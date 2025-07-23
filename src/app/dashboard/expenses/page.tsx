@@ -77,7 +77,8 @@ export default function ExpensesPage() {
   } = useExpenses({ 
     currentMonth, 
     filters: debouncedFilters, 
-    pagination 
+    pagination,
+    updatePagination
   });
 
   // Month navigation

@@ -50,9 +50,10 @@ interface UseExpensesProps {
     total: number;
     pages: number;
   };
+  updatePagination?: (pagination: { page: number; limit: number; total: number; pages: number }) => void;
 }
 
-export const useExpenses = ({ currentMonth, filters, pagination }: UseExpensesProps) => {
+export const useExpenses = ({ currentMonth, filters, pagination, updatePagination }: UseExpensesProps) => {
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [summary, setSummary] = useState<ExpensesSummary>({
     total: { count: 0, amount: 0 },
@@ -65,10 +66,26 @@ export const useExpenses = ({ currentMonth, filters, pagination }: UseExpensesPr
 
   const getMonthDateRange = (year: number, month: number) => {
     const start = new Date(year, month - 1, 1);
-    const end = new Date(year, month, 0);
+    const end = new Date(year, month, 0); // This gets the last day of the month
+    
+    // Use local date formatting to avoid timezone issues
+    const formatLocalDate = (date: Date) => {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    };
+    
+    const startFormatted = formatLocalDate(start);
+    const endFormatted = formatLocalDate(end);
+    
+    console.log('🗓️ Date Range Calculation (Fixed):');
+    console.log(`Input: Year=${year}, Month=${month}`);
+    console.log(`Start: ${startFormatted}, End: ${endFormatted}`);
+    
     return {
-      start: start.toISOString().split('T')[0],
-      end: end.toISOString().split('T')[0]
+      start: startFormatted,
+      end: endFormatted
     };
   };
 
@@ -77,19 +94,27 @@ export const useExpenses = ({ currentMonth, filters, pagination }: UseExpensesPr
       setLoading(true);
       const monthRange = getMonthDateRange(currentMonth.year, currentMonth.month);
       
+      // Debug: Log the current month range being applied
+      console.log('🔍 Expense Filter Debug:');
+      console.log('📅 Current Month:', `${currentMonth.month}/${currentMonth.year}`);
+      console.log('📊 Date Range:', `${monthRange.start} to ${monthRange.end}`);
+      console.log('🎯 Custom Date Range Active:', !!(filters.dateFrom && filters.dateTo));
+      console.log('🔧 All Filters:', filters);
+      
       const params = new URLSearchParams({
         page: page.toString(),
         limit: limit.toString(),
         month: currentMonth.month.toString(),
         year: currentMonth.year.toString(),
+        // Apply month filtering by default, unless custom date range is specified
         ...(filters.dateFrom && filters.dateTo ? {} : {
           dateFrom: monthRange.start,
           dateTo: monthRange.end
         }),
-        ...(filters.status !== 'all' && { status: filters.status }),
-        ...(filters.categoryId && { categoryId: filters.categoryId }),
         ...(filters.dateFrom && { dateFrom: filters.dateFrom }),
         ...(filters.dateTo && { dateTo: filters.dateTo }),
+        ...(filters.status !== 'all' && { status: filters.status }),
+        ...(filters.categoryId && { categoryId: filters.categoryId }),
         ...(filters.search && { search: filters.search })
       });
 
@@ -97,12 +122,24 @@ export const useExpenses = ({ currentMonth, filters, pagination }: UseExpensesPr
       if (!response.ok) throw new Error('Failed to fetch expenses');
       
       const data = await response.json();
+      
+      // Debug API response
+      console.log('📡 API Response Debug:');
+      console.log('📊 Expenses count:', data.expenses?.length || 0);
+      console.log('📄 Pagination data:', data.pagination);
+      console.log('📈 Summary data:', data.summary);
+      
       setExpenses(data.expenses || []);
       setSummary(data.summary || {
         total: { count: 0, amount: 0 },
         pending: { count: 0, amount: 0 },
         approved: { count: 0, amount: 0 }
       });
+      
+      // Update pagination state if callback provided
+      if (updatePagination && data.pagination) {
+        updatePagination(data.pagination);
+      }
       
       return {
         expenses: data.expenses || [],

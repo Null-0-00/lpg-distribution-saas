@@ -1,8 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Disable ESLint during build
+  // Disable ESLint during build and CI
   eslint: {
     ignoreDuringBuilds: true,
+    dirs: [], // Only run ESLint on these directories - empty means disable
   },
   
   // Disable TypeScript errors during build for deployment

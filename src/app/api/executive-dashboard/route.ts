@@ -121,9 +121,9 @@ async function getSalesMetrics(tenantId: string, dateRange: { startDate: Date; e
     if (!acc[date]) {
       acc[date] = { revenue: 0, quantity: 0, orders: 0 };
     }
-    acc[date].revenue += sale.netValue;
-    acc[date].quantity += sale.quantity;
-    acc[date].orders += 1;
+    acc[date]!.revenue += sale.netValue;
+    acc[date]!.quantity += sale.quantity;
+    acc[date]!.orders += 1;
     return acc;
   }, {} as Record<string, { revenue: number; quantity: number; orders: number }>);
 
@@ -364,9 +364,9 @@ async function getTrendsData(tenantId: string, dateRange: { startDate: Date; end
     if (!acc[date]) {
       acc[date] = { revenue: 0, quantity: 0, orders: 0 };
     }
-    acc[date].revenue += sale.netValue;
-    acc[date].quantity += sale.quantity;
-    acc[date].orders += 1;
+    acc[date]!.revenue += sale.netValue;
+    acc[date]!.quantity += sale.quantity;
+    acc[date]!.orders += 1;
     return acc;
   }, {} as Record<string, { revenue: number; quantity: number; orders: number }>);
 
@@ -375,7 +375,7 @@ async function getTrendsData(tenantId: string, dateRange: { startDate: Date; end
     if (!acc[date]) {
       acc[date] = 0;
     }
-    acc[date] += expense.amount;
+    acc[date]! += expense.amount;
     return acc;
   }, {} as Record<string, number>);
 

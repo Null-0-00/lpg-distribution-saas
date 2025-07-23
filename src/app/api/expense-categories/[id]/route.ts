@@ -242,10 +242,10 @@ export async function PUT(
       return NextResponse.json(
         {
           error: 'Validation failed',
-          details: error.errors,
+          details: error.issues,
           message:
-            error.errors
-              ?.map((e) => `${e.path.join('.')}: ${e.message}`)
+            error.issues
+              ?.map((e: any) => `${e.path.join('.')}: ${e.message}`)
               .join(', ') || 'Validation failed',
         },
         { status: 400 }

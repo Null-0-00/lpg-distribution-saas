@@ -1007,6 +1007,11 @@ enum AuditAction {
   ACTIVATE
   DEACTIVATE
   USER_SIGN_IN
+  USER_SIGN_OUT
+  PAYMENT
+  RETURN
+  PAID
+  MONTHLY_REPORT_SENT
 }
 
 enum ReceivableType {

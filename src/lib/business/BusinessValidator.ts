@@ -58,7 +58,7 @@ export class BusinessValidator {
       if (error instanceof z.ZodError) {
         return {
           isValid: false,
-          errors: error.errors.map((e) => `${e.path.join('.')}: ${e.message}`),
+          errors: error.issues.map((e: any) => `${e.path.join('.')}: ${e.message}`),
         };
       }
       return {

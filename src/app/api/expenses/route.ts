@@ -221,8 +221,8 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(
         {
           error: 'Validation failed',
-          details: error.errors,
-          message: error.errors.map((e) => e.message).join(', '),
+          details: error.issues,
+          message: error.issues.map((e) => e.message).join(', '),
         },
         { status: 400 }
       );
@@ -373,16 +373,16 @@ export async function POST(request: NextRequest) {
     if (error instanceof z.ZodError) {
       console.error(
         'Zod validation errors:',
-        JSON.stringify(error.errors, null, 2)
+        JSON.stringify(error.issues, null, 2)
       );
-      const errorDetails = error.errors || [];
+      const errorDetails = error.issues || [];
       return NextResponse.json(
         {
           error: 'Validation failed',
           details: errorDetails,
           message:
             errorDetails
-              .map((e) => `${e.path.join('.')}: ${e.message}`)
+              .map((e: any) => `${e.path.join('.')}: ${e.message}`)
               .join(', ') || 'Validation failed',
         },
         { status: 400 }
@@ -472,10 +472,10 @@ export async function PATCH(request: NextRequest) {
       return NextResponse.json(
         {
           error: 'Validation failed',
-          details: error.errors,
+          details: error.issues,
           message:
-            error.errors
-              ?.map((e) => `${e.path.join('.')}: ${e.message}`)
+            error.issues
+              ?.map((e: any) => `${e.path.join('.')}: ${e.message}`)
               .join(', ') || 'Validation failed',
         },
         { status: 400 }

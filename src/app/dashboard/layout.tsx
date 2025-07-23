@@ -1,6 +1,6 @@
 'use client';
 
-import { useSession } from 'next-auth/react';
+import { useSession, signOut } from 'next-auth/react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useEffect } from 'react';
 import {
@@ -20,12 +20,14 @@ import {
   Settings,
   BarChart3,
   Calculator,
+  LogOut,
 } from 'lucide-react';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
 import { useState } from 'react';
 import { useSettings } from '@/contexts/SettingsContext';
+import { Translations } from '@/lib/i18n/translations';
 
-const getNavigation = (t: (key: string) => string) => [
+const getNavigation = (t: (key: keyof Translations) => string) => [
   { name: t('dashboard'), href: '/dashboard', icon: Home },
   { name: t('sales'), href: '/dashboard/sales', icon: TrendingUp },
   { name: t('analytics'), href: '/dashboard/analytics', icon: Calculator },
@@ -61,6 +63,10 @@ export default function DashboardLayout({
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { t } = useSettings();
   const navigation = getNavigation(t);
+
+  const handleLogout = async () => {
+    await signOut({ callbackUrl: '/auth/login' });
+  };
 
   useEffect(() => {
     if (status === 'loading') return;
@@ -128,6 +134,16 @@ export default function DashboardLayout({
               );
             })}
           </nav>
+          {/* Mobile logout button */}
+          <div className="border-t border-border p-4">
+            <button
+              onClick={handleLogout}
+              className="flex w-full items-center rounded-lg px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20 transition-colors"
+            >
+              <LogOut className="mr-3 h-5 w-5" />
+              {t('logout')}
+            </button>
+          </div>
         </div>
       </div>
 
@@ -159,6 +175,16 @@ export default function DashboardLayout({
               );
             })}
           </nav>
+          {/* Desktop logout button */}
+          <div className="border-t border-border p-4">
+            <button
+              onClick={handleLogout}
+              className="flex w-full items-center rounded-lg px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20 transition-colors"
+            >
+              <LogOut className="mr-3 h-5 w-5" />
+              {t('logout')}
+            </button>
+          </div>
         </div>
       </div>
 
@@ -186,6 +212,13 @@ export default function DashboardLayout({
                   Role: {session?.user?.role}
                 </span>
                 <ThemeToggle />
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center rounded-md p-2 text-sm font-medium text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20 transition-colors"
+                  title="Logout"
+                >
+                  <LogOut className="h-4 w-4" />
+                </button>
               </div>
             </div>
           </div>

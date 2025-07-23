@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/database/client';
-import { ShipmentType, ShipmentStatus } from '@prisma/client';
+import { ShipmentType, ShipmentStatus, MovementType } from '@prisma/client';
 
 export async function GET(request: NextRequest) {
   try {
@@ -388,7 +388,7 @@ export async function POST(request: NextRequest) {
       invoiceNumber,
       vehicleNumber,
       notes:
-        isEmptyTransaction && cylinderSizeId
+        isEmptyTransaction && cylinderSizeId && cylinderSize
           ? `Empty Cylinder Transaction - Size: ${cylinderSize.size}. ${notes || ''}`
           : notes,
     };
@@ -453,24 +453,24 @@ async function updateInventoryFromShipment(
 
   if (fullCylinderChange !== 0 || emptyCylinderChange !== 0) {
     // Determine movement type based on shipment type and purchase type from notes
-    let movementType;
+    let movementType: MovementType;
     switch (shipment.shipmentType) {
       case 'INCOMING_FULL':
         // Check if it's a refill or package purchase from notes
         if (shipment.notes?.startsWith('REFILL:')) {
-          movementType = 'PURCHASE_REFILL';
+          movementType = MovementType.PURCHASE_REFILL;
         } else {
-          movementType = 'PURCHASE_PACKAGE';
+          movementType = MovementType.PURCHASE_PACKAGE;
         }
         break;
       case 'OUTGOING_EMPTY':
-        movementType = 'EMPTY_CYLINDER_SELL';
+        movementType = MovementType.EMPTY_CYLINDER_SELL;
         break;
       case 'INCOMING_EMPTY':
-        movementType = 'EMPTY_CYLINDER_BUY';
+        movementType = MovementType.EMPTY_CYLINDER_BUY;
         break;
       default:
-        movementType = 'ADJUSTMENT_POSITIVE';
+        movementType = MovementType.ADJUSTMENT_POSITIVE;
     }
 
     // Create inventory movement record

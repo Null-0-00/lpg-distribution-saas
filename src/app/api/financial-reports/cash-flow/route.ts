@@ -318,7 +318,7 @@ async function getInvestingCashFlows(
   });
 
   const cashForAssets = assetPurchases.reduce(
-    (sum, asset) => sum + asset.purchaseValue,
+    (sum, asset) => sum + asset.value,
     0
   );
 
@@ -335,7 +335,7 @@ async function getInvestingCashFlows(
         if (!acc[asset.category]) {
           acc[asset.category] = { amount: 0, count: 0 };
         }
-        acc[asset.category].amount += asset.purchaseValue;
+        acc[asset.category].amount += asset.value;
         acc[asset.category].count += 1;
         return acc;
       },
@@ -380,8 +380,8 @@ async function getFinancingCashFlows(
   });
 
   const loanProceeds = liabilityChanges
-    .filter((liability) => liability.initialAmount > 0)
-    .reduce((sum, liability) => sum + liability.initialAmount, 0);
+    .filter((liability) => liability.amount > 0)
+    .reduce((sum, liability) => sum + liability.amount, 0);
 
   // Capital contributions (cash inflows) - placeholder for future implementation
   const capitalContributions = 0;
@@ -460,7 +460,7 @@ async function getBeginningCashBalance(
     0
   );
   const cashForAssets = assetsBeforeStart.reduce(
-    (sum, asset) => sum + asset.purchaseValue,
+    (sum, asset) => sum + asset.value,
     0
   );
 
@@ -468,19 +468,19 @@ async function getBeginningCashBalance(
 }
 
 async function getReceivablesAtDate(tenantId: string, date: Date) {
-  const receivable = await prisma.receivable.findFirst({
+  const receivable = await prisma.receivableRecord.findFirst({
     where: {
       tenantId,
-      recordDate: { lte: date },
+      date: { lte: date },
     },
-    orderBy: { recordDate: 'desc' },
+    orderBy: { date: 'desc' },
   });
 
   return receivable
     ? {
-        cash: receivable.cashReceivable,
-        cylinder: receivable.cylinderReceivable,
-        total: receivable.totalReceivable,
+        cash: receivable.totalCashReceivables,
+        cylinder: receivable.totalCylinderReceivables,
+        total: receivable.totalCashReceivables + receivable.totalCylinderReceivables,
       }
     : { cash: 0, cylinder: 0, total: 0 };
 }
@@ -507,7 +507,25 @@ async function getInventoryValueAtDate(
       if (!acc[productId]) {
         acc[productId] = { fullCylinders: 0, product: movement.product };
       }
-      acc[productId].fullCylinders += movement.fullCylinderChange;
+      // Calculate cylinder changes based on movement type
+      switch (movement.type) {
+        case 'SALE_PACKAGE':
+          acc[productId].fullCylinders -= movement.quantity;
+          break;
+        case 'SALE_REFILL':
+          acc[productId].fullCylinders -= movement.quantity;
+          break;
+        case 'PURCHASE_PACKAGE':
+        case 'PURCHASE_REFILL':
+          acc[productId].fullCylinders += movement.quantity;
+          break;
+        case 'ADJUSTMENT_POSITIVE':
+          acc[productId].fullCylinders += movement.quantity;
+          break;
+        case 'ADJUSTMENT_NEGATIVE':
+          acc[productId].fullCylinders -= movement.quantity;
+          break;
+      }
       return acc;
     },
     {} as Record<string, any>

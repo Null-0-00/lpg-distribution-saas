@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 export const expenseSchema = z.object({
   amount: z.number().positive('Amount must be greater than 0'),
-  description: z.string().max(255, 'Description is too long').optional(),
+  description: z.string().min(1, 'Description is required').max(255, 'Description is too long'),
   categoryId: z.string().min(1, 'Category is required'),
   expenseDate: z.string().min(1, 'Expense date is required'),
   receiptUrl: z.string().url('Invalid URL format').optional().or(z.literal('')),

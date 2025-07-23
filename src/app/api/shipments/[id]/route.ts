@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/database/client';
-import { ShipmentType, ShipmentStatus } from '@prisma/client';
+import { ShipmentType, ShipmentStatus, MovementType } from '@prisma/client';
 
 export async function GET(
   request: NextRequest,
@@ -339,7 +339,7 @@ async function updateInventoryFromCompletedShipment(
     );
     let fullCylinderChange = 0;
     let emptyCylinderChange = 0;
-    let movementType = 'ADJUSTMENT_POSITIVE';
+    let movementType: MovementType = MovementType.ADJUSTMENT_POSITIVE;
 
     // Calculate inventory changes based on shipment type
     switch (shipment.shipmentType) {
@@ -349,30 +349,30 @@ async function updateInventoryFromCompletedShipment(
 
         // Determine movement type based on purchase type from notes
         if (shipment.notes?.includes('REFILL:')) {
-          movementType = 'PURCHASE_REFILL';
+          movementType = MovementType.PURCHASE_REFILL;
         } else if (shipment.notes?.includes('PACKAGE:')) {
-          movementType = 'PURCHASE_PACKAGE';
+          movementType = MovementType.PURCHASE_PACKAGE;
         } else {
-          movementType = 'PURCHASE_PACKAGE'; // Default for incoming full
+          movementType = MovementType.PURCHASE_PACKAGE; // Default for incoming full
         }
         break;
 
       case 'INCOMING_EMPTY':
         // Completed empty cylinder purchase - add to empty cylinder inventory
         emptyCylinderChange = shipment.quantity;
-        movementType = 'EMPTY_CYLINDER_BUY';
+        movementType = MovementType.EMPTY_CYLINDER_BUY;
         break;
 
       case 'OUTGOING_FULL':
         // Completed outgoing shipment - remove from full cylinder inventory
         fullCylinderChange = -shipment.quantity;
-        movementType = 'TRANSFER_OUT';
+        movementType = MovementType.TRANSFER_OUT;
         break;
 
       case 'OUTGOING_EMPTY':
         // Completed empty cylinder sale - remove from empty cylinder inventory
         emptyCylinderChange = -shipment.quantity;
-        movementType = 'EMPTY_CYLINDER_SELL';
+        movementType = MovementType.EMPTY_CYLINDER_SELL;
         break;
     }
 

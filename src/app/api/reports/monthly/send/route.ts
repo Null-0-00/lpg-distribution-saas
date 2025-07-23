@@ -10,7 +10,7 @@ export async function POST(request: NextRequest) {
   try {
     const session = await auth();
 
-    if (!session?.user?.companyId) {
+    if (!session?.user?.tenantId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
     // Generate monthly report
     const generator = new ReportGenerator();
     const reportData = await generator.generateMonthlyReport(
-      session.user.companyId,
+      session.user.tenantId,
       parseInt(year),
       parseInt(month)
     );
@@ -58,12 +58,12 @@ export async function POST(request: NextRequest) {
       // Log the email activity
       await prisma.auditLog.create({
         data: {
-          companyId: session.user.companyId,
+          tenantId: session.user.tenantId,
           userId: session.user.id,
           action: 'MONTHLY_REPORT_SENT',
           entityType: 'REPORT',
           entityId: `monthly-${month}-${year}`,
-          changes: {
+          metadata: {
             month,
             year,
             recipients: validRecipients,
@@ -105,14 +105,14 @@ export async function GET(request: NextRequest) {
   try {
     const session = await auth();
 
-    if (!session?.user?.companyId) {
+    if (!session?.user?.tenantId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     // Get recent monthly report sending history
     const recentReports = await prisma.auditLog.findMany({
       where: {
-        companyId: session.user.companyId,
+        tenantId: session.user.tenantId,
         action: 'MONTHLY_REPORT_SENT',
       },
       orderBy: {
@@ -133,10 +133,10 @@ export async function GET(request: NextRequest) {
       recentReports: recentReports.map((log) => ({
         id: log.id,
         sentAt: log.createdAt,
-        sentBy: log.user,
+        sentBy: log.userId,
         period: log.entityId,
-        recipients: log.changes.recipients?.length || 0,
-        reportMetrics: log.changes.reportMetrics,
+        recipients: (log.metadata as any)?.recipients?.length || 0,
+        reportMetrics: (log.metadata as any)?.reportMetrics,
       })),
     });
   } catch (error) {

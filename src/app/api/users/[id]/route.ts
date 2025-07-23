@@ -36,7 +36,7 @@ export async function PUT(
 
     const updatedUser = await prisma.user.update({
       where: {
-        id: params.id,
+        id: id,
         tenantId,
       },
       data: {
@@ -107,7 +107,7 @@ export async function DELETE(
 
     await prisma.user.delete({
       where: {
-        id: params.id,
+        id: id,
         tenantId,
       },
     });

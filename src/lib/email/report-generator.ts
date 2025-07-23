@@ -5,7 +5,7 @@ const prisma = new PrismaClient();
 
 export class ReportGenerator {
   async generateMonthlyReport(
-    companyId: string,
+    tenantId: string,
     year: number,
     month: number
   ): Promise<MonthlyReportData> {
@@ -14,7 +14,7 @@ export class ReportGenerator {
 
     // Get company details
     const company = await prisma.company.findUnique({
-      where: { id: companyId },
+      where: { id: tenantId },
     });
 
     if (!company) {
@@ -24,10 +24,10 @@ export class ReportGenerator {
     // Generate all report sections
     const [salesSummary, topDrivers, inventoryStatus, financialMetrics] =
       await Promise.all([
-        this.generateSalesSummary(companyId, startDate, endDate),
-        this.generateTopDrivers(companyId, startDate, endDate),
-        this.generateInventoryStatus(companyId),
-        this.generateFinancialMetrics(companyId, startDate, endDate),
+        this.generateSalesSummary(tenantId, startDate, endDate),
+        this.generateTopDrivers(tenantId, startDate, endDate),
+        this.generateInventoryStatus(tenantId),
+        this.generateFinancialMetrics(tenantId, startDate, endDate),
       ]);
 
     return {
@@ -46,13 +46,13 @@ export class ReportGenerator {
   }
 
   private async generateSalesSummary(
-    companyId: string,
+    tenantId: string,
     startDate: Date,
     endDate: Date
   ) {
     const salesData = await prisma.dailySales.findMany({
       where: {
-        companyId,
+        tenantId,
         saleDate: {
           gte: startDate,
           lte: endDate,
@@ -94,14 +94,14 @@ export class ReportGenerator {
   }
 
   private async generateTopDrivers(
-    companyId: string,
+    tenantId: string,
     startDate: Date,
     endDate: Date
   ) {
     const driverSales = await prisma.dailySales.groupBy({
       by: ['driverId'],
       where: {
-        companyId,
+        tenantId,
         saleDate: {
           gte: startDate,
           lte: endDate,
@@ -128,7 +128,7 @@ export class ReportGenerator {
           return {
             driver: driver!,
             totalSales: driverSale._count.id || 0,
-            totalRevenue: driverSale._sum.netValue || 0,
+            totalRevenue: driverSale._sum.netRevenue || 0,
           };
         })
     );
@@ -136,18 +136,17 @@ export class ReportGenerator {
     return topDriversData;
   }
 
-  private async generateInventoryStatus(companyId: string) {
-    const inventoryData = await prisma.monthlyInventory.findMany({
-      where: { companyId },
-      include: { product: true },
-      orderBy: { month: 'desc' },
-      take: 1,
+  private async generateInventoryStatus(tenantId: string) {
+    const inventoryData = await prisma.inventoryRecord.findMany({
+      where: { tenantId },
+      orderBy: { date: 'desc' },
+      take: 10, // Get recent records for each product
     });
 
     const currentStock = inventoryData.map((inventory) => ({
-      product: inventory.product,
-      fullCylinders: inventory.endingFullCylinders,
-      emptyCylinders: inventory.endingEmptyCylinders,
+      productId: inventory.productId,
+      fullCylinders: inventory.fullCylinders,
+      emptyCylinders: inventory.emptyCylinders,
     }));
 
     // Calculate low stock alerts (products with less than 10 full cylinders)
@@ -162,34 +161,34 @@ export class ReportGenerator {
   }
 
   private async generateFinancialMetrics(
-    companyId: string,
+    tenantId: string,
     startDate: Date,
     endDate: Date
   ) {
     // Get sales revenue
     const salesRevenue = await prisma.dailySales.aggregate({
       where: {
-        companyId,
+        tenantId,
         saleDate: {
           gte: startDate,
           lte: endDate,
         },
       },
       _sum: {
-        netValue: true,
-        totalValue: true,
+        netRevenue: true,
+        totalRevenue: true,
       },
     });
 
     // Get expenses
     const expenses = await prisma.expense.aggregate({
       where: {
-        companyId,
+        tenantId,
         expenseDate: {
           gte: startDate,
           lte: endDate,
         },
-        status: 'APPROVED',
+        isApproved: true,
       },
       _sum: {
         amount: true,
@@ -197,13 +196,13 @@ export class ReportGenerator {
     });
 
     // Get current receivables balance
-    const receivables = await prisma.dailyReceivables.findMany({
-      where: { companyId },
+    const receivables = await prisma.receivableRecord.findMany({
+      where: { tenantId },
       orderBy: { date: 'desc' },
       take: 1,
     });
 
-    const totalRevenue = salesRevenue._sum.netValue || 0;
+    const totalRevenue = salesRevenue._sum.netRevenue || 0;
     const expensesTotal = expenses._sum.amount || 0;
     const grossProfit = totalRevenue * 0.25; // Assuming 25% margin
     const netProfit = grossProfit - expensesTotal;
@@ -249,7 +248,7 @@ export async function generateAndEmailMonthlyReports() {
       // Get admin users for this company
       const adminUsers = await prisma.user.findMany({
         where: {
-          companyId: company.id,
+          tenantId: company.id,
           role: 'ADMIN',
           isActive: true,
           email: { not: null },

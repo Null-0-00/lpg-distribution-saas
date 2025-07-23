@@ -17,7 +17,12 @@
       "Bash(npm install:*)",
       "Bash(npm run build:*)",
       "Bash(git add:*)",
-      "Bash(npm run format:*)"
+      "Bash(npm run format:*)",
+      "mcp__gemini-cli__Help",
+      "mcp__gemini-cli__ping",
+      "mcp__gemini-cli__ask-gemini",
+      "mcp__gemini-cli__brainstorm",
+      "Bash(cd \"C:\\Users\\J\\Documents\\Projects\\lpg2\\lpg-distributor-saas\")"
     ],
     "deny": []
   }

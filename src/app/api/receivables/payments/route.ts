@@ -102,6 +102,7 @@ export async function POST(request: NextRequest) {
         await tx.sale.create({
           data: {
             tenantId,
+            userId: session.user.id,
             driverId: customerReceivable.driverId,
             productId: 'receivable-payment', // Special identifier for receivable payments
             saleDate: today,
@@ -111,7 +112,7 @@ export async function POST(request: NextRequest) {
             unitPrice: 0,
             totalValue: 0,
             discount: 0,
-            finalPrice: 0,
+            netValue: 0,
             cashDeposited: data.amount,
             cylindersDeposited: 0,
             customerName: customerReceivable.customerName,

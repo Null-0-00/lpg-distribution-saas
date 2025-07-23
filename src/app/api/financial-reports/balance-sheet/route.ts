@@ -312,8 +312,32 @@ async function calculateInventoryValue(
           product: movement.product,
         };
       }
-      acc[productId].fullCylinders += movement.fullCylinderChange;
-      acc[productId].emptyCylinders += movement.emptyCylinderChange;
+      // Calculate cylinder changes based on movement type
+      switch (movement.type) {
+        case 'SALE_PACKAGE':
+          acc[productId].fullCylinders -= movement.quantity;
+          break;
+        case 'SALE_REFILL':
+          acc[productId].fullCylinders -= movement.quantity;
+          acc[productId].emptyCylinders += movement.quantity;
+          break;
+        case 'PURCHASE_PACKAGE':
+        case 'PURCHASE_REFILL':
+          acc[productId].fullCylinders += movement.quantity;
+          break;
+        case 'EMPTY_CYLINDER_BUY':
+          acc[productId].emptyCylinders += movement.quantity;
+          break;
+        case 'EMPTY_CYLINDER_SELL':
+          acc[productId].emptyCylinders -= movement.quantity;
+          break;
+        case 'ADJUSTMENT_POSITIVE':
+          acc[productId].fullCylinders += movement.quantity;
+          break;
+        case 'ADJUSTMENT_NEGATIVE':
+          acc[productId].fullCylinders -= movement.quantity;
+          break;
+      }
       return acc;
     },
     {} as Record<string, any>
@@ -333,12 +357,12 @@ async function calculateInventoryValue(
 
 async function calculateReceivables(tenantId: string, asOfDate: Date) {
   // Get the most recent receivables record on or before the date
-  const receivablesRecord = await prisma.receivable.findFirst({
+  const receivablesRecord = await prisma.receivableRecord.findFirst({
     where: {
       tenantId,
-      recordDate: { lte: asOfDate },
+      date: { lte: asOfDate },
     },
-    orderBy: { recordDate: 'desc' },
+    orderBy: { date: 'desc' },
   });
 
   if (!receivablesRecord) {
@@ -346,9 +370,9 @@ async function calculateReceivables(tenantId: string, asOfDate: Date) {
   }
 
   return {
-    cash: receivablesRecord.cashReceivable,
-    cylinder: receivablesRecord.cylinderReceivable,
-    total: receivablesRecord.totalReceivable,
+    cash: receivablesRecord.totalCashReceivables,
+    cylinder: receivablesRecord.totalCylinderReceivables,
+    total: receivablesRecord.totalCashReceivables + receivablesRecord.totalCylinderReceivables,
   };
 }
 

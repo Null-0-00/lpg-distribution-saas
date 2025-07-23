@@ -21,9 +21,7 @@ export default async function AdminLayout({
     <div className="min-h-screen bg-gray-50">
       <AdminNavigation user={session.user} />
       <main className="lg:pl-64">
-        <div className="container mx-auto px-4 py-8">
-          {children}
-        </div>
+        <div className="container mx-auto px-4 py-8">{children}</div>
       </main>
     </div>
   );

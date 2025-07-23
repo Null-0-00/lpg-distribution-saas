@@ -1,13 +1,13 @@
-import { NextRequest, NextResponse } from "next/server";
-import bcrypt from "bcryptjs";
-import { prisma } from "@/lib/database/client";
-import { z } from "zod";
+import { NextRequest, NextResponse } from 'next/server';
+import bcrypt from 'bcryptjs';
+import { prisma } from '@/lib/database/client';
+import { z } from 'zod';
 
 const registerSchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters"),
-  email: z.string().email("Invalid email address"),
-  password: z.string().min(8, "Password must be at least 8 characters"),
-  company: z.string().min(2, "Company name must be at least 2 characters"),
+  name: z.string().min(2, 'Name must be at least 2 characters'),
+  email: z.string().email('Invalid email address'),
+  password: z.string().min(8, 'Password must be at least 8 characters'),
+  company: z.string().min(2, 'Company name must be at least 2 characters'),
   phone: z.string().optional(),
 });
 
@@ -17,16 +17,19 @@ export async function POST(request: NextRequest) {
     const validatedData = registerSchema.parse(body);
 
     // For development, use real database now that it's set up
-    if (process.env.NODE_ENV === "development" && process.env.USE_MOCK_AUTH === "true") {
-      console.log("Using development mock registration");
-      
+    if (
+      process.env.NODE_ENV === 'development' &&
+      process.env.USE_MOCK_AUTH === 'true'
+    ) {
+      console.log('Using development mock registration');
+
       // Simulate user creation without database
       const mockUser = {
-        id: "mock-user-" + Date.now(),
+        id: 'mock-user-' + Date.now(),
         name: validatedData.name,
         email: validatedData.email,
-        role: "ADMIN",
-        tenantId: "mock-tenant-" + Date.now(),
+        role: 'ADMIN',
+        tenantId: 'mock-tenant-' + Date.now(),
         isActive: true,
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -34,7 +37,7 @@ export async function POST(request: NextRequest) {
 
       return NextResponse.json(
         {
-          message: "User created successfully (development mode)",
+          message: 'User created successfully (development mode)',
           user: mockUser,
         },
         { status: 201 }
@@ -48,7 +51,7 @@ export async function POST(request: NextRequest) {
 
     if (existingUser) {
       return NextResponse.json(
-        { error: "User with this email already exists" },
+        { error: 'User with this email already exists' },
         { status: 400 }
       );
     }
@@ -60,9 +63,9 @@ export async function POST(request: NextRequest) {
     const tenant = await prisma.tenant.create({
       data: {
         name: validatedData.company,
-        subdomain: validatedData.company.toLowerCase().replace(/\s+/g, "-"),
-        subscriptionStatus: "ACTIVE",
-        subscriptionPlan: "FREEMIUM",
+        subdomain: validatedData.company.toLowerCase().replace(/\s+/g, '-'),
+        subscriptionStatus: 'ACTIVE',
+        subscriptionPlan: 'FREEMIUM',
         isActive: true,
       },
     });
@@ -73,7 +76,7 @@ export async function POST(request: NextRequest) {
         name: validatedData.name,
         email: validatedData.email,
         password: hashedPassword,
-        role: "ADMIN", // First user is admin of their tenant
+        role: 'ADMIN', // First user is admin of their tenant
         tenantId: tenant.id,
         isActive: true,
       },
@@ -84,13 +87,13 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(
       {
-        message: "User created successfully",
+        message: 'User created successfully',
         user: userWithoutPassword,
       },
       { status: 201 }
     );
   } catch (error) {
-    console.error("Registration error:", error);
+    console.error('Registration error:', error);
 
     if (error instanceof z.ZodError) {
       return NextResponse.json(
@@ -100,18 +103,18 @@ export async function POST(request: NextRequest) {
     }
 
     // More detailed error for development
-    if (process.env.NODE_ENV === "development") {
+    if (process.env.NODE_ENV === 'development') {
       return NextResponse.json(
-        { 
-          error: "Internal server error",
-          details: error instanceof Error ? error.message : String(error)
+        {
+          error: 'Internal server error',
+          details: error instanceof Error ? error.message : String(error),
         },
         { status: 500 }
       );
     }
 
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: 'Internal server error' },
       { status: 500 }
     );
   }

@@ -3,7 +3,7 @@
 /**
  * Manual Business Onboarding Script
  * Usage: npm run onboard-business
- * 
+ *
  * This script creates a new tenant and admin user for manual business onboarding
  */
 
@@ -105,11 +105,14 @@ async function main() {
       },
     ]);
 
-    const data: OnboardingData = { ...businessInfo, ...adminInfo } as OnboardingData;
+    const data: OnboardingData = {
+      ...businessInfo,
+      ...adminInfo,
+    } as OnboardingData;
 
     // Check for existing subdomain
     const existingTenant = await prisma.tenant.findUnique({
-      where: { subdomain: data.subdomain.toLowerCase() }
+      where: { subdomain: data.subdomain.toLowerCase() },
     });
 
     if (existingTenant) {
@@ -119,7 +122,7 @@ async function main() {
 
     // Check for existing email
     const existingUser = await prisma.user.findFirst({
-      where: { email: data.userEmail }
+      where: { email: data.userEmail },
     });
 
     if (existingUser) {
@@ -174,7 +177,7 @@ async function main() {
       // Create default cylinder sizes
       const defaultSizes = ['12L', '35L', '5kg', '20L'];
       await tx.cylinderSize.createMany({
-        data: defaultSizes.map(size => ({
+        data: defaultSizes.map((size) => ({
           tenantId: tenant.id,
           size,
           description: `${size} LPG Cylinder`,
@@ -184,9 +187,18 @@ async function main() {
       // Create default expense parent categories
       const parentCategories = [
         { name: 'Operations', description: 'Day-to-day operational expenses' },
-        { name: 'Marketing', description: 'Marketing and promotional expenses' },
-        { name: 'Administrative', description: 'Administrative and office expenses' },
-        { name: 'Transport', description: 'Vehicle and transport related expenses' },
+        {
+          name: 'Marketing',
+          description: 'Marketing and promotional expenses',
+        },
+        {
+          name: 'Administrative',
+          description: 'Administrative and office expenses',
+        },
+        {
+          name: 'Transport',
+          description: 'Vehicle and transport related expenses',
+        },
       ];
 
       for (const parentCat of parentCategories) {
@@ -227,7 +239,6 @@ async function main() {
     console.log(`   Admin: ${result.user.name} (${result.user.email})`);
     console.log(`   Login URL: /auth/login`);
     console.log(`   Tenant ID: ${result.tenant.id}`);
-
   } catch (error) {
     console.error('❌ Onboarding failed:', error);
     process.exit(1);

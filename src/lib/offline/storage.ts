@@ -41,7 +41,7 @@ export class OfflineStorageManager {
     syncInterval: 30000, // 30 seconds
     maxStorage: 50, // 50MB
     autoCleanup: true,
-    cleanupAfterDays: 30
+    cleanupAfterDays: 30,
   };
   private syncTimer: NodeJS.Timeout | null = null;
   private listeners: Map<string, Function[]> = new Map();
@@ -113,7 +113,7 @@ export class OfflineStorageManager {
       data,
       timestamp: Date.now(),
       synced: false,
-      retryCount: 0
+      retryCount: 0,
     };
 
     return new Promise((resolve, reject) => {
@@ -145,11 +145,11 @@ export class OfflineStorageManager {
 
       request.onsuccess = () => {
         let data = request.result as OfflineData[];
-        
+
         if (type) {
-          data = data.filter(item => item.type === type);
+          data = data.filter((item) => item.type === type);
         }
-        
+
         // Sort by timestamp (oldest first)
         data.sort((a, b) => a.timestamp - b.timestamp);
         resolve(data);
@@ -210,7 +210,7 @@ export class OfflineStorageManager {
           if (error) {
             data.lastError = error;
           }
-          
+
           const updateRequest = store.put(data);
           updateRequest.onsuccess = () => resolve();
           updateRequest.onerror = () => reject(updateRequest.error);
@@ -225,7 +225,12 @@ export class OfflineStorageManager {
   /**
    * Cache critical data for offline access
    */
-  async cacheData(key: string, data: any, type: string, ttl: number = 3600000): Promise<void> {
+  async cacheData(
+    key: string,
+    data: any,
+    type: string,
+    ttl: number = 3600000
+  ): Promise<void> {
     if (!this.db) {
       throw new Error('Database not initialized');
     }
@@ -235,7 +240,7 @@ export class OfflineStorageManager {
       data,
       type,
       timestamp: Date.now(),
-      expiry: Date.now() + ttl
+      expiry: Date.now() + ttl,
     };
 
     return new Promise((resolve, reject) => {
@@ -279,17 +284,29 @@ export class OfflineStorageManager {
   async storeEssentialData(): Promise<void> {
     try {
       // Cache active drivers
-      const driversResponse = await fetch('/api/drivers?active=true&driverType=RETAIL');
+      const driversResponse = await fetch(
+        '/api/drivers?active=true&driverType=RETAIL'
+      );
       if (driversResponse.ok) {
         const driversData = await driversResponse.json();
-        await this.cacheData('active-drivers', driversData.drivers, 'drivers', 86400000); // 24 hours
+        await this.cacheData(
+          'active-drivers',
+          driversData.drivers,
+          'drivers',
+          86400000
+        ); // 24 hours
       }
 
       // Cache products with inventory
       const productsResponse = await fetch('/api/products?inventory=true');
       if (productsResponse.ok) {
         const productsData = await productsResponse.json();
-        await this.cacheData('products-inventory', productsData.products, 'products', 3600000); // 1 hour
+        await this.cacheData(
+          'products-inventory',
+          productsData.products,
+          'products',
+          3600000
+        ); // 1 hour
       }
 
       // Cache company info
@@ -303,7 +320,12 @@ export class OfflineStorageManager {
       const metricsResponse = await fetch('/api/dashboard/metrics');
       if (metricsResponse.ok) {
         const metricsData = await metricsResponse.json();
-        await this.cacheData('dashboard-metrics', metricsData, 'metrics', 300000); // 5 minutes
+        await this.cacheData(
+          'dashboard-metrics',
+          metricsData,
+          'metrics',
+          300000
+        ); // 5 minutes
       }
 
       this.notifyListeners('essentialDataCached', {});
@@ -318,19 +340,19 @@ export class OfflineStorageManager {
   async getSyncStatus(): Promise<SyncStatus> {
     const pendingData = await this.getPendingData();
     const settings = await this.getSetting('lastSync');
-    
+
     return {
       isOnline: navigator.onLine,
       lastSync: settings || 0,
       pendingItems: pendingData.length,
       syncing: false, // This would be managed by the sync process
       errors: pendingData
-        .filter(item => item.lastError)
-        .map(item => ({
+        .filter((item) => item.lastError)
+        .map((item) => ({
           id: item.id,
           error: item.lastError!,
-          timestamp: item.timestamp
-        }))
+          timestamp: item.timestamp,
+        })),
     };
   }
 
@@ -362,18 +384,21 @@ export class OfflineStorageManager {
           errorCount++;
         }
       } catch (error) {
-        await this.updateRetryCount(item.id, error instanceof Error ? error.message : 'Unknown error');
+        await this.updateRetryCount(
+          item.id,
+          error instanceof Error ? error.message : 'Unknown error'
+        );
         errorCount++;
       }
     }
 
     // Update last sync time
     await this.setSetting('lastSync', Date.now());
-    
+
     this.notifyListeners('syncCompleted', {
       success: successCount,
       errors: errorCount,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
   }
 
@@ -406,9 +431,10 @@ export class OfflineStorageManager {
         headers: {
           'Content-Type': 'application/json',
           'X-Offline-Sync': 'true',
-          'X-Offline-ID': item.id
+          'X-Offline-ID': item.id,
         },
-        body: item.type === 'action' ? item.data.body : JSON.stringify(item.data)
+        body:
+          item.type === 'action' ? item.data.body : JSON.stringify(item.data),
       });
 
       return response.ok;
@@ -458,7 +484,8 @@ export class OfflineStorageManager {
       return;
     }
 
-    const cutoffTime = Date.now() - (this.config.cleanupAfterDays * 24 * 60 * 60 * 1000);
+    const cutoffTime =
+      Date.now() - this.config.cleanupAfterDays * 24 * 60 * 60 * 1000;
 
     return new Promise((resolve, reject) => {
       const transaction = this.db!.transaction(['offline'], 'readwrite');
@@ -491,10 +518,10 @@ export class OfflineStorageManager {
       const estimate = await navigator.storage.estimate();
       return {
         used: estimate.usage || 0,
-        available: estimate.quota || 0
+        available: estimate.quota || 0,
       };
     }
-    
+
     return { used: 0, available: 0 };
   }
 
@@ -557,7 +584,7 @@ export class OfflineStorageManager {
   private notifyListeners(event: string, data: any): void {
     const listeners = this.listeners.get(event);
     if (listeners) {
-      listeners.forEach(listener => listener(data));
+      listeners.forEach((listener) => listener(data));
     }
   }
 
@@ -565,7 +592,9 @@ export class OfflineStorageManager {
    * Utility methods
    */
   private generateId(): string {
-    return 'offline_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    return (
+      'offline_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9)
+    );
   }
 
   /**
@@ -581,7 +610,7 @@ export class OfflineStorageManager {
       syncStatus,
       storageUsage,
       config: this.config,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
   }
 
@@ -594,11 +623,14 @@ export class OfflineStorageManager {
     }
 
     return new Promise((resolve, reject) => {
-      const transaction = this.db!.transaction(['offline', 'cache'], 'readwrite');
-      
+      const transaction = this.db!.transaction(
+        ['offline', 'cache'],
+        'readwrite'
+      );
+
       const offlineStore = transaction.objectStore('offline');
       const cacheStore = transaction.objectStore('cache');
-      
+
       const clearOffline = offlineStore.clear();
       const clearCache = cacheStore.clear();
 

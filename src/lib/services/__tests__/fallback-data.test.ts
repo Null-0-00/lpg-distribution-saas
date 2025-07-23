@@ -8,7 +8,7 @@ describe('FallbackDataService', () => {
     });
 
     it('should have all required driver properties', () => {
-      FallbackDataService.DRIVERS.forEach(driver => {
+      FallbackDataService.DRIVERS.forEach((driver) => {
         expect(driver).toHaveProperty('id');
         expect(driver).toHaveProperty('name');
         expect(driver).toHaveProperty('phone');
@@ -21,7 +21,7 @@ describe('FallbackDataService', () => {
     });
 
     it('should have valid driver data types', () => {
-      FallbackDataService.DRIVERS.forEach(driver => {
+      FallbackDataService.DRIVERS.forEach((driver) => {
         expect(typeof driver.id).toBe('number');
         expect(typeof driver.name).toBe('string');
         expect(typeof driver.phone).toBe('string');
@@ -40,7 +40,7 @@ describe('FallbackDataService', () => {
     });
 
     it('should have all required data point properties', () => {
-      FallbackDataService.LIVE_DATA_FEED.forEach(item => {
+      FallbackDataService.LIVE_DATA_FEED.forEach((item) => {
         expect(item).toHaveProperty('id');
         expect(item).toHaveProperty('type');
         expect(item).toHaveProperty('message');
@@ -50,9 +50,11 @@ describe('FallbackDataService', () => {
     });
 
     it('should have valid data types', () => {
-      FallbackDataService.LIVE_DATA_FEED.forEach(item => {
+      FallbackDataService.LIVE_DATA_FEED.forEach((item) => {
         expect(typeof item.id).toBe('string');
-        expect(['sale', 'payment', 'stock', 'alert', 'driver']).toContain(item.type);
+        expect(['sale', 'payment', 'stock', 'alert', 'driver']).toContain(
+          item.type
+        );
         expect(typeof item.message).toBe('string');
         expect(typeof item.timestamp).toBe('string');
         expect(['high', 'medium', 'low']).toContain(item.priority);
@@ -63,7 +65,7 @@ describe('FallbackDataService', () => {
   describe('getDashboardAnalytics', () => {
     it('should return analytics with correct structure', () => {
       const analytics = FallbackDataService.getDashboardAnalytics();
-      
+
       expect(analytics).toHaveProperty('weekSalesData');
       expect(analytics).toHaveProperty('topDrivers');
       expect(analytics).toHaveProperty('alerts');
@@ -74,7 +76,7 @@ describe('FallbackDataService', () => {
     it('should have 7 days of sales data', () => {
       const analytics = FallbackDataService.getDashboardAnalytics();
       expect(analytics.weekSalesData).toHaveLength(7);
-      analytics.weekSalesData.forEach(sales => {
+      analytics.weekSalesData.forEach((sales) => {
         expect(typeof sales).toBe('number');
         expect(sales).toBeGreaterThanOrEqual(0);
       });
@@ -83,7 +85,7 @@ describe('FallbackDataService', () => {
     it('should have performance metrics with correct types', () => {
       const analytics = FallbackDataService.getDashboardAnalytics();
       const metrics = analytics.performanceMetrics;
-      
+
       expect(typeof metrics.salesTrend).toBe('string');
       expect(typeof metrics.totalWeekSales).toBe('number');
       expect(typeof metrics.avgDailySales).toBe('number');
@@ -109,20 +111,20 @@ describe('FallbackDataService', () => {
     it('should have deterministic values', () => {
       const data1 = FallbackDataService.getTrendData('7d');
       const data2 = FallbackDataService.getTrendData('7d');
-      
+
       expect(data1).toEqual(data2);
     });
 
     it('should have all required trend properties', () => {
       const data = FallbackDataService.getTrendData('7d');
-      
-      data.forEach(item => {
+
+      data.forEach((item) => {
         expect(item).toHaveProperty('period');
         expect(item).toHaveProperty('sales');
         expect(item).toHaveProperty('revenue');
         expect(item).toHaveProperty('drivers');
         expect(item).toHaveProperty('efficiency');
-        
+
         expect(typeof item.period).toBe('string');
         expect(typeof item.sales).toBe('number');
         expect(typeof item.revenue).toBe('number');
@@ -137,7 +139,7 @@ describe('FallbackDataService', () => {
       const names = FallbackDataService.getDriverNames();
       expect(Array.isArray(names)).toBe(true);
       expect(names).toHaveLength(4);
-      names.forEach(name => {
+      names.forEach((name) => {
         expect(typeof name).toBe('string');
         expect(name.length).toBeGreaterThan(0);
       });
@@ -147,14 +149,16 @@ describe('FallbackDataService', () => {
   describe('getActiveDrivers', () => {
     it('should return only active drivers', () => {
       const activeDrivers = FallbackDataService.getActiveDrivers();
-      activeDrivers.forEach(driver => {
+      activeDrivers.forEach((driver) => {
         expect(driver.status).toBe('active');
       });
     });
 
     it('should return correct number of active drivers', () => {
       const activeDrivers = FallbackDataService.getActiveDrivers();
-      const expectedCount = FallbackDataService.DRIVERS.filter(d => d.status === 'active').length;
+      const expectedCount = FallbackDataService.DRIVERS.filter(
+        (d) => d.status === 'active'
+      ).length;
       expect(activeDrivers).toHaveLength(expectedCount);
     });
   });
@@ -163,7 +167,7 @@ describe('FallbackDataService', () => {
     it('should return consistent data for same index', () => {
       const data1 = FallbackDataService.getDataPointForIndex(0);
       const data2 = FallbackDataService.getDataPointForIndex(0);
-      
+
       // Timestamps can be slightly different, so we compare the rest of the object
       const { timestamp: ts1, ...rest1 } = data1;
       const { timestamp: ts2, ...rest2 } = data2;
@@ -174,13 +178,13 @@ describe('FallbackDataService', () => {
     it('should return different data for different indices', () => {
       const data1 = FallbackDataService.getDataPointForIndex(0);
       const data2 = FallbackDataService.getDataPointForIndex(1);
-      
+
       expect(data1.id).not.toBe(data2.id);
     });
 
     it('should have all required properties', () => {
       const data = FallbackDataService.getDataPointForIndex(0);
-      
+
       expect(data).toHaveProperty('id');
       expect(data).toHaveProperty('type');
       expect(data).toHaveProperty('message');
@@ -191,7 +195,7 @@ describe('FallbackDataService', () => {
     it('should generate valid timestamps', () => {
       const data = FallbackDataService.getDataPointForIndex(0);
       const timestamp = new Date(data.timestamp);
-      
+
       expect(timestamp).toBeInstanceOf(Date);
       expect(timestamp.getTime()).not.toBeNaN();
     });

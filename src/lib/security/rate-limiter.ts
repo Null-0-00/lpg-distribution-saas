@@ -28,7 +28,7 @@ export class RateLimiter {
       message: 'Too many requests, please try again later.',
       skipSuccessfulRequests: false,
       skipFailedRequests: false,
-      ...config
+      ...config,
     };
   }
 
@@ -47,7 +47,9 @@ export class RateLimiter {
       limit: this.config.maxRequests,
       remaining: result.remaining,
       resetTime: result.resetTime,
-      retryAfter: result.allowed ? undefined : Math.ceil(this.config.windowMs / 1000)
+      retryAfter: result.allowed
+        ? undefined
+        : Math.ceil(this.config.windowMs / 1000),
     };
   }
 
@@ -77,7 +79,7 @@ export class RateLimiter {
         error: this.config.message,
         limit: result.limit,
         remaining: result.remaining,
-        resetTime: result.resetTime
+        resetTime: result.resetTime,
       },
       { status: 429 }
     );
@@ -99,58 +101,61 @@ export const RATE_LIMITS = {
   API_GENERAL: new RateLimiter({
     windowMs: 15 * 60 * 1000, // 15 minutes
     maxRequests: 1000,
-    message: 'Too many API requests, please try again later.'
+    message: 'Too many API requests, please try again later.',
   }),
 
   API_AUTH: new RateLimiter({
     windowMs: 15 * 60 * 1000, // 15 minutes
     maxRequests: 5,
-    message: 'Too many authentication attempts, please try again later.'
+    message: 'Too many authentication attempts, please try again later.',
   }),
 
   API_ADMIN: new RateLimiter({
     windowMs: 5 * 60 * 1000, // 5 minutes
     maxRequests: 200,
-    message: 'Too many admin requests, please try again later.'
+    message: 'Too many admin requests, please try again later.',
   }),
 
   // User action rate limits
   SALES_CREATION: new RateLimiter({
     windowMs: 60 * 1000, // 1 minute
     maxRequests: 30,
-    message: 'Too many sales entries, please slow down.'
+    message: 'Too many sales entries, please slow down.',
   }),
 
   SEARCH_REQUESTS: new RateLimiter({
     windowMs: 60 * 1000, // 1 minute
     maxRequests: 60,
-    message: 'Too many search requests, please slow down.'
+    message: 'Too many search requests, please slow down.',
   }),
 
   FILE_UPLOAD: new RateLimiter({
     windowMs: 60 * 1000, // 1 minute
     maxRequests: 10,
-    message: 'Too many file uploads, please wait.'
+    message: 'Too many file uploads, please wait.',
   }),
 
   // Aggressive limits for sensitive operations
   PASSWORD_RESET: new RateLimiter({
     windowMs: 60 * 60 * 1000, // 1 hour
     maxRequests: 3,
-    message: 'Too many password reset attempts.'
+    message: 'Too many password reset attempts.',
   }),
 
   ADMIN_LOGIN: new RateLimiter({
     windowMs: 30 * 60 * 1000, // 30 minutes
     maxRequests: 5,
-    message: 'Too many admin login attempts.'
-  })
+    message: 'Too many admin login attempts.',
+  }),
 } as const;
 
 /**
  * Get client identifier for rate limiting
  */
-export function getClientIdentifier(request: NextRequest, type: 'ip' | 'user' | 'tenant' = 'ip'): string {
+export function getClientIdentifier(
+  request: NextRequest,
+  type: 'ip' | 'user' | 'tenant' = 'ip'
+): string {
   switch (type) {
     case 'ip':
       return getClientIP(request);
@@ -199,7 +204,9 @@ export function createRateLimitMiddleware(
   rateLimiter: RateLimiter,
   identifierType: 'ip' | 'user' | 'tenant' = 'ip'
 ) {
-  return async function rateLimitMiddleware(request: NextRequest): Promise<NextResponse | null> {
+  return async function rateLimitMiddleware(
+    request: NextRequest
+  ): Promise<NextResponse | null> {
     const identifier = getClientIdentifier(request, identifierType);
     const result = await rateLimiter.checkLimit(identifier);
 
@@ -233,7 +240,7 @@ export class SlidingWindowRateLimiter {
   async checkLimit(identifier: string): Promise<RateLimitResult> {
     const now = Date.now();
     const windowStart = now - this.windowMs;
-    
+
     // This would use a more sophisticated Redis implementation
     // For now, using the simple counter approach
     const result = await RateLimitCache.checkRateLimit(
@@ -246,7 +253,7 @@ export class SlidingWindowRateLimiter {
       success: result.allowed,
       limit: this.maxRequests,
       remaining: result.remaining,
-      resetTime: result.resetTime
+      resetTime: result.resetTime,
     };
   }
 }
@@ -277,7 +284,7 @@ export class TokenBucketRateLimiter {
       success: result.allowed,
       limit: this.capacity,
       remaining: result.remaining,
-      resetTime: result.resetTime
+      resetTime: result.resetTime,
     };
   }
 }
@@ -290,7 +297,11 @@ export class AdaptiveRateLimiter {
   private windowMs: number;
   private loadThreshold: number;
 
-  constructor(baseLimit: number, windowMs: number, loadThreshold: number = 0.8) {
+  constructor(
+    baseLimit: number,
+    windowMs: number,
+    loadThreshold: number = 0.8
+  ) {
     this.baseLimit = baseLimit;
     this.windowMs = windowMs;
     this.loadThreshold = loadThreshold;
@@ -304,11 +315,12 @@ export class AdaptiveRateLimiter {
 
   async checkLimit(identifier: string): Promise<RateLimitResult> {
     const currentLoad = await this.getCurrentLoad();
-    
+
     // Reduce limit if system is under high load
-    const adjustedLimit = currentLoad > this.loadThreshold 
-      ? Math.floor(this.baseLimit * (1 - currentLoad))
-      : this.baseLimit;
+    const adjustedLimit =
+      currentLoad > this.loadThreshold
+        ? Math.floor(this.baseLimit * (1 - currentLoad))
+        : this.baseLimit;
 
     const result = await RateLimitCache.checkRateLimit(
       `adaptive:${identifier}`,
@@ -320,7 +332,7 @@ export class AdaptiveRateLimiter {
       success: result.allowed,
       limit: adjustedLimit,
       remaining: result.remaining,
-      resetTime: result.resetTime
+      resetTime: result.resetTime,
     };
   }
 }
@@ -340,7 +352,9 @@ export class DDoSProtection {
     ];
   }
 
-  async checkForDDoS(identifier: string): Promise<{ blocked: boolean; penalty?: number }> {
+  async checkForDDoS(
+    identifier: string
+  ): Promise<{ blocked: boolean; penalty?: number }> {
     // Check request count in the last hour
     const hourlyCount = await RateLimitCache.checkRateLimit(
       `ddos:hourly:${identifier}`,
@@ -351,7 +365,7 @@ export class DDoSProtection {
     // Find applicable penalty
     const applicableThreshold = this.thresholds
       .reverse()
-      .find(threshold => (10000 - hourlyCount.remaining) >= threshold.requests);
+      .find((threshold) => 10000 - hourlyCount.remaining >= threshold.requests);
 
     if (applicableThreshold) {
       // Apply penalty

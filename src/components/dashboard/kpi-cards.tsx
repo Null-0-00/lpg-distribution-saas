@@ -1,6 +1,12 @@
 'use client';
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { TrendIndicator } from './analytics-charts';
@@ -16,7 +22,7 @@ import {
   Clock,
   Target,
   BarChart3,
-  Gauge
+  Gauge,
 } from 'lucide-react';
 
 interface KPICardProps {
@@ -36,14 +42,14 @@ interface KPICardProps {
   };
 }
 
-export function KPICard({ 
-  title, 
-  value, 
-  description, 
-  trend, 
-  icon, 
+export function KPICard({
+  title,
+  value,
+  description,
+  trend,
+  icon,
   variant = 'default',
-  progress 
+  progress,
 }: KPICardProps) {
   const getVariantStyles = () => {
     switch (variant) {
@@ -76,7 +82,7 @@ export function KPICard({
       <CardContent>
         <div className="text-2xl font-bold">{formatValue(value)}</div>
         {description && (
-          <p className="text-xs text-muted-foreground mt-1">{description}</p>
+          <p className="text-muted-foreground mt-1 text-xs">{description}</p>
         )}
         {trend && (
           <div className="mt-2">
@@ -85,11 +91,14 @@ export function KPICard({
         )}
         {progress && (
           <div className="mt-3">
-            <div className="flex items-center justify-between text-xs text-muted-foreground mb-1">
+            <div className="text-muted-foreground mb-1 flex items-center justify-between text-xs">
               <span>{progress.label || 'Progress'}</span>
               <span>{((progress.value / progress.max) * 100).toFixed(0)}%</span>
             </div>
-            <Progress value={(progress.value / progress.max) * 100} className="h-2" />
+            <Progress
+              value={(progress.value / progress.max) * 100}
+              className="h-2"
+            />
           </div>
         )}
       </CardContent>
@@ -120,41 +129,55 @@ export function SalesKPIs({ data, target }: SalesKPIsProps) {
         description="Today's revenue"
         trend={{
           value: data.revenueGrowth,
-          label: 'vs yesterday'
+          label: 'vs yesterday',
         }}
-        icon={<DollarSign className="h-4 w-4 text-muted-foreground" />}
-        variant={data.revenueGrowth > 0 ? 'success' : data.revenueGrowth < -5 ? 'destructive' : 'default'}
-        progress={target ? {
-          value: data.totalRevenue,
-          max: target.revenue,
-          label: 'Daily Target'
-        } : undefined}
+        icon={<DollarSign className="text-muted-foreground h-4 w-4" />}
+        variant={
+          data.revenueGrowth > 0
+            ? 'success'
+            : data.revenueGrowth < -5
+              ? 'destructive'
+              : 'default'
+        }
+        progress={
+          target
+            ? {
+                value: data.totalRevenue,
+                max: target.revenue,
+                label: 'Daily Target',
+              }
+            : undefined
+        }
       />
-      
+
       <KPICard
         title="Total Orders"
         value={data.totalOrders}
         description="Orders processed"
-        icon={<ShoppingCart className="h-4 w-4 text-muted-foreground" />}
-        progress={target ? {
-          value: data.totalOrders,
-          max: target.orders,
-          label: 'Order Target'
-        } : undefined}
+        icon={<ShoppingCart className="text-muted-foreground h-4 w-4" />}
+        progress={
+          target
+            ? {
+                value: data.totalOrders,
+                max: target.orders,
+                label: 'Order Target',
+              }
+            : undefined
+        }
       />
-      
+
       <KPICard
         title="Cylinders Sold"
         value={data.totalQuantity}
         description="Units moved"
-        icon={<Package className="h-4 w-4 text-muted-foreground" />}
+        icon={<Package className="text-muted-foreground h-4 w-4" />}
       />
-      
+
       <KPICard
         title="Avg Order Value"
         value={data.averageOrderValue}
         description="Per order"
-        icon={<BarChart3 className="h-4 w-4 text-muted-foreground" />}
+        icon={<BarChart3 className="text-muted-foreground h-4 w-4" />}
       />
     </div>
   );
@@ -179,30 +202,30 @@ export function InventoryKPIs({ data }: InventoryKPIsProps) {
         title="Full Cylinders"
         value={data.fullCylinders}
         description="Ready for sale"
-        icon={<Package className="h-4 w-4 text-muted-foreground" />}
+        icon={<Package className="text-muted-foreground h-4 w-4" />}
         variant={data.stockLevel === 'low' ? 'warning' : 'default'}
       />
-      
+
       <KPICard
         title="Empty Cylinders"
         value={data.emptyCylinders}
         description="Awaiting refill"
-        icon={<Package className="h-4 w-4 text-muted-foreground" />}
+        icon={<Package className="text-muted-foreground h-4 w-4" />}
       />
-      
+
       <KPICard
         title="Low Stock Alerts"
         value={data.lowStockProducts}
         description="Products below threshold"
-        icon={<AlertTriangle className="h-4 w-4 text-muted-foreground" />}
+        icon={<AlertTriangle className="text-muted-foreground h-4 w-4" />}
         variant={data.lowStockProducts > 0 ? 'warning' : 'success'}
       />
-      
+
       <KPICard
         title="Inventory Value"
         value={data.inventoryValue}
         description="Current stock value"
-        icon={<DollarSign className="h-4 w-4 text-muted-foreground" />}
+        icon={<DollarSign className="text-muted-foreground h-4 w-4" />}
       />
     </div>
   );
@@ -225,30 +248,36 @@ export function ReceivablesKPIs({ data }: ReceivablesKPIsProps) {
         title="Cash Receivables"
         value={data.totalCashReceivables}
         description="Outstanding amount"
-        icon={<DollarSign className="h-4 w-4 text-muted-foreground" />}
+        icon={<DollarSign className="text-muted-foreground h-4 w-4" />}
       />
-      
+
       <KPICard
         title="Cylinder Receivables"
         value={data.totalCylinderReceivables}
         description="Cylinders on credit"
-        icon={<Package className="h-4 w-4 text-muted-foreground" />}
+        icon={<Package className="text-muted-foreground h-4 w-4" />}
       />
-      
+
       <KPICard
         title="Overdue Amount"
         value={data.overdueAmount}
         description="Past due payments"
-        icon={<Clock className="h-4 w-4 text-muted-foreground" />}
+        icon={<Clock className="text-muted-foreground h-4 w-4" />}
         variant={data.overdueAmount > 0 ? 'destructive' : 'success'}
       />
-      
+
       <KPICard
         title="Collection Rate"
         value={`${data.collectionRate.toFixed(1)}%`}
         description="Payment efficiency"
-        icon={<Target className="h-4 w-4 text-muted-foreground" />}
-        variant={data.collectionRate > 90 ? 'success' : data.collectionRate > 70 ? 'warning' : 'destructive'}
+        icon={<Target className="text-muted-foreground h-4 w-4" />}
+        variant={
+          data.collectionRate > 90
+            ? 'success'
+            : data.collectionRate > 70
+              ? 'warning'
+              : 'destructive'
+        }
       />
     </div>
   );
@@ -272,22 +301,26 @@ export function DriverKPIs({ data }: DriverKPIsProps) {
         title="Active Drivers"
         value={data.totalActiveDrivers}
         description="Currently active"
-        icon={<Users className="h-4 w-4 text-muted-foreground" />}
+        icon={<Users className="text-muted-foreground h-4 w-4" />}
       />
-      
+
       <KPICard
         title="Top Performer"
         value={data.topPerformer?.name || 'N/A'}
-        description={data.topPerformer ? `৳${data.topPerformer.totalRevenue.toLocaleString()}` : 'No sales today'}
-        icon={<TrendingUp className="h-4 w-4 text-muted-foreground" />}
+        description={
+          data.topPerformer
+            ? `৳${data.topPerformer.totalRevenue.toLocaleString()}`
+            : 'No sales today'
+        }
+        icon={<TrendingUp className="text-muted-foreground h-4 w-4" />}
         variant={data.topPerformer ? 'success' : 'default'}
       />
-      
+
       <KPICard
         title="Avg Performance"
         value={data.averagePerformance.toLocaleString()}
         description="Revenue per driver"
-        icon={<Gauge className="h-4 w-4 text-muted-foreground" />}
+        icon={<Gauge className="text-muted-foreground h-4 w-4" />}
       />
     </div>
   );
@@ -310,34 +343,40 @@ export function FinancialKPIs({ data }: FinancialKPIsProps) {
         title="Revenue"
         value={data.totalRevenue}
         description="Total income"
-        icon={<DollarSign className="h-4 w-4 text-muted-foreground" />}
+        icon={<DollarSign className="text-muted-foreground h-4 w-4" />}
       />
-      
+
       <KPICard
         title="Expenses"
         value={data.totalExpenses}
         description="Total costs"
-        icon={<TrendingDown className="h-4 w-4 text-muted-foreground" />}
+        icon={<TrendingDown className="text-muted-foreground h-4 w-4" />}
       />
-      
+
       <KPICard
         title="Net Profit"
         value={data.netProfit}
         description="After expenses"
-        icon={<TrendingUp className="h-4 w-4 text-muted-foreground" />}
+        icon={<TrendingUp className="text-muted-foreground h-4 w-4" />}
         variant={data.netProfit > 0 ? 'success' : 'destructive'}
       />
-      
+
       <KPICard
         title="Health Score"
         value={`${data.healthScore.toFixed(0)}%`}
         description="Overall financial health"
-        icon={<Gauge className="h-4 w-4 text-muted-foreground" />}
-        variant={data.healthScore > 70 ? 'success' : data.healthScore > 50 ? 'warning' : 'destructive'}
+        icon={<Gauge className="text-muted-foreground h-4 w-4" />}
+        variant={
+          data.healthScore > 70
+            ? 'success'
+            : data.healthScore > 50
+              ? 'warning'
+              : 'destructive'
+        }
         progress={{
           value: data.healthScore,
           max: 100,
-          label: 'Health Score'
+          label: 'Health Score',
         }}
       />
     </div>

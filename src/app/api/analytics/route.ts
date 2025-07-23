@@ -69,7 +69,10 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    const totalExpenseAmount = totalExpenses.reduce((sum, expense) => sum + expense.amount, 0);
+    const totalExpenseAmount = totalExpenses.reduce(
+      (sum, expense) => sum + expense.amount,
+      0
+    );
 
     // Get sales data for the month
     const salesFilter: any = {
@@ -97,69 +100,90 @@ export async function GET(request: NextRequest) {
     });
 
     // Calculate total sales quantity for cost per unit calculation
-    const totalSalesQuantity = sales.reduce((sum, sale) => sum + sale.quantity, 0);
-    const costPerUnit = totalSalesQuantity > 0 ? totalExpenseAmount / totalSalesQuantity : 0;
+    const totalSalesQuantity = sales.reduce(
+      (sum, sale) => sum + sale.quantity,
+      0
+    );
+    const costPerUnit =
+      totalSalesQuantity > 0 ? totalExpenseAmount / totalSalesQuantity : 0;
 
     // Group sales by product
-    const productSales = sales.reduce((acc, sale) => {
-      const productId = sale.productId;
-      if (!acc[productId]) {
-        acc[productId] = {
-          product: sale.product,
-          totalQuantity: 0,
-          totalRevenue: 0,
-          latestPrice: 0,
-          sales: [],
-        };
-      }
-      acc[productId].totalQuantity += sale.quantity;
-      acc[productId].totalRevenue += sale.totalValue;
-      acc[productId].latestPrice = sale.unitPrice; // Last price will be the latest
-      acc[productId].sales.push(sale);
-      return acc;
-    }, {} as Record<string, any>);
+    const productSales = sales.reduce(
+      (acc, sale) => {
+        const productId = sale.productId;
+        if (!acc[productId]) {
+          acc[productId] = {
+            product: sale.product,
+            totalQuantity: 0,
+            totalRevenue: 0,
+            latestPrice: 0,
+            sales: [],
+          };
+        }
+        acc[productId].totalQuantity += sale.quantity;
+        acc[productId].totalRevenue += sale.totalValue;
+        acc[productId].latestPrice = sale.unitPrice; // Last price will be the latest
+        acc[productId].sales.push(sale);
+        return acc;
+      },
+      {} as Record<string, any>
+    );
 
     // Group sales by driver if no specific driver requested
-    const driverAnalytics = !driverId ? sales.reduce((acc, sale) => {
-      const driverId = sale.driverId;
-      if (!acc[driverId]) {
-        acc[driverId] = {
-          driver: sale.driver,
-          totalQuantity: 0,
-          totalRevenue: 0,
-          sales: [],
-          costPerUnit: 0,
-        };
-      }
-      acc[driverId].totalQuantity += sale.quantity;
-      acc[driverId].totalRevenue += sale.totalValue;
-      acc[driverId].sales.push(sale);
-      return acc;
-    }, {} as Record<string, any>) : {};
+    const driverAnalytics = !driverId
+      ? sales.reduce(
+          (acc, sale) => {
+            const driverId = sale.driverId;
+            if (!acc[driverId]) {
+              acc[driverId] = {
+                driver: sale.driver,
+                totalQuantity: 0,
+                totalRevenue: 0,
+                sales: [],
+                costPerUnit: 0,
+              };
+            }
+            acc[driverId].totalQuantity += sale.quantity;
+            acc[driverId].totalRevenue += sale.totalValue;
+            acc[driverId].sales.push(sale);
+            return acc;
+          },
+          {} as Record<string, any>
+        )
+      : {};
 
     // Calculate cost per unit for each driver
     Object.values(driverAnalytics).forEach((driver: any) => {
-      driver.costPerUnit = driver.totalQuantity > 0 ? totalExpenseAmount / driver.totalQuantity : 0;
+      driver.costPerUnit =
+        driver.totalQuantity > 0
+          ? totalExpenseAmount / driver.totalQuantity
+          : 0;
     });
 
     // Calculate analytics for each product
-    const productAnalytics = products.map(product => {
+    const productAnalytics = products.map((product) => {
       const productSale = productSales[product.id];
-      const commission = commissionStructures.find(c => c.productId === product.id)?.commission || 0;
-      const fixedCost = fixedCostStructures.find(f => f.productId === product.id)?.costPerUnit || 0;
-      
+      const commission =
+        commissionStructures.find((c) => c.productId === product.id)
+          ?.commission || 0;
+      const fixedCost =
+        fixedCostStructures.find((f) => f.productId === product.id)
+          ?.costPerUnit || 0;
+
       // Use global fixed cost if no product-specific cost
-      const globalFixedCost = fixedCostStructures.find(f => f.productId === null)?.costPerUnit || 0;
+      const globalFixedCost =
+        fixedCostStructures.find((f) => f.productId === null)?.costPerUnit || 0;
       const effectiveFixedCost = fixedCost || globalFixedCost;
 
       const buyingPrice = product.costPrice || 0;
-      const sellingPrice = productSale?.latestPrice || product.currentPrice || 0;
+      const sellingPrice =
+        productSale?.latestPrice || product.currentPrice || 0;
       const salesQuantity = productSale?.totalQuantity || 0;
       const revenue = productSale?.totalRevenue || 0;
 
       // Breakeven Price = Buying Price + Commission + Fixed Cost Per Unit
       const breakevenPrice = buyingPrice + commission + effectiveFixedCost;
-      
+
       // Profit per unit = Selling Price - Breakeven Price
       const profitPerUnit = sellingPrice - breakevenPrice;
 
@@ -183,9 +207,16 @@ export async function GET(request: NextRequest) {
     });
 
     // Calculate overall analytics
-    const totalRevenue = Object.values(productSales).reduce((sum: number, p: any) => sum + p.totalRevenue, 0);
-    const totalProfit = productAnalytics.reduce((sum, p) => sum + p.totalProfit, 0);
-    const profitMargin = totalRevenue > 0 ? (totalProfit / totalRevenue) * 100 : 0;
+    const totalRevenue = Object.values(productSales).reduce(
+      (sum: number, p: any) => sum + p.totalRevenue,
+      0
+    );
+    const totalProfit = productAnalytics.reduce(
+      (sum, p) => sum + p.totalProfit,
+      0
+    );
+    const profitMargin =
+      totalRevenue > 0 ? (totalProfit / totalRevenue) * 100 : 0;
 
     const analytics = {
       month,

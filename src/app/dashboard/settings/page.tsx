@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { useState, useEffect } from 'react';
 import { Settings, Globe, DollarSign, Clock, Save, X } from 'lucide-react';
@@ -6,17 +6,17 @@ import { useSettings } from '@/contexts/SettingsContext';
 import { CURRENCIES, TIMEZONES, LANGUAGES } from '@/types/settings';
 
 export default function SettingsPage() {
-  const { 
-    settings, 
-    loading, 
-    error: contextError, 
+  const {
+    settings,
+    loading,
+    error: contextError,
     updateSettings,
     getCurrencySymbol,
     getTimezoneLabel,
     getLanguageName,
-    t
+    t,
   } = useSettings();
-  
+
   const [localSettings, setLocalSettings] = useState(settings);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -32,9 +32,9 @@ export default function SettingsPage() {
       setSaving(true);
       setError(null);
       setSuccess(null);
-      
+
       await updateSettings(localSettings);
-      
+
       setSuccess(t('saveSuccess'));
       setTimeout(() => setSuccess(null), 3000);
     } catch (err) {
@@ -45,39 +45,46 @@ export default function SettingsPage() {
     }
   };
 
-  const handleInputChange = (field: keyof typeof localSettings, value: string) => {
-    setLocalSettings(prev => ({
+  const handleInputChange = (
+    field: keyof typeof localSettings,
+    value: string
+  ) => {
+    setLocalSettings((prev) => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
   };
 
   if (loading) {
     return (
-      <div className="p-6 space-y-6">
-        <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+      <div className="space-y-6 p-6">
+        <div className="flex h-64 items-center justify-center">
+          <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-blue-600"></div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="space-y-6 p-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">{t('generalSettings')}</h1>
-          <p className="text-muted-foreground">Configure global settings for currency, timezone, and language</p>
+          <h1 className="text-foreground text-2xl font-bold">
+            {t('generalSettings')}
+          </h1>
+          <p className="text-muted-foreground">
+            Configure global settings for currency, timezone, and language
+          </p>
         </div>
         <div className="flex items-center space-x-2">
-          <Settings className="h-6 w-6 text-muted-foreground" />
+          <Settings className="text-muted-foreground h-6 w-6" />
         </div>
       </div>
 
       {/* Error Message */}
       {(error || contextError) && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded flex items-center justify-between">
+        <div className="flex items-center justify-between rounded border border-red-400 bg-red-100 px-4 py-3 text-red-700">
           <span>{error || contextError}</span>
           <button onClick={() => setError(null)}>
             <X className="h-4 w-4" />
@@ -87,7 +94,7 @@ export default function SettingsPage() {
 
       {/* Success Message */}
       {success && (
-        <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded flex items-center justify-between">
+        <div className="flex items-center justify-between rounded border border-green-400 bg-green-100 px-4 py-3 text-green-700">
           <span>{success}</span>
           <button onClick={() => setSuccess(null)}>
             <X className="h-4 w-4" />
@@ -96,22 +103,24 @@ export default function SettingsPage() {
       )}
 
       {/* Settings Form */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         {/* Currency Settings */}
-        <div className="bg-card rounded-lg shadow p-6">
-          <div className="flex items-center mb-4">
-            <DollarSign className="h-6 w-6 text-green-500 mr-3" />
-            <h2 className="text-lg font-semibold text-foreground">{t('currency')} {t('settings')}</h2>
+        <div className="bg-card rounded-lg p-6 shadow">
+          <div className="mb-4 flex items-center">
+            <DollarSign className="mr-3 h-6 w-6 text-green-500" />
+            <h2 className="text-foreground text-lg font-semibold">
+              {t('currency')} {t('settings')}
+            </h2>
           </div>
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-muted-foreground mb-2">
+              <label className="text-muted-foreground mb-2 block text-sm font-medium">
                 {t('currency')}
               </label>
               <select
                 value={localSettings.currency}
                 onChange={(e) => handleInputChange('currency', e.target.value)}
-                className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-input text-foreground"
+                className="border-border bg-input text-foreground w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 {CURRENCIES.map((currency) => (
                   <option key={currency.code} value={currency.code}>
@@ -119,33 +128,36 @@ export default function SettingsPage() {
                   </option>
                 ))}
               </select>
-              <p className="text-sm text-muted-foreground mt-1">
+              <p className="text-muted-foreground mt-1 text-sm">
                 This will be used for all financial calculations and displays
               </p>
             </div>
-            <div className="p-3 bg-muted rounded-lg">
-              <p className="text-sm text-muted-foreground">
-                <strong>Current:</strong> {getCurrencySymbol()} {CURRENCIES.find(c => c.code === settings.currency)?.name}
+            <div className="bg-muted rounded-lg p-3">
+              <p className="text-muted-foreground text-sm">
+                <strong>Current:</strong> {getCurrencySymbol()}{' '}
+                {CURRENCIES.find((c) => c.code === settings.currency)?.name}
               </p>
             </div>
           </div>
         </div>
 
         {/* Timezone Settings */}
-        <div className="bg-card rounded-lg shadow p-6">
-          <div className="flex items-center mb-4">
-            <Clock className="h-6 w-6 text-blue-500 mr-3" />
-            <h2 className="text-lg font-semibold text-foreground">{t('timezone')} {t('settings')}</h2>
+        <div className="bg-card rounded-lg p-6 shadow">
+          <div className="mb-4 flex items-center">
+            <Clock className="mr-3 h-6 w-6 text-blue-500" />
+            <h2 className="text-foreground text-lg font-semibold">
+              {t('timezone')} {t('settings')}
+            </h2>
           </div>
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-muted-foreground mb-2">
+              <label className="text-muted-foreground mb-2 block text-sm font-medium">
                 Default Timezone
               </label>
               <select
                 value={localSettings.timezone}
                 onChange={(e) => handleInputChange('timezone', e.target.value)}
-                className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-input text-foreground"
+                className="border-border bg-input text-foreground w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 {TIMEZONES.map((timezone) => (
                   <option key={timezone.value} value={timezone.value}>
@@ -153,36 +165,41 @@ export default function SettingsPage() {
                   </option>
                 ))}
               </select>
-              <p className="text-sm text-muted-foreground mt-1">
+              <p className="text-muted-foreground mt-1 text-sm">
                 This affects all timestamps and scheduling
               </p>
             </div>
-            <div className="p-3 bg-muted rounded-lg">
-              <p className="text-sm text-muted-foreground">
+            <div className="bg-muted rounded-lg p-3">
+              <p className="text-muted-foreground text-sm">
                 <strong>Current:</strong> {getTimezoneLabel()}
               </p>
-              <p className="text-sm text-muted-foreground">
-                Local time: {new Date().toLocaleString('en-US', { timeZone: settings.timezone })}
+              <p className="text-muted-foreground text-sm">
+                Local time:{' '}
+                {new Date().toLocaleString('en-US', {
+                  timeZone: settings.timezone,
+                })}
               </p>
             </div>
           </div>
         </div>
 
         {/* Language Settings */}
-        <div className="bg-card rounded-lg shadow p-6">
-          <div className="flex items-center mb-4">
-            <Globe className="h-6 w-6 text-purple-500 mr-3" />
-            <h2 className="text-lg font-semibold text-foreground">{t('language')} {t('settings')}</h2>
+        <div className="bg-card rounded-lg p-6 shadow">
+          <div className="mb-4 flex items-center">
+            <Globe className="mr-3 h-6 w-6 text-purple-500" />
+            <h2 className="text-foreground text-lg font-semibold">
+              {t('language')} {t('settings')}
+            </h2>
           </div>
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-muted-foreground mb-2">
+              <label className="text-muted-foreground mb-2 block text-sm font-medium">
                 {t('language')}
               </label>
               <select
                 value={localSettings.language}
                 onChange={(e) => handleInputChange('language', e.target.value)}
-                className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-input text-foreground"
+                className="border-border bg-input text-foreground w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 {LANGUAGES.map((language) => (
                   <option key={language.code} value={language.code}>
@@ -190,12 +207,12 @@ export default function SettingsPage() {
                   </option>
                 ))}
               </select>
-              <p className="text-sm text-muted-foreground mt-1">
+              <p className="text-muted-foreground mt-1 text-sm">
                 This affects the interface language and date/number formats
               </p>
             </div>
-            <div className="p-3 bg-muted rounded-lg">
-              <p className="text-sm text-muted-foreground">
+            <div className="bg-muted rounded-lg p-3">
+              <p className="text-muted-foreground text-sm">
                 <strong>Current:</strong> {getLanguageName()}
               </p>
             </div>
@@ -203,30 +220,39 @@ export default function SettingsPage() {
         </div>
 
         {/* Settings Overview */}
-        <div className="bg-card rounded-lg shadow p-6">
-          <h2 className="text-lg font-semibold text-foreground mb-4">{t('settings')} Overview</h2>
+        <div className="bg-card rounded-lg p-6 shadow">
+          <h2 className="text-foreground mb-4 text-lg font-semibold">
+            {t('settings')} Overview
+          </h2>
           <div className="space-y-3">
-            <div className="flex justify-between items-center py-2 border-b border-border">
-              <span className="text-sm text-muted-foreground">{t('currency')}</span>
-              <span className="text-sm font-medium text-foreground">
+            <div className="border-border flex items-center justify-between border-b py-2">
+              <span className="text-muted-foreground text-sm">
+                {t('currency')}
+              </span>
+              <span className="text-foreground text-sm font-medium">
                 {getCurrencySymbol()} {settings.currency}
               </span>
             </div>
-            <div className="flex justify-between items-center py-2 border-b border-border">
-              <span className="text-sm text-muted-foreground">Timezone</span>
-              <span className="text-sm font-medium text-foreground">{settings.timezone}</span>
+            <div className="border-border flex items-center justify-between border-b py-2">
+              <span className="text-muted-foreground text-sm">Timezone</span>
+              <span className="text-foreground text-sm font-medium">
+                {settings.timezone}
+              </span>
             </div>
-            <div className="flex justify-between items-center py-2 border-b border-border">
-              <span className="text-sm text-muted-foreground">{t('language')}</span>
-              <span className="text-sm font-medium text-foreground">
+            <div className="border-border flex items-center justify-between border-b py-2">
+              <span className="text-muted-foreground text-sm">
+                {t('language')}
+              </span>
+              <span className="text-foreground text-sm font-medium">
                 {getLanguageName()}
               </span>
             </div>
           </div>
-          
-          <div className="mt-6 p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg">
+
+          <div className="mt-6 rounded-lg border border-yellow-200 bg-yellow-50 p-4 dark:border-yellow-700 dark:bg-yellow-900/20">
             <p className="text-sm text-yellow-800 dark:text-yellow-200">
-              <strong>Note:</strong> Changes to these settings will affect all users and financial calculations throughout the system.
+              <strong>Note:</strong> Changes to these settings will affect all
+              users and financial calculations throughout the system.
             </p>
           </div>
         </div>
@@ -237,16 +263,16 @@ export default function SettingsPage() {
         <button
           onClick={saveSettings}
           disabled={saving}
-          className="flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="flex items-center rounded-lg bg-blue-600 px-6 py-3 text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {saving ? (
             <>
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+              <div className="mr-2 h-4 w-4 animate-spin rounded-full border-b-2 border-white"></div>
               Saving...
             </>
           ) : (
             <>
-              <Save className="h-4 w-4 mr-2" />
+              <Save className="mr-2 h-4 w-4" />
               {t('save')} {t('settings')}
             </>
           )}

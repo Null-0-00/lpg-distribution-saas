@@ -16,11 +16,16 @@ export async function GET(
     }
 
     const { id } = await params;
-    console.log('GET request - Company ID:', id, 'Tenant ID:', session.user.tenantId);
+    console.log(
+      'GET request - Company ID:',
+      id,
+      'Tenant ID:',
+      session.user.tenantId
+    );
     const company = await prisma.company.findFirst({
       where: {
         id,
-        tenantId: session.user.tenantId
+        tenantId: session.user.tenantId,
       },
       select: {
         id: true,
@@ -40,25 +45,21 @@ export async function GET(
             size: true,
             currentPrice: true,
             lowStockThreshold: true,
-            isActive: true
+            isActive: true,
           },
-          orderBy: { name: 'asc' }
-        }
-      }
+          orderBy: { name: 'asc' },
+        },
+      },
     });
 
     if (!company) {
-      return NextResponse.json(
-        { error: 'Company not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Company not found' }, { status: 404 });
     }
 
     return NextResponse.json({
       success: true,
-      company
+      company,
     });
-
   } catch (error) {
     console.error('Get company error:', error);
     return NextResponse.json(
@@ -96,23 +97,20 @@ export async function PUT(
     const existingCompany = await prisma.company.findFirst({
       where: {
         id,
-        tenantId: session.user.tenantId
-      }
+        tenantId: session.user.tenantId,
+      },
     });
 
     if (!existingCompany) {
-      return NextResponse.json(
-        { error: 'Company not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Company not found' }, { status: 404 });
     }
 
     // Check if another company with same name exists (excluding current)
     const duplicateCompany = await prisma.company.findFirst({
       where: {
         name: { equals: name, mode: 'insensitive' },
-        id: { not: id }
-      }
+        id: { not: id },
+      },
     });
 
     if (duplicateCompany) {
@@ -130,7 +128,7 @@ export async function PUT(
         address,
         phone,
         email,
-        isActive
+        isActive,
       },
       include: {
         products: {
@@ -141,18 +139,17 @@ export async function PUT(
             size: true,
             currentPrice: true,
             lowStockThreshold: true,
-            isActive: true
-          }
-        }
-      }
+            isActive: true,
+          },
+        },
+      },
     });
 
     return NextResponse.json({
       success: true,
       company,
-      message: 'Company updated successfully'
+      message: 'Company updated successfully',
     });
-
   } catch (error) {
     console.error('Update company error:', error);
     return NextResponse.json(
@@ -180,26 +177,29 @@ export async function DELETE(
     const existingCompany = await prisma.company.findFirst({
       where: {
         id,
-        tenantId: session.user.tenantId
+        tenantId: session.user.tenantId,
       },
       include: {
         products: true,
         shipments: true,
-        purchases: true
-      }
+        purchases: true,
+      },
     });
 
     if (!existingCompany) {
-      return NextResponse.json(
-        { error: 'Company not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Company not found' }, { status: 404 });
     }
 
     // Check if company has related data
-    if (existingCompany.shipments.length > 0 || existingCompany.purchases.length > 0) {
+    if (
+      existingCompany.shipments.length > 0 ||
+      existingCompany.purchases.length > 0
+    ) {
       return NextResponse.json(
-        { error: 'Cannot delete company with existing shipments or purchases. Deactivate instead.' },
+        {
+          error:
+            'Cannot delete company with existing shipments or purchases. Deactivate instead.',
+        },
         { status: 400 }
       );
     }
@@ -207,18 +207,17 @@ export async function DELETE(
     // Delete products first, then company
     await prisma.$transaction([
       prisma.product.deleteMany({
-        where: { companyId: id }
+        where: { companyId: id },
       }),
       prisma.company.delete({
-        where: { id }
-      })
+        where: { id },
+      }),
     ]);
 
     return NextResponse.json({
       success: true,
-      message: 'Company and all associated products deleted successfully'
+      message: 'Company and all associated products deleted successfully',
     });
-
   } catch (error) {
     console.error('Delete company error:', error);
     return NextResponse.json(

@@ -44,9 +44,13 @@ export class HTTPSEnforcer {
     try {
       // Check if request is already HTTPS
       const isHTTPS = this.isSecureRequest(request);
-      
+
       // In production, force HTTPS redirect
-      if (this.config.forceHTTPS && !isHTTPS && process.env.NODE_ENV === 'production') {
+      if (
+        this.config.forceHTTPS &&
+        !isHTTPS &&
+        process.env.NODE_ENV === 'production'
+      ) {
         return this.redirectToHTTPS(request);
       }
 
@@ -67,14 +71,13 @@ export class HTTPSEnforcer {
           method: request.method,
           isHTTPS,
           host: request.headers.get('host'),
-          userAgent: request.headers.get('user-agent')
+          userAgent: request.headers.get('user-agent'),
         },
         timestamp: new Date(),
-        isSecure: isHTTPS
+        isSecure: isHTTPS,
       });
 
       return null; // Continue with request
-
     } catch (error) {
       console.error('HTTPS enforcement error:', error);
       return NextResponse.json(
@@ -91,25 +94,29 @@ export class HTTPSEnforcer {
     const headers: Record<string, string> = {};
 
     // HSTS (HTTP Strict Transport Security)
-    if (this.isSecureRequest(request) || process.env.NODE_ENV === 'production') {
+    if (
+      this.isSecureRequest(request) ||
+      process.env.NODE_ENV === 'production'
+    ) {
       const hstsDirectives = [`max-age=${this.config.hstsMaxAge}`];
-      
+
       if (this.config.hstsIncludeSubdomains) {
         hstsDirectives.push('includeSubDomains');
       }
-      
+
       if (this.config.hstsPreload) {
         hstsDirectives.push('preload');
       }
-      
+
       headers['Strict-Transport-Security'] = hstsDirectives.join('; ');
     }
 
     // Upgrade insecure requests
     if (this.config.upgradeInsecureRequests) {
-      headers['Content-Security-Policy'] = 
-        (headers['Content-Security-Policy'] ? headers['Content-Security-Policy'] + '; ' : '') +
-        'upgrade-insecure-requests';
+      headers['Content-Security-Policy'] =
+        (headers['Content-Security-Policy']
+          ? headers['Content-Security-Policy'] + '; '
+          : '') + 'upgrade-insecure-requests';
     }
 
     // Additional transport security headers
@@ -137,13 +144,13 @@ export class HTTPSEnforcer {
       domain,
       isValid: false,
       warnings: [],
-      errors: []
+      errors: [],
     };
 
     try {
       // In a real implementation, you would use a library like 'ssl-checker'
       // or make actual TLS connections to check certificate validity
-      
+
       // For now, we'll simulate the check
       const cachedResult = await redisCache.get<SSLHealthCheck>(
         'global',
@@ -158,7 +165,7 @@ export class HTTPSEnforcer {
       // Simulate SSL certificate check
       result.isValid = true;
       result.expiresAt = new Date(Date.now() + 90 * 24 * 60 * 60 * 1000); // 90 days from now
-      result.issuer = 'Let\'s Encrypt Authority X3';
+      result.issuer = "Let's Encrypt Authority X3";
       result.subject = domain;
 
       // Check for certificate expiry warnings
@@ -171,23 +178,20 @@ export class HTTPSEnforcer {
       }
 
       if (daysUntilExpiry < 7) {
-        result.errors.push(`Certificate expires very soon (${daysUntilExpiry} days)`);
+        result.errors.push(
+          `Certificate expires very soon (${daysUntilExpiry} days)`
+        );
         result.isValid = false;
       }
 
       // Cache the result for 1 hour
-      await redisCache.set(
-        'global',
-        'ssl_checks',
-        domain,
-        result,
-        3600
-      );
+      await redisCache.set('global', 'ssl_checks', domain, result, 3600);
 
       return result;
-
     } catch (error) {
-      result.errors.push(`SSL check failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      result.errors.push(
+        `SSL check failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
       return result;
     }
   }
@@ -209,26 +213,27 @@ export class HTTPSEnforcer {
     try {
       // In a real implementation, this would validate the complete certificate chain
       // For now, we'll return a mock response
-      
+
       return {
         isValid: true,
         chain: [
           {
             subject: domain,
-            issuer: 'Let\'s Encrypt Authority X3',
+            issuer: "Let's Encrypt Authority X3",
             validFrom: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
             validTo: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000),
-            fingerprint: 'sha256:1234567890abcdef...'
-          }
+            fingerprint: 'sha256:1234567890abcdef...',
+          },
         ],
-        errors: []
+        errors: [],
       };
-
     } catch (error) {
       return {
         isValid: false,
         chain: [],
-        errors: [`Certificate chain validation failed: ${error instanceof Error ? error.message : 'Unknown error'}`]
+        errors: [
+          `Certificate chain validation failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        ],
       };
     }
   }
@@ -256,7 +261,7 @@ export class HTTPSEnforcer {
     for (const domain of domains) {
       try {
         const sslCheck = await this.checkSSLHealth(domain);
-        
+
         if (sslCheck.expiresAt) {
           const daysUntilExpiry = Math.ceil(
             (sslCheck.expiresAt.getTime() - Date.now()) / (24 * 60 * 60 * 1000)
@@ -268,7 +273,7 @@ export class HTTPSEnforcer {
               domain,
               severity: 'critical' as const,
               message: `Certificate expired ${Math.abs(daysUntilExpiry)} days ago`,
-              expiresAt: sslCheck.expiresAt
+              expiresAt: sslCheck.expiresAt,
             });
           } else if (daysUntilExpiry <= 7) {
             expiringSoon++;
@@ -276,7 +281,7 @@ export class HTTPSEnforcer {
               domain,
               severity: 'critical' as const,
               message: `Certificate expires in ${daysUntilExpiry} days`,
-              expiresAt: sslCheck.expiresAt
+              expiresAt: sslCheck.expiresAt,
             });
           } else if (daysUntilExpiry <= 30) {
             expiringSoon++;
@@ -284,7 +289,7 @@ export class HTTPSEnforcer {
               domain,
               severity: 'warning' as const,
               message: `Certificate expires in ${daysUntilExpiry} days`,
-              expiresAt: sslCheck.expiresAt
+              expiresAt: sslCheck.expiresAt,
             });
           }
         }
@@ -293,7 +298,7 @@ export class HTTPSEnforcer {
           domain,
           severity: 'critical' as const,
           message: `Failed to check certificate: ${error instanceof Error ? error.message : 'Unknown error'}`,
-          expiresAt: new Date()
+          expiresAt: new Date(),
         });
       }
     }
@@ -303,8 +308,8 @@ export class HTTPSEnforcer {
       summary: {
         total: domains.length,
         expiringSoon,
-        expired
-      }
+        expired,
+      },
     };
   }
 
@@ -314,17 +319,17 @@ export class HTTPSEnforcer {
   createHTTPSMiddleware() {
     return async (request: NextRequest) => {
       const result = await this.enforceHTTPS(request);
-      
+
       if (result) {
         return result; // Redirect or error response
       }
 
       // Add security headers to all responses
       const headers = this.generateSecurityHeaders(request);
-      
+
       return {
         status: 200,
-        headers
+        headers,
       };
     };
   }
@@ -336,37 +341,42 @@ export class HTTPSEnforcer {
     const proto = request.headers.get('x-forwarded-proto');
     const scheme = request.headers.get('x-forwarded-scheme');
     const isHTTPS = request.url.startsWith('https://');
-    
-    return isHTTPS || 
-           proto === 'https' || 
-           scheme === 'https' ||
-           request.headers.get('x-forwarded-ssl') === 'on';
+
+    return (
+      isHTTPS ||
+      proto === 'https' ||
+      scheme === 'https' ||
+      request.headers.get('x-forwarded-ssl') === 'on'
+    );
   }
 
   private redirectToHTTPS(request: NextRequest): NextResponse {
     const httpsUrl = request.url.replace(/^http:/, 'https:');
-    
+
     const response = NextResponse.redirect(httpsUrl, 301);
-    
+
     // Add HSTS header to redirect response
     response.headers.set(
       'Strict-Transport-Security',
       `max-age=${this.config.hstsMaxAge}; includeSubDomains; preload`
     );
-    
+
     return response;
   }
 
-  private validateHost(request: NextRequest): { isValid: boolean; error?: string } {
+  private validateHost(request: NextRequest): {
+    isValid: boolean;
+    error?: string;
+  } {
     const host = request.headers.get('host');
-    
+
     if (!host) {
       return { isValid: false, error: 'Missing host header' };
     }
 
     // Check against allowed hosts
     if (this.config.allowedHosts.length > 0) {
-      const isAllowed = this.config.allowedHosts.some(allowedHost => {
+      const isAllowed = this.config.allowedHosts.some((allowedHost) => {
         if (allowedHost.startsWith('*.')) {
           const domain = allowedHost.slice(2);
           return host.endsWith(domain);
@@ -413,7 +423,7 @@ export const DEFAULT_HTTPS_CONFIG: HTTPSConfig = {
   upgradeInsecureRequests: true,
   checkCertificateExpiry: true,
   allowedHosts: [], // Empty means allow all
-  trustedProxies: ['127.0.0.1', '::1'] // localhost
+  trustedProxies: ['127.0.0.1', '::1'], // localhost
 };
 
 /**
@@ -423,42 +433,45 @@ export class SecurityHeaders {
   /**
    * Generate comprehensive security headers
    */
-  static getSecurityHeaders(options: {
-    cspNonce?: string;
-    environment?: 'development' | 'production';
-    reportUri?: string;
-  } = {}): Record<string, string> {
+  static getSecurityHeaders(
+    options: {
+      cspNonce?: string;
+      environment?: 'development' | 'production';
+      reportUri?: string;
+    } = {}
+  ): Record<string, string> {
     const { cspNonce, environment = 'production', reportUri } = options;
 
     const headers: Record<string, string> = {
       // Prevent MIME type sniffing
       'X-Content-Type-Options': 'nosniff',
-      
+
       // Prevent clickjacking
       'X-Frame-Options': 'DENY',
-      
+
       // Enable XSS filtering
       'X-XSS-Protection': '1; mode=block',
-      
+
       // Control referrer information
       'Referrer-Policy': 'strict-origin-when-cross-origin',
-      
+
       // Feature policy
-      'Permissions-Policy': 'camera=(), microphone=(), geolocation=(), payment=(), usb=()',
-      
+      'Permissions-Policy':
+        'camera=(), microphone=(), geolocation=(), payment=(), usb=()',
+
       // Disable DNS prefetching
       'X-DNS-Prefetch-Control': 'off',
-      
+
       // Prevent IE from executing downloads in site's context
       'X-Download-Options': 'noopen',
-      
+
       // Disable Adobe Flash cross-domain policies
       'X-Permitted-Cross-Domain-Policies': 'none',
-      
+
       // Cross-Origin policies
       'Cross-Origin-Embedder-Policy': 'require-corp',
       'Cross-Origin-Opener-Policy': 'same-origin',
-      'Cross-Origin-Resource-Policy': 'same-origin'
+      'Cross-Origin-Resource-Policy': 'same-origin',
     };
 
     // Content Security Policy
@@ -476,7 +489,7 @@ export class SecurityHeaders {
       "base-uri 'self'",
       "form-action 'self'",
       "manifest-src 'self'",
-      "worker-src 'self'"
+      "worker-src 'self'",
     ];
 
     if (environment === 'production') {
@@ -500,7 +513,7 @@ export class SecurityHeaders {
     options: Parameters<typeof SecurityHeaders.getSecurityHeaders>[0] = {}
   ): NextResponse {
     const headers = this.getSecurityHeaders(options);
-    
+
     Object.entries(headers).forEach(([key, value]) => {
       response.headers.set(key, value);
     });

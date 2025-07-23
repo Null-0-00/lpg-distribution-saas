@@ -38,7 +38,15 @@ export interface NotificationLog {
 
 export interface NotificationChannel {
   id: string;
-  type: 'email' | 'slack' | 'teams' | 'discord' | 'webhook' | 'sms' | 'push' | 'pagerduty';
+  type:
+    | 'email'
+    | 'slack'
+    | 'teams'
+    | 'discord'
+    | 'webhook'
+    | 'sms'
+    | 'push'
+    | 'pagerduty';
   name: string;
   config: Record<string, any>;
   enabled: boolean;
@@ -104,7 +112,9 @@ export class AlertingSystem {
   static getInstance(config?: AlertingConfig): AlertingSystem {
     if (!AlertingSystem.instance) {
       if (!config) {
-        throw new Error('AlertingSystem requires config on first initialization');
+        throw new Error(
+          'AlertingSystem requires config on first initialization'
+        );
       }
       AlertingSystem.instance = new AlertingSystem(config);
     }
@@ -154,7 +164,7 @@ export class AlertingSystem {
         escalationLevel: 0,
         tags: options.tags || {},
         metadata: options.metadata || {},
-        notificationsSent: []
+        notificationsSent: [],
       };
 
       // Store alert
@@ -180,7 +190,6 @@ export class AlertingSystem {
       this.scheduleAutoResolve(alert.id);
 
       return alert.id;
-
     } catch (error) {
       console.error('Failed to send alert:', error);
       throw error;
@@ -190,7 +199,10 @@ export class AlertingSystem {
   /**
    * Acknowledge an alert
    */
-  async acknowledgeAlert(alertId: string, acknowledgedBy: string): Promise<void> {
+  async acknowledgeAlert(
+    alertId: string,
+    acknowledgedBy: string
+  ): Promise<void> {
     const alert = this.activeAlerts.get(alertId);
     if (!alert) throw new Error('Alert not found');
 
@@ -238,7 +250,7 @@ export class AlertingSystem {
   async addChannel(channel: Omit<NotificationChannel, 'id'>): Promise<string> {
     const fullChannel: NotificationChannel = {
       id: this.generateId(),
-      ...channel
+      ...channel,
     };
 
     this.channels.set(fullChannel.id, fullChannel);
@@ -258,10 +270,12 @@ export class AlertingSystem {
   /**
    * Add escalation policy
    */
-  async addEscalationPolicy(policy: Omit<EscalationPolicy, 'id'>): Promise<string> {
+  async addEscalationPolicy(
+    policy: Omit<EscalationPolicy, 'id'>
+  ): Promise<string> {
     const fullPolicy: EscalationPolicy = {
       id: this.generateId(),
-      ...policy
+      ...policy,
     };
 
     this.escalationPolicies.set(fullPolicy.id, fullPolicy);
@@ -300,7 +314,7 @@ export class AlertingSystem {
       resolved: 0,
       escalated: 0,
       avgResolutionTime: 0,
-      topSources: [] as Array<{ source: string; count: number }>
+      topSources: [] as Array<{ source: string; count: number }>,
     };
 
     let totalResolutionTime = 0;
@@ -308,7 +322,8 @@ export class AlertingSystem {
 
     for (const alert of alerts) {
       // Count by severity
-      stats.bySeverity[alert.severity] = (stats.bySeverity[alert.severity] || 0) + 1;
+      stats.bySeverity[alert.severity] =
+        (stats.bySeverity[alert.severity] || 0) + 1;
 
       // Count by source
       stats.bySource[alert.source] = (stats.bySource[alert.source] || 0) + 1;
@@ -320,16 +335,18 @@ export class AlertingSystem {
 
       // Calculate resolution time
       if (alert.resolved && alert.resolvedAt) {
-        const resolutionTime = alert.resolvedAt.getTime() - alert.timestamp.getTime();
+        const resolutionTime =
+          alert.resolvedAt.getTime() - alert.timestamp.getTime();
         totalResolutionTime += resolutionTime;
         resolvedCount++;
       }
     }
 
     // Average resolution time in minutes
-    stats.avgResolutionTime = resolvedCount > 0 
-      ? Math.round(totalResolutionTime / resolvedCount / 60000)
-      : 0;
+    stats.avgResolutionTime =
+      resolvedCount > 0
+        ? Math.round(totalResolutionTime / resolvedCount / 60000)
+        : 0;
 
     // Top sources
     stats.topSources = Object.entries(stats.bySource)
@@ -343,7 +360,9 @@ export class AlertingSystem {
   /**
    * Test notification channel
    */
-  async testChannel(channelId: string): Promise<{ success: boolean; error?: string }> {
+  async testChannel(
+    channelId: string
+  ): Promise<{ success: boolean; error?: string }> {
     const channel = this.channels.get(channelId);
     if (!channel) {
       return { success: false, error: 'Channel not found' };
@@ -363,16 +382,15 @@ export class AlertingSystem {
         escalationLevel: 0,
         tags: { test: 'true' },
         metadata: {},
-        notificationsSent: []
+        notificationsSent: [],
       };
 
       await this.sendNotificationToChannel(channel, testAlert);
       return { success: true };
-
     } catch (error) {
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? error.message : 'Unknown error',
       };
     }
   }
@@ -393,12 +411,18 @@ export class AlertingSystem {
     );
   }
 
-  private async getAlertsInRange(timeRange: { start: Date; end: Date }): Promise<Alert[]> {
+  private async getAlertsInRange(timeRange: {
+    start: Date;
+    end: Date;
+  }): Promise<Alert[]> {
     // In a real implementation, this would query a time-series database
     const alerts: Alert[] = [];
-    
+
     for (const alert of this.activeAlerts.values()) {
-      if (alert.timestamp >= timeRange.start && alert.timestamp <= timeRange.end) {
+      if (
+        alert.timestamp >= timeRange.start &&
+        alert.timestamp <= timeRange.end
+      ) {
         alerts.push(alert);
       }
     }
@@ -408,13 +432,16 @@ export class AlertingSystem {
 
   private isInSilentHours(severity: string): boolean {
     if (!this.config.silentHours.enabled) return false;
-    if (this.config.silentHours.excludeSeverities.includes(severity)) return false;
+    if (this.config.silentHours.excludeSeverities.includes(severity))
+      return false;
 
     const now = new Date();
-    const currentTime = now.toLocaleTimeString('en-US', { 
-      hour12: false,
-      timeZone: this.config.silentHours.timezone 
-    }).substring(0, 5);
+    const currentTime = now
+      .toLocaleTimeString('en-US', {
+        hour12: false,
+        timeZone: this.config.silentHours.timezone,
+      })
+      .substring(0, 5);
 
     const start = this.config.silentHours.start;
     const end = this.config.silentHours.end;
@@ -428,7 +455,7 @@ export class AlertingSystem {
   }
 
   private async isRateLimited(): Promise<boolean> {
-    const windowStart = Date.now() - (this.config.rateLimitWindow * 60 * 1000);
+    const windowStart = Date.now() - this.config.rateLimitWindow * 60 * 1000;
     const recentAlertsCount = await redisCache.increment(
       'global',
       'alert_rate_limit',
@@ -439,7 +466,10 @@ export class AlertingSystem {
     return recentAlertsCount > this.config.maxAlertsPerWindow;
   }
 
-  private async sendNotifications(alert: Alert, channelIds: string[]): Promise<void> {
+  private async sendNotifications(
+    alert: Alert,
+    channelIds: string[]
+  ): Promise<void> {
     const notifications = [];
 
     for (const channelId of channelIds) {
@@ -462,7 +492,7 @@ export class AlertingSystem {
       recipient: this.getChannelRecipient(channel),
       sentAt: new Date(),
       status: 'sent',
-      retryCount: 0
+      retryCount: 0,
     };
 
     try {
@@ -498,7 +528,9 @@ export class AlertingSystem {
       log.status = 'delivered';
     } catch (error) {
       log.status = 'failed';
-      log.response = { error: error instanceof Error ? error.message : 'Unknown error' };
+      log.response = {
+        error: error instanceof Error ? error.message : 'Unknown error',
+      };
       throw error;
     } finally {
       alert.notificationsSent.push(log);
@@ -518,12 +550,21 @@ export class AlertingSystem {
     }
   }
 
-  private async sendEmailNotification(channel: NotificationChannel, alert: Alert): Promise<void> {
+  private async sendEmailNotification(
+    channel: NotificationChannel,
+    alert: Alert
+  ): Promise<void> {
     // Email notification implementation
-    console.log(`Email notification sent to ${channel.config.recipient}:`, alert.title);
+    console.log(
+      `Email notification sent to ${channel.config.recipient}:`,
+      alert.title
+    );
   }
 
-  private async sendSlackNotification(channel: NotificationChannel, alert: Alert): Promise<void> {
+  private async sendSlackNotification(
+    channel: NotificationChannel,
+    alert: Alert
+  ): Promise<void> {
     const payload = {
       channel: channel.config.channel,
       text: `🚨 ${alert.title}`,
@@ -531,105 +572,145 @@ export class AlertingSystem {
         {
           color: this.getSeverityColor(alert.severity),
           fields: [
-            { title: 'Severity', value: alert.severity.toUpperCase(), short: true },
+            {
+              title: 'Severity',
+              value: alert.severity.toUpperCase(),
+              short: true,
+            },
             { title: 'Source', value: alert.source, short: true },
             { title: 'Message', value: alert.message, short: false },
-            { title: 'Time', value: alert.timestamp.toISOString(), short: true }
-          ]
-        }
-      ]
+            {
+              title: 'Time',
+              value: alert.timestamp.toISOString(),
+              short: true,
+            },
+          ],
+        },
+      ],
     };
 
     if (channel.config.webhookUrl) {
       await fetch(channel.config.webhookUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
       });
     }
   }
 
-  private async sendTeamsNotification(channel: NotificationChannel, alert: Alert): Promise<void> {
+  private async sendTeamsNotification(
+    channel: NotificationChannel,
+    alert: Alert
+  ): Promise<void> {
     const payload = {
-      "@type": "MessageCard",
-      "@context": "http://schema.org/extensions",
-      "themeColor": this.getSeverityColor(alert.severity),
-      "summary": alert.title,
-      "sections": [
+      '@type': 'MessageCard',
+      '@context': 'http://schema.org/extensions',
+      themeColor: this.getSeverityColor(alert.severity),
+      summary: alert.title,
+      sections: [
         {
-          "activityTitle": alert.title,
-          "activitySubtitle": `Severity: ${alert.severity.toUpperCase()}`,
-          "facts": [
-            { "name": "Source", "value": alert.source },
-            { "name": "Time", "value": alert.timestamp.toISOString() },
-            { "name": "Message", "value": alert.message }
-          ]
-        }
-      ]
+          activityTitle: alert.title,
+          activitySubtitle: `Severity: ${alert.severity.toUpperCase()}`,
+          facts: [
+            { name: 'Source', value: alert.source },
+            { name: 'Time', value: alert.timestamp.toISOString() },
+            { name: 'Message', value: alert.message },
+          ],
+        },
+      ],
     };
 
     if (channel.config.webhookUrl) {
       await fetch(channel.config.webhookUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
       });
     }
   }
 
-  private async sendDiscordNotification(channel: NotificationChannel, alert: Alert): Promise<void> {
+  private async sendDiscordNotification(
+    channel: NotificationChannel,
+    alert: Alert
+  ): Promise<void> {
     const payload = {
       embeds: [
         {
           title: alert.title,
           description: alert.message,
-          color: parseInt(this.getSeverityColor(alert.severity).replace('#', ''), 16),
+          color: parseInt(
+            this.getSeverityColor(alert.severity).replace('#', ''),
+            16
+          ),
           fields: [
-            { name: 'Severity', value: alert.severity.toUpperCase(), inline: true },
+            {
+              name: 'Severity',
+              value: alert.severity.toUpperCase(),
+              inline: true,
+            },
             { name: 'Source', value: alert.source, inline: true },
-            { name: 'Time', value: alert.timestamp.toISOString(), inline: false }
+            {
+              name: 'Time',
+              value: alert.timestamp.toISOString(),
+              inline: false,
+            },
           ],
-          timestamp: alert.timestamp.toISOString()
-        }
-      ]
+          timestamp: alert.timestamp.toISOString(),
+        },
+      ],
     };
 
     if (channel.config.webhookUrl) {
       await fetch(channel.config.webhookUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
       });
     }
   }
 
-  private async sendWebhookNotification(channel: NotificationChannel, alert: Alert): Promise<void> {
+  private async sendWebhookNotification(
+    channel: NotificationChannel,
+    alert: Alert
+  ): Promise<void> {
     const payload = {
       alert,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
 
     await fetch(channel.config.url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        ...(channel.config.headers || {})
+        ...(channel.config.headers || {}),
       },
-      body: JSON.stringify(payload)
+      body: JSON.stringify(payload),
     });
   }
 
-  private async sendSMSNotification(channel: NotificationChannel, alert: Alert): Promise<void> {
+  private async sendSMSNotification(
+    channel: NotificationChannel,
+    alert: Alert
+  ): Promise<void> {
     // SMS notification implementation would use a service like Twilio
-    console.log(`SMS notification sent to ${channel.config.phoneNumber}:`, alert.title);
+    console.log(
+      `SMS notification sent to ${channel.config.phoneNumber}:`,
+      alert.title
+    );
   }
 
-  private async sendPushNotification(channel: NotificationChannel, alert: Alert): Promise<void> {
+  private async sendPushNotification(
+    channel: NotificationChannel,
+    alert: Alert
+  ): Promise<void> {
     // Push notification implementation would use a service like Firebase
     console.log(`Push notification sent:`, alert.title);
   }
 
-  private async sendPagerDutyNotification(channel: NotificationChannel, alert: Alert): Promise<void> {
+  private async sendPagerDutyNotification(
+    channel: NotificationChannel,
+    alert: Alert
+  ): Promise<void> {
     // PagerDuty notification implementation
     console.log(`PagerDuty notification sent:`, alert.title);
   }
@@ -639,15 +720,18 @@ export class AlertingSystem {
       info: '#36a3eb',
       warning: '#ffcd56',
       error: '#ff6384',
-      critical: '#ff0000'
+      critical: '#ff0000',
     };
     return colors[severity as keyof typeof colors] || '#36a3eb';
   }
 
   private scheduleEscalation(alertId: string): void {
-    setTimeout(async () => {
-      await this.escalateAlert(alertId);
-    }, this.config.acknowledgmentTimeout * 60 * 1000);
+    setTimeout(
+      async () => {
+        await this.escalateAlert(alertId);
+      },
+      this.config.acknowledgmentTimeout * 60 * 1000
+    );
   }
 
   private async escalateAlert(alertId: string): Promise<void> {
@@ -660,7 +744,9 @@ export class AlertingSystem {
     // Find applicable escalation policy
     const policy = this.findEscalationPolicy(alert);
     if (policy) {
-      const level = policy.levels.find(l => l.level === alert.escalationLevel);
+      const level = policy.levels.find(
+        (l) => l.level === alert.escalationLevel
+      );
       if (level) {
         await this.sendNotifications(alert, level.channels);
       }
@@ -673,12 +759,16 @@ export class AlertingSystem {
     for (const policy of this.escalationPolicies.values()) {
       if (!policy.enabled) continue;
 
-      const level = policy.levels.find(l => l.level === alert.escalationLevel);
+      const level = policy.levels.find(
+        (l) => l.level === alert.escalationLevel
+      );
       if (level) {
         const conditions = level.conditions;
-        
-        if (conditions.severities.includes(alert.severity) &&
-            conditions.sources.includes(alert.source)) {
+
+        if (
+          conditions.severities.includes(alert.severity) &&
+          conditions.sources.includes(alert.source)
+        ) {
           return policy;
         }
       }
@@ -688,17 +778,22 @@ export class AlertingSystem {
   }
 
   private scheduleAutoResolve(alertId: string): void {
-    setTimeout(async () => {
-      const alert = this.activeAlerts.get(alertId);
-      if (alert && !alert.resolved) {
-        await this.resolveAlert(alertId, 'auto-resolve');
-      }
-    }, this.config.autoResolveTimeout * 60 * 1000);
+    setTimeout(
+      async () => {
+        const alert = this.activeAlerts.get(alertId);
+        if (alert && !alert.resolved) {
+          await this.resolveAlert(alertId, 'auto-resolve');
+        }
+      },
+      this.config.autoResolveTimeout * 60 * 1000
+    );
   }
 
   private async sendAcknowledgmentNotification(alert: Alert): Promise<void> {
     // Send acknowledgment notification to relevant channels
-    console.log(`Alert acknowledged: ${alert.title} by ${alert.acknowledgedBy}`);
+    console.log(
+      `Alert acknowledged: ${alert.title} by ${alert.acknowledgedBy}`
+    );
   }
 
   private async sendResolutionNotification(alert: Alert): Promise<void> {
@@ -750,6 +845,6 @@ export const DEFAULT_ALERTING_CONFIG: AlertingConfig = {
     start: '22:00',
     end: '08:00',
     timezone: 'UTC',
-    excludeSeverities: ['critical']
-  }
+    excludeSeverities: ['critical'],
+  },
 };

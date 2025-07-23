@@ -48,18 +48,18 @@ export function usePWA(): PWAHookReturn {
     isOnline: navigator.onLine,
     serviceWorkerReady: false,
     updateAvailable: false,
-    installPrompt: null
+    installPrompt: null,
   });
 
   useEffect(() => {
     // Check if app is installed
     const checkInstalled = () => {
-      const isInstalled = 
+      const isInstalled =
         window.matchMedia('(display-mode: standalone)').matches ||
         (window.navigator as any).standalone ||
         document.referrer.includes('android-app://');
-      
-      setState(prev => ({ ...prev, isInstalled }));
+
+      setState((prev) => ({ ...prev, isInstalled }));
     };
 
     // Check service worker status
@@ -67,15 +67,18 @@ export function usePWA(): PWAHookReturn {
       if ('serviceWorker' in navigator) {
         try {
           const registration = await navigator.serviceWorker.ready;
-          setState(prev => ({ ...prev, serviceWorkerReady: true }));
+          setState((prev) => ({ ...prev, serviceWorkerReady: true }));
 
           // Listen for updates
           registration.addEventListener('updatefound', () => {
             const newWorker = registration.installing;
             if (newWorker) {
               newWorker.addEventListener('statechange', () => {
-                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                  setState(prev => ({ ...prev, updateAvailable: true }));
+                if (
+                  newWorker.state === 'installed' &&
+                  navigator.serviceWorker.controller
+                ) {
+                  setState((prev) => ({ ...prev, updateAvailable: true }));
                 }
               });
             }
@@ -89,30 +92,30 @@ export function usePWA(): PWAHookReturn {
     // Handle install prompt
     const handleBeforeInstallPrompt = (event: BeforeInstallPromptEvent) => {
       event.preventDefault();
-      setState(prev => ({
+      setState((prev) => ({
         ...prev,
         isInstallable: true,
-        installPrompt: event
+        installPrompt: event,
       }));
     };
 
     // Handle app installed
     const handleAppInstalled = () => {
-      setState(prev => ({
+      setState((prev) => ({
         ...prev,
         isInstalled: true,
         isInstallable: false,
-        installPrompt: null
+        installPrompt: null,
       }));
     };
 
     // Handle network status
     const handleOnline = () => {
-      setState(prev => ({ ...prev, isOnline: true }));
+      setState((prev) => ({ ...prev, isOnline: true }));
     };
 
     const handleOffline = () => {
-      setState(prev => ({ ...prev, isOnline: false }));
+      setState((prev) => ({ ...prev, isOnline: false }));
     };
 
     // Setup event listeners
@@ -130,7 +133,10 @@ export function usePWA(): PWAHookReturn {
     mediaQuery.addListener(handleDisplayModeChange);
 
     return () => {
-      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+      window.removeEventListener(
+        'beforeinstallprompt',
+        handleBeforeInstallPrompt
+      );
       window.removeEventListener('appinstalled', handleAppInstalled);
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
@@ -149,16 +155,16 @@ export function usePWA(): PWAHookReturn {
     try {
       await state.installPrompt.prompt();
       const choiceResult = await state.installPrompt.userChoice;
-      
+
       if (choiceResult.outcome === 'accepted') {
-        setState(prev => ({
+        setState((prev) => ({
           ...prev,
           isInstallable: false,
-          installPrompt: null
+          installPrompt: null,
         }));
         return true;
       }
-      
+
       return false;
     } catch (error) {
       console.error('Failed to install app:', error);
@@ -171,11 +177,11 @@ export function usePWA(): PWAHookReturn {
    */
   const update = () => {
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.ready.then(registration => {
+      navigator.serviceWorker.ready.then((registration) => {
         if (registration.waiting) {
           // Send message to service worker to skip waiting
           registration.waiting.postMessage({ type: 'SKIP_WAITING' });
-          
+
           // Listen for controlling change
           navigator.serviceWorker.addEventListener('controllerchange', () => {
             window.location.reload();
@@ -194,7 +200,7 @@ export function usePWA(): PWAHookReturn {
       if ('caches' in window) {
         const cacheNames = await caches.keys();
         await Promise.all(
-          cacheNames.map(cacheName => caches.delete(cacheName))
+          cacheNames.map((cacheName) => caches.delete(cacheName))
         );
       }
 
@@ -203,7 +209,7 @@ export function usePWA(): PWAHookReturn {
 
       // Clear localStorage items related to PWA
       const keysToRemove = ['pwa-settings', 'cache-timestamp', 'offline-data'];
-      keysToRemove.forEach(key => localStorage.removeItem(key));
+      keysToRemove.forEach((key) => localStorage.removeItem(key));
 
       console.log('All caches cleared');
     } catch (error) {
@@ -228,7 +234,7 @@ export function usePWA(): PWAHookReturn {
         // Can't programmatically revoke, user needs to do it in browser settings
         return true;
       }
-      
+
       return false;
     } catch (error) {
       console.error('Failed to toggle notifications:', error);
@@ -256,7 +262,10 @@ export function usePWA(): PWAHookReturn {
   /**
    * Get storage information
    */
-  const getStorageInfo = async (): Promise<{ used: number; available: number }> => {
+  const getStorageInfo = async (): Promise<{
+    used: number;
+    available: number;
+  }> => {
     try {
       return await offlineStorage.getStorageUsage();
     } catch (error) {
@@ -268,14 +277,14 @@ export function usePWA(): PWAHookReturn {
   return {
     // State
     ...state,
-    
+
     // Actions
     install,
     update,
     clearCache,
     toggleNotifications,
     forceSync,
-    getStorageInfo
+    getStorageInfo,
   };
 }
 
@@ -289,7 +298,8 @@ export function useInstallBanner() {
 
   useEffect(() => {
     // Check if banner was previously dismissed
-    const wasDismissed = localStorage.getItem('install-banner-dismissed') === 'true';
+    const wasDismissed =
+      localStorage.getItem('install-banner-dismissed') === 'true';
     setDismissed(wasDismissed);
 
     // Show banner if installable and not dismissed
@@ -321,7 +331,7 @@ export function useInstallBanner() {
     dismiss,
     install: installAndDismiss,
     isInstallable,
-    isInstalled
+    isInstalled,
   };
 }
 
@@ -351,7 +361,7 @@ export function useAppUpdate() {
     showUpdatePrompt,
     applyUpdate,
     dismissUpdate,
-    updateAvailable
+    updateAvailable,
   };
 }
 
@@ -364,17 +374,17 @@ export function useOfflineSync() {
     pendingItems: 0,
     lastSync: 0,
     syncing: false,
-    errors: []
+    errors: [],
   });
 
   useEffect(() => {
     const updateSyncStatus = async () => {
       try {
         const status = await offlineStorage.getSyncStatus();
-        setSyncStatus(prev => ({
+        setSyncStatus((prev) => ({
           ...prev,
           pendingItems: status.pendingItems,
-          lastSync: status.lastSync
+          lastSync: status.lastSync,
         }));
       } catch (error) {
         console.error('Failed to update sync status:', error);
@@ -406,20 +416,20 @@ export function useOfflineSync() {
       throw new Error('Cannot sync while offline');
     }
 
-    setSyncStatus(prev => ({ ...prev, syncing: true }));
-    
+    setSyncStatus((prev) => ({ ...prev, syncing: true }));
+
     try {
       await forceSync();
       // Update status after sync
       const status = await offlineStorage.getSyncStatus();
-      setSyncStatus(prev => ({
+      setSyncStatus((prev) => ({
         ...prev,
         pendingItems: status.pendingItems,
         lastSync: status.lastSync,
-        syncing: false
+        syncing: false,
       }));
     } catch (error) {
-      setSyncStatus(prev => ({ ...prev, syncing: false }));
+      setSyncStatus((prev) => ({ ...prev, syncing: false }));
       throw error;
     }
   };
@@ -427,6 +437,6 @@ export function useOfflineSync() {
   return {
     isOnline,
     syncStatus,
-    triggerSync
+    triggerSync,
   };
 }

@@ -1,13 +1,31 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -49,18 +67,24 @@ interface CommissionManagementProps {
   selectedYear: number;
 }
 
-export default function CommissionManagement({ 
-  isOpen, 
-  onClose, 
-  selectedMonth, 
-  selectedYear 
+export default function CommissionManagement({
+  isOpen,
+  onClose,
+  selectedMonth,
+  selectedYear,
 }: CommissionManagementProps) {
   const { t, formatCurrency } = useSettings();
   const [products, setProducts] = useState<Product[]>([]);
-  const [commissionStructures, setCommissionStructures] = useState<CommissionStructure[]>([]);
-  const [fixedCostStructures, setFixedCostStructures] = useState<FixedCostStructure[]>([]);
+  const [commissionStructures, setCommissionStructures] = useState<
+    CommissionStructure[]
+  >([]);
+  const [fixedCostStructures, setFixedCostStructures] = useState<
+    FixedCostStructure[]
+  >([]);
   const [loading, setLoading] = useState(false);
-  const [editingCommission, setEditingCommission] = useState<string | null>(null);
+  const [editingCommission, setEditingCommission] = useState<string | null>(
+    null
+  );
   const [editingFixedCost, setEditingFixedCost] = useState<string | null>(null);
   const [newCommission, setNewCommission] = useState({
     productId: '',
@@ -148,11 +172,17 @@ export default function CommissionManagement({
         if (Array.isArray(data)) {
           setCommissionStructures(data);
         } else {
-          console.error('Commission structures API returned invalid data structure:', data);
+          console.error(
+            'Commission structures API returned invalid data structure:',
+            data
+          );
           setCommissionStructures([]);
         }
       } else {
-        console.error('Failed to fetch commission structures:', response.status);
+        console.error(
+          'Failed to fetch commission structures:',
+          response.status
+        );
         setCommissionStructures([]);
       }
     } catch (error) {
@@ -175,11 +205,17 @@ export default function CommissionManagement({
         if (Array.isArray(data)) {
           setFixedCostStructures(data);
         } else {
-          console.error('Fixed cost structures API returned invalid data structure:', data);
+          console.error(
+            'Fixed cost structures API returned invalid data structure:',
+            data
+          );
           setFixedCostStructures([]);
         }
       } else {
-        console.error('Failed to fetch fixed cost structures:', response.status);
+        console.error(
+          'Failed to fetch fixed cost structures:',
+          response.status
+        );
         setFixedCostStructures([]);
       }
     } catch (error) {
@@ -219,22 +255,28 @@ export default function CommissionManagement({
 
     if (response.ok) {
       await fetchFixedCostStructures();
-      setNewFixedCost({ productId: '', costPerUnit: 0, costType: 'MANUAL', description: '' });
+      setNewFixedCost({
+        productId: '',
+        costPerUnit: 0,
+        costType: 'MANUAL',
+        description: '',
+      });
       setEditingFixedCost(null);
     }
   };
 
   const getMonthName = (month: number) => {
-    return months.find(m => m.value === month)?.label || '';
+    return months.find((m) => m.value === month)?.label || '';
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-h-[90vh] max-w-4xl overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Commission & Fixed Cost Management</DialogTitle>
           <DialogDescription>
-            Manage commission structures and fixed costs for {getMonthName(selectedMonth)} {selectedYear}
+            Manage commission structures and fixed costs for{' '}
+            {getMonthName(selectedMonth)} {selectedYear}
           </DialogDescription>
         </DialogHeader>
 
@@ -250,12 +292,14 @@ export default function CommissionManagement({
                 <CardTitle>Add Commission Structure</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
                   <div>
                     <Label htmlFor="commission-product">Product</Label>
                     <Select
                       value={newCommission.productId}
-                      onValueChange={(value) => setNewCommission({ ...newCommission, productId: value })}
+                      onValueChange={(value) =>
+                        setNewCommission({ ...newCommission, productId: value })
+                      }
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Select product" />
@@ -263,7 +307,8 @@ export default function CommissionManagement({
                       <SelectContent>
                         {products.map((product) => (
                           <SelectItem key={product.id} value={product.id}>
-                            {product.name} ({product.size}) - {product.company.name}
+                            {product.name} ({product.size}) -{' '}
+                            {product.company.name}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -277,28 +322,40 @@ export default function CommissionManagement({
                       step="0.01"
                       min="0"
                       value={newCommission.commission}
-                      onChange={(e) => setNewCommission({ 
-                        ...newCommission, 
-                        commission: parseFloat(e.target.value) || 0 
-                      })}
+                      onChange={(e) =>
+                        setNewCommission({
+                          ...newCommission,
+                          commission: parseFloat(e.target.value) || 0,
+                        })
+                      }
                     />
                   </div>
                   <div className="flex items-end">
-                    <Button 
+                    <Button
                       onClick={() => saveCommissionStructure(newCommission)}
-                      disabled={!newCommission.productId || newCommission.commission === 0}
+                      disabled={
+                        !newCommission.productId ||
+                        newCommission.commission === 0
+                      }
                     >
-                      <Plus className="h-4 w-4 mr-2" />
+                      <Plus className="mr-2 h-4 w-4" />
                       Add
                     </Button>
                   </div>
                 </div>
                 <div>
-                  <Label htmlFor="commission-description">Description (Optional)</Label>
+                  <Label htmlFor="commission-description">
+                    Description (Optional)
+                  </Label>
                   <Textarea
                     id="commission-description"
                     value={newCommission.description}
-                    onChange={(e) => setNewCommission({ ...newCommission, description: e.target.value })}
+                    onChange={(e) =>
+                      setNewCommission({
+                        ...newCommission,
+                        description: e.target.value,
+                      })
+                    }
                     placeholder="Optional description..."
                   />
                 </div>
@@ -312,7 +369,10 @@ export default function CommissionManagement({
               <CardContent>
                 <div className="space-y-2">
                   {commissionStructures.map((structure) => (
-                    <div key={structure.id} className="flex items-center justify-between p-3 border rounded">
+                    <div
+                      key={structure.id}
+                      className="flex items-center justify-between rounded border p-3"
+                    >
                       <div className="flex-1">
                         <div className="font-medium">
                           {structure.product.name} ({structure.product.size})
@@ -321,7 +381,7 @@ export default function CommissionManagement({
                           {structure.product.company.name}
                         </div>
                         {structure.description && (
-                          <div className="text-sm text-gray-600 mt-1">
+                          <div className="mt-1 text-sm text-gray-600">
                             {structure.description}
                           </div>
                         )}
@@ -351,24 +411,29 @@ export default function CommissionManagement({
                 <CardTitle>Add Fixed Cost Structure</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
                   <div>
                     <Label htmlFor="fixed-cost-product">{t('product')}</Label>
                     <Select
                       value={newFixedCost.productId}
-                      onValueChange={(value) => setNewFixedCost({ 
-                        ...newFixedCost, 
-                        productId: value === 'global' ? '' : value 
-                      })}
+                      onValueChange={(value) =>
+                        setNewFixedCost({
+                          ...newFixedCost,
+                          productId: value === 'global' ? '' : value,
+                        })
+                      }
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Select product" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="global">Global Fixed Cost</SelectItem>
+                        <SelectItem value="global">
+                          Global Fixed Cost
+                        </SelectItem>
                         {products.map((product) => (
                           <SelectItem key={product.id} value={product.id}>
-                            {product.name} ({product.size}) - {product.company.name}
+                            {product.name} ({product.size}) -{' '}
+                            {product.company.name}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -382,17 +447,19 @@ export default function CommissionManagement({
                       step="0.01"
                       min="0"
                       value={newFixedCost.costPerUnit}
-                      onChange={(e) => setNewFixedCost({ 
-                        ...newFixedCost, 
-                        costPerUnit: parseFloat(e.target.value) || 0 
-                      })}
+                      onChange={(e) =>
+                        setNewFixedCost({
+                          ...newFixedCost,
+                          costPerUnit: parseFloat(e.target.value) || 0,
+                        })
+                      }
                     />
                   </div>
                   <div>
                     <Label htmlFor="fixed-cost-type">Cost Type</Label>
                     <Select
                       value={newFixedCost.costType}
-                      onValueChange={(value: 'MANUAL' | 'CALCULATED') => 
+                      onValueChange={(value: 'MANUAL' | 'CALCULATED') =>
                         setNewFixedCost({ ...newFixedCost, costType: value })
                       }
                     >
@@ -401,29 +468,40 @@ export default function CommissionManagement({
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="MANUAL">Manual Entry</SelectItem>
-                        <SelectItem value="CALCULATED">Auto Calculated</SelectItem>
+                        <SelectItem value="CALCULATED">
+                          Auto Calculated
+                        </SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                   <div className="flex items-end">
-                    <Button 
-                      onClick={() => saveFixedCostStructure({
-                        ...newFixedCost,
-                        productId: newFixedCost.productId || null,
-                      })}
+                    <Button
+                      onClick={() =>
+                        saveFixedCostStructure({
+                          ...newFixedCost,
+                          productId: newFixedCost.productId || null,
+                        })
+                      }
                       disabled={newFixedCost.costPerUnit === 0}
                     >
-                      <Plus className="h-4 w-4 mr-2" />
+                      <Plus className="mr-2 h-4 w-4" />
                       Add
                     </Button>
                   </div>
                 </div>
                 <div>
-                  <Label htmlFor="fixed-cost-description">Description (Optional)</Label>
+                  <Label htmlFor="fixed-cost-description">
+                    Description (Optional)
+                  </Label>
                   <Textarea
                     id="fixed-cost-description"
                     value={newFixedCost.description}
-                    onChange={(e) => setNewFixedCost({ ...newFixedCost, description: e.target.value })}
+                    onChange={(e) =>
+                      setNewFixedCost({
+                        ...newFixedCost,
+                        description: e.target.value,
+                      })
+                    }
                     placeholder="Optional description..."
                   />
                 </div>
@@ -437,13 +515,15 @@ export default function CommissionManagement({
               <CardContent>
                 <div className="space-y-2">
                   {fixedCostStructures.map((structure) => (
-                    <div key={structure.id} className="flex items-center justify-between p-3 border rounded">
+                    <div
+                      key={structure.id}
+                      className="flex items-center justify-between rounded border p-3"
+                    >
                       <div className="flex-1">
                         <div className="font-medium">
-                          {structure.product ? 
-                            `${structure.product.name} (${structure.product.size})` : 
-                            'Global Fixed Cost'
-                          }
+                          {structure.product
+                            ? `${structure.product.name} (${structure.product.size})`
+                            : 'Global Fixed Cost'}
                         </div>
                         {structure.product && (
                           <div className="text-sm text-gray-500">
@@ -451,18 +531,22 @@ export default function CommissionManagement({
                           </div>
                         )}
                         {structure.description && (
-                          <div className="text-sm text-gray-600 mt-1">
+                          <div className="mt-1 text-sm text-gray-600">
                             {structure.description}
                           </div>
                         )}
                       </div>
                       <div className="flex items-center space-x-2">
-                        <Badge variant={structure.costType === 'MANUAL' ? 'default' : 'secondary'}>
+                        <Badge
+                          variant={
+                            structure.costType === 'MANUAL'
+                              ? 'default'
+                              : 'secondary'
+                          }
+                        >
                           {formatCurrency(structure.costPerUnit)} per unit
                         </Badge>
-                        <Badge variant="outline">
-                          {structure.costType}
-                        </Badge>
+                        <Badge variant="outline">{structure.costType}</Badge>
                         <Button
                           variant="ghost"
                           size="sm"

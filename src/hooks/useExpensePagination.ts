@@ -13,16 +13,16 @@ interface UseExpensePaginationProps {
   onPaginationChange?: (pagination: PaginationData) => void;
 }
 
-export const useExpensePagination = ({ 
-  initialPage = 1, 
+export const useExpensePagination = ({
+  initialPage = 1,
   initialLimit = 20,
-  onPaginationChange
+  onPaginationChange,
 }: UseExpensePaginationProps = {}) => {
   const [pagination, setPagination] = useState<PaginationData>({
     page: initialPage,
     limit: initialLimit,
     total: 0,
-    pages: 0
+    pages: 0,
   });
 
   const updatePagination = (newPagination: Partial<PaginationData>) => {
@@ -69,7 +69,7 @@ export const useExpensePagination = ({
   const getVisiblePageNumbers = (maxVisible: number = 7) => {
     const { page, pages } = pagination;
     const pageNumbers = [];
-    
+
     if (pages <= maxVisible) {
       // Show all pages if total pages is less than max visible
       for (let i = 1; i <= pages; i++) {
@@ -80,14 +80,14 @@ export const useExpensePagination = ({
       const halfVisible = Math.floor(maxVisible / 2);
       let start = Math.max(1, page - halfVisible);
       let end = Math.min(pages, page + halfVisible);
-      
+
       // Adjust if we're near the beginning or end
       if (start === 1) {
         end = Math.min(pages, maxVisible);
       } else if (end === pages) {
         start = Math.max(1, pages - maxVisible + 1);
       }
-      
+
       // Add ellipsis and boundary pages if needed
       if (start > 1) {
         pageNumbers.push(1);
@@ -95,11 +95,11 @@ export const useExpensePagination = ({
           pageNumbers.push('...');
         }
       }
-      
+
       for (let i = start; i <= end; i++) {
         pageNumbers.push(i);
       }
-      
+
       if (end < pages) {
         if (end < pages - 1) {
           pageNumbers.push('...');
@@ -107,19 +107,19 @@ export const useExpensePagination = ({
         pageNumbers.push(pages);
       }
     }
-    
+
     return pageNumbers;
   };
 
   const getPaginationInfo = () => {
     const start = Math.max(1, (pagination.page - 1) * pagination.limit + 1);
     const end = Math.min(pagination.total, pagination.page * pagination.limit);
-    
+
     return {
       start,
       end,
       total: pagination.total,
-      showing: `${start}-${end} of ${pagination.total}`
+      showing: `${start}-${end} of ${pagination.total}`,
     };
   };
 
@@ -147,6 +147,6 @@ export const useExpensePagination = ({
     canGoNext,
     canGoPrev,
     paginationStats,
-    visiblePages
+    visiblePages,
   };
 };

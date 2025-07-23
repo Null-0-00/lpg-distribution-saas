@@ -5,19 +5,19 @@ class MemoryCache {
   private cache = new Map<string, { data: any; expiry: number }>();
 
   set(key: string, value: any, ttl: number = 3600): void {
-    const expiry = Date.now() + (ttl * 1000);
+    const expiry = Date.now() + ttl * 1000;
     this.cache.set(key, { data: value, expiry });
   }
 
   get(key: string): any {
     const item = this.cache.get(key);
     if (!item) return null;
-    
+
     if (Date.now() > item.expiry) {
       this.cache.delete(key);
       return null;
     }
-    
+
     return item.data;
   }
 
@@ -27,7 +27,7 @@ class MemoryCache {
 
   keys(pattern: string): string[] {
     const regex = new RegExp(pattern.replace(/\*/g, '.*'));
-    return Array.from(this.cache.keys()).filter(key => regex.test(key));
+    return Array.from(this.cache.keys()).filter((key) => regex.test(key));
   }
 
   clear(): void {
@@ -47,21 +47,32 @@ export class RedisCache {
   /**
    * Generate cache key with tenant isolation
    */
-  private generateKey(tenantId: string, namespace: string, identifier: string): string {
-    const hash = createHash('sha256').update(identifier).digest('hex').substring(0, 16);
+  private generateKey(
+    tenantId: string,
+    namespace: string,
+    identifier: string
+  ): string {
+    const hash = createHash('sha256')
+      .update(identifier)
+      .digest('hex')
+      .substring(0, 16);
     return `${tenantId}:${namespace}:${hash}`;
   }
 
   /**
    * Get cached data with automatic deserialization
    */
-  async get<T>(tenantId: string, namespace: string, key: string): Promise<T | null> {
+  async get<T>(
+    tenantId: string,
+    namespace: string,
+    key: string
+  ): Promise<T | null> {
     try {
       const cacheKey = this.generateKey(tenantId, namespace, key);
       const data = this.cache.get(cacheKey);
-      
+
       if (!data) return null;
-      
+
       return data as T;
     } catch (error) {
       console.error('Cache get error:', error);
@@ -73,16 +84,16 @@ export class RedisCache {
    * Set cached data with automatic serialization and TTL
    */
   async set<T>(
-    tenantId: string, 
-    namespace: string, 
-    key: string, 
-    data: T, 
+    tenantId: string,
+    namespace: string,
+    key: string,
+    data: T,
     ttl?: number
   ): Promise<boolean> {
     try {
       const cacheKey = this.generateKey(tenantId, namespace, key);
       const expiry = ttl || this.defaultTTL;
-      
+
       this.cache.set(cacheKey, data, expiry);
       return true;
     } catch (error) {
@@ -94,7 +105,11 @@ export class RedisCache {
   /**
    * Delete cached data
    */
-  async delete(tenantId: string, namespace: string, key: string): Promise<boolean> {
+  async delete(
+    tenantId: string,
+    namespace: string,
+    key: string
+  ): Promise<boolean> {
     try {
       const cacheKey = this.generateKey(tenantId, namespace, key);
       return this.cache.delete(cacheKey);
@@ -107,13 +122,16 @@ export class RedisCache {
   /**
    * Invalidate all cache for a specific namespace
    */
-  async invalidateNamespace(tenantId: string, namespace: string): Promise<boolean> {
+  async invalidateNamespace(
+    tenantId: string,
+    namespace: string
+  ): Promise<boolean> {
     try {
       const pattern = `${tenantId}:${namespace}:*`;
       const keys = this.cache.keys(pattern);
-      
-      keys.forEach(key => this.cache.delete(key));
-      
+
+      keys.forEach((key) => this.cache.delete(key));
+
       return true;
     } catch (error) {
       console.error('Cache invalidate namespace error:', error);
@@ -139,21 +157,27 @@ export class RedisCache {
 
     // If not in cache, fetch from source
     const data = await fetcher();
-    
+
     // Store in cache for next time
     await this.set(tenantId, namespace, key, data, ttl);
-    
+
     return data;
   }
 
   /**
    * Batch operations for multiple cache keys
    */
-  async mget<T>(tenantId: string, namespace: string, keys: string[]): Promise<(T | null)[]> {
+  async mget<T>(
+    tenantId: string,
+    namespace: string,
+    keys: string[]
+  ): Promise<(T | null)[]> {
     try {
-      const cacheKeys = keys.map(key => this.generateKey(tenantId, namespace, key));
-      
-      return cacheKeys.map(cacheKey => {
+      const cacheKeys = keys.map((key) =>
+        this.generateKey(tenantId, namespace, key)
+      );
+
+      return cacheKeys.map((cacheKey) => {
         const result = this.cache.get(cacheKey);
         return result || null;
       });
@@ -175,10 +199,10 @@ export class RedisCache {
       entries.forEach(({ key, data, ttl }) => {
         const cacheKey = this.generateKey(tenantId, namespace, key);
         const expiry = ttl || this.defaultTTL;
-        
+
         this.cache.set(cacheKey, data, expiry);
       });
-      
+
       return true;
     } catch (error) {
       console.error('Cache mset error:', error);
@@ -199,9 +223,9 @@ export class RedisCache {
       const cacheKey = this.generateKey(tenantId, namespace, key);
       const current = this.cache.get(cacheKey) || 0;
       const count = current + 1;
-      
+
       this.cache.set(cacheKey, count, ttl || this.defaultTTL);
-      
+
       return count;
     } catch (error) {
       console.error('Cache increment error:', error);
@@ -222,11 +246,11 @@ export class RedisCache {
     try {
       const cacheKey = this.generateKey(tenantId, namespace, key);
       const ttl = Math.floor((expireAt.getTime() - Date.now()) / 1000);
-      
+
       if (ttl > 0) {
         this.cache.set(cacheKey, data, ttl);
       }
-      
+
       return true;
     } catch (error) {
       console.error('Cache setExpireAt error:', error);
@@ -245,8 +269,10 @@ export class RedisCache {
       const result = this.cache.get(testKey);
       this.cache.delete(testKey);
       const latency = Date.now() - start;
-      
-      return result === 'ok' ? { status: 'healthy', latency } : { status: 'unhealthy' };
+
+      return result === 'ok'
+        ? { status: 'healthy', latency }
+        : { status: 'unhealthy' };
     } catch (error) {
       return { status: 'unhealthy' };
     }
@@ -260,7 +286,7 @@ export class RedisCache {
       return {
         type: 'memory',
         keyCount: this.cache['cache'].size,
-        status: 'active'
+        status: 'active',
       };
     } catch (error) {
       console.error('Cache stats error:', error);

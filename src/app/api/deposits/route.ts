@@ -13,7 +13,10 @@ export async function GET(request: NextRequest) {
     const date = searchParams.get('date');
 
     if (!date) {
-      return NextResponse.json({ error: 'Date parameter is required' }, { status: 400 });
+      return NextResponse.json(
+        { error: 'Date parameter is required' },
+        { status: 400 }
+      );
     }
 
     const deposits = await prisma.deposit.findMany({
@@ -21,25 +24,28 @@ export async function GET(request: NextRequest) {
         tenantId: session.user.tenantId,
         depositDate: {
           gte: new Date(date),
-          lt: new Date(new Date(date).getTime() + 24 * 60 * 60 * 1000)
-        }
+          lt: new Date(new Date(date).getTime() + 24 * 60 * 60 * 1000),
+        },
       },
       include: {
         user: {
           select: {
-            name: true
-          }
-        }
+            name: true,
+          },
+        },
       },
       orderBy: {
-        depositDate: 'desc'
-      }
+        depositDate: 'desc',
+      },
     });
 
     return NextResponse.json(deposits);
   } catch (error) {
     console.error('Error fetching deposits:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
   }
 }
 
@@ -54,7 +60,10 @@ export async function POST(request: NextRequest) {
     const { amount, description, particulars, depositDate } = body;
 
     if (!amount || !description || !particulars) {
-      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+      return NextResponse.json(
+        { error: 'Missing required fields' },
+        { status: 400 }
+      );
     }
 
     const deposit = await prisma.deposit.create({
@@ -64,20 +73,23 @@ export async function POST(request: NextRequest) {
         amount: parseFloat(amount),
         description,
         particulars,
-        depositDate: depositDate ? new Date(depositDate) : new Date()
+        depositDate: depositDate ? new Date(depositDate) : new Date(),
       },
       include: {
         user: {
           select: {
-            name: true
-          }
-        }
-      }
+            name: true,
+          },
+        },
+      },
     });
 
     return NextResponse.json(deposit);
   } catch (error) {
     console.error('Error creating deposit:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
   }
 }

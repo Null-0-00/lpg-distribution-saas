@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
 
     const { tenantId } = session.user;
     const { searchParams } = new URL(request.url);
-    
+
     // Parse query parameters directly
     const productId = searchParams.get('productId');
     const companyId = searchParams.get('companyId');
@@ -30,12 +30,12 @@ export async function GET(request: NextRequest) {
       tenantId,
       isActive: true,
     };
-    
+
     if (productId) whereClause.id = productId;
     if (companyId) whereClause.companyId = companyId;
     if (companyName) {
       whereClause.company = {
-        name: companyName
+        name: companyName,
       };
     }
 
@@ -45,28 +45,26 @@ export async function GET(request: NextRequest) {
         company: {
           select: {
             id: true,
-            name: true
-          }
-        }
+            name: true,
+          },
+        },
       },
-      orderBy: [
-        { company: { name: 'asc' } },
-        { name: 'asc' }
-      ]
+      orderBy: [{ company: { name: 'asc' } }, { name: 'asc' }],
     });
 
     const inventoryCalculator = new InventoryCalculator(prisma);
-    
+
     // Calculate current inventory levels for each product
     const inventoryData = await Promise.all(
       products.map(async (product) => {
-        const currentLevels = await inventoryCalculator.getCurrentInventoryLevels(
-          tenantId, 
-          product.id
-        );
+        const currentLevels =
+          await inventoryCalculator.getCurrentInventoryLevels(
+            tenantId,
+            product.id
+          );
 
         const lowStockCheck = await inventoryCalculator.checkLowStockAlert(
-          tenantId, 
+          tenantId,
           product.id
         );
 
@@ -74,7 +72,7 @@ export async function GET(request: NextRequest) {
         if (includeMovements) {
           const movementWhere: Record<string, unknown> = {
             tenantId,
-            productId: product.id
+            productId: product.id,
           };
 
           if (startDate || endDate) {
@@ -88,11 +86,11 @@ export async function GET(request: NextRequest) {
             where: movementWhere,
             include: {
               driver: {
-                select: { name: true }
-              }
+                select: { name: true },
+              },
             },
             orderBy: { date: 'desc' },
-            take: 50 // Limit to last 50 movements
+            take: 50, // Limit to last 50 movements
           });
         }
 
@@ -104,7 +102,7 @@ export async function GET(request: NextRequest) {
             fullName: `${product.company.name} ${product.name} (${product.size}L)`,
             currentPrice: product.currentPrice,
             lowStockThreshold: product.lowStockThreshold,
-            company: product.company
+            company: product.company,
           },
           inventory: {
             fullCylinders: currentLevels.fullCylinders,
@@ -112,43 +110,66 @@ export async function GET(request: NextRequest) {
             totalCylinders: currentLevels.totalCylinders,
             isLowStock: lowStockCheck.isLowStock,
             stockValue: currentLevels.fullCylinders * product.currentPrice,
-            stockHealth: lowStockCheck.isLowStock ? 'critical' : 
-                        currentLevels.fullCylinders <= (product.lowStockThreshold * 1.5) ? 'warning' : 'good'
+            stockHealth: lowStockCheck.isLowStock
+              ? 'critical'
+              : currentLevels.fullCylinders <= product.lowStockThreshold * 1.5
+                ? 'warning'
+                : 'good',
           },
-          ...(includeMovements && { movements })
+          ...(includeMovements && { movements }),
         };
       })
     );
 
     // Filter low stock items if requested
-    const filteredData = includeLowStock 
-      ? inventoryData.filter(item => item.inventory.isLowStock)
+    const filteredData = includeLowStock
+      ? inventoryData.filter((item) => item.inventory.isLowStock)
       : inventoryData;
 
     // Calculate summary statistics
     const summary = {
       totalProducts: filteredData.length,
-      totalFullCylinders: filteredData.reduce((sum, item) => sum + item.inventory.fullCylinders, 0),
-      totalEmptyCylinders: filteredData.reduce((sum, item) => sum + item.inventory.emptyCylinders, 0),
-      totalStockValue: filteredData.reduce((sum, item) => sum + item.inventory.stockValue, 0),
-      lowStockItems: inventoryData.filter(item => item.inventory.isLowStock).length,
-      criticalStockItems: inventoryData.filter(item => item.inventory.fullCylinders === 0).length,
+      totalFullCylinders: filteredData.reduce(
+        (sum, item) => sum + item.inventory.fullCylinders,
+        0
+      ),
+      totalEmptyCylinders: filteredData.reduce(
+        (sum, item) => sum + item.inventory.emptyCylinders,
+        0
+      ),
+      totalStockValue: filteredData.reduce(
+        (sum, item) => sum + item.inventory.stockValue,
+        0
+      ),
+      lowStockItems: inventoryData.filter((item) => item.inventory.isLowStock)
+        .length,
+      criticalStockItems: inventoryData.filter(
+        (item) => item.inventory.fullCylinders === 0
+      ).length,
       stockHealth: {
-        good: inventoryData.filter(item => item.inventory.stockHealth === 'good').length,
-        warning: inventoryData.filter(item => item.inventory.stockHealth === 'warning').length,
-        critical: inventoryData.filter(item => item.inventory.stockHealth === 'critical').length
-      }
+        good: inventoryData.filter(
+          (item) => item.inventory.stockHealth === 'good'
+        ).length,
+        warning: inventoryData.filter(
+          (item) => item.inventory.stockHealth === 'warning'
+        ).length,
+        critical: inventoryData.filter(
+          (item) => item.inventory.stockHealth === 'critical'
+        ).length,
+      },
     };
 
     return NextResponse.json({
       inventory: filteredData,
       summary,
-      lastUpdated: new Date().toISOString()
+      lastUpdated: new Date().toISOString(),
     });
-
   } catch (error) {
     console.error('Inventory fetch error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
   }
 }
 
@@ -161,10 +182,13 @@ export async function POST(request: NextRequest) {
     }
 
     const { tenantId, role } = session.user;
-    
+
     // Only admins can trigger recalculation
     if (role !== 'ADMIN') {
-      return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
+      return NextResponse.json(
+        { error: 'Insufficient permissions' },
+        { status: 403 }
+      );
     }
 
     const body = await request.json();
@@ -176,29 +200,34 @@ export async function POST(request: NextRequest) {
     if (productId) {
       // Recalculate for specific product
       const product = await prisma.product.findFirst({
-        where: { id: productId, tenantId }
+        where: { id: productId, tenantId },
       });
 
       if (!product) {
-        return NextResponse.json({ error: 'Product not found' }, { status: 404 });
+        return NextResponse.json(
+          { error: 'Product not found' },
+          { status: 404 }
+        );
       }
 
       // Get previous day's levels
       const previousDate = new Date(targetDate);
       previousDate.setDate(previousDate.getDate() - 1);
 
-      const previousLevels = await inventoryCalculator.getCurrentInventoryLevels(
-        tenantId, 
-        productId
-      );
+      const previousLevels =
+        await inventoryCalculator.getCurrentInventoryLevels(
+          tenantId,
+          productId
+        );
 
-      const inventoryResult = await inventoryCalculator.calculateInventoryForDate({
-        date: targetDate,
-        tenantId,
-        productId,
-        previousFullCylinders: previousLevels.fullCylinders,
-        previousEmptyCylinders: previousLevels.emptyCylinders
-      });
+      const inventoryResult =
+        await inventoryCalculator.calculateInventoryForDate({
+          date: targetDate,
+          tenantId,
+          productId,
+          previousFullCylinders: previousLevels.fullCylinders,
+          previousEmptyCylinders: previousLevels.emptyCylinders,
+        });
 
       await inventoryCalculator.updateInventoryRecord(
         tenantId,
@@ -210,29 +239,30 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({
         success: true,
         message: `Inventory recalculated for ${product.name}`,
-        result: inventoryResult
+        result: inventoryResult,
       });
-
     } else {
       // Recalculate for all products
       const products = await prisma.product.findMany({
-        where: { tenantId, isActive: true }
+        where: { tenantId, isActive: true },
       });
 
       const results = [];
       for (const product of products) {
-        const previousLevels = await inventoryCalculator.getCurrentInventoryLevels(
-          tenantId, 
-          product.id
-        );
+        const previousLevels =
+          await inventoryCalculator.getCurrentInventoryLevels(
+            tenantId,
+            product.id
+          );
 
-        const inventoryResult = await inventoryCalculator.calculateInventoryForDate({
-          date: targetDate,
-          tenantId,
-          productId: product.id,
-          previousFullCylinders: previousLevels.fullCylinders,
-          previousEmptyCylinders: previousLevels.emptyCylinders
-        });
+        const inventoryResult =
+          await inventoryCalculator.calculateInventoryForDate({
+            date: targetDate,
+            tenantId,
+            productId: product.id,
+            previousFullCylinders: previousLevels.fullCylinders,
+            previousEmptyCylinders: previousLevels.emptyCylinders,
+          });
 
         await inventoryCalculator.updateInventoryRecord(
           tenantId,
@@ -244,19 +274,21 @@ export async function POST(request: NextRequest) {
         results.push({
           productId: product.id,
           productName: product.name,
-          result: inventoryResult
+          result: inventoryResult,
         });
       }
 
       return NextResponse.json({
         success: true,
         message: `Inventory recalculated for ${products.length} products`,
-        results
+        results,
       });
     }
-
   } catch (error) {
     console.error('Inventory recalculation error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
   }
 }

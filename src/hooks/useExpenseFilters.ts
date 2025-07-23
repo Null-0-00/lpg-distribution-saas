@@ -14,9 +14,9 @@ interface UseExpenseFiltersProps {
   onFiltersChange?: (filters: ExpenseFilters) => void;
 }
 
-export const useExpenseFilters = ({ 
-  initialFilters = {}, 
-  onFiltersChange 
+export const useExpenseFilters = ({
+  initialFilters = {},
+  onFiltersChange,
 }: UseExpenseFiltersProps = {}) => {
   const [filters, setFilters] = useState<ExpenseFilters>({
     status: 'all',
@@ -24,21 +24,24 @@ export const useExpenseFilters = ({
     dateFrom: '',
     dateTo: '',
     search: '',
-    ...initialFilters
+    ...initialFilters,
   });
 
   // Debounce search to avoid excessive API calls
   const debouncedSearch = useDebounce(filters.search, 300);
 
-  const debouncedFilters = useMemo(() => ({
-    ...filters,
-    search: debouncedSearch
-  }), [filters, debouncedSearch]);
+  const debouncedFilters = useMemo(
+    () => ({
+      ...filters,
+      search: debouncedSearch,
+    }),
+    [filters, debouncedSearch]
+  );
 
   const updateFilter = (key: keyof ExpenseFilters, value: string) => {
     const newFilters = { ...filters, [key]: value };
     setFilters(newFilters);
-    
+
     // Call callback immediately for non-search filters
     if (key !== 'search') {
       onFiltersChange?.(newFilters);
@@ -57,7 +60,7 @@ export const useExpenseFilters = ({
       categoryId: '',
       dateFrom: '',
       dateTo: '',
-      search: ''
+      search: '',
     };
     setFilters(resetFilters);
     onFiltersChange?.(resetFilters);
@@ -87,7 +90,7 @@ export const useExpenseFilters = ({
 
   const getFilterSummary = () => {
     const activeFilters = [];
-    
+
     if (filters.status !== 'all') {
       activeFilters.push(`Status: ${filters.status}`);
     }
@@ -100,7 +103,7 @@ export const useExpenseFilters = ({
     if (filters.search) {
       activeFilters.push(`Search: "${filters.search}"`);
     }
-    
+
     return activeFilters;
   };
 
@@ -114,6 +117,6 @@ export const useExpenseFilters = ({
     clearDateRange,
     setDateRange,
     hasActiveFilters,
-    getFilterSummary
+    getFilterSummary,
   };
 };

@@ -1,5 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-@import "tailwindcss";
+@import 'tailwindcss';
 
 /* Suppress Dark Reader hydration mismatches */
 svg[data-darkreader-inline-stroke] {
@@ -75,7 +75,9 @@ svg {
   body {
     background-color: rgb(var(--background));
     color: rgb(var(--foreground));
-    transition: background-color 0.3s ease, color 0.3s ease;
+    transition:
+      background-color 0.3s ease,
+      color 0.3s ease;
   }
 
   /* Ensure proper theme switching */

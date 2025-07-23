@@ -14,8 +14,8 @@ const movementQuerySchema = z.object({
   type: z.nativeEnum(MovementType).optional(),
   startDate: z.string().optional(),
   endDate: z.string().optional(),
-  page: z.string().transform(val => parseInt(val) || 1),
-  limit: z.string().transform(val => Math.min(parseInt(val) || 50, 100)),
+  page: z.string().transform((val) => parseInt(val) || 1),
+  limit: z.string().transform((val) => Math.min(parseInt(val) || 50, 100)),
 });
 
 const createMovementSchema = z.object({
@@ -36,7 +36,7 @@ export async function GET(request: NextRequest) {
 
     const { tenantId } = session.user;
     const { searchParams } = new URL(request.url);
-    
+
     // Parse and validate query parameters
     const queryResult = movementQuerySchema.safeParse({
       productId: searchParams.get('productId'),
@@ -49,21 +49,25 @@ export async function GET(request: NextRequest) {
     });
 
     if (!queryResult.success) {
-      return NextResponse.json({
-        error: 'Invalid query parameters',
-        details: queryResult.error.issues
-      }, { status: 400 });
+      return NextResponse.json(
+        {
+          error: 'Invalid query parameters',
+          details: queryResult.error.issues,
+        },
+        { status: 400 }
+      );
     }
 
-    const { productId, driverId, type, startDate, endDate, page, limit } = queryResult.data;
+    const { productId, driverId, type, startDate, endDate, page, limit } =
+      queryResult.data;
 
     // Build where clause
     const where: Record<string, unknown> = { tenantId };
-    
+
     if (productId) where.productId = productId;
     if (driverId) where.driverId = driverId;
     if (type) where.type = type;
-    
+
     if (startDate || endDate) {
       const dateFilter: Record<string, Date> = {};
       if (startDate) dateFilter.gte = new Date(startDate);
@@ -81,33 +85,33 @@ export async function GET(request: NextRequest) {
               name: true,
               size: true,
               company: {
-                select: { name: true }
-              }
-            }
+                select: { name: true },
+              },
+            },
           },
           driver: {
             select: {
               name: true,
-              phone: true
-            }
-          }
+              phone: true,
+            },
+          },
         },
         orderBy: { date: 'desc' },
         skip: (page - 1) * limit,
         take: limit,
       }),
-      prisma.inventoryMovement.count({ where })
+      prisma.inventoryMovement.count({ where }),
     ]);
 
     // Calculate movement summary
     const summary = await prisma.inventoryMovement.aggregate({
       where,
       _sum: {
-        quantity: true
+        quantity: true,
       },
       _count: {
-        id: true
-      }
+        id: true,
+      },
     });
 
     // Group movements by type for analysis
@@ -115,15 +119,15 @@ export async function GET(request: NextRequest) {
       by: ['type'],
       where,
       _sum: {
-        quantity: true
+        quantity: true,
       },
       _count: {
-        id: true
-      }
+        id: true,
+      },
     });
 
     return NextResponse.json({
-      movements: movements.map(movement => ({
+      movements: movements.map((movement) => ({
         id: movement.id,
         type: movement.type,
         quantity: movement.quantity,
@@ -132,34 +136,38 @@ export async function GET(request: NextRequest) {
         date: movement.date,
         product: {
           name: `${movement.product.company.name} ${movement.product.name}`,
-          size: movement.product.size
+          size: movement.product.size,
         },
-        driver: movement.driver ? {
-          name: movement.driver.name,
-          phone: movement.driver.phone
-        } : null,
-        createdAt: movement.createdAt
+        driver: movement.driver
+          ? {
+              name: movement.driver.name,
+              phone: movement.driver.phone,
+            }
+          : null,
+        createdAt: movement.createdAt,
       })),
       pagination: {
         page,
         limit,
         total: totalCount,
-        pages: Math.ceil(totalCount / limit)
+        pages: Math.ceil(totalCount / limit),
       },
       summary: {
         totalMovements: summary._count.id || 0,
         totalQuantity: summary._sum.quantity || 0,
-        movementsByType: movementsByType.map(group => ({
+        movementsByType: movementsByType.map((group) => ({
           type: group.type,
           count: group._count.id,
-          quantity: group._sum.quantity || 0
-        }))
-      }
+          quantity: group._sum.quantity || 0,
+        })),
+      },
     });
-
   } catch (error) {
     console.error('Inventory movements fetch error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
   }
 }
 
@@ -171,10 +179,13 @@ export async function POST(request: NextRequest) {
     }
 
     const { tenantId, role } = session.user;
-    
+
     // Only admins can create manual movements
     if (role !== UserRole.ADMIN) {
-      return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
+      return NextResponse.json(
+        { error: 'Insufficient permissions' },
+        { status: 403 }
+      );
     }
 
     const body = await request.json();
@@ -182,7 +193,7 @@ export async function POST(request: NextRequest) {
 
     // Verify product exists
     const product = await prisma.product.findFirst({
-      where: { id: validatedData.productId, tenantId }
+      where: { id: validatedData.productId, tenantId },
     });
 
     if (!product) {
@@ -192,11 +203,14 @@ export async function POST(request: NextRequest) {
     // Verify driver if provided
     if (validatedData.driverId) {
       const driver = await prisma.driver.findFirst({
-        where: { id: validatedData.driverId, tenantId }
+        where: { id: validatedData.driverId, tenantId },
       });
 
       if (!driver) {
-        return NextResponse.json({ error: 'Driver not found' }, { status: 404 });
+        return NextResponse.json(
+          { error: 'Driver not found' },
+          { status: 404 }
+        );
       }
     }
 
@@ -220,13 +234,15 @@ export async function POST(request: NextRequest) {
       validatedData.productId
     );
 
-    const inventoryResult = await inventoryCalculator.calculateInventoryForDate({
-      date: today,
-      tenantId,
-      productId: validatedData.productId,
-      previousFullCylinders: currentLevels.fullCylinders,
-      previousEmptyCylinders: currentLevels.emptyCylinders
-    });
+    const inventoryResult = await inventoryCalculator.calculateInventoryForDate(
+      {
+        date: today,
+        tenantId,
+        productId: validatedData.productId,
+        previousFullCylinders: currentLevels.fullCylinders,
+        previousEmptyCylinders: currentLevels.emptyCylinders,
+      }
+    );
 
     await inventoryCalculator.updateInventoryRecord(
       tenantId,
@@ -235,26 +251,34 @@ export async function POST(request: NextRequest) {
       inventoryResult
     );
 
-    return NextResponse.json({
-      success: true,
-      message: 'Inventory movement recorded successfully',
-      movement: {
-        type: validatedData.type,
-        quantity: validatedData.quantity,
-        description: validatedData.description,
-        productName: product.name
-      }
-    }, { status: 201 });
-
+    return NextResponse.json(
+      {
+        success: true,
+        message: 'Inventory movement recorded successfully',
+        movement: {
+          type: validatedData.type,
+          quantity: validatedData.quantity,
+          description: validatedData.description,
+          productName: product.name,
+        },
+      },
+      { status: 201 }
+    );
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return NextResponse.json({
-        error: 'Validation failed',
-        details: error.issues
-      }, { status: 400 });
+      return NextResponse.json(
+        {
+          error: 'Validation failed',
+          details: error.issues,
+        },
+        { status: 400 }
+      );
     }
 
     console.error('Inventory movement creation error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
   }
 }

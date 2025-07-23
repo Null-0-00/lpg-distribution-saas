@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { requireAdminAuth, createAdminResponse, createAdminErrorResponse } from '@/lib/admin-auth';
+import {
+  requireAdminAuth,
+  createAdminResponse,
+  createAdminErrorResponse,
+} from '@/lib/admin-auth';
 import { prisma } from '@/lib/prisma';
 import { AuditLogger } from '@/lib/audit-logger';
 
@@ -10,41 +14,41 @@ export async function GET(
   try {
     const session = await requireAdminAuth(request);
     const { id } = await params;
-    
+
     const assignment = await prisma.distributorAssignment.findUnique({
       where: { id },
       include: {
         tenant: {
-          select: { 
-            id: true, 
-            name: true, 
+          select: {
+            id: true,
+            name: true,
             subdomain: true,
             subscriptionStatus: true,
-            isActive: true
-          }
+            isActive: true,
+          },
         },
         company: {
-          select: { 
-            id: true, 
-            name: true, 
+          select: {
+            id: true,
+            name: true,
             code: true,
             territory: true,
-            isActive: true
-          }
+            isActive: true,
+          },
         },
         product: {
-          select: { 
-            id: true, 
-            name: true, 
+          select: {
+            id: true,
+            name: true,
             size: true,
             currentPrice: true,
-            isActive: true
-          }
+            isActive: true,
+          },
         },
         assignedByUser: {
-          select: { id: true, name: true, email: true }
-        }
-      }
+          select: { id: true, name: true, email: true },
+        },
+      },
     });
 
     if (!assignment) {
@@ -67,8 +71,13 @@ export async function GET(
   } catch (error) {
     console.error('Get assignment error:', error);
     return NextResponse.json(
-      createAdminErrorResponse(error instanceof Error ? error.message : 'Failed to fetch assignment'),
-      { status: error instanceof Error && error.message.includes('Admin') ? 403 : 500 }
+      createAdminErrorResponse(
+        error instanceof Error ? error.message : 'Failed to fetch assignment'
+      ),
+      {
+        status:
+          error instanceof Error && error.message.includes('Admin') ? 403 : 500,
+      }
     );
   }
 }
@@ -81,14 +90,8 @@ export async function PUT(
     const session = await requireAdminAuth(request);
     const { id } = await params;
     const data = await request.json();
-    
-    const {
-      territory,
-      effectiveDate,
-      expiryDate,
-      notes,
-      isActive
-    } = data;
+
+    const { territory, effectiveDate, expiryDate, notes, isActive } = data;
 
     // Get existing assignment for audit log
     const existingAssignment = await prisma.distributorAssignment.findUnique({
@@ -96,8 +99,8 @@ export async function PUT(
       include: {
         tenant: { select: { name: true } },
         company: { select: { name: true } },
-        product: { select: { name: true } }
-      }
+        product: { select: { name: true } },
+      },
     });
 
     if (!existingAssignment) {
@@ -110,7 +113,9 @@ export async function PUT(
     const updatedData: any = {};
     if (territory !== undefined) updatedData.territory = territory;
     if (effectiveDate !== undefined) {
-      updatedData.effectiveDate = effectiveDate ? new Date(effectiveDate) : null;
+      updatedData.effectiveDate = effectiveDate
+        ? new Date(effectiveDate)
+        : null;
     }
     if (expiryDate !== undefined) {
       updatedData.expiryDate = expiryDate ? new Date(expiryDate) : null;
@@ -123,18 +128,18 @@ export async function PUT(
       data: updatedData,
       include: {
         tenant: {
-          select: { id: true, name: true, subdomain: true }
+          select: { id: true, name: true, subdomain: true },
         },
         company: {
-          select: { id: true, name: true, code: true }
+          select: { id: true, name: true, code: true },
         },
         product: {
-          select: { id: true, name: true, size: true }
+          select: { id: true, name: true, size: true },
         },
         assignedByUser: {
-          select: { id: true, name: true, email: true }
-        }
-      }
+          select: { id: true, name: true, email: true },
+        },
+      },
     });
 
     await AuditLogger.logDistributorAssignmentAction(
@@ -152,8 +157,13 @@ export async function PUT(
   } catch (error) {
     console.error('Update assignment error:', error);
     return NextResponse.json(
-      createAdminErrorResponse(error instanceof Error ? error.message : 'Failed to update assignment'),
-      { status: error instanceof Error && error.message.includes('Admin') ? 403 : 500 }
+      createAdminErrorResponse(
+        error instanceof Error ? error.message : 'Failed to update assignment'
+      ),
+      {
+        status:
+          error instanceof Error && error.message.includes('Admin') ? 403 : 500,
+      }
     );
   }
 }
@@ -165,15 +175,15 @@ export async function DELETE(
   try {
     const session = await requireAdminAuth(request);
     const { id } = await params;
-    
+
     // Get existing assignment for audit log
     const existingAssignment = await prisma.distributorAssignment.findUnique({
       where: { id },
       include: {
         tenant: { select: { name: true } },
         company: { select: { name: true } },
-        product: { select: { name: true } }
-      }
+        product: { select: { name: true } },
+      },
     });
 
     if (!existingAssignment) {
@@ -186,7 +196,7 @@ export async function DELETE(
     // Soft delete by deactivating
     const deactivatedAssignment = await prisma.distributorAssignment.update({
       where: { id },
-      data: { isActive: false, expiryDate: new Date() }
+      data: { isActive: false, expiryDate: new Date() },
     });
 
     await AuditLogger.logDistributorAssignmentAction(
@@ -207,8 +217,13 @@ export async function DELETE(
   } catch (error) {
     console.error('Delete assignment error:', error);
     return NextResponse.json(
-      createAdminErrorResponse(error instanceof Error ? error.message : 'Failed to remove assignment'),
-      { status: error instanceof Error && error.message.includes('Admin') ? 403 : 500 }
+      createAdminErrorResponse(
+        error instanceof Error ? error.message : 'Failed to remove assignment'
+      ),
+      {
+        status:
+          error instanceof Error && error.message.includes('Admin') ? 403 : 500,
+      }
     );
   }
 }

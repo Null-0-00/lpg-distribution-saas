@@ -31,20 +31,23 @@ export async function GET(request: NextRequest) {
 
     const { tenantId } = session.user;
     const { searchParams } = new URL(request.url);
-    
+
     // Get date range - default to last 30 days
-    const endDate = searchParams.get('endDate') || new Date().toISOString().split('T')[0];
-    const startDate = searchParams.get('startDate') || (() => {
-      const date = new Date();
-      date.setDate(date.getDate() - 30);
-      return date.toISOString().split('T')[0];
-    })();
+    const endDate =
+      searchParams.get('endDate') || new Date().toISOString().split('T')[0];
+    const startDate =
+      searchParams.get('startDate') ||
+      (() => {
+        const date = new Date();
+        date.setDate(date.getDate() - 30);
+        return date.toISOString().split('T')[0];
+      })();
 
     // Generate date range
     const dates = [];
     const current = new Date(startDate);
     const end = new Date(endDate);
-    
+
     while (current <= end) {
       dates.push(current.toISOString().split('T')[0]);
       current.setDate(current.getDate() + 1);
@@ -52,7 +55,7 @@ export async function GET(request: NextRequest) {
 
     // Calculate daily inventory for each date
     const dailyRecords: DailyInventoryRecord[] = [];
-    
+
     for (let i = 0; i < dates.length; i++) {
       const date = dates[i];
       const dateStart = new Date(date);
@@ -66,12 +69,12 @@ export async function GET(request: NextRequest) {
           saleType: 'PACKAGE',
           saleDate: {
             gte: dateStart,
-            lt: dateEnd
-          }
+            lt: dateEnd,
+          },
         },
         _sum: {
-          quantity: true
-        }
+          quantity: true,
+        },
       });
 
       // 2. Refill Sales: Total refill sales by all drivers for this date
@@ -81,12 +84,12 @@ export async function GET(request: NextRequest) {
           saleType: 'REFILL',
           saleDate: {
             gte: dateStart,
-            lt: dateEnd
-          }
+            lt: dateEnd,
+          },
         },
         _sum: {
-          quantity: true
-        }
+          quantity: true,
+        },
       });
 
       const packageSalesQty = packageSales._sum.quantity || 0;
@@ -101,17 +104,14 @@ export async function GET(request: NextRequest) {
           status: 'COMPLETED',
           shipmentDate: {
             gte: dateStart,
-            lt: dateEnd
+            lt: dateEnd,
           },
           // Package purchases are those without 'REFILL:' in notes
-          OR: [
-            { notes: { not: { contains: 'REFILL:' } } },
-            { notes: null }
-          ]
+          OR: [{ notes: { not: { contains: 'REFILL:' } } }, { notes: null }],
         },
         _sum: {
-          quantity: true
-        }
+          quantity: true,
+        },
       });
 
       // 4. Refill Purchase: Total refills purchased from COMPLETED shipments (INCOMING_FULL with REFILL notes)
@@ -122,15 +122,15 @@ export async function GET(request: NextRequest) {
           status: 'COMPLETED',
           shipmentDate: {
             gte: dateStart,
-            lt: dateEnd
+            lt: dateEnd,
           },
           notes: {
-            contains: 'REFILL:'
-          }
+            contains: 'REFILL:',
+          },
         },
         _sum: {
-          quantity: true
-        }
+          quantity: true,
+        },
       });
 
       const packagePurchaseQty = packagePurchaseShipments._sum.quantity || 0;
@@ -141,7 +141,7 @@ export async function GET(request: NextRequest) {
         packageSalesQty,
         refillSalesQty,
         packagePurchaseQty,
-        refillPurchaseQty
+        refillPurchaseQty,
       });
 
       // 5. Empty Cylinders Buy/Sell: From COMPLETED shipments (INCOMING_EMPTY - OUTGOING_EMPTY)
@@ -152,12 +152,12 @@ export async function GET(request: NextRequest) {
           status: 'COMPLETED',
           shipmentDate: {
             gte: dateStart,
-            lt: dateEnd
-          }
+            lt: dateEnd,
+          },
         },
         _sum: {
-          quantity: true
-        }
+          quantity: true,
+        },
       });
 
       const emptySellShipments = await prisma.shipment.aggregate({
@@ -167,21 +167,23 @@ export async function GET(request: NextRequest) {
           status: 'COMPLETED',
           shipmentDate: {
             gte: dateStart,
-            lt: dateEnd
-          }
+            lt: dateEnd,
+          },
         },
         _sum: {
-          quantity: true
-        }
+          quantity: true,
+        },
       });
 
-      const emptyCylindersBuySell = (emptyBuyShipments._sum.quantity || 0) - (emptySellShipments._sum.quantity || 0);
+      const emptyCylindersBuySell =
+        (emptyBuyShipments._sum.quantity || 0) -
+        (emptySellShipments._sum.quantity || 0);
 
       // Debug logging for empty cylinder transactions
       console.log(`Empty cylinder transactions for ${date}:`, {
         emptyBuy: emptyBuyShipments._sum.quantity || 0,
         emptySell: emptySellShipments._sum.quantity || 0,
-        emptyCylindersBuySell
+        emptyCylindersBuySell,
       });
 
       // 6. Calculate Today's Full and Empty Cylinders
@@ -197,10 +199,10 @@ export async function GET(request: NextRequest) {
         // For first day, get totals from a week before as baseline
         const weekBeforeStart = new Date(dateStart);
         weekBeforeStart.setDate(weekBeforeStart.getDate() - 7);
-        
+
         // Get current inventory levels as baseline
         const products = await prisma.product.findMany({
-          where: { tenantId, isActive: true }
+          where: { tenantId, isActive: true },
         });
 
         // Calculate baseline from current inventory (simplified approach)
@@ -210,19 +212,22 @@ export async function GET(request: NextRequest) {
               tenantId,
               productId: product.id,
               createdAt: {
-                lt: dateStart
-              }
+                lt: dateStart,
+              },
             },
             orderBy: {
-              createdAt: 'desc'
+              createdAt: 'desc',
             },
-            take: 1
+            take: 1,
           });
 
           // This is a simplified calculation - in a real system, you'd have daily snapshots
           if (movements.length > 0) {
             const lastMovement = movements[0];
-            if (lastMovement.type.includes('SALE') || lastMovement.type.includes('PURCHASE')) {
+            if (
+              lastMovement.type.includes('SALE') ||
+              lastMovement.type.includes('PURCHASE')
+            ) {
               previousFullCylinders += Math.max(0, 50); // Default baseline
             }
           }
@@ -230,8 +235,13 @@ export async function GET(request: NextRequest) {
       }
 
       // Apply business formulas
-      const fullCylinders = previousFullCylinders + packagePurchaseQty + refillPurchaseQty - totalSalesQty;
-      const emptyCylinders = previousEmptyCylinders + refillSalesQty + emptyCylindersBuySell;
+      const fullCylinders =
+        previousFullCylinders +
+        packagePurchaseQty +
+        refillPurchaseQty -
+        totalSalesQty;
+      const emptyCylinders =
+        previousEmptyCylinders + refillSalesQty + emptyCylindersBuySell;
       const totalCylinders = fullCylinders + emptyCylinders;
 
       dailyRecords.push({
@@ -244,7 +254,7 @@ export async function GET(request: NextRequest) {
         emptyCylindersBuySell,
         fullCylinders,
         emptyCylinders,
-        totalCylinders
+        totalCylinders,
       });
     }
 
@@ -256,12 +266,14 @@ export async function GET(request: NextRequest) {
         totalDays: dailyRecords.length,
         currentFullCylinders: dailyRecords[0]?.fullCylinders || 0,
         currentEmptyCylinders: dailyRecords[0]?.emptyCylinders || 0,
-        currentTotalCylinders: dailyRecords[0]?.totalCylinders || 0
-      }
+        currentTotalCylinders: dailyRecords[0]?.totalCylinders || 0,
+      },
     });
-
   } catch (error) {
     console.error('Daily inventory calculation error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
   }
 }

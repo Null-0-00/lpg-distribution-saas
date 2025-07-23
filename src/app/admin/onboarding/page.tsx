@@ -4,7 +4,13 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 
@@ -19,7 +25,7 @@ export default function OnboardingPage() {
     timezone: 'UTC',
     language: 'en',
     subscriptionPlan: 'PROFESSIONAL',
-    
+
     // Admin User Info
     userName: '',
     userEmail: '',
@@ -27,9 +33,9 @@ export default function OnboardingPage() {
   });
 
   const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
   };
 
@@ -53,7 +59,7 @@ export default function OnboardingPage() {
           title: 'Business Onboarded Successfully',
           description: `${formData.tenantName} has been created with admin user ${formData.userEmail}`,
         });
-        
+
         // Reset form
         setFormData({
           tenantName: '',
@@ -86,7 +92,7 @@ export default function OnboardingPage() {
 
   return (
     <div className="container mx-auto py-8">
-      <Card className="max-w-2xl mx-auto">
+      <Card className="mx-auto max-w-2xl">
         <CardHeader>
           <CardTitle>Manual Business Onboarding</CardTitle>
         </CardHeader>
@@ -95,25 +101,32 @@ export default function OnboardingPage() {
             {/* Tenant Information */}
             <div className="space-y-4">
               <h3 className="text-lg font-semibold">Business Information</h3>
-              
+
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="tenantName">Business Name *</Label>
                   <Input
                     id="tenantName"
                     value={formData.tenantName}
-                    onChange={(e) => handleInputChange('tenantName', e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange('tenantName', e.target.value)
+                    }
                     placeholder="ABC LPG Distributors"
                     required
                   />
                 </div>
-                
+
                 <div>
                   <Label htmlFor="subdomain">Subdomain *</Label>
                   <Input
                     id="subdomain"
                     value={formData.subdomain}
-                    onChange={(e) => handleInputChange('subdomain', e.target.value.toLowerCase())}
+                    onChange={(e) =>
+                      handleInputChange(
+                        'subdomain',
+                        e.target.value.toLowerCase()
+                      )
+                    }
                     placeholder="abc-lpg"
                     required
                   />
@@ -123,7 +136,12 @@ export default function OnboardingPage() {
               <div className="grid grid-cols-3 gap-4">
                 <div>
                   <Label htmlFor="currency">Currency</Label>
-                  <Select value={formData.currency} onValueChange={(value) => handleInputChange('currency', value)}>
+                  <Select
+                    value={formData.currency}
+                    onValueChange={(value) =>
+                      handleInputChange('currency', value)
+                    }
+                  >
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
@@ -138,7 +156,12 @@ export default function OnboardingPage() {
 
                 <div>
                   <Label htmlFor="timezone">Timezone</Label>
-                  <Select value={formData.timezone} onValueChange={(value) => handleInputChange('timezone', value)}>
+                  <Select
+                    value={formData.timezone}
+                    onValueChange={(value) =>
+                      handleInputChange('timezone', value)
+                    }
+                  >
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
@@ -146,14 +169,21 @@ export default function OnboardingPage() {
                       <SelectItem value="UTC">UTC</SelectItem>
                       <SelectItem value="Asia/Dhaka">Asia/Dhaka</SelectItem>
                       <SelectItem value="Asia/Kolkata">Asia/Kolkata</SelectItem>
-                      <SelectItem value="America/New_York">America/New_York</SelectItem>
+                      <SelectItem value="America/New_York">
+                        America/New_York
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
                 <div>
                   <Label htmlFor="subscriptionPlan">Plan</Label>
-                  <Select value={formData.subscriptionPlan} onValueChange={(value) => handleInputChange('subscriptionPlan', value)}>
+                  <Select
+                    value={formData.subscriptionPlan}
+                    onValueChange={(value) =>
+                      handleInputChange('subscriptionPlan', value)
+                    }
+                  >
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
@@ -170,26 +200,30 @@ export default function OnboardingPage() {
             {/* Admin User Information */}
             <div className="space-y-4">
               <h3 className="text-lg font-semibold">Admin User</h3>
-              
+
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="userName">Admin Name *</Label>
                   <Input
                     id="userName"
                     value={formData.userName}
-                    onChange={(e) => handleInputChange('userName', e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange('userName', e.target.value)
+                    }
                     placeholder="John Doe"
                     required
                   />
                 </div>
-                
+
                 <div>
                   <Label htmlFor="userEmail">Admin Email *</Label>
                   <Input
                     id="userEmail"
                     type="email"
                     value={formData.userEmail}
-                    onChange={(e) => handleInputChange('userEmail', e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange('userEmail', e.target.value)
+                    }
                     placeholder="admin@abclpg.com"
                     required
                   />
@@ -202,7 +236,9 @@ export default function OnboardingPage() {
                   id="userPassword"
                   type="password"
                   value={formData.userPassword}
-                  onChange={(e) => handleInputChange('userPassword', e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange('userPassword', e.target.value)
+                  }
                   placeholder="Strong password"
                   required
                   minLength={8}

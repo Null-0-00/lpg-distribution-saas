@@ -8,16 +8,37 @@ import { cn } from '@/lib/utils';
 import { ChevronDown, Check, X, Search, Mic, MicOff } from 'lucide-react';
 
 // Mobile Button Component
-interface MobileButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'success' | 'warning' | 'danger' | 'ghost';
+interface MobileButtonProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?:
+    | 'primary'
+    | 'secondary'
+    | 'success'
+    | 'warning'
+    | 'danger'
+    | 'ghost';
   size?: 'sm' | 'md' | 'lg' | 'xl';
   loading?: boolean;
   touchFeedback?: boolean;
   children: React.ReactNode;
 }
 
-export const MobileButton = React.forwardRef<HTMLButtonElement, MobileButtonProps>(
-  ({ className, variant = 'primary', size = 'lg', loading = false, touchFeedback = true, children, ...props }, ref) => {
+export const MobileButton = React.forwardRef<
+  HTMLButtonElement,
+  MobileButtonProps
+>(
+  (
+    {
+      className,
+      variant = 'primary',
+      size = 'lg',
+      loading = false,
+      touchFeedback = true,
+      children,
+      ...props
+    },
+    ref
+  ) => {
     const [isPressed, setIsPressed] = useState(false);
 
     const baseClasses = cn(
@@ -26,31 +47,37 @@ export const MobileButton = React.forwardRef<HTMLButtonElement, MobileButtonProp
       'focus:outline-none focus:ring-2 focus:ring-offset-2',
       'active:scale-95 select-none user-select-none',
       'disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100',
-      
+
       // Touch-friendly sizing
       {
         'h-10 px-4 text-sm min-w-[44px]': size === 'sm',
-        'h-12 px-6 text-base min-w-[48px]': size === 'md', 
+        'h-12 px-6 text-base min-w-[48px]': size === 'md',
         'h-14 px-8 text-lg min-w-[52px]': size === 'lg',
         'h-16 px-10 text-xl min-w-[56px]': size === 'xl',
       },
-      
+
       // Variant styles
       {
-        'bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500': variant === 'primary',
-        'bg-gray-200 text-gray-900 hover:bg-muted/50 focus:ring-gray-500': variant === 'secondary',
-        'bg-green-600 text-white hover:bg-green-700 focus:ring-green-500': variant === 'success',
-        'bg-yellow-600 text-white hover:bg-yellow-700 focus:ring-yellow-500': variant === 'warning',
-        'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500': variant === 'danger',
-        'bg-transparent text-gray-600 hover:bg-muted/50 focus:ring-gray-500': variant === 'ghost',
+        'bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500':
+          variant === 'primary',
+        'bg-gray-200 text-gray-900 hover:bg-muted/50 focus:ring-gray-500':
+          variant === 'secondary',
+        'bg-green-600 text-white hover:bg-green-700 focus:ring-green-500':
+          variant === 'success',
+        'bg-yellow-600 text-white hover:bg-yellow-700 focus:ring-yellow-500':
+          variant === 'warning',
+        'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500':
+          variant === 'danger',
+        'bg-transparent text-gray-600 hover:bg-muted/50 focus:ring-gray-500':
+          variant === 'ghost',
       },
-      
+
       // Touch feedback
       {
         'transform-gpu': touchFeedback,
         'scale-95': isPressed && touchFeedback,
       },
-      
+
       className
     );
 
@@ -77,7 +104,7 @@ export const MobileButton = React.forwardRef<HTMLButtonElement, MobileButtonProp
         {...props}
       >
         {loading ? (
-          <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+          <div className="mr-2 h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" />
         ) : null}
         {children}
       </button>
@@ -99,9 +126,24 @@ interface MobileInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
 }
 
 export const MobileInput = React.forwardRef<HTMLInputElement, MobileInputProps>(
-  ({ className, label, error, helperText, leftIcon, rightIcon, voiceInput, onVoiceInput, ...props }, ref) => {
+  (
+    {
+      className,
+      label,
+      error,
+      helperText,
+      leftIcon,
+      rightIcon,
+      voiceInput,
+      onVoiceInput,
+      ...props
+    },
+    ref
+  ) => {
     const [isListening, setIsListening] = useState(false);
-    const [recognition, setRecognition] = useState<SpeechRecognition | null>(null);
+    const [recognition, setRecognition] = useState<SpeechRecognition | null>(
+      null
+    );
 
     useEffect(() => {
       if (voiceInput && 'webkitSpeechRecognition' in window) {
@@ -145,80 +187,70 @@ export const MobileInput = React.forwardRef<HTMLInputElement, MobileInputProps>(
       'w-full rounded-lg border transition-colors duration-200',
       'text-base leading-6', // Prevent zoom on iOS
       'focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent',
-      
+
       // Touch-friendly sizing
       'h-12 px-4',
-      
+
       // Icon spacing
       {
         'pl-12': leftIcon,
         'pr-12': rightIcon || voiceInput,
         'pr-20': rightIcon && voiceInput,
       },
-      
+
       // Error styles
       {
         'border-red-300 bg-red-50 text-red-900 placeholder-red-400': error,
         'border-gray-300 bg-white text-gray-900 placeholder-gray-400': !error,
       },
-      
+
       className
     );
 
     return (
       <div className="w-full">
         {label && (
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="mb-2 block text-sm font-medium text-gray-700">
             {label}
           </label>
         )}
-        
+
         <div className="relative">
           {leftIcon && (
-            <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+            <div className="absolute left-3 top-1/2 -translate-y-1/2 transform text-gray-400">
               {leftIcon}
             </div>
           )}
-          
-          <input
-            ref={ref}
-            className={inputClasses}
-            {...props}
-          />
-          
-          <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center space-x-2">
+
+          <input ref={ref} className={inputClasses} {...props} />
+
+          <div className="absolute right-3 top-1/2 flex -translate-y-1/2 transform items-center space-x-2">
             {voiceInput && (
               <button
                 type="button"
                 onClick={handleVoiceToggle}
                 className={cn(
-                  'p-1 rounded-full transition-colors duration-200',
+                  'rounded-full p-1 transition-colors duration-200',
                   {
-                    'text-red-500 bg-red-100': isListening,
+                    'bg-red-100 text-red-500': isListening,
                     'text-gray-400 hover:text-gray-600': !isListening,
                   }
                 )}
               >
                 {isListening ? (
-                  <MicOff className="w-5 h-5" />
+                  <MicOff className="h-5 w-5" />
                 ) : (
-                  <Mic className="w-5 h-5" />
+                  <Mic className="h-5 w-5" />
                 )}
               </button>
             )}
-            
-            {rightIcon && (
-              <div className="text-gray-400">
-                {rightIcon}
-              </div>
-            )}
+
+            {rightIcon && <div className="text-gray-400">{rightIcon}</div>}
           </div>
         </div>
-        
-        {error && (
-          <p className="mt-2 text-sm text-red-600">{error}</p>
-        )}
-        
+
+        {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
+
         {helperText && !error && (
           <p className="mt-2 text-sm text-gray-500">{helperText}</p>
         )}
@@ -249,23 +281,26 @@ export const MobileSelect: React.FC<MobileSelectProps> = ({
   value,
   onChange,
   className,
-  searchable = false
+  searchable = false,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const selectRef = useRef<HTMLDivElement>(null);
 
   const filteredOptions = searchable
-    ? options.filter(option =>
+    ? options.filter((option) =>
         option.label.toLowerCase().includes(searchTerm.toLowerCase())
       )
     : options;
 
-  const selectedOption = options.find(option => option.value === value);
+  const selectedOption = options.find((option) => option.value === value);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (selectRef.current && !selectRef.current.contains(event.target as Node)) {
+      if (
+        selectRef.current &&
+        !selectRef.current.contains(event.target as Node)
+      ) {
         setIsOpen(false);
         setSearchTerm('');
       }
@@ -275,10 +310,7 @@ export const MobileSelect: React.FC<MobileSelectProps> = ({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const selectClasses = cn(
-    'relative w-full',
-    className
-  );
+  const selectClasses = cn('relative w-full', className);
 
   const triggerClasses = cn(
     'w-full h-12 px-4 pr-10 text-base rounded-lg border transition-colors duration-200',
@@ -293,56 +325,52 @@ export const MobileSelect: React.FC<MobileSelectProps> = ({
   return (
     <div className={selectClasses}>
       {label && (
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="mb-2 block text-sm font-medium text-gray-700">
           {label}
         </label>
       )}
-      
+
       <div ref={selectRef} className="relative">
-        <div
-          className={triggerClasses}
-          onClick={() => setIsOpen(!isOpen)}
-        >
-          <span className={cn(
-            'truncate',
-            {
+        <div className={triggerClasses} onClick={() => setIsOpen(!isOpen)}>
+          <span
+            className={cn('truncate', {
               'text-gray-400': !selectedOption,
               'text-gray-900': selectedOption,
-            }
-          )}>
+            })}
+          >
             {selectedOption ? selectedOption.label : placeholder}
           </span>
-          
+
           <ChevronDown
             className={cn(
-              'w-5 h-5 text-gray-400 transition-transform duration-200',
+              'h-5 w-5 text-gray-400 transition-transform duration-200',
               {
-                'transform rotate-180': isOpen,
+                'rotate-180 transform': isOpen,
               }
             )}
           />
         </div>
-        
+
         {isOpen && (
-          <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-auto">
+          <div className="absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-lg border border-gray-300 bg-white shadow-lg">
             {searchable && (
-              <div className="p-3 border-b border-gray-200">
+              <div className="border-b border-gray-200 p-3">
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-gray-400" />
                   <input
                     type="text"
                     placeholder="Search options..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full h-10 pl-10 pr-4 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="h-10 w-full rounded-md border border-gray-300 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
               </div>
             )}
-            
+
             <div className="py-1">
               {filteredOptions.length === 0 ? (
-                <div className="px-4 py-3 text-sm text-gray-500 text-center">
+                <div className="px-4 py-3 text-center text-sm text-gray-500">
                   No options found
                 </div>
               ) : (
@@ -353,8 +381,8 @@ export const MobileSelect: React.FC<MobileSelectProps> = ({
                     disabled={option.disabled}
                     className={cn(
                       'w-full px-4 py-3 text-left text-base transition-colors duration-150',
-                      'hover:bg-muted/50 focus:outline-none focus:bg-gray-100',
-                      'disabled:opacity-50 disabled:cursor-not-allowed',
+                      'hover:bg-muted/50 focus:bg-gray-100 focus:outline-none',
+                      'disabled:cursor-not-allowed disabled:opacity-50',
                       {
                         'bg-blue-50 text-blue-700': value === option.value,
                         'text-gray-900': value !== option.value,
@@ -371,7 +399,7 @@ export const MobileSelect: React.FC<MobileSelectProps> = ({
                     <div className="flex items-center justify-between">
                       <span className="truncate">{option.label}</span>
                       {value === option.value && (
-                        <Check className="w-4 h-4 text-blue-600" />
+                        <Check className="h-4 w-4 text-blue-600" />
                       )}
                     </div>
                   </button>
@@ -381,16 +409,15 @@ export const MobileSelect: React.FC<MobileSelectProps> = ({
           </div>
         )}
       </div>
-      
-      {error && (
-        <p className="mt-2 text-sm text-red-600">{error}</p>
-      )}
+
+      {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
     </div>
   );
 };
 
 // Mobile Textarea Component
-interface MobileTextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
+interface MobileTextareaProps
+  extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
   label?: string;
   error?: string;
   helperText?: string;
@@ -398,10 +425,18 @@ interface MobileTextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaE
   onVoiceInput?: (transcript: string) => void;
 }
 
-export const MobileTextarea = React.forwardRef<HTMLTextAreaElement, MobileTextareaProps>(
-  ({ className, label, error, helperText, voiceInput, onVoiceInput, ...props }, ref) => {
+export const MobileTextarea = React.forwardRef<
+  HTMLTextAreaElement,
+  MobileTextareaProps
+>(
+  (
+    { className, label, error, helperText, voiceInput, onVoiceInput, ...props },
+    ref
+  ) => {
     const [isListening, setIsListening] = useState(false);
-    const [recognition, setRecognition] = useState<SpeechRecognition | null>(null);
+    const [recognition, setRecognition] = useState<SpeechRecognition | null>(
+      null
+    );
 
     useEffect(() => {
       if (voiceInput && 'webkitSpeechRecognition' in window) {
@@ -456,43 +491,37 @@ export const MobileTextarea = React.forwardRef<HTMLTextAreaElement, MobileTextar
     return (
       <div className="w-full">
         {label && (
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="mb-2 block text-sm font-medium text-gray-700">
             {label}
           </label>
         )}
-        
+
         <div className="relative">
-          <textarea
-            ref={ref}
-            className={textareaClasses}
-            {...props}
-          />
-          
+          <textarea ref={ref} className={textareaClasses} {...props} />
+
           {voiceInput && (
             <button
               type="button"
               onClick={handleVoiceToggle}
               className={cn(
-                'absolute top-3 right-3 p-2 rounded-full transition-colors duration-200',
+                'absolute right-3 top-3 rounded-full p-2 transition-colors duration-200',
                 {
-                  'text-red-500 bg-red-100': isListening,
+                  'bg-red-100 text-red-500': isListening,
                   'text-gray-400 hover:text-gray-600': !isListening,
                 }
               )}
             >
               {isListening ? (
-                <MicOff className="w-5 h-5" />
+                <MicOff className="h-5 w-5" />
               ) : (
-                <Mic className="w-5 h-5" />
+                <Mic className="h-5 w-5" />
               )}
             </button>
           )}
         </div>
-        
-        {error && (
-          <p className="mt-2 text-sm text-red-600">{error}</p>
-        )}
-        
+
+        {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
+
         {helperText && !error && (
           <p className="mt-2 text-sm text-gray-500">{helperText}</p>
         )}
@@ -504,44 +533,41 @@ export const MobileTextarea = React.forwardRef<HTMLTextAreaElement, MobileTextar
 MobileTextarea.displayName = 'MobileTextarea';
 
 // Mobile Checkbox Component
-interface MobileCheckboxProps extends React.InputHTMLAttributes<HTMLInputElement> {
+interface MobileCheckboxProps
+  extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
   description?: string;
 }
 
-export const MobileCheckbox = React.forwardRef<HTMLInputElement, MobileCheckboxProps>(
-  ({ className, label, description, ...props }, ref) => {
-    const checkboxClasses = cn(
-      'w-5 h-5 text-blue-600 border-2 border-gray-300 rounded',
-      'focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
-      'transition-colors duration-200',
-      className
-    );
+export const MobileCheckbox = React.forwardRef<
+  HTMLInputElement,
+  MobileCheckboxProps
+>(({ className, label, description, ...props }, ref) => {
+  const checkboxClasses = cn(
+    'w-5 h-5 text-blue-600 border-2 border-gray-300 rounded',
+    'focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
+    'transition-colors duration-200',
+    className
+  );
 
-    return (
-      <div className="flex items-start space-x-3">
-        <input
-          ref={ref}
-          type="checkbox"
-          className={checkboxClasses}
-          {...props}
-        />
-        {(label || description) && (
-          <div className="flex-1 min-w-0">
-            {label && (
-              <label className="text-base font-medium text-gray-900 cursor-pointer">
-                {label}
-              </label>
-            )}
-            {description && (
-              <p className="text-sm text-gray-500 mt-1">{description}</p>
-            )}
-          </div>
-        )}
-      </div>
-    );
-  }
-);
+  return (
+    <div className="flex items-start space-x-3">
+      <input ref={ref} type="checkbox" className={checkboxClasses} {...props} />
+      {(label || description) && (
+        <div className="min-w-0 flex-1">
+          {label && (
+            <label className="cursor-pointer text-base font-medium text-gray-900">
+              {label}
+            </label>
+          )}
+          {description && (
+            <p className="mt-1 text-sm text-gray-500">{description}</p>
+          )}
+        </div>
+      )}
+    </div>
+  );
+});
 
 MobileCheckbox.displayName = 'MobileCheckbox';
 
@@ -561,7 +587,7 @@ export const MobileSwitch: React.FC<MobileSwitchProps> = ({
   label,
   description,
   disabled = false,
-  className
+  className,
 }) => {
   const switchClasses = cn(
     'relative inline-flex h-7 w-12 items-center rounded-full transition-colors duration-200',
@@ -586,18 +612,18 @@ export const MobileSwitch: React.FC<MobileSwitchProps> = ({
   return (
     <div className="flex items-center justify-between">
       {(label || description) && (
-        <div className="flex-1 mr-4">
+        <div className="mr-4 flex-1">
           {label && (
             <label className="text-base font-medium text-gray-900">
               {label}
             </label>
           )}
           {description && (
-            <p className="text-sm text-gray-500 mt-1">{description}</p>
+            <p className="mt-1 text-sm text-gray-500">{description}</p>
           )}
         </div>
       )}
-      
+
       <button
         type="button"
         className={switchClasses}
@@ -622,7 +648,7 @@ export const MobileCard: React.FC<MobileCardProps> = ({
   children,
   className,
   padding = 'md',
-  shadow = 'sm'
+  shadow = 'sm',
 }) => {
   const cardClasses = cn(
     'bg-white rounded-lg border border-gray-200',
@@ -640,11 +666,7 @@ export const MobileCard: React.FC<MobileCardProps> = ({
     className
   );
 
-  return (
-    <div className={cardClasses}>
-      {children}
-    </div>
-  );
+  return <div className={cardClasses}>{children}</div>;
 };
 
 // Mobile Bottom Sheet Component
@@ -661,7 +683,7 @@ export const MobileBottomSheet: React.FC<MobileBottomSheetProps> = ({
   onClose,
   title,
   children,
-  className
+  className,
 }) => {
   useEffect(() => {
     if (isOpen) {
@@ -684,34 +706,36 @@ export const MobileBottomSheet: React.FC<MobileBottomSheetProps> = ({
         className="absolute inset-0 bg-black bg-opacity-50"
         onClick={onClose}
       />
-      
+
       {/* Bottom Sheet */}
-      <div className={cn(
-        'relative w-full max-w-lg bg-white rounded-t-xl shadow-xl',
-        'transform transition-transform duration-300 ease-out',
-        'max-h-[90vh] overflow-hidden',
-        className
-      )}>
+      <div
+        className={cn(
+          'relative w-full max-w-lg rounded-t-xl bg-white shadow-xl',
+          'transform transition-transform duration-300 ease-out',
+          'max-h-[90vh] overflow-hidden',
+          className
+        )}
+      >
         {/* Handle */}
         <div className="flex justify-center py-3">
-          <div className="w-12 h-1 bg-gray-300 rounded-full" />
+          <div className="h-1 w-12 rounded-full bg-gray-300" />
         </div>
-        
+
         {/* Header */}
         {title && (
           <div className="flex items-center justify-between px-6 pb-4">
             <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
             <button
               onClick={onClose}
-              className="p-2 text-gray-400 hover:text-gray-600 rounded-full"
+              className="rounded-full p-2 text-gray-400 hover:text-gray-600"
             >
-              <X className="w-5 h-5" />
+              <X className="h-5 w-5" />
             </button>
           </div>
         )}
-        
+
         {/* Content */}
-        <div className="px-6 pb-6 overflow-y-auto max-h-[calc(90vh-120px)]">
+        <div className="max-h-[calc(90vh-120px)] overflow-y-auto px-6 pb-6">
           {children}
         </div>
       </div>

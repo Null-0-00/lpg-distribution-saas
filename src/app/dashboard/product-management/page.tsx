@@ -1,19 +1,19 @@
-"use client";
+'use client';
 
 import { useState, useEffect } from 'react';
-import { 
-  Plus, 
-  Edit, 
-  Trash2, 
-  Building2, 
-  Package, 
+import {
+  Plus,
+  Edit,
+  Trash2,
+  Building2,
+  Package,
   Search,
   Eye,
   EyeOff,
   Check,
   X,
   Settings,
-  AlertCircle
+  AlertCircle,
 } from 'lucide-react';
 
 interface Company {
@@ -69,16 +69,19 @@ export default function ProductManagementPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [cylinderSizes, setCylinderSizes] = useState<CylinderSize[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'companies' | 'products' | 'cylinder-sizes'>('companies');
+  const [activeTab, setActiveTab] = useState<
+    'companies' | 'products' | 'cylinder-sizes'
+  >('companies');
   const [selectedCompany, setSelectedCompany] = useState<Company | null>(null);
-  
+
   // Modals
   const [showCompanyModal, setShowCompanyModal] = useState(false);
   const [showProductModal, setShowProductModal] = useState(false);
   const [showCylinderSizeModal, setShowCylinderSizeModal] = useState(false);
   const [editingCompany, setEditingCompany] = useState<Company | null>(null);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
-  const [editingCylinderSize, setEditingCylinderSize] = useState<CylinderSize | null>(null);
+  const [editingCylinderSize, setEditingCylinderSize] =
+    useState<CylinderSize | null>(null);
 
   // Search
   const [companySearch, setCompanySearch] = useState('');
@@ -92,7 +95,7 @@ export default function ProductManagementPage() {
     address: '',
     phone: '',
     email: '',
-    isActive: true
+    isActive: true,
   });
 
   const [productForm, setProductForm] = useState({
@@ -101,13 +104,13 @@ export default function ProductManagementPage() {
     currentPrice: 0,
     lowStockThreshold: 0,
     isActive: true,
-    companyId: ''
+    companyId: '',
   });
 
   const [cylinderSizeForm, setCylinderSizeForm] = useState({
     size: '',
     description: '',
-    isActive: true
+    isActive: true,
   });
 
   useEffect(() => {
@@ -133,17 +136,22 @@ export default function ProductManagementPage() {
 
   const fetchProducts = async () => {
     try {
-      const response = await fetch('/api/products?showAll=true&inventory=true', {
-        cache: 'no-cache',
-        headers: {
-          'Cache-Control': 'no-cache'
+      const response = await fetch(
+        '/api/products?showAll=true&inventory=true',
+        {
+          cache: 'no-cache',
+          headers: {
+            'Cache-Control': 'no-cache',
+          },
         }
-      });
+      );
       if (response.ok) {
         const data = await response.json();
         console.log('Frontend received:', data);
         data.products?.forEach((product: any) => {
-          console.log(`Frontend: ${product.name}: isActive = ${product.isActive} (${typeof product.isActive})`);
+          console.log(
+            `Frontend: ${product.name}: isActive = ${product.isActive} (${typeof product.isActive})`
+          );
         });
         setProducts(data.products || []);
       }
@@ -166,15 +174,17 @@ export default function ProductManagementPage() {
 
   const handleCompanySubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     try {
       const method = editingCompany ? 'PUT' : 'POST';
-      const url = editingCompany ? `/api/companies/${editingCompany.id}` : '/api/companies';
-      
+      const url = editingCompany
+        ? `/api/companies/${editingCompany.id}`
+        : '/api/companies';
+
       const response = await fetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(companyForm)
+        body: JSON.stringify(companyForm),
       });
 
       if (response.ok) {
@@ -190,15 +200,17 @@ export default function ProductManagementPage() {
 
   const handleProductSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     try {
       const method = editingProduct ? 'PUT' : 'POST';
-      const url = editingProduct ? `/api/products/${editingProduct.id}` : '/api/products';
-      
+      const url = editingProduct
+        ? `/api/products/${editingProduct.id}`
+        : '/api/products';
+
       const response = await fetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(productForm)
+        body: JSON.stringify(productForm),
       });
 
       if (response.ok) {
@@ -214,11 +226,16 @@ export default function ProductManagementPage() {
   };
 
   const handleDeleteCompany = async (companyId: string) => {
-    if (!confirm('Are you sure you want to delete this company? This will also delete all associated products.')) return;
-    
+    if (
+      !confirm(
+        'Are you sure you want to delete this company? This will also delete all associated products.'
+      )
+    )
+      return;
+
     try {
       const response = await fetch(`/api/companies/${companyId}`, {
-        method: 'DELETE'
+        method: 'DELETE',
       });
 
       if (response.ok) {
@@ -231,10 +248,10 @@ export default function ProductManagementPage() {
 
   const handleDeleteProduct = async (productId: string) => {
     if (!confirm('Are you sure you want to delete this product?')) return;
-    
+
     try {
       const response = await fetch(`/api/products/${productId}`, {
-        method: 'DELETE'
+        method: 'DELETE',
       });
 
       if (response.ok) {
@@ -246,12 +263,15 @@ export default function ProductManagementPage() {
     }
   };
 
-  const toggleProductStatus = async (productId: string, currentStatus: boolean) => {
+  const toggleProductStatus = async (
+    productId: string,
+    currentStatus: boolean
+  ) => {
     try {
       const response = await fetch(`/api/products/${productId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ isActive: !currentStatus })
+        body: JSON.stringify({ isActive: !currentStatus }),
       });
 
       if (response.ok) {
@@ -271,7 +291,7 @@ export default function ProductManagementPage() {
       address: company.address || '',
       phone: company.phone || '',
       email: company.email || '',
-      isActive: company.isActive ?? true
+      isActive: company.isActive ?? true,
     });
     setShowCompanyModal(true);
   };
@@ -284,7 +304,7 @@ export default function ProductManagementPage() {
       currentPrice: product.currentPrice || 0,
       lowStockThreshold: product.lowStockThreshold || 0,
       isActive: product.isActive ?? true,
-      companyId: product.companyId || ''
+      companyId: product.companyId || '',
     });
     setShowProductModal(true);
   };
@@ -296,7 +316,7 @@ export default function ProductManagementPage() {
       address: '',
       phone: '',
       email: '',
-      isActive: true
+      isActive: true,
     });
   };
 
@@ -307,7 +327,7 @@ export default function ProductManagementPage() {
       currentPrice: 0,
       lowStockThreshold: 0,
       isActive: true,
-      companyId: ''
+      companyId: '',
     });
   };
 
@@ -315,21 +335,23 @@ export default function ProductManagementPage() {
     setCylinderSizeForm({
       size: '',
       description: '',
-      isActive: true
+      isActive: true,
     });
   };
 
   const handleCylinderSizeSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     try {
       const method = editingCylinderSize ? 'PUT' : 'POST';
-      const url = editingCylinderSize ? `/api/cylinder-sizes/${editingCylinderSize.id}` : '/api/cylinder-sizes';
-      
+      const url = editingCylinderSize
+        ? `/api/cylinder-sizes/${editingCylinderSize.id}`
+        : '/api/cylinder-sizes';
+
       const response = await fetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(cylinderSizeForm)
+        body: JSON.stringify(cylinderSizeForm),
       });
 
       if (response.ok) {
@@ -347,7 +369,7 @@ export default function ProductManagementPage() {
     if (confirm('Are you sure you want to delete this cylinder size?')) {
       try {
         const response = await fetch(`/api/cylinder-sizes/${cylinderSizeId}`, {
-          method: 'DELETE'
+          method: 'DELETE',
         });
 
         if (response.ok) {
@@ -364,55 +386,66 @@ export default function ProductManagementPage() {
     setCylinderSizeForm({
       size: cylinderSize.size || '',
       description: cylinderSize.description || '',
-      isActive: cylinderSize.isActive ?? true
+      isActive: cylinderSize.isActive ?? true,
     });
     setShowCylinderSizeModal(true);
   };
 
-  const filteredCompanies = companies.filter(company =>
-    company.name.toLowerCase().includes(companySearch.toLowerCase()) ||
-    (company.code && company.code.toLowerCase().includes(companySearch.toLowerCase()))
+  const filteredCompanies = companies.filter(
+    (company) =>
+      company.name.toLowerCase().includes(companySearch.toLowerCase()) ||
+      (company.code &&
+        company.code.toLowerCase().includes(companySearch.toLowerCase()))
   );
 
-  const filteredProducts = products.filter(product =>
-    product.name.toLowerCase().includes(productSearch.toLowerCase()) ||
-    product.size.toLowerCase().includes(productSearch.toLowerCase()) ||
-    (product.company?.name.toLowerCase().includes(productSearch.toLowerCase()))
+  const filteredProducts = products.filter(
+    (product) =>
+      product.name.toLowerCase().includes(productSearch.toLowerCase()) ||
+      product.size.toLowerCase().includes(productSearch.toLowerCase()) ||
+      product.company?.name.toLowerCase().includes(productSearch.toLowerCase())
   );
 
-  const filteredCylinderSizes = cylinderSizes.filter(cylinderSize =>
-    cylinderSize.size.toLowerCase().includes(cylinderSizeSearch.toLowerCase()) ||
-    (cylinderSize.description && cylinderSize.description.toLowerCase().includes(cylinderSizeSearch.toLowerCase()))
+  const filteredCylinderSizes = cylinderSizes.filter(
+    (cylinderSize) =>
+      cylinderSize.size
+        .toLowerCase()
+        .includes(cylinderSizeSearch.toLowerCase()) ||
+      (cylinderSize.description &&
+        cylinderSize.description
+          .toLowerCase()
+          .includes(cylinderSizeSearch.toLowerCase()))
   );
 
   return (
-    <div className="p-6 bg-background min-h-screen">
-      <div className="max-w-7xl mx-auto">
+    <div className="bg-background min-h-screen p-6">
+      <div className="mx-auto max-w-7xl">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-foreground">Product Management</h1>
+          <h1 className="text-foreground text-3xl font-bold">
+            Product Management
+          </h1>
           <p className="text-muted-foreground mt-2">
             Manage companies and their product catalogs
           </p>
         </div>
 
         {/* Tabs */}
-        <div className="border-b border-border mb-6">
+        <div className="border-border mb-6 border-b">
           <nav className="-mb-px flex space-x-8">
             {[
               { id: 'companies', label: 'Companies', icon: Building2 },
               { id: 'products', label: 'Products', icon: Package },
-              { id: 'cylinder-sizes', label: 'Cylinder Sizes', icon: Settings }
+              { id: 'cylinder-sizes', label: 'Cylinder Sizes', icon: Settings },
             ].map((tab) => {
               const Icon = tab.icon;
               return (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id as any)}
-                  className={`flex items-center space-x-2 py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
+                  className={`flex items-center space-x-2 border-b-2 px-1 py-4 text-sm font-medium transition-colors ${
                     activeTab === tab.id
                       ? 'border-blue-500 text-blue-600'
-                      : 'border-transparent text-muted-foreground hover:text-foreground'
+                      : 'text-muted-foreground hover:text-foreground border-transparent'
                   }`}
                 >
                   <Icon className="h-5 w-5" />
@@ -430,19 +463,19 @@ export default function ProductManagementPage() {
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-4">
                 <div className="relative">
-                  <Search className="h-5 w-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
+                  <Search className="text-muted-foreground absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 transform" />
                   <input
                     type="text"
                     placeholder="Search companies..."
                     value={companySearch}
                     onChange={(e) => setCompanySearch(e.target.value)}
-                    className="pl-10 pr-4 py-2 border border-border rounded-md bg-input text-foreground"
+                    className="border-border bg-input text-foreground rounded-md border py-2 pl-10 pr-4"
                   />
                 </div>
               </div>
               <button
                 onClick={() => setShowCompanyModal(true)}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
+                className="flex items-center space-x-2 rounded-lg bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
               >
                 <Plus className="h-5 w-5" />
                 <span>Add Company</span>
@@ -450,16 +483,19 @@ export default function ProductManagementPage() {
             </div>
 
             {/* Companies Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
               {filteredCompanies.map((company) => (
-                <div key={company.id} className="bg-card rounded-lg shadow-sm p-6">
-                  <div className="flex items-start justify-between mb-4">
+                <div
+                  key={company.id}
+                  className="bg-card rounded-lg p-6 shadow-sm"
+                >
+                  <div className="mb-4 flex items-start justify-between">
                     <div>
-                      <h3 className="text-lg font-medium text-foreground">
+                      <h3 className="text-foreground text-lg font-medium">
                         {company.name}
                       </h3>
                       {company.code && (
-                        <p className="text-sm text-gray-500 dark:text-muted-foreground">
+                        <p className="dark:text-muted-foreground text-sm text-gray-500">
                           Code: {company.code}
                         </p>
                       )}
@@ -473,22 +509,16 @@ export default function ProductManagementPage() {
                     </div>
                   </div>
 
-                  <div className="space-y-2 text-sm text-gray-600 dark:text-muted-foreground">
-                    {company.phone && (
-                      <p>📞 {company.phone}</p>
-                    )}
-                    {company.email && (
-                      <p>✉️ {company.email}</p>
-                    )}
-                    {company.address && (
-                      <p>📍 {company.address}</p>
-                    )}
+                  <div className="dark:text-muted-foreground space-y-2 text-sm text-gray-600">
+                    {company.phone && <p>📞 {company.phone}</p>}
+                    {company.email && <p>✉️ {company.email}</p>}
+                    {company.address && <p>📍 {company.address}</p>}
                     <p className="font-medium">
                       Products: {company.products?.length || 0}
                     </p>
                   </div>
 
-                  <div className="flex justify-end space-x-2 mt-4">
+                  <div className="mt-4 flex justify-end space-x-2">
                     <button
                       onClick={() => openEditCompanyModal(company)}
                       className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
@@ -514,13 +544,17 @@ export default function ProductManagementPage() {
         {activeTab === 'products' && (
           <div className="space-y-6">
             {/* Products Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-5">
               <div className="bg-card rounded-lg p-4 shadow-sm">
                 <div className="flex items-center">
                   <Package className="h-8 w-8 text-blue-600" />
                   <div className="ml-3">
-                    <p className="text-sm font-medium text-gray-600 dark:text-muted-foreground">Total Products</p>
-                    <p className="text-2xl font-bold text-foreground">{products.length}</p>
+                    <p className="dark:text-muted-foreground text-sm font-medium text-gray-600">
+                      Total Products
+                    </p>
+                    <p className="text-foreground text-2xl font-bold">
+                      {products.length}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -528,33 +562,46 @@ export default function ProductManagementPage() {
                 <div className="flex items-center">
                   <Check className="h-8 w-8 text-green-600 dark:text-green-400" />
                   <div className="ml-3">
-                    <p className="text-sm font-medium text-gray-600 dark:text-muted-foreground">Active Products</p>
-                    <p className="text-2xl font-bold text-green-600 dark:text-green-400">{products.filter(p => p.isActive).length}</p>
-                  </div>
-                </div>
-              </div>
-              <div className="bg-card rounded-lg p-4 shadow-sm">
-                <div className="flex items-center">
-                  <div className="w-8 h-8 bg-orange-100 dark:bg-orange-900 rounded-full flex items-center justify-center">
-                    <span className="text-orange-600 dark:text-orange-400 font-bold text-sm">!</span>
-                  </div>
-                  <div className="ml-3">
-                    <p className="text-sm font-medium text-gray-600 dark:text-muted-foreground">Low Stock</p>
-                    <p className="text-2xl font-bold text-orange-600 dark:text-orange-400">
-                      {products.filter(p => p.inventory?.isLowStock).length}
+                    <p className="dark:text-muted-foreground text-sm font-medium text-gray-600">
+                      Active Products
+                    </p>
+                    <p className="text-2xl font-bold text-green-600 dark:text-green-400">
+                      {products.filter((p) => p.isActive).length}
                     </p>
                   </div>
                 </div>
               </div>
               <div className="bg-card rounded-lg p-4 shadow-sm">
                 <div className="flex items-center">
-                  <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
-                    <span className="text-blue-600 font-bold text-sm">Σ</span>
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-orange-100 dark:bg-orange-900">
+                    <span className="text-sm font-bold text-orange-600 dark:text-orange-400">
+                      !
+                    </span>
                   </div>
                   <div className="ml-3">
-                    <p className="text-sm font-medium text-gray-600 dark:text-muted-foreground">Total Stock</p>
+                    <p className="dark:text-muted-foreground text-sm font-medium text-gray-600">
+                      Low Stock
+                    </p>
+                    <p className="text-2xl font-bold text-orange-600 dark:text-orange-400">
+                      {products.filter((p) => p.inventory?.isLowStock).length}
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div className="bg-card rounded-lg p-4 shadow-sm">
+                <div className="flex items-center">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900">
+                    <span className="text-sm font-bold text-blue-600">Σ</span>
+                  </div>
+                  <div className="ml-3">
+                    <p className="dark:text-muted-foreground text-sm font-medium text-gray-600">
+                      Total Stock
+                    </p>
                     <p className="text-2xl font-bold text-blue-600">
-                      {products.reduce((sum, p) => sum + (p.inventory?.fullCylinders || 0), 0)}
+                      {products.reduce(
+                        (sum, p) => sum + (p.inventory?.fullCylinders || 0),
+                        0
+                      )}
                     </p>
                   </div>
                 </div>
@@ -563,8 +610,12 @@ export default function ProductManagementPage() {
                 <div className="flex items-center">
                   <Building2 className="h-8 w-8 text-purple-600 dark:text-purple-400" />
                   <div className="ml-3">
-                    <p className="text-sm font-medium text-gray-600 dark:text-muted-foreground">Companies</p>
-                    <p className="text-2xl font-bold text-purple-600 dark:text-purple-400">{companies.filter(c => c.isActive).length}</p>
+                    <p className="dark:text-muted-foreground text-sm font-medium text-gray-600">
+                      Companies
+                    </p>
+                    <p className="text-2xl font-bold text-purple-600 dark:text-purple-400">
+                      {companies.filter((c) => c.isActive).length}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -574,19 +625,19 @@ export default function ProductManagementPage() {
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-4">
                 <div className="relative">
-                  <Search className="h-5 w-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
+                  <Search className="text-muted-foreground absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 transform" />
                   <input
                     type="text"
                     placeholder="Search products..."
                     value={productSearch}
                     onChange={(e) => setProductSearch(e.target.value)}
-                    className="pl-10 pr-4 py-2 border border-border rounded-md bg-input text-foreground"
+                    className="border-border bg-input text-foreground rounded-md border py-2 pl-10 pr-4"
                   />
                 </div>
               </div>
               <button
                 onClick={() => setShowProductModal(true)}
-                className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
+                className="flex items-center space-x-2 rounded-lg bg-green-600 px-4 py-2 text-white transition-colors hover:bg-green-700"
               >
                 <Plus className="h-5 w-5" />
                 <span>Add Product</span>
@@ -594,36 +645,36 @@ export default function ProductManagementPage() {
             </div>
 
             {/* Products Table */}
-            <div className="bg-card rounded-lg shadow-sm overflow-hidden">
+            <div className="bg-card overflow-hidden rounded-lg shadow-sm">
               <div className="overflow-x-auto">
                 <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                   <thead className="bg-muted">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                      <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
                         Product Name
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                      <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
                         Company
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                      <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
                         Cylinder Size
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                      <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
                         Current Price
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                      <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
                         Current Stock
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                      <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
                         Low Stock Alert
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                      <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
                         Status
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                      <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
                         Created
                       </th>
-                      <th className="px-6 py-3 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                      <th className="text-muted-foreground px-6 py-3 text-right text-xs font-medium uppercase tracking-wider">
                         Actions
                       </th>
                     </tr>
@@ -631,70 +682,82 @@ export default function ProductManagementPage() {
                   <tbody className="bg-card divide-y divide-gray-200 dark:divide-gray-700">
                     {filteredProducts.map((product) => (
                       <tr key={product.id} className="hover:bg-muted/50">
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm font-medium text-foreground">
+                        <td className="whitespace-nowrap px-6 py-4">
+                          <div className="text-foreground text-sm font-medium">
                             {product.name}
                           </div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm text-foreground">
+                        <td className="whitespace-nowrap px-6 py-4">
+                          <div className="text-foreground text-sm">
                             {product.company?.name || '-'}
                           </div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm text-foreground">
-                            {product.cylinderSize ? product.cylinderSize.size : product.size}
+                        <td className="whitespace-nowrap px-6 py-4">
+                          <div className="text-foreground text-sm">
+                            {product.cylinderSize
+                              ? product.cylinderSize.size
+                              : product.size}
                           </div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm text-foreground">
-                            {product.currentPrice ? `৳${product.currentPrice.toLocaleString()}` : '-'}
+                        <td className="whitespace-nowrap px-6 py-4">
+                          <div className="text-foreground text-sm">
+                            {product.currentPrice
+                              ? `৳${product.currentPrice.toLocaleString()}`
+                              : '-'}
                           </div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm text-foreground">
+                        <td className="whitespace-nowrap px-6 py-4">
+                          <div className="text-foreground text-sm">
                             {product.inventory ? (
                               <div className="space-y-1">
-                                <div className={`font-medium ${
-                                  product.inventory.isLowStock 
-                                    ? 'text-red-600 dark:text-red-400' 
-                                    : 'text-foreground'
-                                }`}>
+                                <div
+                                  className={`font-medium ${
+                                    product.inventory.isLowStock
+                                      ? 'text-red-600 dark:text-red-400'
+                                      : 'text-foreground'
+                                  }`}
+                                >
                                   {product.inventory.fullCylinders} Full
                                 </div>
-                                <div className="text-xs text-gray-500 dark:text-muted-foreground">
+                                <div className="dark:text-muted-foreground text-xs text-gray-500">
                                   {product.inventory.emptyCylinders} Empty
                                 </div>
                               </div>
                             ) : (
-                              <span className="text-muted-foreground">Loading...</span>
+                              <span className="text-muted-foreground">
+                                Loading...
+                              </span>
                             )}
                           </div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm text-foreground">
-                            {product.lowStockThreshold ? `${product.lowStockThreshold} units` : '-'}
+                        <td className="whitespace-nowrap px-6 py-4">
+                          <div className="text-foreground text-sm">
+                            {product.lowStockThreshold
+                              ? `${product.lowStockThreshold} units`
+                              : '-'}
                           </div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
+                        <td className="whitespace-nowrap px-6 py-4">
                           <button
-                            onClick={() => toggleProductStatus(product.id, product.isActive)}
-                            className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full transition-colors hover:opacity-80 ${
+                            onClick={() =>
+                              toggleProductStatus(product.id, product.isActive)
+                            }
+                            className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold transition-colors hover:opacity-80 ${
                               product.isActive
-                                ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 hover:bg-green-200 dark:hover:bg-green-800'
-                                : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200 hover:bg-red-200 dark:hover:bg-red-800'
+                                ? 'bg-green-100 text-green-800 hover:bg-green-200 dark:bg-green-900 dark:text-green-200 dark:hover:bg-green-800'
+                                : 'bg-red-100 text-red-800 hover:bg-red-200 dark:bg-red-900 dark:text-red-200 dark:hover:bg-red-800'
                             }`}
                             title={`Click to ${product.isActive ? 'deactivate' : 'activate'} product`}
                           >
                             {product.isActive ? 'Active' : 'Inactive'}
                           </button>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm text-foreground">
+                        <td className="whitespace-nowrap px-6 py-4">
+                          <div className="text-foreground text-sm">
                             {new Date(product.createdAt).toLocaleDateString()}
                           </div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <td className="whitespace-nowrap px-6 py-4 text-right text-sm font-medium">
                           <div className="flex justify-end space-x-2">
                             <button
                               onClick={() => openEditProductModal(product)}
@@ -718,8 +781,10 @@ export default function ProductManagementPage() {
                 </table>
                 {filteredProducts.length === 0 && (
                   <div className="p-8 text-center">
-                    <Package className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                    <p className="text-gray-500 dark:text-muted-foreground">No products found.</p>
+                    <Package className="text-muted-foreground mx-auto mb-4 h-12 w-12" />
+                    <p className="dark:text-muted-foreground text-gray-500">
+                      No products found.
+                    </p>
                   </div>
                 )}
               </div>
@@ -734,19 +799,19 @@ export default function ProductManagementPage() {
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-4">
                 <div className="relative">
-                  <Search className="h-5 w-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
+                  <Search className="text-muted-foreground absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 transform" />
                   <input
                     type="text"
                     placeholder="Search cylinder sizes..."
                     value={cylinderSizeSearch}
                     onChange={(e) => setCylinderSizeSearch(e.target.value)}
-                    className="pl-10 pr-4 py-2 border border-border rounded-md bg-input text-foreground"
+                    className="border-border bg-input text-foreground rounded-md border py-2 pl-10 pr-4"
                   />
                 </div>
               </div>
               <button
                 onClick={() => setShowCylinderSizeModal(true)}
-                className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
+                className="flex items-center space-x-2 rounded-lg bg-purple-600 px-4 py-2 text-white transition-colors hover:bg-purple-700"
               >
                 <Plus className="h-5 w-5" />
                 <span>Add Cylinder Size</span>
@@ -754,24 +819,24 @@ export default function ProductManagementPage() {
             </div>
 
             {/* Cylinder Sizes Table */}
-            <div className="bg-card rounded-lg shadow-sm overflow-hidden">
+            <div className="bg-card overflow-hidden rounded-lg shadow-sm">
               <div className="overflow-x-auto">
                 <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                   <thead className="bg-muted">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                      <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
                         Cylinder Size
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                      <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
                         Description
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                      <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
                         Status
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                      <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
                         Created
                       </th>
-                      <th className="px-6 py-3 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                      <th className="text-muted-foreground px-6 py-3 text-right text-xs font-medium uppercase tracking-wider">
                         Actions
                       </th>
                     </tr>
@@ -779,41 +844,49 @@ export default function ProductManagementPage() {
                   <tbody className="bg-card divide-y divide-gray-200 dark:divide-gray-700">
                     {filteredCylinderSizes.map((cylinderSize) => (
                       <tr key={cylinderSize.id} className="hover:bg-muted/50">
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm font-medium text-foreground">
+                        <td className="whitespace-nowrap px-6 py-4">
+                          <div className="text-foreground text-sm font-medium">
                             {cylinderSize.size}
                           </div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm text-foreground">
+                        <td className="whitespace-nowrap px-6 py-4">
+                          <div className="text-foreground text-sm">
                             {cylinderSize.description || '-'}
                           </div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                            cylinderSize.isActive
-                              ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-                              : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
-                          }`}>
+                        <td className="whitespace-nowrap px-6 py-4">
+                          <span
+                            className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${
+                              cylinderSize.isActive
+                                ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+                                : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
+                            }`}
+                          >
                             {cylinderSize.isActive ? 'Active' : 'Inactive'}
                           </span>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm text-foreground">
-                            {new Date(cylinderSize.createdAt).toLocaleDateString()}
+                        <td className="whitespace-nowrap px-6 py-4">
+                          <div className="text-foreground text-sm">
+                            {new Date(
+                              cylinderSize.createdAt
+                            ).toLocaleDateString()}
                           </div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <td className="whitespace-nowrap px-6 py-4 text-right text-sm font-medium">
                           <div className="flex justify-end space-x-2">
                             <button
-                              onClick={() => openEditCylinderSizeModal(cylinderSize)}
+                              onClick={() =>
+                                openEditCylinderSizeModal(cylinderSize)
+                              }
                               className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300"
                               title="Edit Cylinder Size"
                             >
                               <Edit className="h-4 w-4" />
                             </button>
                             <button
-                              onClick={() => handleDeleteCylinderSize(cylinderSize.id)}
+                              onClick={() =>
+                                handleDeleteCylinderSize(cylinderSize.id)
+                              }
                               className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300"
                               title="Delete Cylinder Size"
                             >
@@ -827,8 +900,10 @@ export default function ProductManagementPage() {
                 </table>
                 {filteredCylinderSizes.length === 0 && (
                   <div className="p-8 text-center">
-                    <Settings className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                    <p className="text-gray-500 dark:text-muted-foreground">No cylinder sizes found.</p>
+                    <Settings className="text-muted-foreground mx-auto mb-4 h-12 w-12" />
+                    <p className="dark:text-muted-foreground text-gray-500">
+                      No cylinder sizes found.
+                    </p>
                   </div>
                 )}
               </div>
@@ -839,69 +914,94 @@ export default function ProductManagementPage() {
 
       {/* Company Modal */}
       {showCompanyModal && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-card rounded-lg p-6 w-full max-w-md mx-4">
-            <h3 className="text-lg font-medium text-foreground mb-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-600 bg-opacity-50">
+          <div className="bg-card mx-4 w-full max-w-md rounded-lg p-6">
+            <h3 className="text-foreground mb-4 text-lg font-medium">
               {editingCompany ? 'Edit Company' : 'Add New Company'}
             </h3>
             <form onSubmit={handleCompanySubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
                   Company Name *
                 </label>
                 <input
                   type="text"
                   value={companyForm.name || ''}
-                  onChange={(e) => setCompanyForm(prev => ({ ...prev, name: e.target.value }))}
-                  className="w-full border border-border rounded-md px-3 py-2 bg-input text-foreground"
+                  onChange={(e) =>
+                    setCompanyForm((prev) => ({
+                      ...prev,
+                      name: e.target.value,
+                    }))
+                  }
+                  className="border-border bg-input text-foreground w-full rounded-md border px-3 py-2"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
                   Company Code
                 </label>
                 <input
                   type="text"
                   value={companyForm.code || ''}
-                  onChange={(e) => setCompanyForm(prev => ({ ...prev, code: e.target.value }))}
-                  className="w-full border border-border rounded-md px-3 py-2 bg-input text-foreground"
+                  onChange={(e) =>
+                    setCompanyForm((prev) => ({
+                      ...prev,
+                      code: e.target.value,
+                    }))
+                  }
+                  className="border-border bg-input text-foreground w-full rounded-md border px-3 py-2"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
                   Phone
                 </label>
                 <input
                   type="text"
                   value={companyForm.phone || ''}
-                  onChange={(e) => setCompanyForm(prev => ({ ...prev, phone: e.target.value }))}
-                  className="w-full border border-border rounded-md px-3 py-2 bg-input text-foreground"
+                  onChange={(e) =>
+                    setCompanyForm((prev) => ({
+                      ...prev,
+                      phone: e.target.value,
+                    }))
+                  }
+                  className="border-border bg-input text-foreground w-full rounded-md border px-3 py-2"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
                   Email
                 </label>
                 <input
                   type="email"
                   value={companyForm.email || ''}
-                  onChange={(e) => setCompanyForm(prev => ({ ...prev, email: e.target.value }))}
-                  className="w-full border border-border rounded-md px-3 py-2 bg-input text-foreground"
+                  onChange={(e) =>
+                    setCompanyForm((prev) => ({
+                      ...prev,
+                      email: e.target.value,
+                    }))
+                  }
+                  className="border-border bg-input text-foreground w-full rounded-md border px-3 py-2"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
                   Address
                 </label>
                 <textarea
                   value={companyForm.address || ''}
-                  onChange={(e) => setCompanyForm(prev => ({ ...prev, address: e.target.value }))}
-                  className="w-full border border-border rounded-md px-3 py-2 bg-input text-foreground"
+                  onChange={(e) =>
+                    setCompanyForm((prev) => ({
+                      ...prev,
+                      address: e.target.value,
+                    }))
+                  }
+                  className="border-border bg-input text-foreground w-full rounded-md border px-3 py-2"
                   rows={3}
                 />
               </div>
@@ -911,10 +1011,18 @@ export default function ProductManagementPage() {
                   type="checkbox"
                   id="companyActive"
                   checked={companyForm.isActive}
-                  onChange={(e) => setCompanyForm(prev => ({ ...prev, isActive: e.target.checked }))}
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                  onChange={(e) =>
+                    setCompanyForm((prev) => ({
+                      ...prev,
+                      isActive: e.target.checked,
+                    }))
+                  }
+                  className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                 />
-                <label htmlFor="companyActive" className="ml-2 block text-sm text-foreground">
+                <label
+                  htmlFor="companyActive"
+                  className="text-foreground ml-2 block text-sm"
+                >
                   Active
                 </label>
               </div>
@@ -927,13 +1035,13 @@ export default function ProductManagementPage() {
                     setEditingCompany(null);
                     resetCompanyForm();
                   }}
-                  className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 border border-border rounded-md hover:bg-muted transition-colors"
+                  className="border-border hover:bg-muted rounded-md border bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 transition-colors dark:bg-gray-700 dark:text-gray-300"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 transition-colors"
+                  className="rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700"
                 >
                   {editingCompany ? 'Update' : 'Create'} Company
                 </button>
@@ -945,91 +1053,131 @@ export default function ProductManagementPage() {
 
       {/* Product Modal */}
       {showProductModal && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-card rounded-lg p-6 w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto">
-            <h3 className="text-lg font-medium text-foreground mb-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-600 bg-opacity-50">
+          <div className="bg-card mx-4 max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-lg p-6">
+            <h3 className="text-foreground mb-4 text-lg font-medium">
               {editingProduct ? 'Edit Product' : 'Add New Product'}
             </h3>
             <form onSubmit={handleProductSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
                   Company *
                 </label>
                 <select
                   value={productForm.companyId}
-                  onChange={(e) => setProductForm(prev => ({ ...prev, companyId: e.target.value }))}
-                  className="w-full border border-border rounded-md px-3 py-2 bg-input text-foreground"
+                  onChange={(e) =>
+                    setProductForm((prev) => ({
+                      ...prev,
+                      companyId: e.target.value,
+                    }))
+                  }
+                  className="border-border bg-input text-foreground w-full rounded-md border px-3 py-2"
                   required
                 >
                   <option value="">Select Company</option>
-                  {companies.filter(c => c.isActive).map(company => (
-                    <option key={company.id} value={company.id}>{company.name}</option>
-                  ))}
+                  {companies
+                    .filter((c) => c.isActive)
+                    .map((company) => (
+                      <option key={company.id} value={company.id}>
+                        {company.name}
+                      </option>
+                    ))}
                 </select>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
                   Product Name *
                 </label>
                 <input
                   type="text"
                   value={productForm.name || ''}
-                  onChange={(e) => setProductForm(prev => ({ ...prev, name: e.target.value }))}
-                  className="w-full border border-border rounded-md px-3 py-2 bg-input text-foreground"
+                  onChange={(e) =>
+                    setProductForm((prev) => ({
+                      ...prev,
+                      name: e.target.value,
+                    }))
+                  }
+                  className="border-border bg-input text-foreground w-full rounded-md border px-3 py-2"
                   placeholder="e.g., LPG Cylinder, Cooking Gas, Industrial Gas"
                   required
                 />
-                <p className="text-xs text-gray-500 dark:text-muted-foreground mt-1">
+                <p className="dark:text-muted-foreground mt-1 text-xs text-gray-500">
                   Enter the product name (e.g., LPG Cylinder, Cooking Gas)
                 </p>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
                   Cylinder Type/Size *
                 </label>
                 <select
                   value={productForm.cylinderSizeId || ''}
-                  onChange={(e) => setProductForm(prev => ({ ...prev, cylinderSizeId: e.target.value }))}
-                  className="w-full border border-border rounded-md px-3 py-2 bg-input text-foreground"
+                  onChange={(e) =>
+                    setProductForm((prev) => ({
+                      ...prev,
+                      cylinderSizeId: e.target.value,
+                    }))
+                  }
+                  className="border-border bg-input text-foreground w-full rounded-md border px-3 py-2"
                   required
                 >
                   <option value="">Select Cylinder Size</option>
-                  {cylinderSizes.filter(cs => cs.isActive).map(cylinderSize => (
-                    <option key={cylinderSize.id} value={cylinderSize.id}>
-                      {cylinderSize.size}{cylinderSize.description ? ` - ${cylinderSize.description}` : ''}
-                    </option>
-                  ))}
+                  {cylinderSizes
+                    .filter((cs) => cs.isActive)
+                    .map((cylinderSize) => (
+                      <option key={cylinderSize.id} value={cylinderSize.id}>
+                        {cylinderSize.size}
+                        {cylinderSize.description
+                          ? ` - ${cylinderSize.description}`
+                          : ''}
+                      </option>
+                    ))}
                 </select>
-                <p className="text-xs text-gray-500 dark:text-muted-foreground mt-1">
-                  Select from available cylinder sizes. <span className="text-blue-600 cursor-pointer" onClick={() => setActiveTab('cylinder-sizes')}>Manage cylinder sizes</span>
+                <p className="dark:text-muted-foreground mt-1 text-xs text-gray-500">
+                  Select from available cylinder sizes.{' '}
+                  <span
+                    className="cursor-pointer text-blue-600"
+                    onClick={() => setActiveTab('cylinder-sizes')}
+                  >
+                    Manage cylinder sizes
+                  </span>
                 </p>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
                     Current Price (৳)
                   </label>
                   <input
                     type="number"
                     value={productForm.currentPrice}
-                    onChange={(e) => setProductForm(prev => ({ ...prev, currentPrice: parseFloat(e.target.value) || 0 }))}
-                    className="w-full border border-border rounded-md px-3 py-2 bg-input text-foreground"
+                    onChange={(e) =>
+                      setProductForm((prev) => ({
+                        ...prev,
+                        currentPrice: parseFloat(e.target.value) || 0,
+                      }))
+                    }
+                    className="border-border bg-input text-foreground w-full rounded-md border px-3 py-2"
                     min="0"
                     step="0.01"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
                     Low Stock Threshold
                   </label>
                   <input
                     type="number"
                     value={productForm.lowStockThreshold}
-                    onChange={(e) => setProductForm(prev => ({ ...prev, lowStockThreshold: parseInt(e.target.value) || 0 }))}
-                    className="w-full border border-border rounded-md px-3 py-2 bg-input text-foreground"
+                    onChange={(e) =>
+                      setProductForm((prev) => ({
+                        ...prev,
+                        lowStockThreshold: parseInt(e.target.value) || 0,
+                      }))
+                    }
+                    className="border-border bg-input text-foreground w-full rounded-md border px-3 py-2"
                     min="0"
                   />
                 </div>
@@ -1040,10 +1188,18 @@ export default function ProductManagementPage() {
                   type="checkbox"
                   id="productActive"
                   checked={productForm.isActive}
-                  onChange={(e) => setProductForm(prev => ({ ...prev, isActive: e.target.checked }))}
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                  onChange={(e) =>
+                    setProductForm((prev) => ({
+                      ...prev,
+                      isActive: e.target.checked,
+                    }))
+                  }
+                  className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                 />
-                <label htmlFor="productActive" className="ml-2 block text-sm text-foreground">
+                <label
+                  htmlFor="productActive"
+                  className="text-foreground ml-2 block text-sm"
+                >
                   Active
                 </label>
               </div>
@@ -1056,13 +1212,13 @@ export default function ProductManagementPage() {
                     setEditingProduct(null);
                     resetProductForm();
                   }}
-                  className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 border border-border rounded-md hover:bg-muted transition-colors"
+                  className="border-border hover:bg-muted rounded-md border bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 transition-colors dark:bg-gray-700 dark:text-gray-300"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 text-sm font-medium text-white bg-green-600 border border-transparent rounded-md hover:bg-green-700 transition-colors"
+                  className="rounded-md border border-transparent bg-green-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-green-700"
                 >
                   {editingProduct ? 'Update' : 'Create'} Product
                 </button>
@@ -1074,37 +1230,49 @@ export default function ProductManagementPage() {
 
       {/* Cylinder Size Modal */}
       {showCylinderSizeModal && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-card rounded-lg p-6 w-full max-w-md mx-4">
-            <h3 className="text-lg font-medium text-foreground mb-4">
-              {editingCylinderSize ? 'Edit Cylinder Size' : 'Add New Cylinder Size'}
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-600 bg-opacity-50">
+          <div className="bg-card mx-4 w-full max-w-md rounded-lg p-6">
+            <h3 className="text-foreground mb-4 text-lg font-medium">
+              {editingCylinderSize
+                ? 'Edit Cylinder Size'
+                : 'Add New Cylinder Size'}
             </h3>
             <form onSubmit={handleCylinderSizeSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
                   Cylinder Size *
                 </label>
                 <input
                   type="text"
                   value={cylinderSizeForm.size || ''}
-                  onChange={(e) => setCylinderSizeForm(prev => ({ ...prev, size: e.target.value }))}
-                  className="w-full border border-border rounded-md px-3 py-2 bg-input text-foreground"
+                  onChange={(e) =>
+                    setCylinderSizeForm((prev) => ({
+                      ...prev,
+                      size: e.target.value,
+                    }))
+                  }
+                  className="border-border bg-input text-foreground w-full rounded-md border px-3 py-2"
                   placeholder="e.g., 12L, 35L, 5kg"
                   required
                 />
-                <p className="text-xs text-gray-500 dark:text-muted-foreground mt-1">
+                <p className="dark:text-muted-foreground mt-1 text-xs text-gray-500">
                   Enter cylinder size (e.g., 12L, 35L, 5kg, 20L)
                 </p>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
                   Description
                 </label>
                 <textarea
                   value={cylinderSizeForm.description || ''}
-                  onChange={(e) => setCylinderSizeForm(prev => ({ ...prev, description: e.target.value }))}
-                  className="w-full border border-border rounded-md px-3 py-2 bg-input text-foreground"
+                  onChange={(e) =>
+                    setCylinderSizeForm((prev) => ({
+                      ...prev,
+                      description: e.target.value,
+                    }))
+                  }
+                  className="border-border bg-input text-foreground w-full rounded-md border px-3 py-2"
                   placeholder="Optional description"
                   rows={3}
                 />
@@ -1115,10 +1283,18 @@ export default function ProductManagementPage() {
                   type="checkbox"
                   id="cylinderSizeActive"
                   checked={cylinderSizeForm.isActive}
-                  onChange={(e) => setCylinderSizeForm(prev => ({ ...prev, isActive: e.target.checked }))}
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                  onChange={(e) =>
+                    setCylinderSizeForm((prev) => ({
+                      ...prev,
+                      isActive: e.target.checked,
+                    }))
+                  }
+                  className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                 />
-                <label htmlFor="cylinderSizeActive" className="ml-2 block text-sm text-foreground">
+                <label
+                  htmlFor="cylinderSizeActive"
+                  className="text-foreground ml-2 block text-sm"
+                >
                   Active
                 </label>
               </div>
@@ -1131,13 +1307,13 @@ export default function ProductManagementPage() {
                     setEditingCylinderSize(null);
                     resetCylinderSizeForm();
                   }}
-                  className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 border border-border rounded-md hover:bg-muted transition-colors"
+                  className="border-border hover:bg-muted rounded-md border bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 transition-colors dark:bg-gray-700 dark:text-gray-300"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 text-sm font-medium text-white bg-purple-600 border border-transparent rounded-md hover:bg-purple-700 transition-colors"
+                  className="rounded-md border border-transparent bg-purple-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-purple-700"
                 >
                   {editingCylinderSize ? 'Update' : 'Create'} Cylinder Size
                 </button>

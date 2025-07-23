@@ -19,14 +19,14 @@ export interface Sale {
 }
 
 export enum SaleType {
-  PACKAGE = "PACKAGE",
-  REFILL = "REFILL",
+  PACKAGE = 'PACKAGE',
+  REFILL = 'REFILL',
 }
 
 export enum PaymentType {
-  CASH = "CASH",
-  CREDIT = "CREDIT",
-  CYLINDER_CREDIT = "CYLINDER_CREDIT",
+  CASH = 'CASH',
+  CREDIT = 'CREDIT',
+  CYLINDER_CREDIT = 'CYLINDER_CREDIT',
 }
 
 export interface DailySalesEntry {

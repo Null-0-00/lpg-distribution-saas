@@ -6,11 +6,11 @@ import { usePWA, useOfflineSync } from '@/hooks/usePWA';
 import { offlineStorage } from '@/lib/offline/storage';
 import { pushNotificationManager } from '@/lib/pwa/push-notifications';
 import { Badge } from '@/components/ui/badge';
-import { 
-  CheckCircle, 
-  XCircle, 
-  Clock, 
-  Wifi, 
+import {
+  CheckCircle,
+  XCircle,
+  Clock,
+  Wifi,
   WifiOff,
   Smartphone,
   Bell,
@@ -19,7 +19,7 @@ import {
   Download,
   AlertTriangle,
   Play,
-  TestTube
+  TestTube,
 } from 'lucide-react';
 
 interface TestResult {
@@ -40,41 +40,43 @@ export function MobileTestSuite() {
     {
       name: 'PWA Installation',
       tests: [],
-      running: false
+      running: false,
     },
     {
       name: 'Service Worker',
       tests: [],
-      running: false
+      running: false,
     },
     {
       name: 'Offline Storage',
       tests: [],
-      running: false
+      running: false,
     },
     {
       name: 'Push Notifications',
       tests: [],
-      running: false
+      running: false,
     },
     {
       name: 'Touch & Mobile UI',
       tests: [],
-      running: false
+      running: false,
     },
     {
       name: 'Voice Input',
       tests: [],
-      running: false
+      running: false,
     },
     {
       name: 'Network Connectivity',
       tests: [],
-      running: false
-    }
+      running: false,
+    },
   ]);
 
-  const [overallStatus, setOverallStatus] = useState<'idle' | 'running' | 'completed'>('idle');
+  const [overallStatus, setOverallStatus] = useState<
+    'idle' | 'running' | 'completed'
+  >('idle');
   const pwa = usePWA();
   const { syncStatus } = useOfflineSync();
 
@@ -86,7 +88,7 @@ export function MobileTestSuite() {
     tests.push({
       name: 'PWA Manifest',
       status: 'pending',
-      message: 'Checking manifest file...'
+      message: 'Checking manifest file...',
     });
 
     try {
@@ -97,20 +99,20 @@ export function MobileTestSuite() {
           name: 'PWA Manifest',
           status: 'pass',
           message: 'Manifest loaded successfully',
-          details: `App name: ${manifest.name}`
+          details: `App name: ${manifest.name}`,
         };
       } else {
         tests[0] = {
           name: 'PWA Manifest',
           status: 'fail',
-          message: 'Manifest file not found'
+          message: 'Manifest file not found',
         };
       }
     } catch (error) {
       tests[0] = {
         name: 'PWA Manifest',
         status: 'fail',
-        message: 'Failed to load manifest'
+        message: 'Failed to load manifest',
       };
     }
 
@@ -118,19 +120,19 @@ export function MobileTestSuite() {
     tests.push({
       name: 'Install Prompt',
       status: pwa.isInstallable ? 'pass' : 'warning',
-      message: pwa.isInstallable ? 
-        'Install prompt available' : 
-        'Install prompt not triggered (may be already installed)',
-      details: pwa.isInstalled ? 'App appears to be installed' : undefined
+      message: pwa.isInstallable
+        ? 'Install prompt available'
+        : 'Install prompt not triggered (may be already installed)',
+      details: pwa.isInstalled ? 'App appears to be installed' : undefined,
     });
 
     // Test 3: Standalone Mode
     tests.push({
       name: 'Standalone Mode',
       status: pwa.isInstalled ? 'pass' : 'warning',
-      message: pwa.isInstalled ? 
-        'Running in standalone mode' : 
-        'Not running in standalone mode'
+      message: pwa.isInstalled
+        ? 'Running in standalone mode'
+        : 'Not running in standalone mode',
     });
 
     return tests;
@@ -144,9 +146,10 @@ export function MobileTestSuite() {
     tests.push({
       name: 'Service Worker Support',
       status: 'serviceWorker' in navigator ? 'pass' : 'fail',
-      message: 'serviceWorker' in navigator ? 
-        'Service Worker API supported' : 
-        'Service Worker not supported'
+      message:
+        'serviceWorker' in navigator
+          ? 'Service Worker API supported'
+          : 'Service Worker not supported',
     });
 
     // Test 2: Service Worker Registration
@@ -156,27 +159,30 @@ export function MobileTestSuite() {
         tests.push({
           name: 'Service Worker Registration',
           status: registration ? 'pass' : 'fail',
-          message: registration ? 
-            'Service Worker registered' : 
-            'Service Worker not registered'
+          message: registration
+            ? 'Service Worker registered'
+            : 'Service Worker not registered',
         });
 
         // Test 3: Service Worker State
         if (registration) {
-          const sw = registration.active || registration.installing || registration.waiting;
+          const sw =
+            registration.active ||
+            registration.installing ||
+            registration.waiting;
           tests.push({
             name: 'Service Worker State',
             status: sw ? 'pass' : 'warning',
-            message: sw ? 
-              `Service Worker ${sw.state}` : 
-              'Service Worker state unknown'
+            message: sw
+              ? `Service Worker ${sw.state}`
+              : 'Service Worker state unknown',
           });
         }
       } catch (error) {
         tests.push({
           name: 'Service Worker Registration',
           status: 'fail',
-          message: 'Failed to check registration'
+          message: 'Failed to check registration',
         });
       }
     }
@@ -185,9 +191,7 @@ export function MobileTestSuite() {
     tests.push({
       name: 'Update Check',
       status: pwa.updateAvailable ? 'warning' : 'pass',
-      message: pwa.updateAvailable ? 
-        'Update available' : 
-        'App is up to date'
+      message: pwa.updateAvailable ? 'Update available' : 'App is up to date',
     });
 
     return tests;
@@ -201,9 +205,10 @@ export function MobileTestSuite() {
     tests.push({
       name: 'IndexedDB Support',
       status: 'indexedDB' in window ? 'pass' : 'fail',
-      message: 'indexedDB' in window ? 
-        'IndexedDB supported' : 
-        'IndexedDB not supported'
+      message:
+        'indexedDB' in window
+          ? 'IndexedDB supported'
+          : 'IndexedDB not supported',
     });
 
     // Test 2: Storage Quota
@@ -213,28 +218,31 @@ export function MobileTestSuite() {
         name: 'Storage Quota',
         status: storageInfo.available > 0 ? 'pass' : 'warning',
         message: `${Math.round(storageInfo.used / 1024 / 1024)}MB used of ${Math.round(storageInfo.available / 1024 / 1024)}MB available`,
-        details: `${Math.round((storageInfo.used / storageInfo.available) * 100)}% used`
+        details: `${Math.round((storageInfo.used / storageInfo.available) * 100)}% used`,
       });
     } catch (error) {
       tests.push({
         name: 'Storage Quota',
         status: 'warning',
-        message: 'Unable to check storage quota'
+        message: 'Unable to check storage quota',
       });
     }
 
     // Test 3: Offline Data Storage
     try {
-      const testId = await offlineStorage.storeOffline('sale', { test: true, timestamp: Date.now() });
+      const testId = await offlineStorage.storeOffline('sale', {
+        test: true,
+        timestamp: Date.now(),
+      });
       const pendingData = await offlineStorage.getPendingData();
-      const testData = pendingData.find(item => item.id === testId);
-      
+      const testData = pendingData.find((item) => item.id === testId);
+
       tests.push({
         name: 'Offline Data Storage',
         status: testData ? 'pass' : 'fail',
-        message: testData ? 
-          'Successfully stored offline data' : 
-          'Failed to store offline data'
+        message: testData
+          ? 'Successfully stored offline data'
+          : 'Failed to store offline data',
       });
 
       // Clean up test data
@@ -245,7 +253,7 @@ export function MobileTestSuite() {
       tests.push({
         name: 'Offline Data Storage',
         status: 'fail',
-        message: 'Offline storage test failed'
+        message: 'Offline storage test failed',
       });
     }
 
@@ -253,23 +261,25 @@ export function MobileTestSuite() {
     try {
       const testKey = 'cache-performance-test';
       const testData = { timestamp: Date.now(), data: 'test' };
-      
+
       const startTime = performance.now();
       await offlineStorage.cacheData(testKey, testData, 'test', 60000);
       const cachedData = await offlineStorage.getCachedData(testKey);
       const endTime = performance.now();
-      
+
       tests.push({
         name: 'Cache Performance',
         status: cachedData && endTime - startTime < 100 ? 'pass' : 'warning',
         message: `Cache operation took ${Math.round(endTime - startTime)}ms`,
-        details: cachedData ? 'Data cached and retrieved successfully' : 'Cache operation failed'
+        details: cachedData
+          ? 'Data cached and retrieved successfully'
+          : 'Cache operation failed',
       });
     } catch (error) {
       tests.push({
         name: 'Cache Performance',
         status: 'warning',
-        message: 'Cache performance test failed'
+        message: 'Cache performance test failed',
       });
     }
 
@@ -284,27 +294,33 @@ export function MobileTestSuite() {
     tests.push({
       name: 'Notification API',
       status: 'Notification' in window ? 'pass' : 'fail',
-      message: 'Notification' in window ? 
-        'Notification API supported' : 
-        'Notification API not supported'
+      message:
+        'Notification' in window
+          ? 'Notification API supported'
+          : 'Notification API not supported',
     });
 
     // Test 2: Push Manager Support
     tests.push({
       name: 'Push Manager',
       status: 'PushManager' in window ? 'pass' : 'fail',
-      message: 'PushManager' in window ? 
-        'Push Manager supported' : 
-        'Push Manager not supported'
+      message:
+        'PushManager' in window
+          ? 'Push Manager supported'
+          : 'Push Manager not supported',
     });
 
     // Test 3: Notification Permission
     if ('Notification' in window) {
       tests.push({
         name: 'Notification Permission',
-        status: Notification.permission === 'granted' ? 'pass' : 
-               Notification.permission === 'denied' ? 'fail' : 'warning',
-        message: `Permission: ${Notification.permission}`
+        status:
+          Notification.permission === 'granted'
+            ? 'pass'
+            : Notification.permission === 'denied'
+              ? 'fail'
+              : 'warning',
+        message: `Permission: ${Notification.permission}`,
       });
 
       // Test 4: Push Notification Manager
@@ -313,9 +329,9 @@ export function MobileTestSuite() {
         tests.push({
           name: 'Push Manager Init',
           status: initialized ? 'pass' : 'warning',
-          message: initialized ? 
-            'Push notification manager initialized' : 
-            'Push notification manager failed to initialize'
+          message: initialized
+            ? 'Push notification manager initialized'
+            : 'Push notification manager failed to initialize',
         });
 
         // Test 5: Test Notification
@@ -325,13 +341,13 @@ export function MobileTestSuite() {
             tests.push({
               name: 'Test Notification',
               status: 'pass',
-              message: 'Test notification sent successfully'
+              message: 'Test notification sent successfully',
             });
           } catch (error) {
             tests.push({
               name: 'Test Notification',
               status: 'warning',
-              message: 'Test notification failed'
+              message: 'Test notification failed',
             });
           }
         }
@@ -339,7 +355,7 @@ export function MobileTestSuite() {
         tests.push({
           name: 'Push Manager Init',
           status: 'fail',
-          message: 'Failed to initialize push manager'
+          message: 'Failed to initialize push manager',
         });
       }
     }
@@ -355,9 +371,10 @@ export function MobileTestSuite() {
     tests.push({
       name: 'Touch Support',
       status: 'ontouchstart' in window ? 'pass' : 'warning',
-      message: 'ontouchstart' in window ? 
-        'Touch events supported' : 
-        'Touch events not detected (may be desktop)'
+      message:
+        'ontouchstart' in window
+          ? 'Touch events supported'
+          : 'Touch events not detected (may be desktop)',
     });
 
     // Test 2: Viewport Meta Tag
@@ -365,10 +382,12 @@ export function MobileTestSuite() {
     tests.push({
       name: 'Viewport Meta Tag',
       status: viewportMeta ? 'pass' : 'fail',
-      message: viewportMeta ? 
-        'Viewport meta tag present' : 
-        'Viewport meta tag missing',
-      details: viewportMeta ? (viewportMeta as HTMLMetaElement).content : undefined
+      message: viewportMeta
+        ? 'Viewport meta tag present'
+        : 'Viewport meta tag missing',
+      details: viewportMeta
+        ? (viewportMeta as HTMLMetaElement).content
+        : undefined,
     });
 
     // Test 3: Screen Size Detection
@@ -377,7 +396,7 @@ export function MobileTestSuite() {
       name: 'Mobile Screen Size',
       status: isMobileSize ? 'pass' : 'warning',
       message: `Screen width: ${window.innerWidth}px`,
-      details: isMobileSize ? 'Mobile layout active' : 'Desktop layout active'
+      details: isMobileSize ? 'Mobile layout active' : 'Desktop layout active',
     });
 
     // Test 4: CSS Transforms (for touch feedback)
@@ -386,9 +405,10 @@ export function MobileTestSuite() {
     tests.push({
       name: 'CSS Transform Support',
       status: testElement.style.transform === 'scale(1)' ? 'pass' : 'warning',
-      message: testElement.style.transform === 'scale(1)' ? 
-        'CSS transforms supported' : 
-        'CSS transforms may not be supported'
+      message:
+        testElement.style.transform === 'scale(1)'
+          ? 'CSS transforms supported'
+          : 'CSS transforms may not be supported',
     });
 
     return tests;
@@ -399,31 +419,36 @@ export function MobileTestSuite() {
     const tests: TestResult[] = [];
 
     // Test 1: Speech Recognition Support
-    const hasSpeechRecognition = 'webkitSpeechRecognition' in window || 'SpeechRecognition' in window;
+    const hasSpeechRecognition =
+      'webkitSpeechRecognition' in window || 'SpeechRecognition' in window;
     tests.push({
       name: 'Speech Recognition API',
       status: hasSpeechRecognition ? 'pass' : 'warning',
-      message: hasSpeechRecognition ? 
-        'Speech Recognition supported' : 
-        'Speech Recognition not supported'
+      message: hasSpeechRecognition
+        ? 'Speech Recognition supported'
+        : 'Speech Recognition not supported',
     });
 
     // Test 2: Media Devices Support (for microphone access)
     tests.push({
       name: 'Media Devices API',
       status: navigator.mediaDevices ? 'pass' : 'warning',
-      message: navigator.mediaDevices ? 
-        'Media Devices API supported' : 
-        'Media Devices API not supported'
+      message: navigator.mediaDevices
+        ? 'Media Devices API supported'
+        : 'Media Devices API not supported',
     });
 
     // Test 3: HTTPS Check (required for voice input)
     tests.push({
       name: 'HTTPS Protocol',
-      status: location.protocol === 'https:' || location.hostname === 'localhost' ? 'pass' : 'fail',
-      message: location.protocol === 'https:' || location.hostname === 'localhost' ? 
-        'Secure context available' : 
-        'HTTPS required for voice input'
+      status:
+        location.protocol === 'https:' || location.hostname === 'localhost'
+          ? 'pass'
+          : 'fail',
+      message:
+        location.protocol === 'https:' || location.hostname === 'localhost'
+          ? 'Secure context available'
+          : 'HTTPS required for voice input',
     });
 
     return tests;
@@ -437,45 +462,48 @@ export function MobileTestSuite() {
     tests.push({
       name: 'Network Status',
       status: navigator.onLine ? 'pass' : 'warning',
-      message: navigator.onLine ? 'Online' : 'Offline'
+      message: navigator.onLine ? 'Online' : 'Offline',
     });
 
     // Test 2: Network Information API
-    const connection = (navigator as any).connection || (navigator as any).mozConnection || (navigator as any).webkitConnection;
+    const connection =
+      (navigator as any).connection ||
+      (navigator as any).mozConnection ||
+      (navigator as any).webkitConnection;
     if (connection) {
       tests.push({
         name: 'Connection Type',
         status: 'pass',
         message: `${connection.effectiveType || 'unknown'} connection`,
-        details: `Downlink: ${connection.downlink || 'unknown'} Mbps`
+        details: `Downlink: ${connection.downlink || 'unknown'} Mbps`,
       });
     } else {
       tests.push({
         name: 'Connection Type',
         status: 'warning',
-        message: 'Network Information API not supported'
+        message: 'Network Information API not supported',
       });
     }
 
     // Test 3: API Connectivity
     if (navigator.onLine) {
       try {
-        const response = await fetch('/api/health', { 
+        const response = await fetch('/api/health', {
           method: 'GET',
-          cache: 'no-cache'
+          cache: 'no-cache',
         });
         tests.push({
           name: 'API Connectivity',
           status: response.ok ? 'pass' : 'warning',
-          message: response.ok ? 
-            `API reachable (${response.status})` : 
-            `API error (${response.status})`
+          message: response.ok
+            ? `API reachable (${response.status})`
+            : `API error (${response.status})`,
         });
       } catch (error) {
         tests.push({
           name: 'API Connectivity',
           status: 'fail',
-          message: 'API not reachable'
+          message: 'API not reachable',
         });
       }
     }
@@ -484,12 +512,13 @@ export function MobileTestSuite() {
     tests.push({
       name: 'Data Sync',
       status: syncStatus.pendingItems === 0 ? 'pass' : 'warning',
-      message: syncStatus.pendingItems === 0 ? 
-        'All data synced' : 
-        `${syncStatus.pendingItems} items pending sync`,
-      details: syncStatus.lastSync ? 
-        `Last sync: ${new Date(syncStatus.lastSync).toLocaleTimeString()}` : 
-        'Never synced'
+      message:
+        syncStatus.pendingItems === 0
+          ? 'All data synced'
+          : `${syncStatus.pendingItems} items pending sync`,
+      details: syncStatus.lastSync
+        ? `Last sync: ${new Date(syncStatus.lastSync).toLocaleTimeString()}`
+        : 'Never synced',
     });
 
     return tests;
@@ -497,9 +526,11 @@ export function MobileTestSuite() {
 
   // Run individual test suite
   const runTestSuite = async (suiteName: string) => {
-    setTestSuites(prev => prev.map(suite => 
-      suite.name === suiteName ? { ...suite, running: true } : suite
-    ));
+    setTestSuites((prev) =>
+      prev.map((suite) =>
+        suite.name === suiteName ? { ...suite, running: true } : suite
+      )
+    );
 
     let tests: TestResult[] = [];
 
@@ -528,28 +559,32 @@ export function MobileTestSuite() {
           break;
       }
     } catch (error) {
-      tests = [{
-        name: 'Test Suite Error',
-        status: 'fail',
-        message: 'Test suite failed to run'
-      }];
+      tests = [
+        {
+          name: 'Test Suite Error',
+          status: 'fail',
+          message: 'Test suite failed to run',
+        },
+      ];
     }
 
-    setTestSuites(prev => prev.map(suite => 
-      suite.name === suiteName ? { ...suite, tests, running: false } : suite
-    ));
+    setTestSuites((prev) =>
+      prev.map((suite) =>
+        suite.name === suiteName ? { ...suite, tests, running: false } : suite
+      )
+    );
   };
 
   // Run all test suites
   const runAllTests = async () => {
     setOverallStatus('running');
-    
+
     for (const suite of testSuites) {
       await runTestSuite(suite.name);
       // Small delay between test suites
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise((resolve) => setTimeout(resolve, 500));
     }
-    
+
     setOverallStatus('completed');
   };
 
@@ -598,7 +633,11 @@ export function MobileTestSuite() {
       case 'Voice Input':
         return <Play className="h-5 w-5" />;
       case 'Network Connectivity':
-        return pwa.isOnline ? <Wifi className="h-5 w-5" /> : <WifiOff className="h-5 w-5" />;
+        return pwa.isOnline ? (
+          <Wifi className="h-5 w-5" />
+        ) : (
+          <WifiOff className="h-5 w-5" />
+        );
       default:
         return <TestTube className="h-5 w-5" />;
     }
@@ -608,13 +647,15 @@ export function MobileTestSuite() {
     <div className="space-y-6 pb-6">
       {/* Header */}
       <MobileCard>
-        <div className="flex items-center justify-between mb-4">
+        <div className="mb-4 flex items-center justify-between">
           <h2 className="text-xl font-bold">Mobile & PWA Test Suite</h2>
-          <Badge variant={overallStatus === 'completed' ? 'default' : 'secondary'}>
+          <Badge
+            variant={overallStatus === 'completed' ? 'default' : 'secondary'}
+          >
             {overallStatus}
           </Badge>
         </div>
-        
+
         <MobileButton
           variant="primary"
           size="lg"
@@ -629,12 +670,12 @@ export function MobileTestSuite() {
       {/* Test Suites */}
       {testSuites.map((suite) => (
         <MobileCard key={suite.name}>
-          <div className="flex items-center justify-between mb-3">
+          <div className="mb-3 flex items-center justify-between">
             <div className="flex items-center space-x-2">
               {getSuiteIcon(suite.name)}
               <h3 className="font-semibold">{suite.name}</h3>
             </div>
-            
+
             <MobileButton
               variant="secondary"
               size="sm"
@@ -649,18 +690,25 @@ export function MobileTestSuite() {
           {suite.tests.length > 0 && (
             <div className="space-y-2">
               {suite.tests.map((test, index) => (
-                <div key={index} className="flex items-start space-x-3 p-2 bg-gray-50 rounded">
+                <div
+                  key={index}
+                  className="flex items-start space-x-3 rounded bg-gray-50 p-2"
+                >
                   {getStatusIcon(test.status)}
-                  <div className="flex-1 min-w-0">
+                  <div className="min-w-0 flex-1">
                     <div className="flex items-center justify-between">
                       <span className="text-sm font-medium">{test.name}</span>
-                      <span className={`text-xs ${getStatusColor(test.status)}`}>
+                      <span
+                        className={`text-xs ${getStatusColor(test.status)}`}
+                      >
                         {test.status}
                       </span>
                     </div>
-                    <p className="text-xs text-gray-600 mt-1">{test.message}</p>
+                    <p className="mt-1 text-xs text-gray-600">{test.message}</p>
                     {test.details && (
-                      <p className="text-xs text-gray-500 mt-1">{test.details}</p>
+                      <p className="mt-1 text-xs text-gray-500">
+                        {test.details}
+                      </p>
                     )}
                   </div>
                 </div>
@@ -669,7 +717,7 @@ export function MobileTestSuite() {
           )}
 
           {suite.tests.length === 0 && !suite.running && (
-            <p className="text-sm text-gray-500 text-center py-4">
+            <p className="py-4 text-center text-sm text-gray-500">
               No tests run yet
             </p>
           )}

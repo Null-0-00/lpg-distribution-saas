@@ -6,22 +6,42 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { SaleType, PaymentType } from '@prisma/client';
 import { offlineStorage } from '@/lib/offline/storage';
-import { MobileButton, MobileInput, MobileSelect, MobileTextarea, MobileCard } from '@/components/ui/mobile-optimized';
+import {
+  MobileButton,
+  MobileInput,
+  MobileSelect,
+  MobileTextarea,
+  MobileCard,
+} from '@/components/ui/mobile-optimized';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
-import { Wifi, WifiOff, CloudOff, Loader2, AlertTriangle, Check, Mic } from 'lucide-react';
+import {
+  Wifi,
+  WifiOff,
+  CloudOff,
+  Loader2,
+  AlertTriangle,
+  Check,
+  Mic,
+} from 'lucide-react';
 import { useSettings } from '@/contexts/SettingsContext';
 
 const offlineSaleSchema = z.object({
   driverId: z.string().min(1, 'Driver is required'),
   productId: z.string().min(1, 'Product is required'),
   saleType: z.nativeEnum(SaleType),
-  quantity: z.number().min(1, 'Quantity must be at least 1').max(1000, 'Quantity too large'),
+  quantity: z
+    .number()
+    .min(1, 'Quantity must be at least 1')
+    .max(1000, 'Quantity too large'),
   unitPrice: z.number().min(0, 'Price cannot be negative'),
   discount: z.number().min(0, 'Discount cannot be negative'),
   paymentType: z.nativeEnum(PaymentType),
   cashDeposited: z.number().min(0, 'Cash deposited cannot be negative'),
-  cylindersDeposited: z.number().int().min(0, 'Cylinders deposited cannot be negative'),
+  cylindersDeposited: z
+    .number()
+    .int()
+    .min(0, 'Cylinders deposited cannot be negative'),
   notes: z.string().optional(),
 });
 
@@ -53,7 +73,10 @@ interface OfflineSalesFormProps {
   onCancel?: () => void;
 }
 
-export function OfflineSalesForm({ onSubmit, onCancel }: OfflineSalesFormProps) {
+export function OfflineSalesForm({
+  onSubmit,
+  onCancel,
+}: OfflineSalesFormProps) {
   const [drivers, setDrivers] = useState<Driver[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [isOnline, setIsOnline] = useState(navigator.onLine);
@@ -70,7 +93,7 @@ export function OfflineSalesForm({ onSubmit, onCancel }: OfflineSalesFormProps) 
     watch,
     setValue,
     reset,
-    formState: { errors }
+    formState: { errors },
   } = useForm<z.infer<typeof offlineSaleSchema>>({
     resolver: zodResolver(offlineSaleSchema),
     defaultValues: {
@@ -78,12 +101,13 @@ export function OfflineSalesForm({ onSubmit, onCancel }: OfflineSalesFormProps) 
       cashDeposited: 0,
       cylindersDeposited: 0,
       paymentType: PaymentType.CASH,
-      saleType: SaleType.PACKAGE
-    }
+      saleType: SaleType.PACKAGE,
+    },
   });
 
   const watchedValues = watch();
-  const totalValue = (watchedValues.quantity || 0) * (watchedValues.unitPrice || 0);
+  const totalValue =
+    (watchedValues.quantity || 0) * (watchedValues.unitPrice || 0);
   const netValue = totalValue - (watchedValues.discount || 0);
 
   // Load cached data for offline operation
@@ -91,15 +115,17 @@ export function OfflineSalesForm({ onSubmit, onCancel }: OfflineSalesFormProps) 
     const loadCachedData = async () => {
       try {
         setLoadingData(true);
-        
+
         // Try to get data from cache first
-        const cachedDrivers = await offlineStorage.getCachedData('active-drivers');
-        const cachedProducts = await offlineStorage.getCachedData('products-inventory');
-        
+        const cachedDrivers =
+          await offlineStorage.getCachedData('active-drivers');
+        const cachedProducts =
+          await offlineStorage.getCachedData('products-inventory');
+
         if (cachedDrivers) {
           setDrivers(cachedDrivers);
         }
-        
+
         if (cachedProducts) {
           setProducts(cachedProducts);
         }
@@ -109,19 +135,29 @@ export function OfflineSalesForm({ onSubmit, onCancel }: OfflineSalesFormProps) 
           try {
             const [driversRes, productsRes] = await Promise.all([
               fetch('/api/drivers?active=true&driverType=RETAIL'),
-              fetch('/api/products?inventory=true')
+              fetch('/api/products?inventory=true'),
             ]);
 
             if (driversRes.ok) {
               const driversData = await driversRes.json();
               setDrivers(driversData.drivers);
-              await offlineStorage.cacheData('active-drivers', driversData.drivers, 'drivers', 86400000);
+              await offlineStorage.cacheData(
+                'active-drivers',
+                driversData.drivers,
+                'drivers',
+                86400000
+              );
             }
 
             if (productsRes.ok) {
               const productsData = await productsRes.json();
               setProducts(productsData.products);
-              await offlineStorage.cacheData('products-inventory', productsData.products, 'products', 3600000);
+              await offlineStorage.cacheData(
+                'products-inventory',
+                productsData.products,
+                'products',
+                3600000
+              );
             }
           } catch (fetchError) {
             console.log('Failed to refresh data, using cached data');
@@ -132,7 +168,6 @@ export function OfflineSalesForm({ onSubmit, onCancel }: OfflineSalesFormProps) 
         const syncStatus = await offlineStorage.getSyncStatus();
         setPendingSync(syncStatus.pendingItems);
         setLastSync(syncStatus.lastSync ? new Date(syncStatus.lastSync) : null);
-
       } catch (error) {
         console.error('Failed to load data:', error);
       } finally {
@@ -164,7 +199,7 @@ export function OfflineSalesForm({ onSubmit, onCancel }: OfflineSalesFormProps) 
   // Update unit price when product changes
   useEffect(() => {
     if (watchedValues.productId) {
-      const product = products.find(p => p.id === watchedValues.productId);
+      const product = products.find((p) => p.id === watchedValues.productId);
       if (product) {
         setSelectedProduct(product);
         setValue('unitPrice', product.currentPrice);
@@ -181,13 +216,13 @@ export function OfflineSalesForm({ onSubmit, onCancel }: OfflineSalesFormProps) 
 
   const handleFormSubmit = async (data: z.infer<typeof offlineSaleSchema>) => {
     setLoading(true);
-    
+
     try {
       const saleData = {
         ...data,
         timestamp: Date.now(),
         offline: !isOnline,
-        deviceId: localStorage.getItem('deviceId') || 'unknown'
+        deviceId: localStorage.getItem('deviceId') || 'unknown',
       };
 
       if (isOnline && onSubmit) {
@@ -215,11 +250,11 @@ export function OfflineSalesForm({ onSubmit, onCancel }: OfflineSalesFormProps) 
       setSelectedProduct(null);
 
       // Show success message
-      alert(isOnline ? 
-        'Sale created successfully!' : 
-        'Sale saved offline. Will sync when connection is restored.'
+      alert(
+        isOnline
+          ? 'Sale created successfully!'
+          : 'Sale saved offline. Will sync when connection is restored.'
       );
-
     } catch (error) {
       console.error('Failed to submit sale:', error);
       alert('Failed to save sale. Please try again.');
@@ -241,24 +276,24 @@ export function OfflineSalesForm({ onSubmit, onCancel }: OfflineSalesFormProps) 
   };
 
   const formatDriverOptions = () => {
-    return drivers.map(driver => ({
+    return drivers.map((driver) => ({
       value: driver.id,
-      label: `${driver.name}${driver.route ? ` - ${driver.route}` : ''}`
+      label: `${driver.name}${driver.route ? ` - ${driver.route}` : ''}`,
     }));
   };
 
   const formatProductOptions = () => {
-    return products.map(product => ({
+    return products.map((product) => ({
       value: product.id,
       label: `${product.fullName}${product.inventory ? ` (${product.inventory.fullCylinders} available)` : ''}`,
-      disabled: product.inventory?.fullCylinders === 0
+      disabled: product.inventory?.fullCylinders === 0,
     }));
   };
 
   if (loadingData) {
     return (
-      <MobileCard className="text-center py-8">
-        <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
+      <MobileCard className="py-8 text-center">
+        <Loader2 className="mx-auto mb-4 h-8 w-8 animate-spin" />
         <p>Loading form data...</p>
       </MobileCard>
     );
@@ -279,7 +314,7 @@ export function OfflineSalesForm({ onSubmit, onCancel }: OfflineSalesFormProps) 
               {isOnline ? 'Online' : 'Offline Mode'}
             </span>
           </div>
-          
+
           {pendingSync > 0 && (
             <Badge variant="outline" className="flex items-center space-x-1">
               <CloudOff className="h-3 w-3" />
@@ -287,9 +322,9 @@ export function OfflineSalesForm({ onSubmit, onCancel }: OfflineSalesFormProps) 
             </Badge>
           )}
         </div>
-        
+
         {lastSync && (
-          <p className="text-xs text-gray-500 mt-1">
+          <p className="mt-1 text-xs text-gray-500">
             Last sync: {lastSync.toLocaleTimeString()}
           </p>
         )}
@@ -323,7 +358,8 @@ export function OfflineSalesForm({ onSubmit, onCancel }: OfflineSalesFormProps) 
           <Alert className="border-orange-200 bg-orange-50">
             <AlertTriangle className="h-4 w-4 text-orange-600" />
             <AlertDescription className="text-orange-800">
-              Warning: This product is running low on stock ({selectedProduct.inventory.fullCylinders} cylinders remaining).
+              Warning: This product is running low on stock (
+              {selectedProduct.inventory.fullCylinders} cylinders remaining).
             </AlertDescription>
           </Alert>
         )}
@@ -334,7 +370,7 @@ export function OfflineSalesForm({ onSubmit, onCancel }: OfflineSalesFormProps) 
             label="Sale Type *"
             options={[
               { value: SaleType.PACKAGE, label: 'Package Sale' },
-              { value: SaleType.REFILL, label: 'Refill Sale' }
+              { value: SaleType.REFILL, label: 'Refill Sale' },
             ]}
             value={watchedValues.saleType || ''}
             onChange={(value) => setValue('saleType', value as SaleType)}
@@ -374,9 +410,13 @@ export function OfflineSalesForm({ onSubmit, onCancel }: OfflineSalesFormProps) 
           />
 
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">Net Value</label>
-            <div className="h-12 px-4 bg-gray-50 border border-gray-300 rounded-lg flex items-center">
-              <span className="text-lg font-semibold">{formatCurrency(netValue)}</span>
+            <label className="block text-sm font-medium text-gray-700">
+              Net Value
+            </label>
+            <div className="flex h-12 items-center rounded-lg border border-gray-300 bg-gray-50 px-4">
+              <span className="text-lg font-semibold">
+                {formatCurrency(netValue)}
+              </span>
             </div>
           </div>
         </div>
@@ -388,7 +428,7 @@ export function OfflineSalesForm({ onSubmit, onCancel }: OfflineSalesFormProps) 
             options={[
               { value: PaymentType.CASH, label: 'Cash' },
               { value: PaymentType.CREDIT, label: 'Credit' },
-              { value: PaymentType.CYLINDER_CREDIT, label: 'Cylinder Credit' }
+              { value: PaymentType.CYLINDER_CREDIT, label: 'Cylinder Credit' },
             ]}
             value={watchedValues.paymentType || ''}
             onChange={(value) => setValue('paymentType', value as PaymentType)}
@@ -432,38 +472,44 @@ export function OfflineSalesForm({ onSubmit, onCancel }: OfflineSalesFormProps) 
           <Alert className="border-yellow-200 bg-yellow-50">
             <AlertTriangle className="h-4 w-4 text-yellow-600" />
             <AlertDescription className="text-yellow-800">
-              This sale will create a cash receivable of {formatCurrency(netValue - (watchedValues.cashDeposited || 0))}.
+              This sale will create a cash receivable of{' '}
+              {formatCurrency(netValue - (watchedValues.cashDeposited || 0))}.
             </AlertDescription>
           </Alert>
         )}
 
-        {watchedValues.saleType === SaleType.REFILL && 
-         (watchedValues.quantity || 0) > (watchedValues.cylindersDeposited || 0) && (
-          <Alert className="border-blue-200 bg-blue-50">
-            <AlertTriangle className="h-4 w-4 text-blue-600" />
-            <AlertDescription className="text-blue-800">
-              This sale will create a cylinder receivable of {(watchedValues.quantity || 0) - (watchedValues.cylindersDeposited || 0)} cylinders.
-            </AlertDescription>
-          </Alert>
-        )}
+        {watchedValues.saleType === SaleType.REFILL &&
+          (watchedValues.quantity || 0) >
+            (watchedValues.cylindersDeposited || 0) && (
+            <Alert className="border-blue-200 bg-blue-50">
+              <AlertTriangle className="h-4 w-4 text-blue-600" />
+              <AlertDescription className="text-blue-800">
+                This sale will create a cylinder receivable of{' '}
+                {(watchedValues.quantity || 0) -
+                  (watchedValues.cylindersDeposited || 0)}{' '}
+                cylinders.
+              </AlertDescription>
+            </Alert>
+          )}
 
         {/* Offline Mode Info */}
         {!isOnline && (
           <Alert className="border-blue-200 bg-blue-50">
             <CloudOff className="h-4 w-4 text-blue-600" />
             <AlertDescription className="text-blue-800">
-              You're working offline. This sale will be saved locally and synced when connection is restored.
+              You're working offline. This sale will be saved locally and synced
+              when connection is restored.
             </AlertDescription>
           </Alert>
         )}
 
         {/* Form Actions */}
-        <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4">
-          <div className="flex space-x-4 max-w-lg mx-auto">
+        <div className="fixed bottom-0 left-0 right-0 border-t border-gray-200 bg-white p-4">
+          <div className="mx-auto flex max-w-lg space-x-4">
             {onCancel && (
-              <MobileButton 
-                type="button" 
-                variant="secondary" 
+              <MobileButton
+                type="button"
+                variant="secondary"
                 size="lg"
                 onClick={onCancel}
                 className="flex-1"
@@ -471,14 +517,18 @@ export function OfflineSalesForm({ onSubmit, onCancel }: OfflineSalesFormProps) 
                 Cancel
               </MobileButton>
             )}
-            <MobileButton 
-              type="submit" 
-              variant="primary" 
+            <MobileButton
+              type="submit"
+              variant="primary"
               size="lg"
               loading={loading}
               className="flex-1"
             >
-              {loading ? 'Saving...' : isOnline ? 'Create Sale' : 'Save Offline'}
+              {loading
+                ? 'Saving...'
+                : isOnline
+                  ? 'Create Sale'
+                  : 'Save Offline'}
             </MobileButton>
           </div>
         </div>

@@ -23,57 +23,92 @@ export async function GET(request: NextRequest) {
     }
 
     const tenantId = session.user.tenantId;
-    
+
     // Parse dates
     const periodStart = new Date(startDate);
     const periodEnd = new Date(endDate + 'T23:59:59.999Z');
-    const comparisonStart = compareStartDate ? new Date(compareStartDate) : null;
-    const comparisonEnd = compareEndDate ? new Date(compareEndDate + 'T23:59:59.999Z') : null;
+    const comparisonStart = compareStartDate
+      ? new Date(compareStartDate)
+      : null;
+    const comparisonEnd = compareEndDate
+      ? new Date(compareEndDate + 'T23:59:59.999Z')
+      : null;
 
     // REVENUE CALCULATIONS
-    const revenueData = await calculateRevenue(tenantId, periodStart, periodEnd, comparisonStart, comparisonEnd);
-    
+    const revenueData = await calculateRevenue(
+      tenantId,
+      periodStart,
+      periodEnd,
+      comparisonStart,
+      comparisonEnd
+    );
+
     // COST OF GOODS SOLD
-    const cogsData = await calculateCOGS(tenantId, periodStart, periodEnd, comparisonStart, comparisonEnd);
-    
+    const cogsData = await calculateCOGS(
+      tenantId,
+      periodStart,
+      periodEnd,
+      comparisonStart,
+      comparisonEnd
+    );
+
     // OPERATING EXPENSES
-    const expensesData = await calculateOperatingExpenses(tenantId, periodStart, periodEnd, comparisonStart, comparisonEnd);
+    const expensesData = await calculateOperatingExpenses(
+      tenantId,
+      periodStart,
+      periodEnd,
+      comparisonStart,
+      comparisonEnd
+    );
 
     // CALCULATE NET INCOME
     const grossProfit = revenueData.current.total - cogsData.current.total;
     const netIncome = grossProfit - expensesData.current.total;
 
-    const compareGrossProfit = revenueData.comparison ? 
-      (revenueData.comparison.total - (cogsData.comparison?.total || 0)) : null;
-    const compareNetIncome = compareGrossProfit !== null ? 
-      (compareGrossProfit - (expensesData.comparison?.total || 0)) : null;
+    const compareGrossProfit = revenueData.comparison
+      ? revenueData.comparison.total - (cogsData.comparison?.total || 0)
+      : null;
+    const compareNetIncome =
+      compareGrossProfit !== null
+        ? compareGrossProfit - (expensesData.comparison?.total || 0)
+        : null;
 
     const incomeStatement = {
       period: {
         startDate,
         endDate,
         compareStartDate,
-        compareEndDate
+        compareEndDate,
       },
       revenue: revenueData,
       costOfGoodsSold: cogsData,
       grossProfit: {
         current: grossProfit,
-        comparison: compareGrossProfit
+        comparison: compareGrossProfit,
       },
       operatingExpenses: expensesData,
       netIncome: {
         current: netIncome,
-        comparison: compareNetIncome
+        comparison: compareNetIncome,
       },
       margins: {
-        grossMargin: revenueData.current.total > 0 ? (grossProfit / revenueData.current.total) * 100 : 0,
-        netMargin: revenueData.current.total > 0 ? (netIncome / revenueData.current.total) * 100 : 0,
-        compareGrossMargin: revenueData.comparison && revenueData.comparison.total > 0 ? 
-          ((compareGrossProfit || 0) / revenueData.comparison.total) * 100 : null,
-        compareNetMargin: revenueData.comparison && revenueData.comparison.total > 0 ? 
-          ((compareNetIncome || 0) / revenueData.comparison.total) * 100 : null
-      }
+        grossMargin:
+          revenueData.current.total > 0
+            ? (grossProfit / revenueData.current.total) * 100
+            : 0,
+        netMargin:
+          revenueData.current.total > 0
+            ? (netIncome / revenueData.current.total) * 100
+            : 0,
+        compareGrossMargin:
+          revenueData.comparison && revenueData.comparison.total > 0
+            ? ((compareGrossProfit || 0) / revenueData.comparison.total) * 100
+            : null,
+        compareNetMargin:
+          revenueData.comparison && revenueData.comparison.total > 0
+            ? ((compareNetIncome || 0) / revenueData.comparison.total) * 100
+            : null,
+      },
     };
 
     return NextResponse.json(incomeStatement);
@@ -87,8 +122,8 @@ export async function GET(request: NextRequest) {
 }
 
 async function calculateRevenue(
-  tenantId: string, 
-  periodStart: Date, 
+  tenantId: string,
+  periodStart: Date,
   periodEnd: Date,
   comparisonStart: Date | null,
   comparisonEnd: Date | null
@@ -99,13 +134,13 @@ async function calculateRevenue(
       tenantId,
       saleDate: {
         gte: periodStart,
-        lte: periodEnd
-      }
+        lte: periodEnd,
+      },
     },
     include: {
       driver: true,
-      product: true
-    }
+      product: true,
+    },
   });
 
   // Comparison period revenue
@@ -116,47 +151,58 @@ async function calculateRevenue(
         tenantId,
         saleDate: {
           gte: comparisonStart,
-          lte: comparisonEnd
-        }
+          lte: comparisonEnd,
+        },
       },
       include: {
         driver: true,
-        product: true
-      }
+        product: true,
+      },
     });
   }
 
   const processRevenue = (sales: any[]) => {
-    const byType = sales.reduce((acc, sale) => {
-      const type = sale.saleType;
-      if (!acc[type]) {
-        acc[type] = { amount: 0, quantity: 0, count: 0 };
-      }
-      acc[type].amount += sale.netValue;
-      acc[type].quantity += sale.quantity;
-      acc[type].count += 1;
-      return acc;
-    }, {} as Record<string, { amount: number; quantity: number; count: number }>);
+    const byType = sales.reduce(
+      (acc, sale) => {
+        const type = sale.saleType;
+        if (!acc[type]) {
+          acc[type] = { amount: 0, quantity: 0, count: 0 };
+        }
+        acc[type].amount += sale.netValue;
+        acc[type].quantity += sale.quantity;
+        acc[type].count += 1;
+        return acc;
+      },
+      {} as Record<string, { amount: number; quantity: number; count: number }>
+    );
 
-    const byDriver = sales.reduce((acc, sale) => {
-      const driverName = sale.driver.name;
-      if (!acc[driverName]) {
-        acc[driverName] = { amount: 0, quantity: 0, count: 0 };
-      }
-      acc[driverName].amount += sale.netValue;
-      acc[driverName].quantity += sale.quantity;
-      acc[driverName].count += 1;
-      return acc;
-    }, {} as Record<string, { amount: number; quantity: number; count: number }>);
+    const byDriver = sales.reduce(
+      (acc, sale) => {
+        const driverName = sale.driver.name;
+        if (!acc[driverName]) {
+          acc[driverName] = { amount: 0, quantity: 0, count: 0 };
+        }
+        acc[driverName].amount += sale.netValue;
+        acc[driverName].quantity += sale.quantity;
+        acc[driverName].count += 1;
+        return acc;
+      },
+      {} as Record<string, { amount: number; quantity: number; count: number }>
+    );
 
     const total = sales.reduce((sum, sale) => sum + sale.netValue, 0);
 
-    return { byType, byDriver, total, totalQuantity: sales.reduce((sum, sale) => sum + sale.quantity, 0) };
+    return {
+      byType,
+      byDriver,
+      total,
+      totalQuantity: sales.reduce((sum, sale) => sum + sale.quantity, 0),
+    };
   };
 
   return {
     current: processRevenue(currentSales),
-    comparison: comparisonSales ? processRevenue(comparisonSales) : null
+    comparison: comparisonSales ? processRevenue(comparisonSales) : null,
   };
 }
 
@@ -173,13 +219,13 @@ async function calculateCOGS(
       tenantId,
       purchaseDate: {
         gte: periodStart,
-        lte: periodEnd
-      }
+        lte: periodEnd,
+      },
     },
     include: {
       product: true,
-      company: true
-    }
+      company: true,
+    },
   });
 
   // Comparison period purchases
@@ -190,47 +236,64 @@ async function calculateCOGS(
         tenantId,
         purchaseDate: {
           gte: comparisonStart,
-          lte: comparisonEnd
-        }
+          lte: comparisonEnd,
+        },
       },
       include: {
         product: true,
-        company: true
-      }
+        company: true,
+      },
     });
   }
 
   const processCOGS = (purchases: any[]) => {
-    const byProduct = purchases.reduce((acc, purchase) => {
-      const productName = purchase.product.name;
-      if (!acc[productName]) {
-        acc[productName] = { amount: 0, quantity: 0, count: 0 };
-      }
-      acc[productName].amount += purchase.totalCost;
-      acc[productName].quantity += purchase.quantity;
-      acc[productName].count += 1;
-      return acc;
-    }, {} as Record<string, { amount: number; quantity: number; count: number }>);
+    const byProduct = purchases.reduce(
+      (acc, purchase) => {
+        const productName = purchase.product.name;
+        if (!acc[productName]) {
+          acc[productName] = { amount: 0, quantity: 0, count: 0 };
+        }
+        acc[productName].amount += purchase.totalCost;
+        acc[productName].quantity += purchase.quantity;
+        acc[productName].count += 1;
+        return acc;
+      },
+      {} as Record<string, { amount: number; quantity: number; count: number }>
+    );
 
-    const bySupplier = purchases.reduce((acc, purchase) => {
-      const supplierName = purchase.company.name;
-      if (!acc[supplierName]) {
-        acc[supplierName] = { amount: 0, quantity: 0, count: 0 };
-      }
-      acc[supplierName].amount += purchase.totalCost;
-      acc[supplierName].quantity += purchase.quantity;
-      acc[supplierName].count += 1;
-      return acc;
-    }, {} as Record<string, { amount: number; quantity: number; count: number }>);
+    const bySupplier = purchases.reduce(
+      (acc, purchase) => {
+        const supplierName = purchase.company.name;
+        if (!acc[supplierName]) {
+          acc[supplierName] = { amount: 0, quantity: 0, count: 0 };
+        }
+        acc[supplierName].amount += purchase.totalCost;
+        acc[supplierName].quantity += purchase.quantity;
+        acc[supplierName].count += 1;
+        return acc;
+      },
+      {} as Record<string, { amount: number; quantity: number; count: number }>
+    );
 
-    const total = purchases.reduce((sum, purchase) => sum + purchase.totalCost, 0);
+    const total = purchases.reduce(
+      (sum, purchase) => sum + purchase.totalCost,
+      0
+    );
 
-    return { byProduct, bySupplier, total, totalQuantity: purchases.reduce((sum, purchase) => sum + purchase.quantity, 0) };
+    return {
+      byProduct,
+      bySupplier,
+      total,
+      totalQuantity: purchases.reduce(
+        (sum, purchase) => sum + purchase.quantity,
+        0
+      ),
+    };
   };
 
   return {
     current: processCOGS(currentPurchases),
-    comparison: comparisonPurchases ? processCOGS(comparisonPurchases) : null
+    comparison: comparisonPurchases ? processCOGS(comparisonPurchases) : null,
   };
 }
 
@@ -247,14 +310,14 @@ async function calculateOperatingExpenses(
       tenantId,
       expenseDate: {
         gte: periodStart,
-        lte: periodEnd
+        lte: periodEnd,
       },
-      isApproved: true
+      isApproved: true,
     },
     include: {
       category: true,
-      user: true
-    }
+      user: true,
+    },
   });
 
   // Comparison period expenses
@@ -265,27 +328,30 @@ async function calculateOperatingExpenses(
         tenantId,
         expenseDate: {
           gte: comparisonStart,
-          lte: comparisonEnd
+          lte: comparisonEnd,
         },
-        isApproved: true
+        isApproved: true,
       },
       include: {
         category: true,
-        user: true
-      }
+        user: true,
+      },
     });
   }
 
   const processExpenses = (expenses: any[]) => {
-    const byCategory = expenses.reduce((acc, expense) => {
-      const categoryName = expense.category.name;
-      if (!acc[categoryName]) {
-        acc[categoryName] = { amount: 0, count: 0 };
-      }
-      acc[categoryName].amount += expense.amount;
-      acc[categoryName].count += 1;
-      return acc;
-    }, {} as Record<string, { amount: number; count: number }>);
+    const byCategory = expenses.reduce(
+      (acc, expense) => {
+        const categoryName = expense.category.name;
+        if (!acc[categoryName]) {
+          acc[categoryName] = { amount: 0, count: 0 };
+        }
+        acc[categoryName].amount += expense.amount;
+        acc[categoryName].count += 1;
+        return acc;
+      },
+      {} as Record<string, { amount: number; count: number }>
+    );
 
     const total = expenses.reduce((sum, expense) => sum + expense.amount, 0);
 
@@ -294,6 +360,6 @@ async function calculateOperatingExpenses(
 
   return {
     current: processExpenses(currentExpenses),
-    comparison: comparisonExpenses ? processExpenses(comparisonExpenses) : null
+    comparison: comparisonExpenses ? processExpenses(comparisonExpenses) : null,
   };
 }

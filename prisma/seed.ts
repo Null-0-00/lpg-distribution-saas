@@ -1,7 +1,12 @@
 // Database Seeding Script
 // Creates initial data for development and testing
 
-import { PrismaClient, UserRole, SubscriptionStatus, SubscriptionPlan } from '@prisma/client';
+import {
+  PrismaClient,
+  UserRole,
+  SubscriptionStatus,
+  SubscriptionPlan,
+} from '@prisma/client';
 import { hash } from 'bcryptjs';
 
 const prisma = new PrismaClient();
@@ -24,10 +29,10 @@ async function main() {
         timezone: 'Asia/Dhaka',
         businessHours: {
           start: '09:00',
-          end: '18:00'
-        }
-      }
-    }
+          end: '18:00',
+        },
+      },
+    },
   });
 
   console.log('✅ Created tenant:', tenant.name);
@@ -35,11 +40,11 @@ async function main() {
   // Create admin user
   const adminPassword = await hash('admin123', 12);
   const adminUser = await prisma.user.upsert({
-    where: { 
+    where: {
       tenantId_email: {
         tenantId: tenant.id,
-        email: 'admin@demo.com'
-      }
+        email: 'admin@demo.com',
+      },
     },
     update: {},
     create: {
@@ -48,8 +53,8 @@ async function main() {
       name: 'Admin User',
       password: adminPassword,
       role: UserRole.ADMIN,
-      isActive: true
-    }
+      isActive: true,
+    },
   });
 
   console.log('✅ Created admin user:', adminUser.email);
@@ -57,11 +62,11 @@ async function main() {
   // Create manager user
   const managerPassword = await hash('manager123', 12);
   const managerUser = await prisma.user.upsert({
-    where: { 
+    where: {
       tenantId_email: {
         tenantId: tenant.id,
-        email: 'manager@demo.com'
-      }
+        email: 'manager@demo.com',
+      },
     },
     update: {},
     create: {
@@ -70,8 +75,8 @@ async function main() {
       name: 'Manager User',
       password: managerPassword,
       role: UserRole.MANAGER,
-      isActive: true
-    }
+      isActive: true,
+    },
   });
 
   console.log('✅ Created manager user:', managerUser.email);
@@ -84,16 +89,14 @@ async function main() {
     // No demo products created
   ]);
 
-  
-
   // Create drivers
   const drivers = await Promise.all([
     prisma.driver.upsert({
       where: {
         tenantId_phone: {
           tenantId: tenant.id,
-          phone: '+880-1711-123456'
-        }
+          phone: '+880-1711-123456',
+        },
       },
       update: {},
       create: {
@@ -106,15 +109,15 @@ async function main() {
         route: 'Dhanmondi - Gulshan',
         joiningDate: new Date('2024-01-15'),
         status: 'ACTIVE',
-        driverType: 'RETAIL'
-      }
+        driverType: 'RETAIL',
+      },
     }),
     prisma.driver.upsert({
       where: {
         tenantId_phone: {
           tenantId: tenant.id,
-          phone: '+880-1722-234567'
-        }
+          phone: '+880-1722-234567',
+        },
       },
       update: {},
       create: {
@@ -127,12 +130,12 @@ async function main() {
         route: 'Uttara - Mirpur',
         joiningDate: new Date('2024-02-01'),
         status: 'ACTIVE',
-        driverType: 'SHIPMENT'
-      }
-    })
+        driverType: 'SHIPMENT',
+      },
+    }),
   ]);
 
-  console.log('✅ Created drivers:', drivers.map(d => d.name).join(', '));
+  console.log('✅ Created drivers:', drivers.map((d) => d.name).join(', '));
 
   // Create expense categories
   const expenseCategories = await Promise.all([
@@ -140,8 +143,8 @@ async function main() {
       where: {
         tenantId_name: {
           tenantId: tenant.id,
-          name: 'Transportation'
-        }
+          name: 'Transportation',
+        },
       },
       update: {},
       create: {
@@ -149,15 +152,15 @@ async function main() {
         name: 'Transportation',
         description: 'Vehicle fuel, maintenance, and transportation costs',
         budget: 50000,
-        isActive: true
-      }
+        isActive: true,
+      },
     }),
     prisma.expenseCategory.upsert({
       where: {
         tenantId_name: {
           tenantId: tenant.id,
-          name: 'Salaries'
-        }
+          name: 'Salaries',
+        },
       },
       update: {},
       create: {
@@ -165,15 +168,15 @@ async function main() {
         name: 'Salaries',
         description: 'Employee salaries and benefits',
         budget: 200000,
-        isActive: true
-      }
+        isActive: true,
+      },
     }),
     prisma.expenseCategory.upsert({
       where: {
         tenantId_name: {
           tenantId: tenant.id,
-          name: 'Office Rent'
-        }
+          name: 'Office Rent',
+        },
       },
       update: {},
       create: {
@@ -181,12 +184,15 @@ async function main() {
         name: 'Office Rent',
         description: 'Office and warehouse rental costs',
         budget: 80000,
-        isActive: true
-      }
-    })
+        isActive: true,
+      },
+    }),
   ]);
 
-  console.log('✅ Created expense categories:', expenseCategories.map(c => c.name).join(', '));
+  console.log(
+    '✅ Created expense categories:',
+    expenseCategories.map((c) => c.name).join(', ')
+  );
 
   // Create sample assets
   const assets = await Promise.all([
@@ -200,8 +206,8 @@ async function main() {
         description: 'Primary delivery vehicle for LPG cylinders',
         purchaseDate: new Date('2024-01-01'),
         depreciationRate: 20,
-        isActive: true
-      }
+        isActive: true,
+      },
     }),
     prisma.asset.create({
       data: {
@@ -213,8 +219,8 @@ async function main() {
         description: 'Computers, furniture, and office equipment',
         purchaseDate: new Date('2024-01-15'),
         depreciationRate: 10,
-        isActive: true
-      }
+        isActive: true,
+      },
     }),
     prisma.asset.create({
       data: {
@@ -223,12 +229,12 @@ async function main() {
         category: 'CURRENT_ASSET',
         value: 500000,
         description: 'Current bank balance',
-        isActive: true
-      }
-    })
+        isActive: true,
+      },
+    }),
   ]);
 
-  console.log('✅ Created assets:', assets.map(a => a.name).join(', '));
+  console.log('✅ Created assets:', assets.map((a) => a.name).join(', '));
 
   // Create sample liabilities
   const liabilities = await Promise.all([
@@ -240,8 +246,8 @@ async function main() {
         amount: 1000000,
         description: 'Business expansion loan',
         dueDate: new Date('2026-12-31'),
-        isActive: true
-      }
+        isActive: true,
+      },
     }),
     prisma.liability.create({
       data: {
@@ -251,32 +257,58 @@ async function main() {
         amount: 150000,
         description: 'Outstanding supplier payments',
         dueDate: new Date('2024-12-31'),
-        isActive: true
-      }
-    })
+        isActive: true,
+      },
+    }),
   ]);
 
-  console.log('✅ Created liabilities:', liabilities.map(l => l.name).join(', '));
+  console.log(
+    '✅ Created liabilities:',
+    liabilities.map((l) => l.name).join(', ')
+  );
 
   // Create permissions
   const permissions = await Promise.all([
-    prisma.permission.upsert({ where: { name: 'users:create' }, update: {}, create: { name: 'users:create', description: 'Create users' } }),
-    prisma.permission.upsert({ where: { name: 'users:read' }, update: {}, create: { name: 'users:read', description: 'Read users' } }),
-    prisma.permission.upsert({ where: { name: 'users:update' }, update: {}, create: { name: 'users:update', description: 'Update users' } }),
-    prisma.permission.upsert({ where: { name: 'users:delete' }, update: {}, create: { name: 'users:delete', description: 'Delete users' } }),
-    prisma.permission.upsert({ where: { name: 'roles:assign' }, update: {}, create: { name: 'roles:assign', description: 'Assign roles to users' } }),
+    prisma.permission.upsert({
+      where: { name: 'users:create' },
+      update: {},
+      create: { name: 'users:create', description: 'Create users' },
+    }),
+    prisma.permission.upsert({
+      where: { name: 'users:read' },
+      update: {},
+      create: { name: 'users:read', description: 'Read users' },
+    }),
+    prisma.permission.upsert({
+      where: { name: 'users:update' },
+      update: {},
+      create: { name: 'users:update', description: 'Update users' },
+    }),
+    prisma.permission.upsert({
+      where: { name: 'users:delete' },
+      update: {},
+      create: { name: 'users:delete', description: 'Delete users' },
+    }),
+    prisma.permission.upsert({
+      where: { name: 'roles:assign' },
+      update: {},
+      create: { name: 'roles:assign', description: 'Assign roles to users' },
+    }),
   ]);
 
-  console.log('✅ Created permissions:', permissions.map(p => p.name).join(', '));
+  console.log(
+    '✅ Created permissions:',
+    permissions.map((p) => p.name).join(', ')
+  );
 
   // Assign all permissions to admin
   await prisma.user.update({
     where: { id: adminUser.id },
     data: {
       permissions: {
-        connect: permissions.map(p => ({ id: p.id }))
-      }
-    }
+        connect: permissions.map((p) => ({ id: p.id })),
+      },
+    },
   });
 
   console.log('✅ Assigned all permissions to admin');
@@ -284,11 +316,11 @@ async function main() {
   // Create demo admin user
   const demoAdminPassword = await hash('demo.admin', 12);
   const demoAdminUser = await prisma.user.upsert({
-    where: { 
+    where: {
       tenantId_email: {
         tenantId: tenant.id,
-        email: 'demo@admin.com'
-      }
+        email: 'demo@admin.com',
+      },
     },
     update: {},
     create: {
@@ -299,9 +331,9 @@ async function main() {
       role: UserRole.ADMIN,
       isActive: true,
       permissions: {
-        connect: permissions.map(p => ({ id: p.id }))
-      }
-    }
+        connect: permissions.map((p) => ({ id: p.id })),
+      },
+    },
   });
 
   console.log('✅ Created demo admin user:', demoAdminUser.email);

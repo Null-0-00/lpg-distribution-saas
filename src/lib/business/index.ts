@@ -2,18 +2,18 @@
 // Central export point for all business logic functions
 
 export { InventoryCalculator } from './inventory';
-export type { 
+export type {
   InventoryCalculationData,
   SalesData,
   PurchaseData,
-  InventoryResult 
+  InventoryResult,
 } from './inventory';
 
 export { ReceivablesCalculator } from './receivables';
 export type {
   ReceivablesCalculationData,
   DailySalesRevenue,
-  ReceivablesResult
+  ReceivablesResult,
 } from './receivables';
 
 export { BusinessValidator } from './validation';
@@ -26,5 +26,5 @@ export {
   expenseValidationSchema,
   assetValidationSchema,
   liabilityValidationSchema,
-  userValidationSchema
+  userValidationSchema,
 } from './validation';

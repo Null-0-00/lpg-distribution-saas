@@ -56,10 +56,10 @@ interface UseDailySalesDataProps {
   driverType?: 'RETAIL' | 'SHIPMENT';
 }
 
-export const useDailySalesData = ({ 
-  month, 
-  year, 
-  driverType = 'RETAIL' 
+export const useDailySalesData = ({
+  month,
+  year,
+  driverType = 'RETAIL',
 }: UseDailySalesDataProps = {}) => {
   const [dailySales, setDailySales] = useState<DailySalesRecord[]>([]);
   const [summary, setSummary] = useState<DailySalesSummary>({
@@ -74,15 +74,15 @@ export const useDailySalesData = ({
     uniqueDrivers: 0,
     dateRange: {
       start: new Date(),
-      end: new Date()
-    }
+      end: new Date(),
+    },
   });
   const [period, setPeriod] = useState<DailySalesPeriod>({
     month: new Date().getMonth() + 1,
     year: new Date().getFullYear(),
     monthName: new Date().toLocaleString('default', { month: 'long' }),
     dateRange: '',
-    driverType
+    driverType,
   });
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
@@ -90,47 +90,54 @@ export const useDailySalesData = ({
   const fetchDailySalesData = useCallback(async () => {
     try {
       setLoading(true);
-      
+
       const params = new URLSearchParams();
       if (month) params.append('month', month.toString());
       if (year) params.append('year', year.toString());
       if (driverType) params.append('driverType', driverType);
 
-      console.log('🚀 Fetching daily sales data with params:', params.toString());
-      const response = await fetch(`/api/drivers/daily-sales?${params.toString()}`);
-      
+      console.log(
+        '🚀 Fetching daily sales data with params:',
+        params.toString()
+      );
+      const response = await fetch(
+        `/api/drivers/daily-sales?${params.toString()}`
+      );
+
       console.log('📡 Daily sales response status:', response.status);
-      
+
       if (!response.ok) {
         const errorText = await response.text();
         console.error('❌ Daily sales API error:', errorText);
-        throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
+        throw new Error(
+          `HTTP error! status: ${response.status} - ${errorText}`
+        );
       }
-      
+
       const result = await response.json();
       console.log('📊 Daily sales result:', result);
-      
+
       if (result.success) {
         // Convert date strings to Date objects
         const processedData = result.data.map((record: any) => ({
           ...record,
-          saleDate: new Date(record.saleDate)
+          saleDate: new Date(record.saleDate),
         }));
-        
+
         setDailySales(processedData);
         setSummary({
           ...result.summary,
           dateRange: {
             start: new Date(result.summary.dateRange.start),
-            end: new Date(result.summary.dateRange.end)
-          }
+            end: new Date(result.summary.dateRange.end),
+          },
         });
         setPeriod(result.period);
-        
+
         console.log('✅ Daily sales data loaded:', {
           recordsCount: processedData.length,
           summary: result.summary,
-          period: result.period
+          period: result.period,
         });
       } else {
         throw new Error(result.error || 'Failed to fetch daily sales data');
@@ -138,9 +145,9 @@ export const useDailySalesData = ({
     } catch (error) {
       console.error('Error fetching daily sales data:', error);
       toast({
-        title: "Error",
-        description: "Failed to load daily sales data. Please try again.",
-        variant: "destructive"
+        title: 'Error',
+        description: 'Failed to load daily sales data. Please try again.',
+        variant: 'destructive',
       });
       // Set empty state on error
       setDailySales([]);
@@ -156,8 +163,8 @@ export const useDailySalesData = ({
         uniqueDrivers: 0,
         dateRange: {
           start: new Date(),
-          end: new Date()
-        }
+          end: new Date(),
+        },
       });
     } finally {
       setLoading(false);
@@ -172,53 +179,83 @@ export const useDailySalesData = ({
     fetchDailySalesData();
   }, [fetchDailySalesData]);
 
-  const getSalesByDriver = useCallback((driverId: string) => {
-    return dailySales.filter(record => record.driver.id === driverId);
-  }, [dailySales]);
+  const getSalesByDriver = useCallback(
+    (driverId: string) => {
+      return dailySales.filter((record) => record.driver.id === driverId);
+    },
+    [dailySales]
+  );
 
-  const getSalesByDate = useCallback((date: Date) => {
-    const targetDate = date.toISOString().split('T')[0];
-    return dailySales.filter(record => 
-      record.saleDate.toISOString().split('T')[0] === targetDate
-    );
-  }, [dailySales]);
+  const getSalesByDate = useCallback(
+    (date: Date) => {
+      const targetDate = date.toISOString().split('T')[0];
+      return dailySales.filter(
+        (record) => record.saleDate.toISOString().split('T')[0] === targetDate
+      );
+    },
+    [dailySales]
+  );
 
-  const getDriverStats = useCallback((driverId: string) => {
-    const driverSales = getSalesByDriver(driverId);
-    return {
-      totalRecords: driverSales.length,
-      totalPackageSales: driverSales.reduce((sum, record) => sum + record.packageSales, 0),
-      totalRefillSales: driverSales.reduce((sum, record) => sum + record.refillSales, 0),
-      totalSales: driverSales.reduce((sum, record) => sum + record.totalSales, 0),
-      totalRevenue: driverSales.reduce((sum, record) => sum + record.totalRevenue, 0),
-      totalCashDeposits: driverSales.reduce((sum, record) => sum + record.cashDeposits, 0),
-      totalCylinderDeposits: driverSales.reduce((sum, record) => sum + record.cylinderDeposits, 0),
-      totalNetRevenue: driverSales.reduce((sum, record) => sum + record.netRevenue, 0)
-    };
-  }, [getSalesByDriver]);
+  const getDriverStats = useCallback(
+    (driverId: string) => {
+      const driverSales = getSalesByDriver(driverId);
+      return {
+        totalRecords: driverSales.length,
+        totalPackageSales: driverSales.reduce(
+          (sum, record) => sum + record.packageSales,
+          0
+        ),
+        totalRefillSales: driverSales.reduce(
+          (sum, record) => sum + record.refillSales,
+          0
+        ),
+        totalSales: driverSales.reduce(
+          (sum, record) => sum + record.totalSales,
+          0
+        ),
+        totalRevenue: driverSales.reduce(
+          (sum, record) => sum + record.totalRevenue,
+          0
+        ),
+        totalCashDeposits: driverSales.reduce(
+          (sum, record) => sum + record.cashDeposits,
+          0
+        ),
+        totalCylinderDeposits: driverSales.reduce(
+          (sum, record) => sum + record.cylinderDeposits,
+          0
+        ),
+        totalNetRevenue: driverSales.reduce(
+          (sum, record) => sum + record.netRevenue,
+          0
+        ),
+      };
+    },
+    [getSalesByDriver]
+  );
 
   const formatCurrency = useCallback((amount: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
       minimumFractionDigits: 0,
-      maximumFractionDigits: 0
+      maximumFractionDigits: 0,
     }).format(amount);
   }, []);
 
   const formatDate = useCallback((date: Date | string | null | undefined) => {
     if (!date) return 'N/A';
-    
+
     const dateObj = date instanceof Date ? date : new Date(date);
-    
+
     if (isNaN(dateObj.getTime())) {
       return 'Invalid Date';
     }
-    
+
     return dateObj.toLocaleDateString('en-US', {
       month: 'short',
       day: 'numeric',
-      year: 'numeric'
+      year: 'numeric',
     });
   }, []);
 
@@ -232,6 +269,6 @@ export const useDailySalesData = ({
     getSalesByDate,
     getDriverStats,
     formatCurrency,
-    formatDate
+    formatDate,
   };
 };

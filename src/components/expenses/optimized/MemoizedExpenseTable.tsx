@@ -31,30 +31,36 @@ export const MemoizedExpenseTable = memo<MemoizedExpenseTableProps>(
     onApproveExpense,
     onRejectExpense,
     onPageChange,
-    onLimitChange
+    onLimitChange,
   }) => {
     // Memoize expensive calculations
     const memoizedExpenses = useMemo(() => {
-      return expenses.map(expense => ({
+      return expenses.map((expense) => ({
         ...expense,
         formattedAmount: new Intl.NumberFormat('en-US', {
           style: 'currency',
-          currency: 'USD'
+          currency: 'USD',
         }).format(expense.amount),
-        formattedDate: new Date(expense.expenseDate).toLocaleDateString('en-US', {
-          year: 'numeric',
-          month: 'short',
-          day: 'numeric'
-        })
+        formattedDate: new Date(expense.expenseDate).toLocaleDateString(
+          'en-US',
+          {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+          }
+        ),
       }));
     }, [expenses]);
 
-    const memoizedPagination = useMemo(() => ({
-      page: pagination.page,
-      limit: pagination.limit,
-      total: pagination.total,
-      pages: pagination.pages
-    }), [pagination.page, pagination.limit, pagination.total, pagination.pages]);
+    const memoizedPagination = useMemo(
+      () => ({
+        page: pagination.page,
+        limit: pagination.limit,
+        total: pagination.total,
+        pages: pagination.pages,
+      }),
+      [pagination.page, pagination.limit, pagination.total, pagination.pages]
+    );
 
     return (
       <ExpenseTable

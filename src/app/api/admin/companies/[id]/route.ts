@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { requireAdminAuth, createAdminResponse, createAdminErrorResponse } from '@/lib/admin-auth';
+import {
+  requireAdminAuth,
+  createAdminResponse,
+  createAdminErrorResponse,
+} from '@/lib/admin-auth';
 import { prisma } from '@/lib/prisma';
 import { AuditLogger } from '@/lib/audit-logger';
 
@@ -10,7 +14,7 @@ export async function GET(
   try {
     const session = await requireAdminAuth(request);
     const { id } = await params;
-    
+
     const company = await prisma.company.findUnique({
       where: { id },
       include: {
@@ -19,41 +23,40 @@ export async function GET(
             _count: {
               select: {
                 purchases: true,
-                inventoryMovements: true
-              }
-            }
-          }
+                inventoryMovements: true,
+              },
+            },
+          },
         },
         distributorAssignments: {
           where: { isActive: true },
           include: {
             tenant: {
-              select: { id: true, name: true, subdomain: true }
+              select: { id: true, name: true, subdomain: true },
             },
             product: {
-              select: { id: true, name: true }
-            }
-          }
+              select: { id: true, name: true },
+            },
+          },
         },
         companyPricingTiers: {
-          where: { isActive: true }
+          where: { isActive: true },
         },
         _count: {
           select: {
             products: true,
             purchases: true,
             shipments: true,
-            distributorAssignments: true
-          }
-        }
-      }
+            distributorAssignments: true,
+          },
+        },
+      },
     });
 
     if (!company) {
-      return NextResponse.json(
-        createAdminErrorResponse('Company not found'),
-        { status: 404 }
-      );
+      return NextResponse.json(createAdminErrorResponse('Company not found'), {
+        status: 404,
+      });
     }
 
     await AuditLogger.logCompanyAction(
@@ -69,8 +72,13 @@ export async function GET(
   } catch (error) {
     console.error('Get company error:', error);
     return NextResponse.json(
-      createAdminErrorResponse(error instanceof Error ? error.message : 'Failed to fetch company'),
-      { status: error instanceof Error && error.message.includes('Admin') ? 403 : 500 }
+      createAdminErrorResponse(
+        error instanceof Error ? error.message : 'Failed to fetch company'
+      ),
+      {
+        status:
+          error instanceof Error && error.message.includes('Admin') ? 403 : 500,
+      }
     );
   }
 }
@@ -83,7 +91,7 @@ export async function PUT(
     const session = await requireAdminAuth(request);
     const { id } = await params;
     const data = await request.json();
-    
+
     const {
       name,
       code,
@@ -95,28 +103,27 @@ export async function PUT(
       supplierInfo,
       territory,
       analytics,
-      isActive
+      isActive,
     } = data;
 
     // Get existing company for audit log
     const existingCompany = await prisma.company.findUnique({
-      where: { id }
+      where: { id },
     });
 
     if (!existingCompany) {
-      return NextResponse.json(
-        createAdminErrorResponse('Company not found'),
-        { status: 404 }
-      );
+      return NextResponse.json(createAdminErrorResponse('Company not found'), {
+        status: 404,
+      });
     }
 
     // Check for name conflicts (excluding current company)
     if (name && name !== existingCompany.name) {
       const nameConflict = await prisma.company.findFirst({
-        where: { 
+        where: {
           name: { equals: name, mode: 'insensitive' },
-          id: { not: id }
-        }
+          id: { not: id },
+        },
       });
 
       if (nameConflict) {
@@ -130,10 +137,10 @@ export async function PUT(
     // Check for code conflicts (excluding current company)
     if (code && code !== existingCompany.code) {
       const codeConflict = await prisma.company.findFirst({
-        where: { 
+        where: {
           code: { equals: code, mode: 'insensitive' },
-          id: { not: id }
-        }
+          id: { not: id },
+        },
       });
 
       if (codeConflict) {
@@ -164,10 +171,10 @@ export async function PUT(
         _count: {
           select: {
             products: true,
-            distributorAssignments: true
-          }
-        }
-      }
+            distributorAssignments: true,
+          },
+        },
+      },
     });
 
     await AuditLogger.logCompanyAction(
@@ -185,8 +192,13 @@ export async function PUT(
   } catch (error) {
     console.error('Update company error:', error);
     return NextResponse.json(
-      createAdminErrorResponse(error instanceof Error ? error.message : 'Failed to update company'),
-      { status: error instanceof Error && error.message.includes('Admin') ? 403 : 500 }
+      createAdminErrorResponse(
+        error instanceof Error ? error.message : 'Failed to update company'
+      ),
+      {
+        status:
+          error instanceof Error && error.message.includes('Admin') ? 403 : 500,
+      }
     );
   }
 }
@@ -198,7 +210,7 @@ export async function DELETE(
   try {
     const session = await requireAdminAuth(request);
     const { id } = await params;
-    
+
     // Get existing company for audit log
     const existingCompany = await prisma.company.findUnique({
       where: { id },
@@ -207,29 +219,29 @@ export async function DELETE(
           select: {
             products: true,
             purchases: true,
-            distributorAssignments: true
-          }
-        }
-      }
+            distributorAssignments: true,
+          },
+        },
+      },
     });
 
     if (!existingCompany) {
-      return NextResponse.json(
-        createAdminErrorResponse('Company not found'),
-        { status: 404 }
-      );
+      return NextResponse.json(createAdminErrorResponse('Company not found'), {
+        status: 404,
+      });
     }
 
     // Check if company has active relationships
-    const hasActiveData = existingCompany._count.products > 0 || 
-                         existingCompany._count.purchases > 0 || 
-                         existingCompany._count.distributorAssignments > 0;
+    const hasActiveData =
+      existingCompany._count.products > 0 ||
+      existingCompany._count.purchases > 0 ||
+      existingCompany._count.distributorAssignments > 0;
 
     if (hasActiveData) {
       // Soft delete by deactivating instead of hard delete
       const deactivatedCompany = await prisma.company.update({
         where: { id },
-        data: { isActive: false }
+        data: { isActive: false },
       });
 
       await AuditLogger.logCompanyAction(
@@ -250,7 +262,7 @@ export async function DELETE(
     } else {
       // Hard delete if no relationships exist
       await prisma.company.delete({
-        where: { id }
+        where: { id },
       });
 
       await AuditLogger.logCompanyAction(
@@ -263,17 +275,19 @@ export async function DELETE(
       );
 
       return NextResponse.json(
-        createAdminResponse(
-          { deleted: true },
-          'Company deleted successfully'
-        )
+        createAdminResponse({ deleted: true }, 'Company deleted successfully')
       );
     }
   } catch (error) {
     console.error('Delete company error:', error);
     return NextResponse.json(
-      createAdminErrorResponse(error instanceof Error ? error.message : 'Failed to delete company'),
-      { status: error instanceof Error && error.message.includes('Admin') ? 403 : 500 }
+      createAdminErrorResponse(
+        error instanceof Error ? error.message : 'Failed to delete company'
+      ),
+      {
+        status:
+          error instanceof Error && error.message.includes('Admin') ? 403 : 500,
+      }
     );
   }
 }

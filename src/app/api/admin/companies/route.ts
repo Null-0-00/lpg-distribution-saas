@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { requireAdminAuth, createAdminResponse, createAdminErrorResponse } from '@/lib/admin-auth';
+import {
+  requireAdminAuth,
+  createAdminResponse,
+  createAdminErrorResponse,
+} from '@/lib/admin-auth';
 import { prisma } from '@/lib/prisma';
 import { AuditLogger } from '@/lib/audit-logger';
 
@@ -7,7 +11,7 @@ export async function GET(request: NextRequest) {
   try {
     const session = await requireAdminAuth(request);
     const { searchParams } = new URL(request.url);
-    
+
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '20');
     const search = searchParams.get('search') || '';
@@ -16,19 +20,19 @@ export async function GET(request: NextRequest) {
     const offset = (page - 1) * limit;
 
     const whereClause: any = {};
-    
+
     if (search) {
       whereClause.OR = [
         { name: { contains: search, mode: 'insensitive' } },
         { code: { contains: search, mode: 'insensitive' } },
-        { email: { contains: search, mode: 'insensitive' } }
+        { email: { contains: search, mode: 'insensitive' } },
       ];
     }
-    
+
     if (isActive !== null && isActive !== undefined) {
       whereClause.isActive = isActive === 'true';
     }
-    
+
     if (territory) {
       whereClause.territory = territory;
     }
@@ -38,40 +42,40 @@ export async function GET(request: NextRequest) {
         where: whereClause,
         include: {
           products: {
-            select: { id: true, name: true, isActive: true }
+            select: { id: true, name: true, isActive: true },
           },
           distributorAssignments: {
             where: { isActive: true },
             include: {
               tenant: {
-                select: { id: true, name: true }
-              }
-            }
+                select: { id: true, name: true },
+              },
+            },
           },
           companyPricingTiers: {
             where: { isActive: true },
-            select: { id: true, tierName: true, discountPercent: true }
+            select: { id: true, tierName: true, discountPercent: true },
           },
           _count: {
             select: {
               products: true,
               purchases: true,
-              shipments: true
-            }
-          }
+              shipments: true,
+            },
+          },
         },
         orderBy: { name: 'asc' },
         take: limit,
-        skip: offset
+        skip: offset,
       }),
-      
+
       prisma.company.count({ where: whereClause }),
-      
+
       prisma.company.findMany({
         select: { territory: true },
         where: { territory: { not: null } },
-        distinct: ['territory']
-      })
+        distinct: ['territory'],
+      }),
     ]);
 
     await AuditLogger.logCompanyAction(
@@ -83,23 +87,30 @@ export async function GET(request: NextRequest) {
       request
     );
 
-    return NextResponse.json(createAdminResponse({
-      companies,
-      pagination: {
-        page,
-        limit,
-        total: totalCount,
-        totalPages: Math.ceil(totalCount / limit),
-        hasNext: offset + limit < totalCount,
-        hasPrev: page > 1
-      },
-      territories: territories.map(t => t.territory).filter(Boolean)
-    }));
+    return NextResponse.json(
+      createAdminResponse({
+        companies,
+        pagination: {
+          page,
+          limit,
+          total: totalCount,
+          totalPages: Math.ceil(totalCount / limit),
+          hasNext: offset + limit < totalCount,
+          hasPrev: page > 1,
+        },
+        territories: territories.map((t) => t.territory).filter(Boolean),
+      })
+    );
   } catch (error) {
     console.error('Get companies error:', error);
     return NextResponse.json(
-      createAdminErrorResponse(error instanceof Error ? error.message : 'Failed to fetch companies'),
-      { status: error instanceof Error && error.message.includes('Admin') ? 403 : 500 }
+      createAdminErrorResponse(
+        error instanceof Error ? error.message : 'Failed to fetch companies'
+      ),
+      {
+        status:
+          error instanceof Error && error.message.includes('Admin') ? 403 : 500,
+      }
     );
   }
 }
@@ -108,7 +119,7 @@ export async function POST(request: NextRequest) {
   try {
     const session = await requireAdminAuth(request);
     const data = await request.json();
-    
+
     const {
       name,
       code,
@@ -120,7 +131,7 @@ export async function POST(request: NextRequest) {
       supplierInfo,
       territory,
       analytics,
-      isActive = true
+      isActive = true,
     } = data;
 
     if (!name) {
@@ -132,9 +143,9 @@ export async function POST(request: NextRequest) {
 
     // Check if company with same name already exists
     const existingCompany = await prisma.company.findFirst({
-      where: { 
-        name: { equals: name, mode: 'insensitive' }
-      }
+      where: {
+        name: { equals: name, mode: 'insensitive' },
+      },
     });
 
     if (existingCompany) {
@@ -147,9 +158,9 @@ export async function POST(request: NextRequest) {
     // Check if code is provided and unique
     if (code) {
       const existingCode = await prisma.company.findFirst({
-        where: { 
-          code: { equals: code, mode: 'insensitive' }
-        }
+        where: {
+          code: { equals: code, mode: 'insensitive' },
+        },
       });
 
       if (existingCode) {
@@ -162,7 +173,7 @@ export async function POST(request: NextRequest) {
 
     // Create with system tenant (companies are global)
     const systemTenant = await prisma.tenant.findFirst({
-      where: { subdomain: 'system' }
+      where: { subdomain: 'system' },
     });
 
     if (!systemTenant) {
@@ -185,16 +196,16 @@ export async function POST(request: NextRequest) {
         supplierInfo: supplierInfo || null,
         territory,
         analytics: analytics || null,
-        isActive
+        isActive,
       },
       include: {
         _count: {
           select: {
             products: true,
-            distributorAssignments: true
-          }
-        }
-      }
+            distributorAssignments: true,
+          },
+        },
+      },
     });
 
     await AuditLogger.logCompanyAction(
@@ -213,8 +224,13 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Create company error:', error);
     return NextResponse.json(
-      createAdminErrorResponse(error instanceof Error ? error.message : 'Failed to create company'),
-      { status: error instanceof Error && error.message.includes('Admin') ? 403 : 500 }
+      createAdminErrorResponse(
+        error instanceof Error ? error.message : 'Failed to create company'
+      ),
+      {
+        status:
+          error instanceof Error && error.message.includes('Admin') ? 403 : 500,
+      }
     );
   }
 }

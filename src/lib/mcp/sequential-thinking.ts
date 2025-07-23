@@ -39,9 +39,11 @@ export class SequentialThinkingProcessor {
 
   addThought(thought: SequentialThought): void {
     const validatedThought = SequentialThoughtSchema.parse(thought);
-    
+
     if (validatedThought.thoughtNumber > this.maxThoughts) {
-      throw new Error(`Thought number exceeds maximum allowed (${this.maxThoughts})`);
+      throw new Error(
+        `Thought number exceeds maximum allowed (${this.maxThoughts})`
+      );
     }
 
     this.thoughts.push(validatedThought);
@@ -54,7 +56,9 @@ export class SequentialThinkingProcessor {
   isComplete(): boolean {
     if (this.thoughts.length === 0) return false;
     const lastThought = this.thoughts[this.thoughts.length - 1];
-    return !lastThought.nextThoughtNeeded || this.thoughts.length >= this.maxThoughts;
+    return (
+      !lastThought.nextThoughtNeeded || this.thoughts.length >= this.maxThoughts
+    );
   }
 
   reset(): void {
@@ -115,7 +119,8 @@ export class LPGBusinessThinking extends SequentialThinkingProcessor {
     });
 
     const totalSales = packageSales + refillSales;
-    const newFullCylinders = currentFull + packagePurchases + refillPurchases - totalSales;
+    const newFullCylinders =
+      currentFull + packagePurchases + refillPurchases - totalSales;
     const newEmptyCylinders = currentEmpty + refillSales;
 
     this.addThought({
@@ -195,7 +200,8 @@ export class LPGBusinessThinking extends SequentialThinkingProcessor {
     });
 
     const newCashReceivables = currentCashReceivables + cashReceivablesChange;
-    const newCylinderReceivables = currentCylinderReceivables + cylinderReceivablesChange;
+    const newCylinderReceivables =
+      currentCylinderReceivables + cylinderReceivablesChange;
 
     this.addThought({
       thought: `New cash receivables: ${currentCashReceivables} + ${cashReceivablesChange} = ${newCashReceivables}`,

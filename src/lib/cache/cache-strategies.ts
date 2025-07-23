@@ -8,17 +8,17 @@ export const CACHE_TTL = {
   DASHBOARD_METRICS: 300, // 5 minutes
   LIVE_INVENTORY: 600, // 10 minutes
   RECENT_SALES: 900, // 15 minutes
-  
+
   // Moderately changing data
   USER_PROFILE: 1800, // 30 minutes
   DRIVER_LIST: 1800, // 30 minutes
   PRODUCT_LIST: 3600, // 1 hour
-  
+
   // Rarely changing data
   COMPANY_LIST: 7200, // 2 hours
   EXPENSE_CATEGORIES: 7200, // 2 hours
   SYSTEM_SETTINGS: 14400, // 4 hours
-  
+
   // Static-like data
   USER_PERMISSIONS: 86400, // 24 hours
   TENANT_CONFIG: 86400, // 24 hours
@@ -48,7 +48,7 @@ export const CACHE_NAMESPACE = {
 export class DashboardCache {
   static async getDashboardMetrics(tenantId: string, dateRange: string) {
     const cacheKey = `metrics:${dateRange}`;
-    
+
     return redisCache.getOrSet(
       tenantId,
       CACHE_NAMESPACE.DASHBOARD,
@@ -61,7 +61,7 @@ export class DashboardCache {
           totalOrders: 245,
           activeDrivers: 12,
           lowStockItems: 3,
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toISOString(),
         };
       },
       CACHE_TTL.DASHBOARD_METRICS
@@ -90,7 +90,7 @@ export class DashboardCache {
 export class SalesCache {
   static async getSalesSummary(tenantId: string, filters: any) {
     const cacheKey = `summary:${JSON.stringify(filters)}`;
-    
+
     return redisCache.getOrSet(
       tenantId,
       CACHE_NAMESPACE.SALES,
@@ -102,7 +102,7 @@ export class SalesCache {
           packageSales: 89,
           refillSales: 156,
           filters,
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toISOString(),
         };
       },
       CACHE_TTL.RECENT_SALES
@@ -112,7 +112,7 @@ export class SalesCache {
   static async cacheTodaysSales(tenantId: string, salesData: any) {
     const today = new Date().toISOString().split('T')[0];
     const cacheKey = `today:${today}`;
-    
+
     return redisCache.set(
       tenantId,
       CACHE_NAMESPACE.SALES,
@@ -137,7 +137,7 @@ export class SalesCache {
 export class InventoryCache {
   static async getCurrentInventory(tenantId: string, productId?: string) {
     const cacheKey = productId ? `current:product:${productId}` : 'current:all';
-    
+
     return redisCache.getOrSet(
       tenantId,
       CACHE_NAMESPACE.INVENTORY,
@@ -149,7 +149,7 @@ export class InventoryCache {
           emptyCylinders: 75,
           totalCylinders: 225,
           lowStockAlerts: 2,
-          lastUpdated: new Date().toISOString()
+          lastUpdated: new Date().toISOString(),
         };
       },
       CACHE_TTL.LIVE_INVENTORY
@@ -172,7 +172,7 @@ export class InventoryCache {
       const cacheKey = `current:product:${productId}`;
       await redisCache.delete(tenantId, CACHE_NAMESPACE.INVENTORY, cacheKey);
     }
-    
+
     // Always invalidate the all products cache
     await redisCache.delete(tenantId, CACHE_NAMESPACE.INVENTORY, 'current:all');
   }
@@ -184,7 +184,7 @@ export class InventoryCache {
 export class UserCache {
   static async getUserProfile(tenantId: string, userId: string) {
     const cacheKey = `profile:${userId}`;
-    
+
     return redisCache.getOrSet(
       tenantId,
       CACHE_NAMESPACE.USERS,
@@ -197,7 +197,7 @@ export class UserCache {
           email: 'john@example.com',
           role: 'MANAGER',
           permissions: ['sales:read', 'inventory:read'],
-          lastLogin: new Date().toISOString()
+          lastLogin: new Date().toISOString(),
         };
       },
       CACHE_TTL.USER_PROFILE
@@ -206,7 +206,7 @@ export class UserCache {
 
   static async getActiveDrivers(tenantId: string) {
     const cacheKey = 'active:all';
-    
+
     return redisCache.getOrSet(
       tenantId,
       CACHE_NAMESPACE.DRIVERS,
@@ -215,7 +215,7 @@ export class UserCache {
         // This would call your actual active drivers function
         return [
           { id: '1', name: 'Driver 1', status: 'ACTIVE', route: 'Route A' },
-          { id: '2', name: 'Driver 2', status: 'ACTIVE', route: 'Route B' }
+          { id: '2', name: 'Driver 2', status: 'ACTIVE', route: 'Route B' },
         ];
       },
       CACHE_TTL.DRIVER_LIST
@@ -238,7 +238,7 @@ export class UserCache {
 export class CatalogCache {
   static async getProducts(tenantId: string, companyId?: string) {
     const cacheKey = companyId ? `company:${companyId}` : 'all';
-    
+
     return redisCache.getOrSet(
       tenantId,
       CACHE_NAMESPACE.PRODUCTS,
@@ -247,7 +247,7 @@ export class CatalogCache {
         // This would call your actual products function
         return [
           { id: '1', name: '12L Cylinder', size: '12L', currentPrice: 950 },
-          { id: '2', name: '35L Cylinder', size: '35L', currentPrice: 2100 }
+          { id: '2', name: '35L Cylinder', size: '35L', currentPrice: 2100 },
         ];
       },
       CACHE_TTL.PRODUCT_LIST
@@ -256,7 +256,7 @@ export class CatalogCache {
 
   static async getCompanies(tenantId: string) {
     const cacheKey = 'all:active';
-    
+
     return redisCache.getOrSet(
       tenantId,
       CACHE_NAMESPACE.COMPANIES,
@@ -265,7 +265,7 @@ export class CatalogCache {
         // This would call your actual companies function
         return [
           { id: '1', name: 'Aygaz', code: 'AYG', isActive: true },
-          { id: '2', name: 'Jamuna', code: 'JAM', isActive: true }
+          { id: '2', name: 'Jamuna', code: 'JAM', isActive: true },
         ];
       },
       CACHE_TTL.COMPANY_LIST
@@ -274,7 +274,11 @@ export class CatalogCache {
 
   static async invalidateProductsCache(tenantId: string, companyId?: string) {
     if (companyId) {
-      await redisCache.delete(tenantId, CACHE_NAMESPACE.PRODUCTS, `company:${companyId}`);
+      await redisCache.delete(
+        tenantId,
+        CACHE_NAMESPACE.PRODUCTS,
+        `company:${companyId}`
+      );
     }
     await redisCache.delete(tenantId, CACHE_NAMESPACE.PRODUCTS, 'all');
   }
@@ -356,7 +360,7 @@ export class RateLimitCache {
     return {
       allowed: count <= limit,
       remaining,
-      resetTime
+      resetTime,
     };
   }
 }
@@ -373,7 +377,7 @@ export class CacheWarmer {
       InventoryCache.getCurrentInventory(tenantId),
       UserCache.getActiveDrivers(tenantId),
       CatalogCache.getProducts(tenantId),
-      CatalogCache.getCompanies(tenantId)
+      CatalogCache.getCompanies(tenantId),
     ];
 
     await Promise.allSettled(promises);

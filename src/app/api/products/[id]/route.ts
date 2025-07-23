@@ -18,37 +18,33 @@ export async function GET(
     const product = await prisma.product.findFirst({
       where: {
         id,
-        tenantId
+        tenantId,
       },
       include: {
         company: {
           select: {
             id: true,
-            name: true
-          }
+            name: true,
+          },
         },
         cylinderSize: {
           select: {
             id: true,
             size: true,
-            description: true
-          }
-        }
-      }
+            description: true,
+          },
+        },
+      },
     });
 
     if (!product) {
-      return NextResponse.json(
-        { error: 'Product not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Product not found' }, { status: 404 });
     }
 
     return NextResponse.json({
       success: true,
-      product
+      product,
     });
-
   } catch (error) {
     console.error('Get product error:', error);
     return NextResponse.json(
@@ -78,7 +74,7 @@ export async function PUT(
       currentPrice,
       lowStockThreshold,
       isActive,
-      companyId
+      companyId,
     } = data;
 
     if (!name || !companyId) {
@@ -100,27 +96,21 @@ export async function PUT(
     const existingProduct = await prisma.product.findFirst({
       where: {
         id,
-        tenantId
-      }
+        tenantId,
+      },
     });
 
     if (!existingProduct) {
-      return NextResponse.json(
-        { error: 'Product not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Product not found' }, { status: 404 });
     }
 
     // Verify company belongs to tenant
     const company = await prisma.company.findFirst({
-      where: { id: companyId, tenantId }
+      where: { id: companyId, tenantId },
     });
 
     if (!company) {
-      return NextResponse.json(
-        { error: 'Company not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Company not found' }, { status: 404 });
     }
 
     // Verify cylinder size belongs to tenant if provided
@@ -128,7 +118,7 @@ export async function PUT(
     let actualSize = size;
     if (cylinderSizeId) {
       cylinderSize = await prisma.cylinderSize.findFirst({
-        where: { id: cylinderSizeId, tenantId }
+        where: { id: cylinderSizeId, tenantId },
       });
 
       if (!cylinderSize) {
@@ -137,7 +127,7 @@ export async function PUT(
           { status: 404 }
         );
       }
-      
+
       // Use cylinder size for the size field
       actualSize = cylinderSize.size;
     }
@@ -146,16 +136,21 @@ export async function PUT(
     const duplicateProduct = await prisma.product.findFirst({
       where: {
         name: { equals: name, mode: 'insensitive' },
-        ...(cylinderSizeId ? { cylinderSizeId } : { size: { equals: actualSize, mode: 'insensitive' } }),
+        ...(cylinderSizeId
+          ? { cylinderSizeId }
+          : { size: { equals: actualSize, mode: 'insensitive' } }),
         companyId,
         tenantId,
-        id: { not: id }
-      }
+        id: { not: id },
+      },
     });
 
     if (duplicateProduct) {
       return NextResponse.json(
-        { error: 'Product with this name and cylinder size already exists for this company' },
+        {
+          error:
+            'Product with this name and cylinder size already exists for this company',
+        },
         { status: 409 }
       );
     }
@@ -175,25 +170,24 @@ export async function PUT(
         company: {
           select: {
             id: true,
-            name: true
-          }
+            name: true,
+          },
         },
         cylinderSize: {
           select: {
             id: true,
             size: true,
-            description: true
-          }
-        }
-      }
+            description: true,
+          },
+        },
+      },
     });
 
     return NextResponse.json({
       success: true,
       product,
-      message: 'Product updated successfully'
+      message: 'Product updated successfully',
     });
-
   } catch (error) {
     console.error('Update product error:', error);
     return NextResponse.json(
@@ -220,46 +214,45 @@ export async function DELETE(
     const existingProduct = await prisma.product.findFirst({
       where: {
         id,
-        tenantId
-      }
+        tenantId,
+      },
     });
 
     if (!existingProduct) {
-      return NextResponse.json(
-        { error: 'Product not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Product not found' }, { status: 404 });
     }
 
     // Check if product has related data (sales, shipments, etc.)
     const [salesCount, dailySalesCount, shipmentsCount] = await Promise.all([
       prisma.sale.count({
-        where: { productId: id }
+        where: { productId: id },
       }),
       prisma.dailySales.count({
-        where: { productId: id }
+        where: { productId: id },
       }),
       prisma.shipment.count({
-        where: { productId: id }
-      })
+        where: { productId: id },
+      }),
     ]);
 
     if (salesCount > 0 || dailySalesCount > 0 || shipmentsCount > 0) {
       return NextResponse.json(
-        { error: 'Cannot delete product with existing sales or shipments. Deactivate instead.' },
+        {
+          error:
+            'Cannot delete product with existing sales or shipments. Deactivate instead.',
+        },
         { status: 400 }
       );
     }
 
     await prisma.product.delete({
-      where: { id }
+      where: { id },
     });
 
     return NextResponse.json({
       success: true,
-      message: 'Product deleted successfully'
+      message: 'Product deleted successfully',
     });
-
   } catch (error) {
     console.error('Delete product error:', error);
     return NextResponse.json(

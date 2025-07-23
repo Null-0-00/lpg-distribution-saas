@@ -27,6 +27,7 @@ A comprehensive, subscription-based SaaS platform that empowers LPG distributors
 ## 📋 Development Status
 
 ### ✅ Phase 1: Foundation & Setup (COMPLETED)
+
 - [x] Next.js 14 project setup with TypeScript
 - [x] Multi-tenant architecture foundation
 - [x] Security headers and production configuration
@@ -39,6 +40,7 @@ A comprehensive, subscription-based SaaS platform that empowers LPG distributors
 - [x] Build optimization and testing
 
 ### ✅ Phase 2: Database Schema & Business Logic (COMPLETED)
+
 - [x] Comprehensive Prisma schema design with 15 models
 - [x] Multi-tenant data isolation and relationships
 - [x] Business logic implementation (inventory & receivables)
@@ -47,6 +49,7 @@ A comprehensive, subscription-based SaaS platform that empowers LPG distributors
 - [x] Business validation rules and constraints
 
 ### ✅ Phase 3: Daily Sales System (COMPLETED)
+
 - [x] Comprehensive Sales API endpoints with validation
 - [x] Dynamic sales form with real-time inventory checks
 - [x] Real-time inventory updates and business logic integration
@@ -55,6 +58,7 @@ A comprehensive, subscription-based SaaS platform that empowers LPG distributors
 - [x] Mobile-responsive design with proper error handling
 
 ### ✅ Phase 4: Inventory Management System (COMPLETED)
+
 - [x] Comprehensive inventory API with real-time calculations
 - [x] Automated stock level monitoring and intelligent alerts
 - [x] Inventory dashboard with overview and detailed analytics
@@ -63,12 +67,14 @@ A comprehensive, subscription-based SaaS platform that empowers LPG distributors
 - [x] Stock health analysis and recommendations
 
 ### 🔄 Phase 5: Driver & User Management (NEXT)
+
 - [ ] Driver management interface
 - [ ] User role management and permissions
 - [ ] Driver performance analytics
 - [ ] User activity monitoring
 
 ### 📅 Upcoming Phases
+
 - Phase 6: Receivables Tracking
 - Phase 7: Assets & Liabilities Management
 - Phase 8: Expense Management
@@ -105,30 +111,34 @@ src/
 
 ### Prerequisites
 
-- Node.js 18+ 
+- Node.js 18+
 - PostgreSQL database
 - npm or yarn package manager
 
 ### Installation
 
 1. **Clone the repository**
+
    ```bash
    git clone <repository-url>
    cd lpg-distributor-saas
    ```
 
 2. **Install dependencies**
+
    ```bash
    npm install
    ```
 
 3. **Environment setup**
+
    ```bash
    cp .env.example .env.local
    # Edit .env.local with your database credentials
    ```
 
 4. **Database setup**
+
    ```bash
    npm run db:generate
    npm run db:push
@@ -164,12 +174,14 @@ npm run db:studio    # Open Prisma Studio
 ## 📊 Business Rules
 
 ### Critical Inventory Formulas
+
 - **Package Sale**: -1 Full Cylinder, no Empty Cylinder change
 - **Refill Sale**: -1 Full Cylinder, +1 Empty Cylinder
 - **Today's Full Cylinders**: Yesterday's Full + Package Purchase + Refill Purchase - Total Sales
 - **Today's Empty Cylinders**: Yesterday's Empty + Refill Sales + Empty Cylinders Buy/Sell
 
 ### Receivables Calculation
+
 - **Cash Receivables Change**: driver_sales_revenue - cash_deposits - discounts
 - **Cylinder Receivables Change**: driver_refill_sales - cylinder_deposits
 

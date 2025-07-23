@@ -2,8 +2,17 @@ import { prisma } from '@/lib/prisma';
 import { NextRequest } from 'next/server';
 import { getRequestMetadata } from '@/lib/admin-auth';
 
-type AuditAction = 'CREATE' | 'UPDATE' | 'DELETE' | 'VIEW' | 'ASSIGN' | 'UNASSIGN' | 
-                   'APPROVE' | 'REJECT' | 'ACTIVATE' | 'DEACTIVATE';
+type AuditAction =
+  | 'CREATE'
+  | 'UPDATE'
+  | 'DELETE'
+  | 'VIEW'
+  | 'ASSIGN'
+  | 'UNASSIGN'
+  | 'APPROVE'
+  | 'REJECT'
+  | 'ACTIVATE'
+  | 'DEACTIVATE';
 
 interface AuditLogData {
   userId: string;
@@ -20,8 +29,10 @@ interface AuditLogData {
 export class AuditLogger {
   static async log(data: AuditLogData): Promise<void> {
     try {
-      const requestMetadata = data.request ? await getRequestMetadata(data.request) : {};
-      
+      const requestMetadata = data.request
+        ? await getRequestMetadata(data.request)
+        : {};
+
       await prisma.auditLog.create({
         data: {
           userId: data.userId,
@@ -33,11 +44,11 @@ export class AuditLogger {
           newValues: data.newValues || null,
           metadata: {
             ...requestMetadata,
-            ...data.metadata
+            ...data.metadata,
           },
           ipAddress: requestMetadata.ipAddress,
-          userAgent: requestMetadata.userAgent
-        }
+          userAgent: requestMetadata.userAgent,
+        },
       });
     } catch (error) {
       console.error('Failed to create audit log:', error);
@@ -45,10 +56,10 @@ export class AuditLogger {
   }
 
   static async logCompanyAction(
-    userId: string, 
-    action: AuditAction, 
-    companyId?: string, 
-    oldValues?: any, 
+    userId: string,
+    action: AuditAction,
+    companyId?: string,
+    oldValues?: any,
     newValues?: any,
     request?: NextRequest
   ) {
@@ -59,15 +70,15 @@ export class AuditLogger {
       entityId: companyId,
       oldValues,
       newValues,
-      request
+      request,
     });
   }
 
   static async logProductAction(
-    userId: string, 
-    action: AuditAction, 
-    productId?: string, 
-    oldValues?: any, 
+    userId: string,
+    action: AuditAction,
+    productId?: string,
+    oldValues?: any,
     newValues?: any,
     request?: NextRequest
   ) {
@@ -78,15 +89,15 @@ export class AuditLogger {
       entityId: productId,
       oldValues,
       newValues,
-      request
+      request,
     });
   }
 
   static async logDistributorAssignmentAction(
-    userId: string, 
-    action: AuditAction, 
-    assignmentId?: string, 
-    oldValues?: any, 
+    userId: string,
+    action: AuditAction,
+    assignmentId?: string,
+    oldValues?: any,
     newValues?: any,
     request?: NextRequest
   ) {
@@ -97,16 +108,16 @@ export class AuditLogger {
       entityId: assignmentId,
       oldValues,
       newValues,
-      request
+      request,
     });
   }
 
   static async logPricingTierAction(
-    userId: string, 
-    action: AuditAction, 
+    userId: string,
+    action: AuditAction,
     tierType: 'Company' | 'Product',
-    tierId?: string, 
-    oldValues?: any, 
+    tierId?: string,
+    oldValues?: any,
     newValues?: any,
     request?: NextRequest
   ) {
@@ -117,15 +128,15 @@ export class AuditLogger {
       entityId: tierId,
       oldValues,
       newValues,
-      request
+      request,
     });
   }
 
   static async logPricingAssignmentAction(
-    userId: string, 
-    action: AuditAction, 
-    assignmentId?: string, 
-    oldValues?: any, 
+    userId: string,
+    action: AuditAction,
+    assignmentId?: string,
+    oldValues?: any,
     newValues?: any,
     request?: NextRequest
   ) {
@@ -136,7 +147,7 @@ export class AuditLogger {
       entityId: assignmentId,
       oldValues,
       newValues,
-      request
+      request,
     });
   }
 
@@ -149,7 +160,7 @@ export class AuditLogger {
     offset: number = 0
   ) {
     const whereClause: any = {};
-    
+
     if (entityType) whereClause.entityType = entityType;
     if (entityId) whereClause.entityId = entityId;
     if (userId) whereClause.userId = userId;
@@ -160,23 +171,23 @@ export class AuditLogger {
         where: whereClause,
         include: {
           user: {
-            select: { id: true, name: true, email: true }
+            select: { id: true, name: true, email: true },
           },
           tenant: {
-            select: { id: true, name: true }
-          }
+            select: { id: true, name: true },
+          },
         },
         orderBy: { createdAt: 'desc' },
         take: limit,
-        skip: offset
+        skip: offset,
       }),
-      prisma.auditLog.count({ where: whereClause })
+      prisma.auditLog.count({ where: whereClause }),
     ]);
 
     return {
       logs,
       totalCount,
-      hasMore: offset + limit < totalCount
+      hasMore: offset + limit < totalCount,
     };
   }
 
@@ -188,11 +199,11 @@ export class AuditLogger {
       where: whereClause,
       include: {
         user: {
-          select: { id: true, name: true, email: true }
-        }
+          select: { id: true, name: true, email: true },
+        },
       },
       orderBy: { createdAt: 'desc' },
-      take: limit
+      take: limit,
     });
   }
 
@@ -203,9 +214,9 @@ export class AuditLogger {
     return prisma.auditLog.findMany({
       where: {
         userId,
-        createdAt: { gte: startDate }
+        createdAt: { gte: startDate },
       },
-      orderBy: { createdAt: 'desc' }
+      orderBy: { createdAt: 'desc' },
     });
   }
 
@@ -213,14 +224,14 @@ export class AuditLogger {
     return prisma.auditLog.findMany({
       where: {
         entityType,
-        entityId
+        entityId,
       },
       include: {
         user: {
-          select: { id: true, name: true, email: true }
-        }
+          select: { id: true, name: true, email: true },
+        },
       },
-      orderBy: { createdAt: 'desc' }
+      orderBy: { createdAt: 'desc' },
     });
   }
 
@@ -229,53 +240,49 @@ export class AuditLogger {
     startDate.setDate(startDate.getDate() - days);
 
     const whereClause: any = {
-      createdAt: { gte: startDate }
+      createdAt: { gte: startDate },
     };
     if (tenantId) whereClause.tenantId = tenantId;
 
-    const [
-      totalActions,
-      actionsByType,
-      actionsByEntity,
-      topUsers
-    ] = await Promise.all([
-      prisma.auditLog.count({ where: whereClause }),
-      
-      prisma.auditLog.groupBy({
-        by: ['action'],
-        where: whereClause,
-        _count: { action: true }
-      }),
-      
-      prisma.auditLog.groupBy({
-        by: ['entityType'],
-        where: whereClause,
-        _count: { entityType: true }
-      }),
-      
-      prisma.auditLog.groupBy({
-        by: ['userId'],
-        where: whereClause,
-        _count: { userId: true },
-        orderBy: { _count: { userId: 'desc' } },
-        take: 10
-      })
-    ]);
+    const [totalActions, actionsByType, actionsByEntity, topUsers] =
+      await Promise.all([
+        prisma.auditLog.count({ where: whereClause }),
+
+        prisma.auditLog.groupBy({
+          by: ['action'],
+          where: whereClause,
+          _count: { action: true },
+        }),
+
+        prisma.auditLog.groupBy({
+          by: ['entityType'],
+          where: whereClause,
+          _count: { entityType: true },
+        }),
+
+        prisma.auditLog.groupBy({
+          by: ['userId'],
+          where: whereClause,
+          _count: { userId: true },
+          orderBy: { _count: { userId: 'desc' } },
+          take: 10,
+        }),
+      ]);
 
     return {
       totalActions,
-      actionsByType: actionsByType.map(item => ({
+      actionsByType: actionsByType.map((item) => ({
         action: item.action,
-        count: item._count.action
+        count: item._count.action,
       })),
-      actionsByEntity: actionsByEntity.map(item => ({
+      actionsByEntity: actionsByEntity.map((item) => ({
         entityType: item.entityType,
-        count: item._count.entityType
+        count: item._count.entityType,
       })),
-      topUsers: topUsers.map(item => ({
+      topUsers: topUsers.map((item) => ({
         userId: item.userId,
-        count: item._count.userId
-      }))
+        count: item._count.userId,
+      })),
     };
   }
 }

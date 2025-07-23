@@ -44,73 +44,100 @@ export class XSSProtection {
       name: 'script_tags',
       pattern: /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,
       severity: 'critical' as const,
-      description: 'Script tag execution'
+      description: 'Script tag execution',
     },
     {
       name: 'javascript_protocol',
       pattern: /javascript:/gi,
       severity: 'high' as const,
-      description: 'JavaScript protocol usage'
+      description: 'JavaScript protocol usage',
     },
     {
       name: 'event_handlers',
       pattern: /on\w+\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]*)/gi,
       severity: 'high' as const,
-      description: 'Event handler attributes'
+      description: 'Event handler attributes',
     },
     {
       name: 'iframe_tags',
       pattern: /<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi,
       severity: 'high' as const,
-      description: 'Iframe embedding'
+      description: 'Iframe embedding',
     },
     {
       name: 'object_embed',
       pattern: /<(object|embed)\b[^<]*(?:(?!<\/\1>)<[^<]*)*<\/\1>/gi,
       severity: 'high' as const,
-      description: 'Object/Embed tags'
+      description: 'Object/Embed tags',
     },
     {
       name: 'svg_scripts',
       pattern: /<svg[^>]*>[\s\S]*?<script[\s\S]*?<\/script>[\s\S]*?<\/svg>/gi,
       severity: 'high' as const,
-      description: 'SVG with scripts'
+      description: 'SVG with scripts',
     },
     {
       name: 'data_urls',
       pattern: /data:(?:text\/html|application\/javascript|text\/javascript)/gi,
       severity: 'medium' as const,
-      description: 'Dangerous data URLs'
+      description: 'Dangerous data URLs',
     },
     {
       name: 'vbscript',
       pattern: /vbscript:/gi,
       severity: 'medium' as const,
-      description: 'VBScript protocol'
+      description: 'VBScript protocol',
     },
     {
       name: 'expression',
       pattern: /expression\s*\(/gi,
       severity: 'medium' as const,
-      description: 'CSS expressions'
+      description: 'CSS expressions',
     },
     {
       name: 'import_stylesheets',
       pattern: /@import\s+(?:url\s*\()?['"]?javascript:/gi,
       severity: 'medium' as const,
-      description: 'CSS import with JavaScript'
-    }
+      description: 'CSS import with JavaScript',
+    },
   ];
 
   private static readonly ALLOWED_TAGS_DEFAULT = [
-    'p', 'br', 'strong', 'em', 'u', 'i', 'b',
-    'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
-    'ul', 'ol', 'li', 'blockquote',
-    'a', 'img', 'table', 'thead', 'tbody', 'tr', 'td', 'th'
+    'p',
+    'br',
+    'strong',
+    'em',
+    'u',
+    'i',
+    'b',
+    'h1',
+    'h2',
+    'h3',
+    'h4',
+    'h5',
+    'h6',
+    'ul',
+    'ol',
+    'li',
+    'blockquote',
+    'a',
+    'img',
+    'table',
+    'thead',
+    'tbody',
+    'tr',
+    'td',
+    'th',
   ];
 
   private static readonly ALLOWED_ATTRIBUTES_DEFAULT = [
-    'href', 'src', 'alt', 'title', 'class', 'id', 'target'
+    'href',
+    'src',
+    'alt',
+    'title',
+    'class',
+    'id',
+    'target',
   ];
 
   /**
@@ -139,7 +166,7 @@ export class XSSProtection {
         threats.push({
           type: xssPattern.name,
           pattern: xssPattern.description,
-          severity: xssPattern.severity
+          severity: xssPattern.severity,
         });
         blocked.push(...matches);
       }
@@ -148,11 +175,20 @@ export class XSSProtection {
     // Configure DOMPurify based on options
     const config: any = {
       ALLOWED_TAGS: options.allowedTags || this.ALLOWED_TAGS_DEFAULT,
-      ALLOWED_ATTR: options.allowedAttributes || this.ALLOWED_ATTRIBUTES_DEFAULT,
+      ALLOWED_ATTR:
+        options.allowedAttributes || this.ALLOWED_ATTRIBUTES_DEFAULT,
       KEEP_CONTENT: true,
       FORBID_SCRIPT: true,
       FORBID_TAGS: ['script', 'object', 'embed', 'iframe', 'frame', 'frameset'],
-      FORBID_ATTR: ['onerror', 'onload', 'onclick', 'onmouseover', 'onmouseout', 'onkeydown', 'onkeyup']
+      FORBID_ATTR: [
+        'onerror',
+        'onload',
+        'onclick',
+        'onmouseover',
+        'onmouseout',
+        'onkeydown',
+        'onkeyup',
+      ],
     };
 
     if (options.strictMode) {
@@ -180,27 +216,36 @@ export class XSSProtection {
    */
   private static simpleSanitize(input: string, options: any): string {
     let cleaned = input;
-    
+
     // Remove all script tags
-    cleaned = cleaned.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
-    
+    cleaned = cleaned.replace(
+      /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,
+      ''
+    );
+
     // Remove iframe tags
-    cleaned = cleaned.replace(/<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi, '');
-    
+    cleaned = cleaned.replace(
+      /<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi,
+      ''
+    );
+
     // Remove object and embed tags
-    cleaned = cleaned.replace(/<(object|embed)\b[^<]*(?:(?!<\/\1>)<[^<]*)*<\/\1>/gi, '');
-    
+    cleaned = cleaned.replace(
+      /<(object|embed)\b[^<]*(?:(?!<\/\1>)<[^<]*)*<\/\1>/gi,
+      ''
+    );
+
     // Remove event handlers
     cleaned = cleaned.replace(/on\w+\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]*)/gi, '');
-    
+
     // Remove javascript: and vbscript: protocols
     cleaned = cleaned.replace(/javascript:|vbscript:/gi, '');
-    
+
     // If strict mode, remove all HTML tags
     if (options.strictMode) {
       cleaned = cleaned.replace(/<[^>]*>/g, '');
     }
-    
+
     return cleaned;
   }
 
@@ -214,7 +259,10 @@ export class XSSProtection {
     cleaned = cleaned.replace(/javascript:/gi, '');
 
     // Remove data: URLs that could be dangerous
-    cleaned = cleaned.replace(/data:(?:text\/html|application\/javascript|text\/javascript)[^"']*/gi, '');
+    cleaned = cleaned.replace(
+      /data:(?:text\/html|application\/javascript|text\/javascript)[^"']*/gi,
+      ''
+    );
 
     // Remove CSS expressions
     cleaned = cleaned.replace(/expression\s*\([^)]*\)/gi, '');
@@ -241,8 +289,11 @@ export class XSSProtection {
         type: 'XSS_THREAT_DETECTED',
         threats,
         sample,
-        severity: threats.some(t => t.severity === 'critical') ? 'critical' :
-                 threats.some(t => t.severity === 'high') ? 'high' : 'medium'
+        severity: threats.some((t) => t.severity === 'critical')
+          ? 'critical'
+          : threats.some((t) => t.severity === 'high')
+            ? 'high'
+            : 'medium',
       };
 
       await redisCache.set(
@@ -263,7 +314,9 @@ export class XSSProtection {
   static generateCSPHeader(config: SecurityConfig): string {
     const directives = [];
 
-    for (const [directive, sources] of Object.entries(config.contentSecurityPolicy.directives)) {
+    for (const [directive, sources] of Object.entries(
+      config.contentSecurityPolicy.directives
+    )) {
       directives.push(`${directive} ${sources.join(' ')}`);
     }
 
@@ -276,8 +329,14 @@ export class XSSProtection {
   static sanitizeURL(url: string): string | null {
     try {
       // Block dangerous protocols
-      const dangerousProtocols = ['javascript:', 'data:', 'vbscript:', 'file:', 'ftp:'];
-      
+      const dangerousProtocols = [
+        'javascript:',
+        'data:',
+        'vbscript:',
+        'file:',
+        'ftp:',
+      ];
+
       for (const protocol of dangerousProtocols) {
         if (url.toLowerCase().startsWith(protocol)) {
           return null;
@@ -286,7 +345,7 @@ export class XSSProtection {
 
       // Parse and validate URL
       const parsedUrl = new URL(url);
-      
+
       // Only allow http and https
       if (!['http:', 'https:'].includes(parsedUrl.protocol)) {
         return null;
@@ -316,12 +375,12 @@ export class CSRFProtection {
     const tokenData = {
       sessionId,
       timestamp: Date.now(),
-      nonce: randomBytes(16).toString('hex')
+      nonce: randomBytes(16).toString('hex'),
     };
 
     const token = randomBytes(32).toString('hex');
     const signature = this.createTokenSignature(token, tokenData);
-    const expiresAt = new Date(Date.now() + (this.config.csrfTokenExpiry * 1000));
+    const expiresAt = new Date(Date.now() + this.config.csrfTokenExpiry * 1000);
 
     // Store token in Redis with expiration
     await redisCache.set(
@@ -332,7 +391,7 @@ export class CSRFProtection {
         sessionId,
         signature,
         expiresAt: expiresAt.toISOString(),
-        ...tokenData
+        ...tokenData,
       },
       this.config.csrfTokenExpiry
     );
@@ -358,9 +417,17 @@ export class CSRFProtection {
       }
 
       // Retrieve token from Redis
-      const storedData = await redisCache.get<any>('global', 'csrf_tokens', token);
+      const storedData = await redisCache.get<any>(
+        'global',
+        'csrf_tokens',
+        token
+      );
       if (!storedData) {
-        return { isValid: false, error: 'CSRF token not found or expired', shouldRegenerate: true };
+        return {
+          isValid: false,
+          error: 'CSRF token not found or expired',
+          shouldRegenerate: true,
+        };
       }
 
       // Validate session ID
@@ -370,14 +437,23 @@ export class CSRFProtection {
 
       // Validate signature
       const expectedSignature = this.createTokenSignature(token, storedData);
-      if (!timingSafeEqual(Buffer.from(storedData.signature), Buffer.from(expectedSignature))) {
+      if (
+        !timingSafeEqual(
+          Buffer.from(storedData.signature),
+          Buffer.from(expectedSignature)
+        )
+      ) {
         return { isValid: false, error: 'CSRF token signature invalid' };
       }
 
       // Check expiration
       const expiresAt = new Date(storedData.expiresAt);
       if (expiresAt <= new Date()) {
-        return { isValid: false, error: 'CSRF token expired', shouldRegenerate: true };
+        return {
+          isValid: false,
+          error: 'CSRF token expired',
+          shouldRegenerate: true,
+        };
       }
 
       // Validate request origin (additional security)
@@ -390,11 +466,10 @@ export class CSRFProtection {
       const shouldRegenerate = this.shouldRegenerateToken(storedData);
 
       return { isValid: true, shouldRegenerate };
-
     } catch (error) {
       return {
         isValid: false,
-        error: `CSRF validation error: ${error instanceof Error ? error.message : 'Unknown error'}`
+        error: `CSRF validation error: ${error instanceof Error ? error.message : 'Unknown error'}`,
       };
     }
   }
@@ -423,7 +498,10 @@ export class CSRFProtection {
   /**
    * Validate request origin
    */
-  private validateRequestOrigin(request: NextRequest): { isValid: boolean; error?: string } {
+  private validateRequestOrigin(request: NextRequest): {
+    isValid: boolean;
+    error?: string;
+  } {
     const origin = request.headers.get('origin');
     const referer = request.headers.get('referer');
     const host = request.headers.get('host');
@@ -460,7 +538,7 @@ export class CSRFProtection {
   private shouldRegenerateToken(tokenData: any): boolean {
     const tokenAge = Date.now() - tokenData.timestamp;
     const halfLife = (this.config.csrfTokenExpiry * 1000) / 2;
-    
+
     // Regenerate if token is older than half its lifetime
     return tokenAge > halfLife;
   }
@@ -475,29 +553,38 @@ export class CSRFProtection {
         return { status: 200, skipCSRF: true };
       }
 
-      const token = request.headers.get('x-csrf-token') || 
-                   request.headers.get('csrf-token');
-      const sessionId = request.headers.get('x-session-id') || 
-                       request.cookies.get('session-id')?.value;
+      const token =
+        request.headers.get('x-csrf-token') ||
+        request.headers.get('csrf-token');
+      const sessionId =
+        request.headers.get('x-session-id') ||
+        request.cookies.get('session-id')?.value;
 
       if (!sessionId) {
-        return { status: 401, error: 'Session ID required for CSRF protection' };
+        return {
+          status: 401,
+          error: 'Session ID required for CSRF protection',
+        };
       }
 
-      const validation = await this.validateToken(token || '', sessionId, request);
+      const validation = await this.validateToken(
+        token || '',
+        sessionId,
+        request
+      );
 
       if (!validation.isValid) {
         return {
           status: 403,
           error: 'CSRF protection failed',
           details: validation.error,
-          shouldRegenerate: validation.shouldRegenerate
+          shouldRegenerate: validation.shouldRegenerate,
         };
       }
 
       return {
         status: 200,
-        shouldRegenerate: validation.shouldRegenerate
+        shouldRegenerate: validation.shouldRegenerate,
       };
     };
   }
@@ -523,8 +610,9 @@ export class SecurityProtectionMiddleware {
   async protect(request: NextRequest): Promise<NextResponse | null> {
     try {
       // Apply CSRF protection
-      const csrfResult = await this.csrfProtection.createCSRFMiddleware()(request);
-      
+      const csrfResult =
+        await this.csrfProtection.createCSRFMiddleware()(request);
+
       if (csrfResult.status !== 200) {
         return NextResponse.json(
           { error: csrfResult.error, details: csrfResult.details },
@@ -533,16 +621,19 @@ export class SecurityProtectionMiddleware {
       }
 
       // Apply XSS protection to request body if present
-      if (request.method !== 'GET' && request.headers.get('content-type')?.includes('application/json')) {
+      if (
+        request.method !== 'GET' &&
+        request.headers.get('content-type')?.includes('application/json')
+      ) {
         try {
           const body = await request.json();
           const sanitizedBody = this.sanitizeRequestBody(body);
-          
+
           // Replace request body with sanitized version
           const sanitizedRequest = new Request(request.url, {
             method: request.method,
             headers: request.headers,
-            body: JSON.stringify(sanitizedBody)
+            body: JSON.stringify(sanitizedBody),
           });
 
           // Continue with sanitized request
@@ -556,7 +647,6 @@ export class SecurityProtectionMiddleware {
       }
 
       return null; // Let the request continue
-
     } catch (error) {
       console.error('Security protection error:', error);
       return NextResponse.json(
@@ -575,13 +665,13 @@ export class SecurityProtectionMiddleware {
         strictMode: this.config.xssStrictMode,
         allowedTags: this.config.allowedTags,
         allowedAttributes: this.config.allowedAttributes,
-        logThreats: true
+        logThreats: true,
       });
       return result.cleaned;
     }
 
     if (Array.isArray(obj)) {
-      return obj.map(item => this.sanitizeRequestBody(item));
+      return obj.map((item) => this.sanitizeRequestBody(item));
     }
 
     if (obj && typeof obj === 'object') {
@@ -600,12 +690,14 @@ export class SecurityProtectionMiddleware {
    */
   generateSecurityHeaders(): Record<string, string> {
     return {
-      'Content-Security-Policy': this.xssProtection.generateCSPHeader(this.config),
+      'Content-Security-Policy': this.xssProtection.generateCSPHeader(
+        this.config
+      ),
       'X-Content-Type-Options': 'nosniff',
       'X-Frame-Options': 'DENY',
       'X-XSS-Protection': '1; mode=block',
       'Referrer-Policy': 'strict-origin-when-cross-origin',
-      'Permissions-Policy': 'camera=(), microphone=(), geolocation=()'
+      'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
     };
   }
 }
@@ -615,7 +707,8 @@ export class SecurityProtectionMiddleware {
  */
 export const DEFAULT_SECURITY_CONFIG: SecurityConfig = {
   csrfTokenExpiry: 3600, // 1 hour
-  csrfSecret: process.env.CSRF_SECRET || 'default-csrf-secret-change-in-production',
+  csrfSecret:
+    process.env.CSRF_SECRET || 'default-csrf-secret-change-in-production',
   xssStrictMode: false,
   allowedTags: ['p', 'br', 'strong', 'em', 'u', 'i', 'b', 'a'],
   allowedAttributes: ['href', 'target', 'rel'],
@@ -629,7 +722,7 @@ export const DEFAULT_SECURITY_CONFIG: SecurityConfig = {
       'connect-src': ["'self'"],
       'frame-ancestors': ["'none'"],
       'base-uri': ["'self'"],
-      'form-action': ["'self'"]
-    }
-  }
+      'form-action': ["'self'"],
+    },
+  },
 };

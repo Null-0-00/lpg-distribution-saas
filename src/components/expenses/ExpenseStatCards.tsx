@@ -15,7 +15,7 @@ interface ExpenseStatCardsProps {
 
 export const ExpenseStatCards: React.FC<ExpenseStatCardsProps> = ({
   summary,
-  loading
+  loading,
 }) => {
   const { formatCurrency } = useSettings();
 
@@ -26,7 +26,7 @@ export const ExpenseStatCards: React.FC<ExpenseStatCardsProps> = ({
       count: summary.total.count,
       icon: Receipt,
       color: 'bg-blue-500',
-      textColor: 'text-blue-600'
+      textColor: 'text-blue-600',
     },
     {
       title: 'Pending Approval',
@@ -34,7 +34,7 @@ export const ExpenseStatCards: React.FC<ExpenseStatCardsProps> = ({
       count: summary.pending.count,
       icon: AlertCircle,
       color: 'bg-yellow-500',
-      textColor: 'text-yellow-600'
+      textColor: 'text-yellow-600',
     },
     {
       title: 'Approved',
@@ -42,36 +42,36 @@ export const ExpenseStatCards: React.FC<ExpenseStatCardsProps> = ({
       count: summary.approved.count,
       icon: TrendingUp,
       color: 'bg-green-500',
-      textColor: 'text-green-600'
-    }
+      textColor: 'text-green-600',
+    },
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
       {cards.map((card, index) => (
-        <div key={index} className="bg-card rounded-lg shadow p-6">
+        <div key={index} className="bg-card rounded-lg p-6 shadow">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-muted-foreground font-medium">
+              <p className="text-muted-foreground text-sm font-medium">
                 {card.title}
               </p>
               {loading ? (
                 <div className="animate-pulse">
-                  <div className="h-8 bg-muted rounded w-24 mt-2"></div>
-                  <div className="h-4 bg-muted rounded w-16 mt-1"></div>
+                  <div className="bg-muted mt-2 h-8 w-24 rounded"></div>
+                  <div className="bg-muted mt-1 h-4 w-16 rounded"></div>
                 </div>
               ) : (
                 <>
                   <p className={`text-2xl font-bold ${card.textColor}`}>
                     {formatCurrency(card.amount)}
                   </p>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-muted-foreground text-sm">
                     {card.count} expense{card.count !== 1 ? 's' : ''}
                   </p>
                 </>
               )}
             </div>
-            <div className={`p-3 rounded-full ${card.color} bg-opacity-10`}>
+            <div className={`rounded-full p-3 ${card.color} bg-opacity-10`}>
               <card.icon className={`h-6 w-6 ${card.textColor}`} />
             </div>
           </div>

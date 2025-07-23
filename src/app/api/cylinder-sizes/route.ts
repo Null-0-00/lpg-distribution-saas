@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
 
     const cylinderSizes = await prisma.cylinderSize.findMany({
       where: { tenantId },
-      orderBy: { size: 'asc' }
+      orderBy: { size: 'asc' },
     });
 
     return NextResponse.json({ cylinderSizes });
@@ -48,8 +48,8 @@ export async function POST(request: NextRequest) {
     const existingSize = await prisma.cylinderSize.findFirst({
       where: {
         size: { equals: size, mode: 'insensitive' },
-        tenantId
-      }
+        tenantId,
+      },
     });
 
     if (existingSize) {
@@ -63,13 +63,13 @@ export async function POST(request: NextRequest) {
       data: {
         tenantId,
         size: size.trim(),
-        description: description?.trim() || null
-      }
+        description: description?.trim() || null,
+      },
     });
 
     return NextResponse.json({
       cylinderSize,
-      message: 'Cylinder size created successfully'
+      message: 'Cylinder size created successfully',
     });
   } catch (error) {
     console.error('Create cylinder size error:', error);

@@ -1,7 +1,14 @@
-"use client";
+'use client';
 
 import { useState, useEffect } from 'react';
-import { Calendar, FileText, TrendingUp, DollarSign, AlertCircle, RefreshCw } from 'lucide-react';
+import {
+  Calendar,
+  FileText,
+  TrendingUp,
+  DollarSign,
+  AlertCircle,
+  RefreshCw,
+} from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useSettings } from '@/contexts/SettingsContext';
 
@@ -81,11 +88,11 @@ interface DailySalesReportData {
 
 export default function DailySalesReportPage() {
   const { formatCurrency, formatDate, t } = useSettings();
-  
+
   // Helper function to translate common English patterns
   const translateText = (text: string | null | undefined): string => {
     if (!text) return '';
-    
+
     // Replace common English patterns with translations
     return text
       .replace(/Cash deposits by driver/g, t('cashDepositsByDriver'))
@@ -97,9 +104,13 @@ export default function DailySalesReportPage() {
       .replace(/Miscellaneous Expense/gi, t('miscellaneousExpense'))
       .replace(/General Expense/gi, t('generalExpense'));
   };
-  const [reportData, setReportData] = useState<DailySalesReportData | null>(null);
+  const [reportData, setReportData] = useState<DailySalesReportData | null>(
+    null
+  );
   const [loading, setLoading] = useState(true);
-  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+  const [selectedDate, setSelectedDate] = useState(
+    new Date().toISOString().split('T')[0]
+  );
   const [refreshing, setRefreshing] = useState(false);
   const { toast } = useToast();
 
@@ -110,24 +121,28 @@ export default function DailySalesReportPage() {
       } else {
         setLoading(true);
       }
-      
+
       const response = await fetch(`/api/reports/daily-sales?date=${date}`, {
         cache: 'no-cache',
         headers: {
-          'Cache-Control': 'no-cache'
-        }
+          'Cache-Control': 'no-cache',
+        },
       });
-      
+
       if (response.ok) {
         const data = await response.json();
         setReportData(data);
       } else {
         const errorText = await response.text();
-        console.error('Daily sales report API error:', response.status, errorText);
+        console.error(
+          'Daily sales report API error:',
+          response.status,
+          errorText
+        );
         toast({
           title: t('error'),
           description: t('failedToLoadDailySalesReport'),
-          variant: "destructive"
+          variant: 'destructive',
         });
       }
     } catch (error) {
@@ -135,7 +150,7 @@ export default function DailySalesReportPage() {
       toast({
         title: t('error'),
         description: t('failedToLoadDailySalesReport'),
-        variant: "destructive"
+        variant: 'destructive',
       });
     } finally {
       setLoading(false);
@@ -155,10 +170,9 @@ export default function DailySalesReportPage() {
     fetchReportData(selectedDate, true);
   };
 
-
   // All drivers are retail now, so this function is not needed
   // const getDriverTypeColor = (driverType: 'RETAIL' | 'WHOLESALE') => {
-  //   return driverType === 'RETAIL' 
+  //   return driverType === 'RETAIL'
   //     ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
   //     : 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200';
   // };
@@ -166,9 +180,11 @@ export default function DailySalesReportPage() {
   if (loading) {
     return (
       <div className="p-6">
-        <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mr-3"></div>
-          <span className="text-muted-foreground">{t('loadingDailySalesReport')}</span>
+        <div className="flex h-64 items-center justify-center">
+          <div className="mr-3 h-8 w-8 animate-spin rounded-full border-b-2 border-blue-500"></div>
+          <span className="text-muted-foreground">
+            {t('loadingDailySalesReport')}
+          </span>
         </div>
       </div>
     );
@@ -177,9 +193,11 @@ export default function DailySalesReportPage() {
   if (!reportData) {
     return (
       <div className="p-6">
-        <div className="text-center text-muted-foreground">
-          <FileText className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-          <p className="text-lg font-medium mb-2">{t('noReportDataAvailable')}</p>
+        <div className="text-muted-foreground text-center">
+          <FileText className="text-muted-foreground mx-auto mb-4 h-12 w-12" />
+          <p className="mb-2 text-lg font-medium">
+            {t('noReportDataAvailable')}
+          </p>
           <p className="text-sm">{t('tryAgainOrSelectDate')}</p>
         </div>
       </div>
@@ -187,74 +205,88 @@ export default function DailySalesReportPage() {
   }
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="space-y-6 p-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">{t('dailySalesReport')}</h1>
-          <p className="text-muted-foreground">{t('comprehensiveDailySalesReport')}</p>
+          <h1 className="text-foreground text-2xl font-bold">
+            {t('dailySalesReport')}
+          </h1>
+          <p className="text-muted-foreground">
+            {t('comprehensiveDailySalesReport')}
+          </p>
         </div>
         <div className="flex items-center space-x-4">
           <div className="flex items-center space-x-2">
-            <Calendar className="h-5 w-5 text-muted-foreground" />
+            <Calendar className="text-muted-foreground h-5 w-5" />
             <input
               type="date"
               value={selectedDate}
               onChange={handleDateChange}
-              className="px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-background text-foreground"
+              className="border-border bg-background text-foreground rounded-lg border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
           <button
             onClick={handleRefresh}
             disabled={refreshing}
-            className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+            className="flex items-center rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 disabled:opacity-50"
           >
-            <RefreshCw className={`h-4 w-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
+            <RefreshCw
+              className={`mr-2 h-4 w-4 ${refreshing ? 'animate-spin' : ''}`}
+            />
             {t('refresh')}
           </button>
         </div>
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-card rounded-lg shadow p-6">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
+        <div className="bg-card rounded-lg p-6 shadow">
           <div className="flex items-center">
             <TrendingUp className="h-8 w-8 text-green-500" />
             <div className="ml-4">
-              <p className="text-sm text-muted-foreground">{t('totalSalesValue')}</p>
-              <p className="text-2xl font-bold text-foreground">
+              <p className="text-muted-foreground text-sm">
+                {t('totalSalesValue')}
+              </p>
+              <p className="text-foreground text-2xl font-bold">
                 {formatCurrency(reportData.totals.totalSalesValue)}
               </p>
             </div>
           </div>
         </div>
-        <div className="bg-card rounded-lg shadow p-6">
+        <div className="bg-card rounded-lg p-6 shadow">
           <div className="flex items-center">
             <DollarSign className="h-8 w-8 text-blue-500" />
             <div className="ml-4">
-              <p className="text-sm text-muted-foreground">{t('totalDeposited')}</p>
-              <p className="text-2xl font-bold text-foreground">
+              <p className="text-muted-foreground text-sm">
+                {t('totalDeposited')}
+              </p>
+              <p className="text-foreground text-2xl font-bold">
                 {formatCurrency(reportData.totals.totalDeposited)}
               </p>
             </div>
           </div>
         </div>
-        <div className="bg-card rounded-lg shadow p-6">
+        <div className="bg-card rounded-lg p-6 shadow">
           <div className="flex items-center">
             <AlertCircle className="h-8 w-8 text-orange-500" />
             <div className="ml-4">
-              <p className="text-sm text-muted-foreground">{t('totalExpenses')}</p>
-              <p className="text-2xl font-bold text-foreground">
+              <p className="text-muted-foreground text-sm">
+                {t('totalExpenses')}
+              </p>
+              <p className="text-foreground text-2xl font-bold">
                 {formatCurrency(reportData.summary.totalExpenses)}
               </p>
             </div>
           </div>
         </div>
-        <div className="bg-card rounded-lg shadow p-6">
+        <div className="bg-card rounded-lg p-6 shadow">
           <div className="flex items-center">
             <DollarSign className="h-8 w-8 text-green-500" />
             <div className="ml-4">
-              <p className="text-sm text-muted-foreground">{t('availableCash')}</p>
+              <p className="text-muted-foreground text-sm">
+                {t('availableCash')}
+              </p>
               <p className="text-2xl font-bold text-green-600 dark:text-green-400">
                 {formatCurrency(reportData.summary.availableCash)}
               </p>
@@ -264,161 +296,181 @@ export default function DailySalesReportPage() {
       </div>
 
       {/* Daily Sales Report Table */}
-      <div className="bg-card rounded-lg shadow overflow-hidden">
-        <div className="px-6 py-4 border-b border-border">
-          <h2 className="text-lg font-semibold text-foreground">
+      <div className="bg-card overflow-hidden rounded-lg shadow">
+        <div className="border-border border-b px-6 py-4">
+          <h2 className="text-foreground text-lg font-semibold">
             {t('dailySalesReport')} - {formatDate(selectedDate)}
           </h2>
         </div>
-        
+
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="bg-muted">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
                   {t('driver')}
                 </th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                <th className="px-6 py-3 text-center text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-300">
                   {t('packageSalesQty')}
                 </th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                <th className="px-6 py-3 text-center text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-300">
                   {t('refillSalesQty')}
                 </th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                <th className="px-6 py-3 text-center text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-300">
                   {t('totalSalesQty')}
                 </th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                <th className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-300">
                   {t('totalSalesValue')}
                 </th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                <th className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-300">
                   {t('discount')}
                 </th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                <th className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-300">
                   {t('totalDeposited')}
                 </th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                <th className="px-6 py-3 text-center text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-300">
                   {t('totalCylindersReceivables')}
                 </th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                <th className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-300">
                   {t('totalCashReceivables')}
                 </th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                <th className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-300">
                   {t('changeInReceivablesCashCylinders')}
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-card divide-y divide-border">
+            <tbody className="bg-card divide-border divide-y">
               {reportData.driverReports.map((driver) => (
                 <tr key={driver.driverId} className="hover:bg-muted/50">
-                  <td className="px-6 py-4 whitespace-nowrap">
+                  <td className="whitespace-nowrap px-6 py-4">
                     <div className="flex items-center">
                       <div>
-                        <div className="text-sm font-medium text-foreground">
+                        <div className="text-foreground text-sm font-medium">
                           {driver.driverName}
                         </div>
-                        <div className="text-xs text-muted-foreground">
+                        <div className="text-muted-foreground text-xs">
                           {t('retailDriver')}
                         </div>
                       </div>
                     </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-foreground">
+                  <td className="text-foreground whitespace-nowrap px-6 py-4 text-center text-sm">
                     {driver.packageSales}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-foreground">
+                  <td className="text-foreground whitespace-nowrap px-6 py-4 text-center text-sm">
                     {driver.refillSales}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium text-foreground">
+                  <td className="text-foreground whitespace-nowrap px-6 py-4 text-center text-sm font-medium">
                     {driver.totalSalesQty}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-foreground">
+                  <td className="text-foreground whitespace-nowrap px-6 py-4 text-right text-sm">
                     {formatCurrency(driver.totalSalesValue)}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-foreground">
+                  <td className="text-foreground whitespace-nowrap px-6 py-4 text-right text-sm">
                     {formatCurrency(driver.discount)}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-foreground">
+                  <td className="text-foreground whitespace-nowrap px-6 py-4 text-right text-sm">
                     {formatCurrency(driver.totalDeposited)}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-foreground">
+                  <td className="text-foreground whitespace-nowrap px-6 py-4 text-center text-sm">
                     {driver.totalCylinderReceivables}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-foreground">
+                  <td className="text-foreground whitespace-nowrap px-6 py-4 text-right text-sm">
                     {formatCurrency(driver.totalCashReceivables)}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
+                  <td className="whitespace-nowrap px-6 py-4 text-right text-sm">
                     <div className="flex flex-col text-xs">
-                      <span className={`font-medium ${
-                        driver.changeInCashReceivables > 0 
-                          ? 'text-red-600 dark:text-red-400' 
-                          : driver.changeInCashReceivables < 0 
-                            ? 'text-green-600 dark:text-green-400' 
-                            : 'text-foreground'
-                      }`}>
-                        {t('cash')}: {driver.changeInCashReceivables > 0 ? '+' : ''}{formatCurrency(driver.changeInCashReceivables)}
+                      <span
+                        className={`font-medium ${
+                          driver.changeInCashReceivables > 0
+                            ? 'text-red-600 dark:text-red-400'
+                            : driver.changeInCashReceivables < 0
+                              ? 'text-green-600 dark:text-green-400'
+                              : 'text-foreground'
+                        }`}
+                      >
+                        {t('cash')}:{' '}
+                        {driver.changeInCashReceivables > 0 ? '+' : ''}
+                        {formatCurrency(driver.changeInCashReceivables)}
                       </span>
-                      <span className={`font-medium ${
-                        driver.changeInCylinderReceivables > 0 
-                          ? 'text-red-600 dark:text-red-400' 
-                          : driver.changeInCylinderReceivables < 0 
-                            ? 'text-green-600 dark:text-green-400' 
-                            : 'text-foreground'
-                      }`}>
-                        {t('cylinders')}: {driver.changeInCylinderReceivables > 0 ? '+' : ''}{driver.changeInCylinderReceivables}
+                      <span
+                        className={`font-medium ${
+                          driver.changeInCylinderReceivables > 0
+                            ? 'text-red-600 dark:text-red-400'
+                            : driver.changeInCylinderReceivables < 0
+                              ? 'text-green-600 dark:text-green-400'
+                              : 'text-foreground'
+                        }`}
+                      >
+                        {t('cylinders')}:{' '}
+                        {driver.changeInCylinderReceivables > 0 ? '+' : ''}
+                        {driver.changeInCylinderReceivables}
                       </span>
                     </div>
                   </td>
                 </tr>
               ))}
-              
+
               {/* Totals Row */}
               <tr className="bg-muted font-bold">
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">
+                <td className="text-foreground whitespace-nowrap px-6 py-4 text-sm">
                   {t('total').toUpperCase()}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-foreground">
+                <td className="text-foreground whitespace-nowrap px-6 py-4 text-center text-sm">
                   {reportData.totals.packageSales}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-foreground">
+                <td className="text-foreground whitespace-nowrap px-6 py-4 text-center text-sm">
                   {reportData.totals.refillSales}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-foreground">
+                <td className="text-foreground whitespace-nowrap px-6 py-4 text-center text-sm">
                   {reportData.totals.totalSalesQty}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-foreground">
+                <td className="text-foreground whitespace-nowrap px-6 py-4 text-right text-sm">
                   {formatCurrency(reportData.totals.totalSalesValue)}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-foreground">
+                <td className="text-foreground whitespace-nowrap px-6 py-4 text-right text-sm">
                   {formatCurrency(reportData.totals.discount)}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-foreground">
+                <td className="text-foreground whitespace-nowrap px-6 py-4 text-right text-sm">
                   {formatCurrency(reportData.totals.totalDeposited)}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-foreground">
+                <td className="text-foreground whitespace-nowrap px-6 py-4 text-center text-sm">
                   {reportData.totals.totalCylinderReceivables}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-foreground">
+                <td className="text-foreground whitespace-nowrap px-6 py-4 text-right text-sm">
                   {formatCurrency(reportData.totals.totalCashReceivables)}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
+                <td className="whitespace-nowrap px-6 py-4 text-right text-sm">
                   <div className="flex flex-col text-xs">
-                    <span className={`font-medium ${
-                      reportData.totals.changeInCashReceivables > 0 
-                        ? 'text-red-600 dark:text-red-400' 
-                        : reportData.totals.changeInCashReceivables < 0 
-                          ? 'text-green-600 dark:text-green-400' 
-                          : 'text-foreground'
-                    }`}>
-                      {t('cash')}: {reportData.totals.changeInCashReceivables > 0 ? '+' : ''}{formatCurrency(reportData.totals.changeInCashReceivables)}
+                    <span
+                      className={`font-medium ${
+                        reportData.totals.changeInCashReceivables > 0
+                          ? 'text-red-600 dark:text-red-400'
+                          : reportData.totals.changeInCashReceivables < 0
+                            ? 'text-green-600 dark:text-green-400'
+                            : 'text-foreground'
+                      }`}
+                    >
+                      {t('cash')}:{' '}
+                      {reportData.totals.changeInCashReceivables > 0 ? '+' : ''}
+                      {formatCurrency(
+                        reportData.totals.changeInCashReceivables
+                      )}
                     </span>
-                    <span className={`font-medium ${
-                      reportData.totals.changeInCylinderReceivables > 0 
-                        ? 'text-red-600 dark:text-red-400' 
-                        : reportData.totals.changeInCylinderReceivables < 0 
-                          ? 'text-green-600 dark:text-green-400' 
-                          : 'text-foreground'
-                    }`}>
-                      {t('cylinders')}: {reportData.totals.changeInCylinderReceivables > 0 ? '+' : ''}{reportData.totals.changeInCylinderReceivables}
+                    <span
+                      className={`font-medium ${
+                        reportData.totals.changeInCylinderReceivables > 0
+                          ? 'text-red-600 dark:text-red-400'
+                          : reportData.totals.changeInCylinderReceivables < 0
+                            ? 'text-green-600 dark:text-green-400'
+                            : 'text-foreground'
+                      }`}
+                    >
+                      {t('cylinders')}:{' '}
+                      {reportData.totals.changeInCylinderReceivables > 0
+                        ? '+'
+                        : ''}
+                      {reportData.totals.changeInCylinderReceivables}
                     </span>
                   </div>
                 </td>
@@ -430,39 +482,59 @@ export default function DailySalesReportPage() {
 
       {/* Daily Deposits & Expenses Tables */}
       <div className="bg-card rounded-lg shadow">
-        <div className="px-6 py-4 border-b border-border">
-          <h2 className="text-lg font-semibold text-foreground">
+        <div className="border-border border-b px-6 py-4">
+          <h2 className="text-foreground text-lg font-semibold">
             {t('dailyDepositsExpenses')} - {formatDate(selectedDate)}
           </h2>
-          <p className="text-sm text-muted-foreground">{t('detailedBreakdownDepositsExpenses')}</p>
+          <p className="text-muted-foreground text-sm">
+            {t('detailedBreakdownDepositsExpenses')}
+          </p>
         </div>
-        
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 p-6">
+
+        <div className="grid grid-cols-1 gap-6 p-6 lg:grid-cols-2">
           {/* Deposits Table */}
           <div>
-            <h3 className="text-md font-medium text-foreground mb-4">{t('deposits')}</h3>
+            <h3 className="text-md text-foreground mb-4 font-medium">
+              {t('deposits')}
+            </h3>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead className="bg-muted">
                   <tr>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-muted-foreground uppercase">{t('particulars')}</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-muted-foreground uppercase">{t('description')}</th>
-                    <th className="px-3 py-2 text-right text-xs font-medium text-muted-foreground uppercase">{t('amount')}</th>
+                    <th className="text-muted-foreground px-3 py-2 text-left text-xs font-medium uppercase">
+                      {t('particulars')}
+                    </th>
+                    <th className="text-muted-foreground px-3 py-2 text-left text-xs font-medium uppercase">
+                      {t('description')}
+                    </th>
+                    <th className="text-muted-foreground px-3 py-2 text-right text-xs font-medium uppercase">
+                      {t('amount')}
+                    </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-border">
-                  {reportData.deposits && reportData.deposits.map((deposit) => (
-                    <tr key={deposit.id} className="hover:bg-muted/50">
-                      <td className="px-3 py-2 text-sm text-foreground">
-                        {translateText(deposit.particulars) || t('cashDepositsByDriver')}
-                      </td>
-                      <td className="px-3 py-2 text-sm text-foreground">{deposit.description}</td>
-                      <td className="px-3 py-2 text-sm text-foreground text-right">{formatCurrency(deposit.amount)}</td>
-                    </tr>
-                  ))}
-                  {(!reportData.deposits || reportData.deposits.length === 0) && (
+                <tbody className="divide-border divide-y">
+                  {reportData.deposits &&
+                    reportData.deposits.map((deposit) => (
+                      <tr key={deposit.id} className="hover:bg-muted/50">
+                        <td className="text-foreground px-3 py-2 text-sm">
+                          {translateText(deposit.particulars) ||
+                            t('cashDepositsByDriver')}
+                        </td>
+                        <td className="text-foreground px-3 py-2 text-sm">
+                          {deposit.description}
+                        </td>
+                        <td className="text-foreground px-3 py-2 text-right text-sm">
+                          {formatCurrency(deposit.amount)}
+                        </td>
+                      </tr>
+                    ))}
+                  {(!reportData.deposits ||
+                    reportData.deposits.length === 0) && (
                     <tr>
-                      <td colSpan={3} className="px-3 py-4 text-center text-sm text-muted-foreground">
+                      <td
+                        colSpan={3}
+                        className="text-muted-foreground px-3 py-4 text-center text-sm"
+                      >
                         {t('noDepositsFound')}
                       </td>
                     </tr>
@@ -470,9 +542,21 @@ export default function DailySalesReportPage() {
                 </tbody>
                 <tfoot className="bg-muted">
                   <tr>
-                    <td colSpan={2} className="px-3 py-2 text-sm font-medium text-foreground">{t('totalDepositsCalculated')}</td>
-                    <td className="px-3 py-2 text-sm font-bold text-foreground text-right">
-                      {formatCurrency(reportData.deposits ? reportData.deposits.reduce((sum, deposit) => sum + deposit.amount, 0) : 0)}
+                    <td
+                      colSpan={2}
+                      className="text-foreground px-3 py-2 text-sm font-medium"
+                    >
+                      {t('totalDepositsCalculated')}
+                    </td>
+                    <td className="text-foreground px-3 py-2 text-right text-sm font-bold">
+                      {formatCurrency(
+                        reportData.deposits
+                          ? reportData.deposits.reduce(
+                              (sum, deposit) => sum + deposit.amount,
+                              0
+                            )
+                          : 0
+                      )}
                     </td>
                   </tr>
                 </tfoot>
@@ -482,29 +566,46 @@ export default function DailySalesReportPage() {
 
           {/* Expenses Table */}
           <div>
-            <h3 className="text-md font-medium text-foreground mb-4">{t('expenses')}</h3>
+            <h3 className="text-md text-foreground mb-4 font-medium">
+              {t('expenses')}
+            </h3>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead className="bg-muted">
                   <tr>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-muted-foreground uppercase">{t('particulars')}</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-muted-foreground uppercase">{t('description')}</th>
-                    <th className="px-3 py-2 text-right text-xs font-medium text-muted-foreground uppercase">{t('amount')}</th>
+                    <th className="text-muted-foreground px-3 py-2 text-left text-xs font-medium uppercase">
+                      {t('particulars')}
+                    </th>
+                    <th className="text-muted-foreground px-3 py-2 text-left text-xs font-medium uppercase">
+                      {t('description')}
+                    </th>
+                    <th className="text-muted-foreground px-3 py-2 text-right text-xs font-medium uppercase">
+                      {t('amount')}
+                    </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-border">
+                <tbody className="divide-border divide-y">
                   {reportData.expenses.map((expense) => (
                     <tr key={expense.id} className="hover:bg-muted/50">
-                      <td className="px-3 py-2 text-sm text-foreground">
-                        {translateText(expense.category || expense.particulars) || t('generalExpense')}
+                      <td className="text-foreground px-3 py-2 text-sm">
+                        {translateText(
+                          expense.category || expense.particulars
+                        ) || t('generalExpense')}
                       </td>
-                      <td className="px-3 py-2 text-sm text-foreground">{expense.description}</td>
-                      <td className="px-3 py-2 text-sm text-foreground text-right">{formatCurrency(expense.amount)}</td>
+                      <td className="text-foreground px-3 py-2 text-sm">
+                        {expense.description}
+                      </td>
+                      <td className="text-foreground px-3 py-2 text-right text-sm">
+                        {formatCurrency(expense.amount)}
+                      </td>
                     </tr>
                   ))}
                   {reportData.expenses.length === 0 && (
                     <tr>
-                      <td colSpan={3} className="px-3 py-4 text-center text-sm text-muted-foreground">
+                      <td
+                        colSpan={3}
+                        className="text-muted-foreground px-3 py-4 text-center text-sm"
+                      >
                         {t('noExpensesFound')}
                       </td>
                     </tr>
@@ -512,9 +613,19 @@ export default function DailySalesReportPage() {
                 </tbody>
                 <tfoot className="bg-muted">
                   <tr>
-                    <td colSpan={2} className="px-3 py-2 text-sm font-medium text-foreground">{t('totalExpensesCalculated')}</td>
-                    <td className="px-3 py-2 text-sm font-bold text-foreground text-right">
-                      {formatCurrency(reportData.expenses.reduce((sum, expense) => sum + expense.amount, 0))}
+                    <td
+                      colSpan={2}
+                      className="text-foreground px-3 py-2 text-sm font-medium"
+                    >
+                      {t('totalExpensesCalculated')}
+                    </td>
+                    <td className="text-foreground px-3 py-2 text-right text-sm font-bold">
+                      {formatCurrency(
+                        reportData.expenses.reduce(
+                          (sum, expense) => sum + expense.amount,
+                          0
+                        )
+                      )}
                     </td>
                   </tr>
                 </tfoot>
@@ -525,23 +636,33 @@ export default function DailySalesReportPage() {
       </div>
 
       {/* Available Cash Summary */}
-      <div className="bg-card rounded-lg shadow p-6">
+      <div className="bg-card rounded-lg p-6 shadow">
         <div className="text-center">
-          <h2 className="text-lg font-semibold text-foreground mb-4">
+          <h2 className="text-foreground mb-4 text-lg font-semibold">
             {t('availableCash')} - {formatDate(selectedDate)}
           </h2>
-          <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-700">
-            <div className="flex justify-between items-center">
-              <span className="text-lg font-semibold text-foreground">{t('totalAvailableCash')}:</span>
+          <div className="rounded-lg border border-green-200 bg-green-50 p-4 dark:border-green-700 dark:bg-green-900/20">
+            <div className="flex items-center justify-between">
+              <span className="text-foreground text-lg font-semibold">
+                {t('totalAvailableCash')}:
+              </span>
               <span className="text-3xl font-bold text-green-600 dark:text-green-400">
                 {formatCurrency(
-                  reportData.summary.totalDeposited + 
-                  (reportData.deposits ? reportData.deposits.reduce((sum, deposit) => sum + deposit.amount, 0) : 0) - 
-                  reportData.expenses.reduce((sum, expense) => sum + expense.amount, 0)
+                  reportData.summary.totalDeposited +
+                    (reportData.deposits
+                      ? reportData.deposits.reduce(
+                          (sum, deposit) => sum + deposit.amount,
+                          0
+                        )
+                      : 0) -
+                    reportData.expenses.reduce(
+                      (sum, expense) => sum + expense.amount,
+                      0
+                    )
                 )}
               </span>
             </div>
-            <p className="text-sm text-muted-foreground mt-2">
+            <p className="text-muted-foreground mt-2 text-sm">
               {t('totalDepositsIncludingSales')}
             </p>
           </div>

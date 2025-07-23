@@ -18,7 +18,16 @@ class BugChecker {
 
   log(message, type = 'info') {
     const timestamp = new Date().toISOString();
-    const prefix = type === 'critical' ? '🚨' : type === 'bug' ? '🐛' : type === 'warning' ? '⚠️' : type === 'suggestion' ? '💡' : 'ℹ️';
+    const prefix =
+      type === 'critical'
+        ? '🚨'
+        : type === 'bug'
+          ? '🐛'
+          : type === 'warning'
+            ? '⚠️'
+            : type === 'suggestion'
+              ? '💡'
+              : 'ℹ️';
     console.log(`[${timestamp}] ${prefix} ${message}`);
   }
 
@@ -52,16 +61,17 @@ class BugChecker {
 
   checkTypeScriptErrors() {
     this.log('🔍 Checking TypeScript compilation errors...');
-    
+
     const { execSync } = require('child_process');
     try {
       execSync('npm run type-check', { stdio: 'pipe' });
       this.log('✅ TypeScript compilation successful');
     } catch (error) {
-      const errorOutput = error.stdout?.toString() || error.stderr?.toString() || '';
+      const errorOutput =
+        error.stdout?.toString() || error.stderr?.toString() || '';
       const lines = errorOutput.split('\n');
-      
-      lines.forEach(line => {
+
+      lines.forEach((line) => {
         if (line.includes('error TS')) {
           const match = line.match(/(.+?)\((\d+),(\d+)\): error (TS\d+): (.+)/);
           if (match) {
@@ -75,18 +85,21 @@ class BugChecker {
 
   checkLintingIssues() {
     this.log('🔍 Checking ESLint issues...');
-    
+
     const { execSync } = require('child_process');
     try {
       execSync('npm run lint', { stdio: 'pipe' });
       this.log('✅ No linting issues found');
     } catch (error) {
-      const errorOutput = error.stdout?.toString() || error.stderr?.toString() || '';
+      const errorOutput =
+        error.stdout?.toString() || error.stderr?.toString() || '';
       const lines = errorOutput.split('\n');
-      
-      lines.forEach(line => {
+
+      lines.forEach((line) => {
         if (line.includes('Error:') || line.includes('Warning:')) {
-          const match = line.match(/(.+?):(\d+):(\d+)\s+(Error|Warning):\s+(.+)/);
+          const match = line.match(
+            /(.+?):(\d+):(\d+)\s+(Error|Warning):\s+(.+)/
+          );
           if (match) {
             const [, file, lineNum, , severity, message] = match;
             if (severity === 'Error') {
@@ -109,10 +122,10 @@ class BugChecker {
       'src/app/layout.tsx',
       'src/app/page.tsx',
       'package.json',
-      'tsconfig.json'
+      'tsconfig.json',
     ];
 
-    criticalFiles.forEach(file => {
+    criticalFiles.forEach((file) => {
       if (!this.fileExists(file)) {
         this.addCritical(file, 'Critical file is missing');
       }
@@ -130,12 +143,12 @@ class BugChecker {
 
     try {
       const pkg = JSON.parse(packageJson);
-      
+
       // Check for missing peer dependencies
       if (!pkg.dependencies?.react) {
         this.addCritical('package.json', 'React dependency missing');
       }
-      
+
       if (!pkg.dependencies?.next) {
         this.addCritical('package.json', 'Next.js dependency missing');
       }
@@ -145,18 +158,23 @@ class BugChecker {
         const reactVersion = pkg.dependencies.react;
         const reactDomVersion = pkg.dependencies['react-dom'];
         if (reactVersion !== reactDomVersion) {
-          this.addWarning('package.json', 'React and React-DOM version mismatch');
+          this.addWarning(
+            'package.json',
+            'React and React-DOM version mismatch'
+          );
         }
       }
 
       // Check for security vulnerabilities in dependencies
       const vulnerableDeps = ['lodash@<4.17.21', 'axios@<0.21.1'];
-      Object.keys(pkg.dependencies || {}).forEach(dep => {
+      Object.keys(pkg.dependencies || {}).forEach((dep) => {
         if (dep === 'lodash' && pkg.dependencies[dep].includes('^4.17.20')) {
-          this.addWarning('package.json', 'Potentially vulnerable lodash version');
+          this.addWarning(
+            'package.json',
+            'Potentially vulnerable lodash version'
+          );
         }
       });
-
     } catch (error) {
       this.addBug('package.json', 1, 'Invalid JSON syntax');
     }
@@ -172,26 +190,51 @@ class BugChecker {
     }
 
     // Check for missing essential models
-    const requiredModels = ['Company', 'User', 'Driver', 'Product', 'DailySales'];
-    requiredModels.forEach(model => {
+    const requiredModels = [
+      'Company',
+      'User',
+      'Driver',
+      'Product',
+      'DailySales',
+    ];
+    requiredModels.forEach((model) => {
       if (!schema.includes(`model ${model}`)) {
-        this.addBug('prisma/schema.prisma', 0, `Missing essential model: ${model}`, 'high');
+        this.addBug(
+          'prisma/schema.prisma',
+          0,
+          `Missing essential model: ${model}`,
+          'high'
+        );
       }
     });
 
     // Check for multi-tenant isolation
     if (!schema.includes('companyId')) {
-      this.addCritical('prisma/schema.prisma', 'Multi-tenant isolation (companyId) missing');
+      this.addCritical(
+        'prisma/schema.prisma',
+        'Multi-tenant isolation (companyId) missing'
+      );
     }
 
     // Check for proper indexing
     if (!schema.includes('@@index')) {
-      this.addWarning('prisma/schema.prisma', 'No database indexes defined - may cause performance issues');
+      this.addWarning(
+        'prisma/schema.prisma',
+        'No database indexes defined - may cause performance issues'
+      );
     }
 
     // Check for missing relations
-    if (schema.includes('model DailySales') && !schema.includes('driver   Driver')) {
-      this.addBug('prisma/schema.prisma', 0, 'DailySales model missing driver relation', 'medium');
+    if (
+      schema.includes('model DailySales') &&
+      !schema.includes('driver   Driver')
+    ) {
+      this.addBug(
+        'prisma/schema.prisma',
+        0,
+        'DailySales model missing driver relation',
+        'medium'
+      );
     }
   }
 
@@ -207,10 +250,10 @@ class BugChecker {
     // Check critical API endpoints
     const criticalEndpoints = [
       'src/app/api/sales/route.ts',
-      'src/app/api/dashboard/metrics/route.ts'
+      'src/app/api/dashboard/metrics/route.ts',
     ];
 
-    criticalEndpoints.forEach(endpoint => {
+    criticalEndpoints.forEach((endpoint) => {
       if (!this.fileExists(endpoint)) {
         this.addBug(endpoint, 0, 'Critical API endpoint missing', 'high');
       } else {
@@ -223,7 +266,10 @@ class BugChecker {
 
           // Check for authentication
           if (!content.includes('session') && !content.includes('auth')) {
-            this.addWarning(endpoint, 'No authentication check in API endpoint');
+            this.addWarning(
+              endpoint,
+              'No authentication check in API endpoint'
+            );
           }
 
           // Check for input validation
@@ -239,36 +285,44 @@ class BugChecker {
     this.log('🔍 Checking security issues...');
 
     // Check for exposed secrets
-    const sensitiveFiles = [
-      '.env',
-      '.env.local',
-      '.env.production'
-    ];
+    const sensitiveFiles = ['.env', '.env.local', '.env.production'];
 
-    sensitiveFiles.forEach(file => {
+    sensitiveFiles.forEach((file) => {
       if (this.fileExists(file)) {
-        this.addWarning(file, 'Environment file exists - ensure it\'s not committed to git');
+        this.addWarning(
+          file,
+          "Environment file exists - ensure it's not committed to git"
+        );
       }
     });
 
     // Check for .env.example
-    if (!this.fileExists('.env.example') && !this.fileExists('.env.local.example')) {
-      this.addWarning('root', 'No .env.example file found - developers won\'t know required environment variables');
+    if (
+      !this.fileExists('.env.example') &&
+      !this.fileExists('.env.local.example')
+    ) {
+      this.addWarning(
+        'root',
+        "No .env.example file found - developers won't know required environment variables"
+      );
     }
 
     // Check for hardcoded secrets
     const checkFiles = [
       'src/lib/auth/auth-options.ts',
-      'src/app/api/auth/[...nextauth]/route.ts'
+      'src/app/api/auth/[...nextauth]/route.ts',
     ];
 
-    checkFiles.forEach(file => {
+    checkFiles.forEach((file) => {
       const content = this.readFile(file);
       if (content) {
-        if (content.includes('your-secret-key-here') || content.includes('secret123')) {
+        if (
+          content.includes('your-secret-key-here') ||
+          content.includes('secret123')
+        ) {
           this.addCritical(file, 'Hardcoded secret key found - security risk');
         }
-        
+
         if (content.includes('console.log') && content.includes('password')) {
           this.addBug(file, 0, 'Potential password logging in console', 'high');
         }
@@ -281,18 +335,24 @@ class BugChecker {
 
     // Check for large bundle size indicators
     const componentFiles = this.getFilesInDirectory('src/components', '.tsx');
-    componentFiles.forEach(file => {
+    componentFiles.forEach((file) => {
       const content = this.readFile(file);
       if (content) {
         // Check for large imports
         const importCount = (content.match(/^import/gm) || []).length;
         if (importCount > 20) {
-          this.addWarning(file, `High number of imports (${importCount}) - may affect bundle size`);
+          this.addWarning(
+            file,
+            `High number of imports (${importCount}) - may affect bundle size`
+          );
         }
 
         // Check for inefficient re-renders
         if (content.includes('useEffect') && !content.includes('deps')) {
-          this.addSuggestion(file, 'useEffect without dependency array may cause performance issues');
+          this.addSuggestion(
+            file,
+            'useEffect without dependency array may cause performance issues'
+          );
         }
       }
     });
@@ -301,7 +361,10 @@ class BugChecker {
     const dashboardFile = this.readFile('src/app/dashboard/page.tsx');
     if (dashboardFile) {
       if (dashboardFile.includes('map') && !dashboardFile.includes('useMemo')) {
-        this.addSuggestion('src/app/dashboard/page.tsx', 'Consider using useMemo for expensive calculations');
+        this.addSuggestion(
+          'src/app/dashboard/page.tsx',
+          'Consider using useMemo for expensive calculations'
+        );
       }
     }
   }
@@ -313,12 +376,22 @@ class BugChecker {
     const salesForm = this.readFile('src/components/forms/SaleForm.tsx');
     if (salesForm) {
       if (!salesForm.includes('validation') && !salesForm.includes('schema')) {
-        this.addBug('src/components/forms/SaleForm.tsx', 0, 'Sales form missing validation logic', 'medium');
+        this.addBug(
+          'src/components/forms/SaleForm.tsx',
+          0,
+          'Sales form missing validation logic',
+          'medium'
+        );
       }
 
       // Check for proper business rules
       if (!salesForm.includes('quantity') || !salesForm.includes('price')) {
-        this.addBug('src/components/forms/SaleForm.tsx', 0, 'Sales form missing essential fields', 'high');
+        this.addBug(
+          'src/components/forms/SaleForm.tsx',
+          0,
+          'Sales form missing essential fields',
+          'high'
+        );
       }
     }
 
@@ -326,10 +399,18 @@ class BugChecker {
     const validator = this.readFile('src/lib/business/BusinessValidator.ts');
     if (validator) {
       if (!validator.includes('validateSale')) {
-        this.addBug('src/lib/business/BusinessValidator.ts', 0, 'Missing sale validation method', 'medium');
+        this.addBug(
+          'src/lib/business/BusinessValidator.ts',
+          0,
+          'Missing sale validation method',
+          'medium'
+        );
       }
     } else {
-      this.addWarning('src/lib/business/BusinessValidator.ts', 'Business validation logic file missing');
+      this.addWarning(
+        'src/lib/business/BusinessValidator.ts',
+        'Business validation logic file missing'
+      );
     }
   }
 
@@ -339,11 +420,17 @@ class BugChecker {
     const layout = this.readFile('src/app/layout.tsx');
     if (layout) {
       if (!layout.includes('viewport')) {
-        this.addWarning('src/app/layout.tsx', 'Missing viewport meta tag for mobile compatibility');
+        this.addWarning(
+          'src/app/layout.tsx',
+          'Missing viewport meta tag for mobile compatibility'
+        );
       }
 
       if (!layout.includes('apple-mobile-web-app')) {
-        this.addWarning('src/app/layout.tsx', 'Missing Apple mobile web app meta tags');
+        this.addWarning(
+          'src/app/layout.tsx',
+          'Missing Apple mobile web app meta tags'
+        );
       }
     }
 
@@ -356,7 +443,10 @@ class BugChecker {
           this.addWarning('public/manifest.json', 'PWA manifest missing icons');
         }
         if (!manifestData.start_url) {
-          this.addWarning('public/manifest.json', 'PWA manifest missing start_url');
+          this.addWarning(
+            'public/manifest.json',
+            'PWA manifest missing start_url'
+          );
         }
       } catch (error) {
         this.addBug('public/manifest.json', 1, 'Invalid JSON in PWA manifest');
@@ -372,18 +462,24 @@ class BugChecker {
     const readmeFiles = ['README.md', 'docs/README.md'];
     let hasReadme = false;
 
-    readmeFiles.forEach(file => {
+    readmeFiles.forEach((file) => {
       if (this.fileExists(file)) {
         hasReadme = true;
         const content = this.readFile(file);
         if (content && content.length < 500) {
-          this.addWarning(file, 'README file is very short - consider adding more documentation');
+          this.addWarning(
+            file,
+            'README file is very short - consider adding more documentation'
+          );
         }
       }
     });
 
     if (!hasReadme) {
-      this.addWarning('root', 'No README.md file found - add documentation for developers');
+      this.addWarning(
+        'root',
+        'No README.md file found - add documentation for developers'
+      );
     }
 
     // Check for API documentation
@@ -399,7 +495,7 @@ class BugChecker {
       if (fs.existsSync(fullPath)) {
         const walk = (dirPath) => {
           const items = fs.readdirSync(dirPath);
-          items.forEach(item => {
+          items.forEach((item) => {
             const itemPath = path.join(dirPath, item);
             const stat = fs.statSync(itemPath);
             if (stat.isDirectory()) {
@@ -418,8 +514,14 @@ class BugChecker {
   }
 
   runBugCheck() {
-    this.log('🚀 Starting Comprehensive Bug Check for LPG Distributor SaaS', 'info');
-    this.log('================================================================', 'info');
+    this.log(
+      '🚀 Starting Comprehensive Bug Check for LPG Distributor SaaS',
+      'info'
+    );
+    this.log(
+      '================================================================',
+      'info'
+    );
 
     this.checkMissingFiles();
     this.checkDependencyIssues();
@@ -437,50 +539,80 @@ class BugChecker {
   }
 
   generateReport() {
-    this.log('================================================================', 'info');
+    this.log(
+      '================================================================',
+      'info'
+    );
     this.log('🐛 BUG CHECK COMPLETE', 'info');
-    
-    const totalIssues = this.criticalIssues.length + this.bugs.length + this.warnings.length;
-    
+
+    const totalIssues =
+      this.criticalIssues.length + this.bugs.length + this.warnings.length;
+
     if (this.criticalIssues.length > 0) {
       this.log(`🚨 CRITICAL ISSUES: ${this.criticalIssues.length}`, 'critical');
-      this.criticalIssues.forEach(issue => {
+      this.criticalIssues.forEach((issue) => {
         this.log(`  🚨 ${issue.file}: ${issue.issue}`, 'critical');
       });
     }
 
     if (this.bugs.length > 0) {
       this.log(`🐛 BUGS FOUND: ${this.bugs.length}`, 'bug');
-      this.bugs.forEach(bug => {
-        const severity = bug.severity === 'high' ? '🔴' : bug.severity === 'medium' ? '🟡' : '🟢';
-        this.log(`  ${severity} ${bug.file}:${bug.line || '?'} - ${bug.issue}`, 'bug');
+      this.bugs.forEach((bug) => {
+        const severity =
+          bug.severity === 'high'
+            ? '🔴'
+            : bug.severity === 'medium'
+              ? '🟡'
+              : '🟢';
+        this.log(
+          `  ${severity} ${bug.file}:${bug.line || '?'} - ${bug.issue}`,
+          'bug'
+        );
       });
     }
 
     if (this.warnings.length > 0) {
       this.log(`⚠️ WARNINGS: ${this.warnings.length}`, 'warning');
-      this.warnings.forEach(warning => {
+      this.warnings.forEach((warning) => {
         this.log(`  ⚠️ ${warning.file}: ${warning.issue}`, 'warning');
       });
     }
 
     if (this.suggestions.length > 0) {
       this.log(`💡 SUGGESTIONS: ${this.suggestions.length}`, 'suggestion');
-      this.suggestions.forEach(suggestion => {
-        this.log(`  💡 ${suggestion.file}: ${suggestion.suggestion}`, 'suggestion');
+      this.suggestions.forEach((suggestion) => {
+        this.log(
+          `  💡 ${suggestion.file}: ${suggestion.suggestion}`,
+          'suggestion'
+        );
       });
     }
 
-    this.log('================================================================', 'info');
-    
+    this.log(
+      '================================================================',
+      'info'
+    );
+
     if (totalIssues === 0) {
       this.log('🎉 NO ISSUES FOUND - PROJECT IS CLEAN!', 'info');
     } else {
-      const healthScore = Math.max(0, 100 - (this.criticalIssues.length * 25) - (this.bugs.length * 10) - (this.warnings.length * 2));
-      this.log(`📊 PROJECT HEALTH SCORE: ${healthScore}/100`, healthScore >= 80 ? 'info' : 'warning');
-      
+      const healthScore = Math.max(
+        0,
+        100 -
+          this.criticalIssues.length * 25 -
+          this.bugs.length * 10 -
+          this.warnings.length * 2
+      );
+      this.log(
+        `📊 PROJECT HEALTH SCORE: ${healthScore}/100`,
+        healthScore >= 80 ? 'info' : 'warning'
+      );
+
       if (this.criticalIssues.length > 0) {
-        this.log('🚨 ACTION REQUIRED: Fix critical issues before deployment', 'critical');
+        this.log(
+          '🚨 ACTION REQUIRED: Fix critical issues before deployment',
+          'critical'
+        );
       } else if (this.bugs.length > 0) {
         this.log('🐛 RECOMMENDATION: Fix bugs for better stability', 'warning');
       } else {
@@ -493,7 +625,13 @@ class BugChecker {
       bugs: this.bugs.length,
       warnings: this.warnings.length,
       suggestions: this.suggestions.length,
-      healthScore: Math.max(0, 100 - (this.criticalIssues.length * 25) - (this.bugs.length * 10) - (this.warnings.length * 2))
+      healthScore: Math.max(
+        0,
+        100 -
+          this.criticalIssues.length * 25 -
+          this.bugs.length * 10 -
+          this.warnings.length * 2
+      ),
     };
   }
 }

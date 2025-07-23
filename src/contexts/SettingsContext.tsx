@@ -1,7 +1,18 @@
-"use client";
+'use client';
 
-import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { SettingsData, CURRENCIES, TIMEZONES, LANGUAGES } from '@/types/settings';
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  ReactNode,
+} from 'react';
+import {
+  SettingsData,
+  CURRENCIES,
+  TIMEZONES,
+  LANGUAGES,
+} from '@/types/settings';
 import { getTranslation, Translations } from '@/lib/i18n/translations';
 
 interface SettingsContextType {
@@ -20,7 +31,9 @@ interface SettingsContextType {
   t: (key: keyof Translations) => string;
 }
 
-const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
+const SettingsContext = createContext<SettingsContextType | undefined>(
+  undefined
+);
 
 interface SettingsProviderProps {
   children: ReactNode;
@@ -30,7 +43,7 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
   const [settings, setSettings] = useState<SettingsData>({
     currency: 'BDT', // Better default for LPG distributors in Bangladesh
     timezone: 'Asia/Dhaka', // Better default timezone
-    language: 'en'
+    language: 'en',
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -39,22 +52,22 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
     try {
       setLoading(true);
       setError(null);
-      
+
       const response = await fetch('/api/settings');
-      
+
       if (!response.ok) {
         if (response.status === 401 || response.status === 403) {
           // User is not authorized, use better defaults for LPG distributors
           setSettings({
             currency: 'BDT',
             timezone: 'Asia/Dhaka',
-            language: 'en'
+            language: 'en',
           });
           return;
         }
         throw new Error('Failed to fetch settings');
       }
-      
+
       const data = await response.json();
       setSettings(data);
     } catch (err) {
@@ -64,7 +77,7 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
       setSettings({
         currency: 'BDT',
         timezone: 'Asia/Dhaka',
-        language: 'en'
+        language: 'en',
       });
     } finally {
       setLoading(false);
@@ -74,7 +87,7 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
   const updateSettings = async (newSettings: SettingsData) => {
     try {
       setError(null);
-      
+
       const response = await fetch('/api/settings', {
         method: 'PUT',
         headers: {
@@ -82,12 +95,12 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
         },
         body: JSON.stringify(newSettings),
       });
-      
+
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.error || 'Failed to update settings');
       }
-      
+
       const updatedSettings = await response.json();
       setSettings(updatedSettings);
     } catch (err) {
@@ -102,9 +115,9 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
   };
 
   const formatCurrency = (amount: number): string => {
-    const currency = CURRENCIES.find(c => c.code === settings.currency);
+    const currency = CURRENCIES.find((c) => c.code === settings.currency);
     const symbol = currency?.symbol || '৳'; // Default to BDT symbol
-    
+
     try {
       // For BDT, use custom formatting since Intl might not support it properly
       if (settings.currency === 'BDT') {
@@ -113,13 +126,16 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
           maximumFractionDigits: 2,
         })} ${symbol}`;
       }
-      
-      return new Intl.NumberFormat(settings.language === 'bn' ? 'bn-BD' : 'en-US', {
-        style: 'currency',
-        currency: settings.currency,
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      }).format(amount);
+
+      return new Intl.NumberFormat(
+        settings.language === 'bn' ? 'bn-BD' : 'en-US',
+        {
+          style: 'currency',
+          currency: settings.currency,
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        }
+      ).format(amount);
     } catch {
       // Fallback if Intl.NumberFormat fails
       return `${amount.toLocaleString('en-US', {
@@ -131,7 +147,7 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
 
   const formatDateTime = (date: Date | string): string => {
     const dateObj = typeof date === 'string' ? new Date(date) : date;
-    
+
     try {
       return new Intl.DateTimeFormat(settings.language, {
         timeZone: settings.timezone,
@@ -150,7 +166,7 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
 
   const formatDate = (date: Date | string): string => {
     const dateObj = typeof date === 'string' ? new Date(date) : date;
-    
+
     try {
       // Use explicit format for consistent display regardless of browser locale
       return new Intl.DateTimeFormat('en-US', {
@@ -171,7 +187,7 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
 
   const formatTime = (date: Date | string): string => {
     const dateObj = typeof date === 'string' ? new Date(date) : date;
-    
+
     try {
       return new Intl.DateTimeFormat(settings.language, {
         timeZone: settings.timezone,
@@ -186,17 +202,17 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
   };
 
   const getCurrencySymbol = (): string => {
-    const currency = CURRENCIES.find(c => c.code === settings.currency);
+    const currency = CURRENCIES.find((c) => c.code === settings.currency);
     return currency?.symbol || '$';
   };
 
   const getTimezoneLabel = (): string => {
-    const timezone = TIMEZONES.find(t => t.value === settings.timezone);
+    const timezone = TIMEZONES.find((t) => t.value === settings.timezone);
     return timezone?.label || settings.timezone;
   };
 
   const getLanguageName = (): string => {
-    const language = LANGUAGES.find(l => l.code === settings.language);
+    const language = LANGUAGES.find((l) => l.code === settings.language);
     return language?.name || 'English';
   };
 

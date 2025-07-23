@@ -1,18 +1,18 @@
-import { NextAuthConfig } from "next-auth";
-import { PrismaAdapter } from "@auth/prisma-adapter";
-import CredentialsProvider from "next-auth/providers/credentials";
-import { compare } from "bcryptjs";
-import { prisma } from "@/lib/prisma";
-import { UserRole } from "@prisma/client";
+import { NextAuthConfig } from 'next-auth';
+import { PrismaAdapter } from '@auth/prisma-adapter';
+import CredentialsProvider from 'next-auth/providers/credentials';
+import { compare } from 'bcryptjs';
+import { prisma } from '@/lib/prisma';
+import { UserRole } from '@prisma/client';
 
 export const authConfig: NextAuthConfig = {
   adapter: PrismaAdapter(prisma),
   providers: [
     CredentialsProvider({
-      name: "credentials",
+      name: 'credentials',
       credentials: {
-        email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" },
+        email: { label: 'Email', type: 'email' },
+        password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
@@ -24,16 +24,16 @@ export const authConfig: NextAuthConfig = {
           const user = await prisma.user.findFirst({
             where: {
               email: credentials.email as string,
-              isActive: true
+              isActive: true,
             },
             include: {
               tenant: {
                 select: {
                   isActive: true,
-                  subscriptionStatus: true
-                }
-              }
-            }
+                  subscriptionStatus: true,
+                },
+              },
+            },
           });
 
           if (!user || !user.password) {
@@ -42,7 +42,7 @@ export const authConfig: NextAuthConfig = {
 
           // Check if tenant is active
           if (!user.tenant.isActive) {
-            throw new Error("Account suspended");
+            throw new Error('Account suspended');
           }
 
           // Verify password
@@ -58,7 +58,7 @@ export const authConfig: NextAuthConfig = {
           // Update last login
           await prisma.user.update({
             where: { id: user.id },
-            data: { lastLoginAt: new Date() }
+            data: { lastLoginAt: new Date() },
           });
 
           return {
@@ -67,17 +67,17 @@ export const authConfig: NextAuthConfig = {
             name: user.name,
             role: user.role,
             tenantId: user.tenantId,
-            avatar: user.avatar || undefined
+            avatar: user.avatar || undefined,
           };
         } catch (error) {
-          console.error("Auth error:", error);
+          console.error('Auth error:', error);
           return null;
         }
       },
     }),
   ],
   session: {
-    strategy: "jwt",
+    strategy: 'jwt',
     maxAge: 30 * 24 * 60 * 60, // 30 days
   },
   callbacks: {
@@ -98,7 +98,7 @@ export const authConfig: NextAuthConfig = {
     },
     async redirect({ url, baseUrl }) {
       // Redirect to dashboard after successful login
-      if (url.startsWith("/")) {
+      if (url.startsWith('/')) {
         return `${baseUrl}${url}`;
       } else if (new URL(url).origin === baseUrl) {
         return url;
@@ -107,8 +107,8 @@ export const authConfig: NextAuthConfig = {
     },
   },
   pages: {
-    signIn: "/auth/login",
-    error: "/auth/error",
+    signIn: '/auth/login',
+    error: '/auth/error',
   },
   events: {
     async signIn({ user }) {
@@ -118,5 +118,5 @@ export const authConfig: NextAuthConfig = {
       console.log(`User signed out`);
     },
   },
-  debug: process.env.NODE_ENV === "development",
+  debug: process.env.NODE_ENV === 'development',
 };

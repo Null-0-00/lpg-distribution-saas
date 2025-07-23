@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
 
     // Check if subdomain already exists
     const existingTenant = await prisma.tenant.findUnique({
-      where: { subdomain }
+      where: { subdomain },
     });
 
     if (existingTenant) {
@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
 
     // Check if user email already exists
     const existingUser = await prisma.user.findFirst({
-      where: { email: userEmail }
+      where: { email: userEmail },
     });
 
     if (existingUser) {
@@ -83,7 +83,7 @@ export async function POST(request: NextRequest) {
       // Create default cylinder sizes
       const defaultSizes = ['12L', '35L', '5kg', '20L'];
       await tx.cylinderSize.createMany({
-        data: defaultSizes.map(size => ({
+        data: defaultSizes.map((size) => ({
           tenantId: tenant.id,
           size,
           description: `${size} LPG Cylinder`,
@@ -93,8 +93,14 @@ export async function POST(request: NextRequest) {
       // Create default expense categories
       const parentCategories = [
         { name: 'Operations', description: 'Day-to-day operational expenses' },
-        { name: 'Marketing', description: 'Marketing and promotional expenses' },
-        { name: 'Administrative', description: 'Administrative and office expenses' },
+        {
+          name: 'Marketing',
+          description: 'Marketing and promotional expenses',
+        },
+        {
+          name: 'Administrative',
+          description: 'Administrative and office expenses',
+        },
       ];
 
       for (const parentCat of parentCategories) {

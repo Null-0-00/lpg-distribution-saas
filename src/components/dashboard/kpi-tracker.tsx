@@ -1,12 +1,24 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import {
   Target,
   TrendingUp,
@@ -22,7 +34,7 @@ import {
   Zap,
   Award,
   Calendar,
-  Filter
+  Filter,
 } from 'lucide-react';
 import { CircularProgress, ProgressIndicator } from './progress-indicator';
 import {
@@ -34,7 +46,7 @@ import {
   Tooltip,
   ResponsiveContainer,
   AreaChart,
-  Area
+  Area,
 } from 'recharts';
 
 interface KPI {
@@ -90,15 +102,20 @@ export function KPITracker({ dashboardData, liveMetrics }: KPITrackerProps) {
         period: 'daily',
         status: getKPIStatus(liveMetrics?.today?.revenue || 0, 100000),
         trend: {
-          direction: liveMetrics?.growth?.revenue > 0 ? 'up' : liveMetrics?.growth?.revenue < 0 ? 'down' : 'neutral',
+          direction:
+            liveMetrics?.growth?.revenue > 0
+              ? 'up'
+              : liveMetrics?.growth?.revenue < 0
+                ? 'down'
+                : 'neutral',
           percentage: Math.abs(liveMetrics?.growth?.revenue || 0),
-          period: 'vs yesterday'
+          period: 'vs yesterday',
         },
         threshold: {
           warning: 70000,
-          critical: 50000
+          critical: 50000,
         },
-        history: generateHistoryData(liveMetrics?.today?.revenue || 0, 7)
+        history: generateHistoryData(liveMetrics?.today?.revenue || 0, 7),
       },
       {
         id: 'monthly-sales',
@@ -108,17 +125,26 @@ export function KPITracker({ dashboardData, liveMetrics }: KPITrackerProps) {
         target: 3000000,
         unit: '৳',
         period: 'monthly',
-        status: getKPIStatus(dashboardData?.metrics?.sales?.totalRevenue || 0, 3000000),
+        status: getKPIStatus(
+          dashboardData?.metrics?.sales?.totalRevenue || 0,
+          3000000
+        ),
         trend: {
-          direction: dashboardData?.metrics?.sales?.revenueGrowth > 0 ? 'up' : 'down',
-          percentage: Math.abs(dashboardData?.metrics?.sales?.revenueGrowth || 0),
-          period: 'vs last month'
+          direction:
+            dashboardData?.metrics?.sales?.revenueGrowth > 0 ? 'up' : 'down',
+          percentage: Math.abs(
+            dashboardData?.metrics?.sales?.revenueGrowth || 0
+          ),
+          period: 'vs last month',
         },
         threshold: {
           warning: 2100000,
-          critical: 1500000
+          critical: 1500000,
         },
-        history: generateHistoryData(dashboardData?.metrics?.sales?.totalRevenue || 0, 30)
+        history: generateHistoryData(
+          dashboardData?.metrics?.sales?.totalRevenue || 0,
+          30
+        ),
       },
       {
         id: 'inventory-turnover',
@@ -128,17 +154,24 @@ export function KPITracker({ dashboardData, liveMetrics }: KPITrackerProps) {
         target: 15,
         unit: 'days',
         period: 'monthly',
-        status: getKPIStatus(dashboardData?.metrics?.inventory?.turnoverRate || 0, 15, true),
+        status: getKPIStatus(
+          dashboardData?.metrics?.inventory?.turnoverRate || 0,
+          15,
+          true
+        ),
         trend: {
           direction: 'neutral',
           percentage: 0,
-          period: 'vs last month'
+          period: 'vs last month',
         },
         threshold: {
           warning: 20,
-          critical: 25
+          critical: 25,
         },
-        history: generateHistoryData(dashboardData?.metrics?.inventory?.turnoverRate || 0, 30)
+        history: generateHistoryData(
+          dashboardData?.metrics?.inventory?.turnoverRate || 0,
+          30
+        ),
       },
       {
         id: 'collection-rate',
@@ -148,17 +181,23 @@ export function KPITracker({ dashboardData, liveMetrics }: KPITrackerProps) {
         target: 95,
         unit: '%',
         period: 'monthly',
-        status: getKPIStatus(dashboardData?.metrics?.receivables?.collectionRate || 0, 95),
+        status: getKPIStatus(
+          dashboardData?.metrics?.receivables?.collectionRate || 0,
+          95
+        ),
         trend: {
           direction: 'neutral',
           percentage: 0,
-          period: 'vs last month'
+          period: 'vs last month',
         },
         threshold: {
           warning: 85,
-          critical: 75
+          critical: 75,
         },
-        history: generateHistoryData(dashboardData?.metrics?.receivables?.collectionRate || 0, 30)
+        history: generateHistoryData(
+          dashboardData?.metrics?.receivables?.collectionRate || 0,
+          30
+        ),
       },
       {
         id: 'driver-efficiency',
@@ -168,17 +207,23 @@ export function KPITracker({ dashboardData, liveMetrics }: KPITrackerProps) {
         target: 50000,
         unit: '৳',
         period: 'daily',
-        status: getKPIStatus(dashboardData?.metrics?.drivers?.averagePerformance || 0, 50000),
+        status: getKPIStatus(
+          dashboardData?.metrics?.drivers?.averagePerformance || 0,
+          50000
+        ),
         trend: {
           direction: 'neutral',
           percentage: 0,
-          period: 'vs yesterday'
+          period: 'vs yesterday',
         },
         threshold: {
           warning: 35000,
-          critical: 25000
+          critical: 25000,
         },
-        history: generateHistoryData(dashboardData?.metrics?.drivers?.averagePerformance || 0, 7)
+        history: generateHistoryData(
+          dashboardData?.metrics?.drivers?.averagePerformance || 0,
+          7
+        ),
       },
       {
         id: 'profit-margin',
@@ -188,26 +233,36 @@ export function KPITracker({ dashboardData, liveMetrics }: KPITrackerProps) {
         target: 20,
         unit: '%',
         period: 'monthly',
-        status: getKPIStatus(dashboardData?.metrics?.financial?.profitMargin || 0, 20),
+        status: getKPIStatus(
+          dashboardData?.metrics?.financial?.profitMargin || 0,
+          20
+        ),
         trend: {
           direction: 'neutral',
           percentage: 0,
-          period: 'vs last month'
+          period: 'vs last month',
         },
         threshold: {
           warning: 15,
-          critical: 10
+          critical: 10,
         },
-        history: generateHistoryData(dashboardData?.metrics?.financial?.profitMargin || 0, 30)
-      }
+        history: generateHistoryData(
+          dashboardData?.metrics?.financial?.profitMargin || 0,
+          30
+        ),
+      },
     ];
 
     setKpis(generatedKPIs);
   };
 
-  const getKPIStatus = (current: number, target: number, inverse = false): 'on-track' | 'behind' | 'ahead' | 'at-risk' => {
+  const getKPIStatus = (
+    current: number,
+    target: number,
+    inverse = false
+  ): 'on-track' | 'behind' | 'ahead' | 'at-risk' => {
     const percentage = (current / target) * 100;
-    
+
     if (inverse) {
       if (percentage <= 100) return 'ahead';
       if (percentage <= 120) return 'on-track';
@@ -230,55 +285,70 @@ export function KPITracker({ dashboardData, liveMetrics }: KPITrackerProps) {
       data.push({
         date: date.toISOString().split('T')[0],
         value: Math.max(0, current * (1 + variation)),
-        target: current * 1.1
+        target: current * 1.1,
       });
     }
     return data;
   };
 
-  const filteredKPIs = kpis.filter(kpi => 
-    selectedCategory === 'all' || kpi.category === selectedCategory
-  ).filter(kpi =>
-    selectedPeriod === 'all' || kpi.period === selectedPeriod
-  );
+  const filteredKPIs = kpis
+    .filter(
+      (kpi) => selectedCategory === 'all' || kpi.category === selectedCategory
+    )
+    .filter((kpi) => selectedPeriod === 'all' || kpi.period === selectedPeriod);
 
   const getCategoryIcon = (category: string) => {
     switch (category) {
-      case 'sales': return <DollarSign className="h-4 w-4" />;
-      case 'inventory': return <Package className="h-4 w-4" />;
-      case 'financial': return <BarChart3 className="h-4 w-4" />;
-      case 'operational': return <Users className="h-4 w-4" />;
-      default: return <Target className="h-4 w-4" />;
+      case 'sales':
+        return <DollarSign className="h-4 w-4" />;
+      case 'inventory':
+        return <Package className="h-4 w-4" />;
+      case 'financial':
+        return <BarChart3 className="h-4 w-4" />;
+      case 'operational':
+        return <Users className="h-4 w-4" />;
+      default:
+        return <Target className="h-4 w-4" />;
     }
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'ahead': return 'text-green-600 bg-green-50 border-green-200';
-      case 'on-track': return 'text-blue-600 bg-blue-50 border-blue-200';
-      case 'behind': return 'text-yellow-600 bg-yellow-50 border-yellow-200';
-      case 'at-risk': return 'text-red-600 bg-red-50 border-red-200';
-      default: return 'text-gray-600 bg-gray-50 border-gray-200';
+      case 'ahead':
+        return 'text-green-600 bg-green-50 border-green-200';
+      case 'on-track':
+        return 'text-blue-600 bg-blue-50 border-blue-200';
+      case 'behind':
+        return 'text-yellow-600 bg-yellow-50 border-yellow-200';
+      case 'at-risk':
+        return 'text-red-600 bg-red-50 border-red-200';
+      default:
+        return 'text-gray-600 bg-gray-50 border-gray-200';
     }
   };
 
   const getStatusBadge = (status: string) => {
     switch (status) {
-      case 'ahead': return <Badge className="bg-green-100 text-green-800">Ahead</Badge>;
-      case 'on-track': return <Badge className="bg-blue-100 text-blue-800">On Track</Badge>;
-      case 'behind': return <Badge className="bg-yellow-100 text-yellow-800">Behind</Badge>;
-      case 'at-risk': return <Badge variant="destructive">At Risk</Badge>;
-      default: return <Badge variant="outline">Unknown</Badge>;
+      case 'ahead':
+        return <Badge className="bg-green-100 text-green-800">Ahead</Badge>;
+      case 'on-track':
+        return <Badge className="bg-blue-100 text-blue-800">On Track</Badge>;
+      case 'behind':
+        return <Badge className="bg-yellow-100 text-yellow-800">Behind</Badge>;
+      case 'at-risk':
+        return <Badge variant="destructive">At Risk</Badge>;
+      default:
+        return <Badge variant="outline">Unknown</Badge>;
     }
   };
 
   const calculateOverallScore = () => {
     if (kpis.length === 0) return 0;
     const scores = {
-      'ahead': 100,
+      ahead: 100,
       'on-track': 80,
-      'behind': 60,
-      'at-risk': 30
+      behind: 60,
+      'at-risk': 30,
     };
     const totalScore = kpis.reduce((sum, kpi) => sum + scores[kpi.status], 0);
     return Math.round(totalScore / kpis.length);
@@ -286,12 +356,14 @@ export function KPITracker({ dashboardData, liveMetrics }: KPITrackerProps) {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
+      <div className="flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
         <div>
           <h2 className="text-2xl font-bold tracking-tight">KPI Tracker</h2>
-          <p className="text-muted-foreground">Monitor key performance indicators and targets</p>
+          <p className="text-muted-foreground">
+            Monitor key performance indicators and targets
+          </p>
         </div>
-        
+
         <div className="flex items-center space-x-2">
           <Select value={selectedCategory} onValueChange={setSelectedCategory}>
             <SelectTrigger className="w-[140px]">
@@ -305,7 +377,7 @@ export function KPITracker({ dashboardData, liveMetrics }: KPITrackerProps) {
               <SelectItem value="operational">Operational</SelectItem>
             </SelectContent>
           </Select>
-          
+
           <Select value={selectedPeriod} onValueChange={setSelectedPeriod}>
             <SelectTrigger className="w-[120px]">
               <SelectValue placeholder="Period" />
@@ -325,7 +397,7 @@ export function KPITracker({ dashboardData, liveMetrics }: KPITrackerProps) {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Overall Score</CardTitle>
-            <Award className="h-4 w-4 text-muted-foreground" />
+            <Award className="text-muted-foreground h-4 w-4" />
           </CardHeader>
           <CardContent>
             <div className="flex items-center space-x-4">
@@ -334,11 +406,21 @@ export function KPITracker({ dashboardData, liveMetrics }: KPITrackerProps) {
                 max={100}
                 size={60}
                 strokeWidth={6}
-                color={calculateOverallScore() > 80 ? '#10b981' : calculateOverallScore() > 60 ? '#f59e0b' : '#ef4444'}
+                color={
+                  calculateOverallScore() > 80
+                    ? '#10b981'
+                    : calculateOverallScore() > 60
+                      ? '#f59e0b'
+                      : '#ef4444'
+                }
               />
               <div>
-                <div className="text-2xl font-bold">{calculateOverallScore()}%</div>
-                <p className="text-xs text-muted-foreground">Performance score</p>
+                <div className="text-2xl font-bold">
+                  {calculateOverallScore()}%
+                </div>
+                <p className="text-muted-foreground text-xs">
+                  Performance score
+                </p>
               </div>
             </div>
           </CardContent>
@@ -351,9 +433,15 @@ export function KPITracker({ dashboardData, liveMetrics }: KPITrackerProps) {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-green-600">
-              {kpis.filter(k => k.status === 'on-track' || k.status === 'ahead').length}
+              {
+                kpis.filter(
+                  (k) => k.status === 'on-track' || k.status === 'ahead'
+                ).length
+              }
             </div>
-            <p className="text-xs text-muted-foreground">of {kpis.length} KPIs</p>
+            <p className="text-muted-foreground text-xs">
+              of {kpis.length} KPIs
+            </p>
           </CardContent>
         </Card>
 
@@ -364,9 +452,9 @@ export function KPITracker({ dashboardData, liveMetrics }: KPITrackerProps) {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-yellow-600">
-              {kpis.filter(k => k.status === 'behind').length}
+              {kpis.filter((k) => k.status === 'behind').length}
             </div>
-            <p className="text-xs text-muted-foreground">need attention</p>
+            <p className="text-muted-foreground text-xs">need attention</p>
           </CardContent>
         </Card>
 
@@ -377,38 +465,50 @@ export function KPITracker({ dashboardData, liveMetrics }: KPITrackerProps) {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-red-600">
-              {kpis.filter(k => k.status === 'at-risk').length}
+              {kpis.filter((k) => k.status === 'at-risk').length}
             </div>
-            <p className="text-xs text-muted-foreground">critical issues</p>
+            <p className="text-muted-foreground text-xs">critical issues</p>
           </CardContent>
         </Card>
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {filteredKPIs.map((kpi) => (
-          <Card key={kpi.id} className={`border-l-4 ${getStatusColor(kpi.status).split(' ')[2]}`}>
+          <Card
+            key={kpi.id}
+            className={`border-l-4 ${getStatusColor(kpi.status).split(' ')[2]}`}
+          >
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
                   {getCategoryIcon(kpi.category)}
-                  <CardTitle className="text-sm font-medium">{kpi.name}</CardTitle>
+                  <CardTitle className="text-sm font-medium">
+                    {kpi.name}
+                  </CardTitle>
                 </div>
                 {getStatusBadge(kpi.status)}
               </div>
-              <CardDescription className="capitalize">{kpi.period} target</CardDescription>
+              <CardDescription className="capitalize">
+                {kpi.period} target
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between">
                 <div>
                   <div className="text-2xl font-bold">
-                    {kpi.unit === '৳' ? `৳${kpi.current.toLocaleString()}` : 
-                     kpi.unit === '%' ? `${kpi.current.toFixed(1)}%` : 
-                     `${kpi.current.toLocaleString()}${kpi.unit}`}
+                    {kpi.unit === '৳'
+                      ? `৳${kpi.current.toLocaleString()}`
+                      : kpi.unit === '%'
+                        ? `${kpi.current.toFixed(1)}%`
+                        : `${kpi.current.toLocaleString()}${kpi.unit}`}
                   </div>
-                  <div className="text-sm text-muted-foreground">
-                    Target: {kpi.unit === '৳' ? `৳${kpi.target.toLocaleString()}` : 
-                            kpi.unit === '%' ? `${kpi.target}%` : 
-                            `${kpi.target.toLocaleString()}${kpi.unit}`}
+                  <div className="text-muted-foreground text-sm">
+                    Target:{' '}
+                    {kpi.unit === '৳'
+                      ? `৳${kpi.target.toLocaleString()}`
+                      : kpi.unit === '%'
+                        ? `${kpi.target}%`
+                        : `${kpi.target.toLocaleString()}${kpi.unit}`}
                   </div>
                 </div>
                 <div className="text-right">
@@ -418,19 +518,26 @@ export function KPITracker({ dashboardData, liveMetrics }: KPITrackerProps) {
                     ) : kpi.trend.direction === 'down' ? (
                       <TrendingDown className="h-3 w-3 text-red-500" />
                     ) : null}
-                    <span className={`text-xs font-medium ${
-                      kpi.trend.direction === 'up' ? 'text-green-500' : 
-                      kpi.trend.direction === 'down' ? 'text-red-500' : 'text-gray-500'
-                    }`}>
+                    <span
+                      className={`text-xs font-medium ${
+                        kpi.trend.direction === 'up'
+                          ? 'text-green-500'
+                          : kpi.trend.direction === 'down'
+                            ? 'text-red-500'
+                            : 'text-gray-500'
+                      }`}
+                    >
                       {kpi.trend.percentage.toFixed(1)}%
                     </span>
                   </div>
-                  <div className="text-xs text-muted-foreground">{kpi.trend.period}</div>
+                  <div className="text-muted-foreground text-xs">
+                    {kpi.trend.period}
+                  </div>
                 </div>
               </div>
 
-              <Progress 
-                value={Math.min(100, (kpi.current / kpi.target) * 100)} 
+              <Progress
+                value={Math.min(100, (kpi.current / kpi.target) * 100)}
                 className="h-2"
               />
 
@@ -438,19 +545,25 @@ export function KPITracker({ dashboardData, liveMetrics }: KPITrackerProps) {
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={kpi.history.slice(-7)}>
                     <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis 
-                      dataKey="date" 
-                      tickFormatter={(value) => new Date(value).getDate().toString()}
+                    <XAxis
+                      dataKey="date"
+                      tickFormatter={(value) =>
+                        new Date(value).getDate().toString()
+                      }
                       fontSize={10}
                     />
                     <YAxis hide />
-                    <Tooltip 
-                      labelFormatter={(value) => new Date(value).toLocaleDateString()}
+                    <Tooltip
+                      labelFormatter={(value) =>
+                        new Date(value).toLocaleDateString()
+                      }
                       formatter={(value: any) => [
-                        kpi.unit === '৳' ? `৳${value.toLocaleString()}` : 
-                        kpi.unit === '%' ? `${value.toFixed(1)}%` : 
-                        `${value.toLocaleString()}${kpi.unit}`,
-                        'Value'
+                        kpi.unit === '৳'
+                          ? `৳${value.toLocaleString()}`
+                          : kpi.unit === '%'
+                            ? `${value.toFixed(1)}%`
+                            : `${value.toLocaleString()}${kpi.unit}`,
+                        'Value',
                       ]}
                     />
                     <Area

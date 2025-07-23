@@ -5,15 +5,45 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Plus, Search, Edit, Trash2, Filter, Users, Building2, Package, MapPin, Calendar } from 'lucide-react';
+import {
+  Plus,
+  Search,
+  Edit,
+  Trash2,
+  Filter,
+  Users,
+  Building2,
+  Package,
+  MapPin,
+  Calendar,
+} from 'lucide-react';
 
 interface Tenant {
   id: string;
@@ -79,7 +109,8 @@ export default function AdminDistributorAssignmentsPage() {
   const [totalPages, setTotalPages] = useState(1);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-  const [selectedAssignment, setSelectedAssignment] = useState<Assignment | null>(null);
+  const [selectedAssignment, setSelectedAssignment] =
+    useState<Assignment | null>(null);
   const [availableProducts, setAvailableProducts] = useState<Product[]>([]);
   const [formData, setFormData] = useState<AssignmentFormData>({
     tenantId: '',
@@ -88,7 +119,7 @@ export default function AdminDistributorAssignmentsPage() {
     territory: '',
     effectiveDate: new Date().toISOString().split('T')[0] ?? '',
     expiryDate: '',
-    notes: ''
+    notes: '',
   });
   const [submitting, setSubmitting] = useState(false);
 
@@ -99,7 +130,16 @@ export default function AdminDistributorAssignmentsPage() {
       return;
     }
     fetchAssignments();
-  }, [session, status, router, page, filterTenant, filterCompany, filterTerritory, filterActive]);
+  }, [
+    session,
+    status,
+    router,
+    page,
+    filterTenant,
+    filterCompany,
+    filterTerritory,
+    filterActive,
+  ]);
 
   useEffect(() => {
     if (formData.companyId) {
@@ -118,10 +158,12 @@ export default function AdminDistributorAssignmentsPage() {
         ...(filterTenant !== 'all' && { tenantId: filterTenant }),
         ...(filterCompany !== 'all' && { companyId: filterCompany }),
         ...(filterTerritory !== 'all' && { territory: filterTerritory }),
-        ...(filterActive !== 'all' && { isActive: filterActive })
+        ...(filterActive !== 'all' && { isActive: filterActive }),
       });
 
-      const response = await fetch(`/api/admin/distributor-assignments?${params}`);
+      const response = await fetch(
+        `/api/admin/distributor-assignments?${params}`
+      );
       const result = await response.json();
 
       if (result.success) {
@@ -134,14 +176,14 @@ export default function AdminDistributorAssignmentsPage() {
         toast({
           title: 'Error',
           description: result.error || 'Failed to fetch assignments',
-          variant: 'destructive'
+          variant: 'destructive',
         });
       }
     } catch (error) {
       toast({
         title: 'Error',
         description: 'Failed to fetch assignments',
-        variant: 'destructive'
+        variant: 'destructive',
       });
     } finally {
       setLoading(false);
@@ -150,7 +192,9 @@ export default function AdminDistributorAssignmentsPage() {
 
   const fetchProducts = async (companyId: string) => {
     try {
-      const response = await fetch(`/api/admin/products?companyId=${companyId}&limit=100`);
+      const response = await fetch(
+        `/api/admin/products?companyId=${companyId}&limit=100`
+      );
       const result = await response.json();
 
       if (result.success) {
@@ -169,7 +213,7 @@ export default function AdminDistributorAssignmentsPage() {
       territory: '',
       effectiveDate: new Date().toISOString().split('T')[0] ?? '',
       expiryDate: '',
-      notes: ''
+      notes: '',
     });
     setAvailableProducts([]);
   };
@@ -188,7 +232,7 @@ export default function AdminDistributorAssignmentsPage() {
       territory: assignment.territory ?? '',
       effectiveDate: assignment.effectiveDate.split('T')[0] ?? '',
       expiryDate: assignment.expiryDate?.split('T')[0] ?? '',
-      notes: assignment.notes ?? ''
+      notes: assignment.notes ?? '',
     });
     setSelectedAssignment(assignment);
     setIsEditDialogOpen(true);
@@ -206,19 +250,19 @@ export default function AdminDistributorAssignmentsPage() {
         territory: formData.territory || null,
         effectiveDate: formData.effectiveDate,
         expiryDate: formData.expiryDate || null,
-        notes: formData.notes || null
+        notes: formData.notes || null,
       };
 
-      const url = selectedAssignment 
+      const url = selectedAssignment
         ? `/api/admin/distributor-assignments/${selectedAssignment.id}`
         : '/api/admin/distributor-assignments';
-      
+
       const method = selectedAssignment ? 'PUT' : 'POST';
 
       const response = await fetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
       });
 
       const result = await response.json();
@@ -226,7 +270,7 @@ export default function AdminDistributorAssignmentsPage() {
       if (result.success) {
         toast({
           title: 'Success',
-          description: result.message
+          description: result.message,
         });
         setIsCreateDialogOpen(false);
         setIsEditDialogOpen(false);
@@ -235,14 +279,14 @@ export default function AdminDistributorAssignmentsPage() {
         toast({
           title: 'Error',
           description: result.error || 'Failed to save assignment',
-          variant: 'destructive'
+          variant: 'destructive',
         });
       }
     } catch (error) {
       toast({
         title: 'Error',
         description: 'Failed to save assignment',
-        variant: 'destructive'
+        variant: 'destructive',
       });
     } finally {
       setSubmitting(false);
@@ -251,32 +295,35 @@ export default function AdminDistributorAssignmentsPage() {
 
   const handleToggleActive = async (assignment: Assignment) => {
     try {
-      const response = await fetch(`/api/admin/distributor-assignments/${assignment.id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ isActive: !assignment.isActive })
-      });
+      const response = await fetch(
+        `/api/admin/distributor-assignments/${assignment.id}`,
+        {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ isActive: !assignment.isActive }),
+        }
+      );
 
       const result = await response.json();
 
       if (result.success) {
         toast({
           title: 'Success',
-          description: `Assignment ${assignment.isActive ? 'deactivated' : 'activated'} successfully`
+          description: `Assignment ${assignment.isActive ? 'deactivated' : 'activated'} successfully`,
         });
         fetchAssignments();
       } else {
         toast({
           title: 'Error',
           description: result.error || 'Failed to update assignment status',
-          variant: 'destructive'
+          variant: 'destructive',
         });
       }
     } catch (error) {
       toast({
         title: 'Error',
         description: 'Failed to update assignment status',
-        variant: 'destructive'
+        variant: 'destructive',
       });
     }
   };
@@ -295,10 +342,12 @@ export default function AdminDistributorAssignmentsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
+      <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">Distributor Assignments</h1>
-          <p className="text-muted-foreground">Manage company and product assignments to distributors</p>
+          <p className="text-muted-foreground">
+            Manage company and product assignments to distributors
+          </p>
         </div>
         <Button onClick={handleCreate}>
           <Plus className="mr-2 h-4 w-4" />
@@ -315,7 +364,7 @@ export default function AdminDistributorAssignmentsPage() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-5">
             <Select value={filterTenant} onValueChange={setFilterTenant}>
               <SelectTrigger>
                 <SelectValue placeholder="Filter by distributor" />
@@ -329,7 +378,7 @@ export default function AdminDistributorAssignmentsPage() {
                 ))}
               </SelectContent>
             </Select>
-            
+
             <Select value={filterCompany} onValueChange={setFilterCompany}>
               <SelectTrigger>
                 <SelectValue placeholder="Filter by company" />
@@ -343,7 +392,7 @@ export default function AdminDistributorAssignmentsPage() {
                 ))}
               </SelectContent>
             </Select>
-            
+
             <Select value={filterTerritory} onValueChange={setFilterTerritory}>
               <SelectTrigger>
                 <SelectValue placeholder="Filter by territory" />
@@ -357,7 +406,7 @@ export default function AdminDistributorAssignmentsPage() {
                 ))}
               </SelectContent>
             </Select>
-            
+
             <Select value={filterActive} onValueChange={setFilterActive}>
               <SelectTrigger>
                 <SelectValue placeholder="Filter by status" />
@@ -368,7 +417,7 @@ export default function AdminDistributorAssignmentsPage() {
                 <SelectItem value="false">Inactive</SelectItem>
               </SelectContent>
             </Select>
-            
+
             <Button variant="outline" onClick={fetchAssignments}>
               Apply Filters
             </Button>
@@ -377,36 +426,45 @@ export default function AdminDistributorAssignmentsPage() {
       </Card>
 
       {/* Assignments Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         {loading ? (
           Array.from({ length: 4 }).map((_, i) => (
             <Card key={i}>
               <CardContent className="p-6">
-                <Skeleton className="h-4 w-3/4 mb-2" />
-                <Skeleton className="h-4 w-1/2 mb-4" />
+                <Skeleton className="mb-2 h-4 w-3/4" />
+                <Skeleton className="mb-4 h-4 w-1/2" />
                 <Skeleton className="h-20 w-full" />
               </CardContent>
             </Card>
           ))
         ) : assignments.length === 0 ? (
-          <div className="col-span-full text-center py-12">
-            <Users className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
+          <div className="col-span-full py-12 text-center">
+            <Users className="text-muted-foreground mx-auto mb-4 h-12 w-12" />
             <h3 className="text-lg font-medium">No assignments found</h3>
-            <p className="text-muted-foreground">Get started by creating your first distributor assignment.</p>
+            <p className="text-muted-foreground">
+              Get started by creating your first distributor assignment.
+            </p>
           </div>
         ) : (
           assignments.map((assignment) => (
-            <Card key={assignment.id} className="hover:shadow-md transition-shadow">
+            <Card
+              key={assignment.id}
+              className="transition-shadow hover:shadow-md"
+            >
               <CardHeader className="pb-3">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
-                    <CardTitle className="text-lg flex items-center gap-2">
+                    <CardTitle className="flex items-center gap-2 text-lg">
                       <Users className="h-5 w-5" />
                       {assignment.tenant.name}
                     </CardTitle>
-                    <CardDescription>@{assignment.tenant.subdomain}</CardDescription>
+                    <CardDescription>
+                      @{assignment.tenant.subdomain}
+                    </CardDescription>
                   </div>
-                  <Badge variant={assignment.isActive ? 'default' : 'secondary'}>
+                  <Badge
+                    variant={assignment.isActive ? 'default' : 'secondary'}
+                  >
                     {assignment.isActive ? 'Active' : 'Inactive'}
                   </Badge>
                 </div>
@@ -414,7 +472,7 @@ export default function AdminDistributorAssignmentsPage() {
               <CardContent className="space-y-4">
                 {assignment.company && (
                   <div className="flex items-center gap-2 text-sm">
-                    <Building2 className="h-4 w-4 text-muted-foreground" />
+                    <Building2 className="text-muted-foreground h-4 w-4" />
                     <span className="font-medium">Company:</span>
                     <span>{assignment.company.name}</span>
                     {assignment.company.code && (
@@ -427,22 +485,24 @@ export default function AdminDistributorAssignmentsPage() {
 
                 {assignment.product && (
                   <div className="flex items-center gap-2 text-sm">
-                    <Package className="h-4 w-4 text-muted-foreground" />
+                    <Package className="text-muted-foreground h-4 w-4" />
                     <span className="font-medium">Product:</span>
-                    <span>{assignment.product.name} ({assignment.product.size})</span>
+                    <span>
+                      {assignment.product.name} ({assignment.product.size})
+                    </span>
                   </div>
                 )}
 
                 {assignment.territory && (
                   <div className="flex items-center gap-2 text-sm">
-                    <MapPin className="h-4 w-4 text-muted-foreground" />
+                    <MapPin className="text-muted-foreground h-4 w-4" />
                     <span className="font-medium">Territory:</span>
                     <span>{assignment.territory}</span>
                   </div>
                 )}
 
                 <div className="flex items-center gap-2 text-sm">
-                  <Calendar className="h-4 w-4 text-muted-foreground" />
+                  <Calendar className="text-muted-foreground h-4 w-4" />
                   <span className="font-medium">Effective:</span>
                   <span>{formatDate(assignment.effectiveDate)}</span>
                   {assignment.expiryDate && (
@@ -454,22 +514,26 @@ export default function AdminDistributorAssignmentsPage() {
                 </div>
 
                 {assignment.notes && (
-                  <div className="text-sm text-muted-foreground bg-muted/30 p-2 rounded">
+                  <div className="text-muted-foreground bg-muted/30 rounded p-2 text-sm">
                     {assignment.notes}
                   </div>
                 )}
 
-                <div className="flex items-center justify-between pt-2 border-t">
-                  <div className="text-xs text-muted-foreground">
+                <div className="flex items-center justify-between border-t pt-2">
+                  <div className="text-muted-foreground text-xs">
                     Created by {assignment.assignedByUser.name}
                   </div>
                   <div className="flex gap-2">
-                    <Button variant="outline" size="sm" onClick={() => handleEdit(assignment)}>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleEdit(assignment)}
+                    >
                       <Edit className="h-4 w-4" />
                     </Button>
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
+                    <Button
+                      variant="outline"
+                      size="sm"
                       onClick={() => handleToggleActive(assignment)}
                     >
                       <Trash2 className="h-4 w-4" />
@@ -487,17 +551,17 @@ export default function AdminDistributorAssignmentsPage() {
         <div className="flex justify-center gap-2">
           <Button
             variant="outline"
-            onClick={() => setPage(p => Math.max(1, p - 1))}
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
             disabled={page === 1}
           >
             Previous
           </Button>
-          <span className="py-2 px-4">
+          <span className="px-4 py-2">
             Page {page} of {totalPages}
           </span>
           <Button
             variant="outline"
-            onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
             disabled={page === totalPages}
           >
             Next
@@ -506,19 +570,22 @@ export default function AdminDistributorAssignmentsPage() {
       )}
 
       {/* Create/Edit Dialog */}
-      <Dialog open={isCreateDialogOpen || isEditDialogOpen} onOpenChange={(open) => {
-        if (!open) {
-          setIsCreateDialogOpen(false);
-          setIsEditDialogOpen(false);
-        }
-      }}>
+      <Dialog
+        open={isCreateDialogOpen || isEditDialogOpen}
+        onOpenChange={(open) => {
+          if (!open) {
+            setIsCreateDialogOpen(false);
+            setIsEditDialogOpen(false);
+          }
+        }}
+      >
         <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle>
               {selectedAssignment ? 'Edit Assignment' : 'Create Assignment'}
             </DialogTitle>
             <DialogDescription>
-              {selectedAssignment 
+              {selectedAssignment
                 ? 'Update distributor assignment details.'
                 : 'Assign companies and products to distributors.'}
             </DialogDescription>
@@ -526,9 +593,11 @@ export default function AdminDistributorAssignmentsPage() {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="tenantId">Distributor *</Label>
-              <Select 
-                value={formData.tenantId} 
-                onValueChange={(value) => setFormData({ ...formData, tenantId: value })}
+              <Select
+                value={formData.tenantId}
+                onValueChange={(value) =>
+                  setFormData({ ...formData, tenantId: value })
+                }
                 required
               >
                 <SelectTrigger>
@@ -547,9 +616,15 @@ export default function AdminDistributorAssignmentsPage() {
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="companyId">Company (Optional)</Label>
-                <Select 
-                  value={formData.companyId} 
-                  onValueChange={(value) => setFormData({ ...formData, companyId: value, productId: '' })}
+                <Select
+                  value={formData.companyId}
+                  onValueChange={(value) =>
+                    setFormData({
+                      ...formData,
+                      companyId: value,
+                      productId: '',
+                    })
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select company" />
@@ -567,9 +642,11 @@ export default function AdminDistributorAssignmentsPage() {
 
               <div className="space-y-2">
                 <Label htmlFor="productId">Product (Optional)</Label>
-                <Select 
-                  value={formData.productId} 
-                  onValueChange={(value) => setFormData({ ...formData, productId: value })}
+                <Select
+                  value={formData.productId}
+                  onValueChange={(value) =>
+                    setFormData({ ...formData, productId: value })
+                  }
                   disabled={!formData.companyId}
                 >
                   <SelectTrigger>
@@ -592,7 +669,9 @@ export default function AdminDistributorAssignmentsPage() {
               <Input
                 id="territory"
                 value={formData.territory}
-                onChange={(e) => setFormData({ ...formData, territory: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, territory: e.target.value })
+                }
                 placeholder="e.g., Dhaka North, Chittagong"
               />
             </div>
@@ -604,7 +683,9 @@ export default function AdminDistributorAssignmentsPage() {
                   id="effectiveDate"
                   type="date"
                   value={formData.effectiveDate}
-                  onChange={(e) => setFormData({ ...formData, effectiveDate: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, effectiveDate: e.target.value })
+                  }
                   required
                 />
               </div>
@@ -614,7 +695,9 @@ export default function AdminDistributorAssignmentsPage() {
                   id="expiryDate"
                   type="date"
                   value={formData.expiryDate}
-                  onChange={(e) => setFormData({ ...formData, expiryDate: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, expiryDate: e.target.value })
+                  }
                 />
               </div>
             </div>
@@ -624,7 +707,9 @@ export default function AdminDistributorAssignmentsPage() {
               <Textarea
                 id="notes"
                 value={formData.notes}
-                onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, notes: e.target.value })
+                }
                 placeholder="Additional notes or conditions"
                 rows={3}
               />
@@ -642,7 +727,11 @@ export default function AdminDistributorAssignmentsPage() {
                 Cancel
               </Button>
               <Button type="submit" disabled={submitting}>
-                {submitting ? 'Saving...' : (selectedAssignment ? 'Update' : 'Create')}
+                {submitting
+                  ? 'Saving...'
+                  : selectedAssignment
+                    ? 'Update'
+                    : 'Create'}
               </Button>
             </DialogFooter>
           </form>

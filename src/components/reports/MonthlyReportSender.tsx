@@ -1,10 +1,16 @@
-"use client";
+'use client';
 
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Mail, Plus, X, Send, Clock, CheckCircle } from 'lucide-react';
@@ -51,7 +57,9 @@ export function MonthlyReportSender() {
 
   const validateEmails = () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const validEmails = recipients.filter(email => email.trim() && emailRegex.test(email.trim()));
+    const validEmails = recipients.filter(
+      (email) => email.trim() && emailRegex.test(email.trim())
+    );
     return validEmails;
   };
 
@@ -59,7 +67,7 @@ export function MonthlyReportSender() {
     try {
       setLoadingHistory(true);
       const response = await fetch('/api/reports/monthly/send');
-      
+
       if (response.ok) {
         const data = await response.json();
         setRecentReports(data.recentReports || []);
@@ -73,12 +81,12 @@ export function MonthlyReportSender() {
 
   const sendMonthlyReport = async () => {
     const validEmails = validateEmails();
-    
+
     if (validEmails.length === 0) {
       toast({
-        title: "Invalid Recipients",
-        description: "Please provide at least one valid email address",
-        variant: "destructive"
+        title: 'Invalid Recipients',
+        description: 'Please provide at least one valid email address',
+        variant: 'destructive',
       });
       return;
     }
@@ -88,26 +96,26 @@ export function MonthlyReportSender() {
       const response = await fetch('/api/reports/monthly/send', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           month: month + 1, // Convert from 0-based to 1-based
           year,
-          recipients: validEmails
-        })
+          recipients: validEmails,
+        }),
       });
 
       const data = await response.json();
 
       if (response.ok) {
         toast({
-          title: "Report Sent Successfully",
-          description: `Monthly report sent to ${validEmails.length} recipients`
+          title: 'Report Sent Successfully',
+          description: `Monthly report sent to ${validEmails.length} recipients`,
         });
-        
+
         // Refresh history
         await loadReportHistory();
-        
+
         // Reset form
         setRecipients(['']);
       } else {
@@ -116,9 +124,10 @@ export function MonthlyReportSender() {
     } catch (error) {
       console.error('Failed to send report:', error);
       toast({
-        title: "Failed to Send Report",
-        description: error instanceof Error ? error.message : "Please try again",
-        variant: "destructive"
+        title: 'Failed to Send Report',
+        description:
+          error instanceof Error ? error.message : 'Please try again',
+        variant: 'destructive',
       });
     } finally {
       setSending(false);
@@ -126,8 +135,18 @@ export function MonthlyReportSender() {
   };
 
   const monthNames = [
-    'January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December'
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
   ];
 
   return (
@@ -136,11 +155,12 @@ export function MonthlyReportSender() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center">
-            <Mail className="h-5 w-5 mr-2" />
+            <Mail className="mr-2 h-5 w-5" />
             Send Monthly Report
           </CardTitle>
           <CardDescription>
-            Generate and email a comprehensive monthly business report to stakeholders
+            Generate and email a comprehensive monthly business report to
+            stakeholders
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -152,7 +172,7 @@ export function MonthlyReportSender() {
                 id="month"
                 value={month}
                 onChange={(e) => setMonth(parseInt(e.target.value))}
-                className="w-full mt-1 p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                className="mt-1 w-full rounded-md border border-gray-300 p-2 focus:ring-2 focus:ring-blue-500"
               >
                 {monthNames.map((name, index) => (
                   <option key={index} value={index}>
@@ -167,10 +187,15 @@ export function MonthlyReportSender() {
                 id="year"
                 value={year}
                 onChange={(e) => setYear(parseInt(e.target.value))}
-                className="w-full mt-1 p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                className="mt-1 w-full rounded-md border border-gray-300 p-2 focus:ring-2 focus:ring-blue-500"
               >
-                {Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - i).map(y => (
-                  <option key={y} value={y}>{y}</option>
+                {Array.from(
+                  { length: 5 },
+                  (_, i) => new Date().getFullYear() - i
+                ).map((y) => (
+                  <option key={y} value={y}>
+                    {y}
+                  </option>
                 ))}
               </select>
             </div>
@@ -179,7 +204,7 @@ export function MonthlyReportSender() {
           {/* Recipients */}
           <div>
             <Label>Email Recipients</Label>
-            <div className="space-y-2 mt-1">
+            <div className="mt-1 space-y-2">
               {recipients.map((email, index) => (
                 <div key={index} className="flex items-center space-x-2">
                   <Input
@@ -208,7 +233,7 @@ export function MonthlyReportSender() {
                 onClick={addRecipient}
                 className="w-full"
               >
-                <Plus className="h-4 w-4 mr-2" />
+                <Plus className="mr-2 h-4 w-4" />
                 Add Recipient
               </Button>
             </div>
@@ -218,9 +243,13 @@ export function MonthlyReportSender() {
           <Alert>
             <Mail className="h-4 w-4" />
             <AlertDescription>
-              Report for <strong>{monthNames[month]} {year}</strong> will be sent to{' '}
-              <strong>{validateEmails().length}</strong> valid recipients.
-              The report includes sales summary, top drivers, inventory status, and financial metrics.
+              Report for{' '}
+              <strong>
+                {monthNames[month]} {year}
+              </strong>{' '}
+              will be sent to <strong>{validateEmails().length}</strong> valid
+              recipients. The report includes sales summary, top drivers,
+              inventory status, and financial metrics.
             </AlertDescription>
           </Alert>
 
@@ -232,12 +261,12 @@ export function MonthlyReportSender() {
           >
             {sending ? (
               <>
-                <Clock className="h-4 w-4 mr-2 animate-spin" />
+                <Clock className="mr-2 h-4 w-4 animate-spin" />
                 Generating & Sending Report...
               </>
             ) : (
               <>
-                <Send className="h-4 w-4 mr-2" />
+                <Send className="mr-2 h-4 w-4" />
                 Send Monthly Report
               </>
             )}
@@ -264,18 +293,25 @@ export function MonthlyReportSender() {
           </Button>
 
           {recentReports.length === 0 ? (
-            <p className="text-gray-500 text-center py-8">
+            <p className="py-8 text-center text-gray-500">
               No monthly reports have been sent yet.
             </p>
           ) : (
             <div className="space-y-3">
               {recentReports.map((report) => (
-                <div key={report.id} className="border rounded-lg p-4 space-y-2">
+                <div
+                  key={report.id}
+                  className="space-y-2 rounded-lg border p-4"
+                >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-2">
                       <CheckCircle className="h-4 w-4 text-green-500" />
-                      <span className="font-medium">Report for {report.period}</span>
-                      <Badge variant="secondary">{report.recipients} recipients</Badge>
+                      <span className="font-medium">
+                        Report for {report.period}
+                      </span>
+                      <Badge variant="secondary">
+                        {report.recipients} recipients
+                      </Badge>
                     </div>
                     <span className="text-sm text-gray-500">
                       {new Date(report.sentAt).toLocaleDateString()}
@@ -286,8 +322,9 @@ export function MonthlyReportSender() {
                   </div>
                   {report.reportMetrics && (
                     <div className="text-sm text-gray-600">
-                      Report metrics: {report.reportMetrics.totalSales} sales, 
-                      ৳{report.reportMetrics.totalRevenue.toLocaleString()} revenue
+                      Report metrics: {report.reportMetrics.totalSales} sales, ৳
+                      {report.reportMetrics.totalRevenue.toLocaleString()}{' '}
+                      revenue
                     </div>
                   )}
                 </div>

@@ -21,13 +21,16 @@ export async function GET(request: NextRequest) {
   try {
     const session = await auth();
     console.log('Session:', session);
-    
+
     if (!session?.user) {
-      return NextResponse.json({ 
-        error: 'Unauthorized', 
-        message: 'No active session found. Please log in first.',
-        debug: { session }
-      }, { status: 401 });
+      return NextResponse.json(
+        {
+          error: 'Unauthorized',
+          message: 'No active session found. Please log in first.',
+          debug: { session },
+        },
+        { status: 401 }
+      );
     }
 
     const { tenantId, role } = session.user;
@@ -37,10 +40,13 @@ export async function GET(request: NextRequest) {
 
     // Only admins can view all users
     if (role !== UserRole.ADMIN) {
-      return NextResponse.json({ 
-        error: 'Insufficient permissions', 
-        message: `Role ${role} cannot access user management. Admin role required.`
-      }, { status: 403 });
+      return NextResponse.json(
+        {
+          error: 'Insufficient permissions',
+          message: `Role ${role} cannot access user management. Admin role required.`,
+        },
+        { status: 403 }
+      );
     }
 
     // Parse query parameters with simple defaults (no complex validation)
@@ -50,14 +56,22 @@ export async function GET(request: NextRequest) {
     const limitParam = searchParams.get('limit');
 
     // Simple validation and defaults
-    const filterRole = roleParam && Object.values(UserRole).includes(roleParam as UserRole) ? roleParam as UserRole : undefined;
-    const active = activeParam === 'true' ? true : activeParam === 'false' ? false : undefined;
+    const filterRole =
+      roleParam && Object.values(UserRole).includes(roleParam as UserRole)
+        ? (roleParam as UserRole)
+        : undefined;
+    const active =
+      activeParam === 'true'
+        ? true
+        : activeParam === 'false'
+          ? false
+          : undefined;
     const page = parseInt(pageParam || '1') || 1;
     const limit = Math.min(parseInt(limitParam || '20') || 20, 100);
 
     // Build where clause
     const where: Record<string, unknown> = { tenantId };
-    
+
     if (filterRole) where.role = filterRole;
     if (active !== undefined) where.isActive = active;
 
@@ -79,15 +93,15 @@ export async function GET(request: NextRequest) {
           _count: {
             select: {
               sales: true,
-              expenses: true
-            }
-          }
+              expenses: true,
+            },
+          },
         },
         orderBy: { createdAt: 'desc' },
         skip: (page - 1) * limit,
         take: limit,
       }),
-      prisma.user.count({ where })
+      prisma.user.count({ where }),
     ]);
 
     // Get activity summary for each user
@@ -103,19 +117,19 @@ export async function GET(request: NextRequest) {
               tenantId,
               userId: user.id,
               createdAt: {
-                gte: thirtyDaysAgo
-              }
-            }
+                gte: thirtyDaysAgo,
+              },
+            },
           }),
           prisma.expense.count({
             where: {
               tenantId,
               userId: user.id,
               createdAt: {
-                gte: thirtyDaysAgo
-              }
-            }
-          })
+                gte: thirtyDaysAgo,
+              },
+            },
+          }),
         ]);
 
         return {
@@ -123,8 +137,8 @@ export async function GET(request: NextRequest) {
           recentActivity: {
             salesLast30Days: recentSales,
             expensesLast30Days: recentExpenses,
-            lastActive: user.lastLoginAt || user.updatedAt
-          }
+            lastActive: user.lastLoginAt || user.updatedAt,
+          },
         };
       })
     );
@@ -132,16 +146,16 @@ export async function GET(request: NextRequest) {
     // Calculate summary statistics
     const summary = {
       totalUsers: totalCount,
-      activeUsers: users.filter(u => u.isActive).length,
-      inactiveUsers: users.filter(u => !u.isActive).length,
-      adminUsers: users.filter(u => u.role === UserRole.ADMIN).length,
-      managerUsers: users.filter(u => u.role === UserRole.MANAGER).length,
-      recentLogins: users.filter(u => {
+      activeUsers: users.filter((u) => u.isActive).length,
+      inactiveUsers: users.filter((u) => !u.isActive).length,
+      adminUsers: users.filter((u) => u.role === UserRole.ADMIN).length,
+      managerUsers: users.filter((u) => u.role === UserRole.MANAGER).length,
+      recentLogins: users.filter((u) => {
         if (!u.lastLoginAt) return false;
         const sevenDaysAgo = new Date();
         sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
         return new Date(u.lastLoginAt) > sevenDaysAgo;
-      }).length
+      }).length,
     };
 
     return NextResponse.json({
@@ -150,14 +164,16 @@ export async function GET(request: NextRequest) {
         page,
         limit,
         total: totalCount,
-        pages: Math.ceil(totalCount / limit)
+        pages: Math.ceil(totalCount / limit),
       },
-      summary
+      summary,
     });
-
   } catch (error) {
     console.error('Users fetch error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
   }
 }
 
@@ -165,22 +181,28 @@ export async function POST(request: NextRequest) {
   try {
     const session = await auth();
     console.log('POST Session:', session);
-    
+
     if (!session?.user) {
-      return NextResponse.json({ 
-        error: 'Unauthorized', 
-        message: 'No active session found. Please log in first.'
-      }, { status: 401 });
+      return NextResponse.json(
+        {
+          error: 'Unauthorized',
+          message: 'No active session found. Please log in first.',
+        },
+        { status: 401 }
+      );
     }
 
     const { tenantId, role } = session.user;
 
     // Only admins can create users
     if (role !== UserRole.ADMIN) {
-      return NextResponse.json({ 
-        error: 'Insufficient permissions', 
-        message: `Role ${role} cannot create users. Admin role required.`
-      }, { status: 403 });
+      return NextResponse.json(
+        {
+          error: 'Insufficient permissions',
+          message: `Role ${role} cannot create users. Admin role required.`,
+        },
+        { status: 403 }
+      );
     }
 
     const body = await request.json();
@@ -190,12 +212,15 @@ export async function POST(request: NextRequest) {
     const existingUser = await prisma.user.findFirst({
       where: {
         tenantId,
-        email: validatedData.email
-      }
+        email: validatedData.email,
+      },
     });
 
     if (existingUser) {
-      return NextResponse.json({ error: 'Email already exists' }, { status: 400 });
+      return NextResponse.json(
+        { error: 'Email already exists' },
+        { status: 400 }
+      );
     }
 
     // Hash password
@@ -211,9 +236,11 @@ export async function POST(request: NextRequest) {
         role: validatedData.role,
         avatar: validatedData.avatar,
         isActive: true,
-        permissions: validatedData.permissions ? {
-          connect: validatedData.permissions.map(name => ({ name }))
-        } : undefined
+        permissions: validatedData.permissions
+          ? {
+              connect: validatedData.permissions.map((name) => ({ name })),
+            }
+          : undefined,
       },
       select: {
         id: true,
@@ -226,28 +253,36 @@ export async function POST(request: NextRequest) {
           select: {
             id: true,
             name: true,
-            description: true
-          }
+            description: true,
+          },
         },
-        createdAt: true
-      }
+        createdAt: true,
+      },
     });
 
-    return NextResponse.json({
-      success: true,
-      message: 'User created successfully',
-      user: newUser
-    }, { status: 201 });
-
+    return NextResponse.json(
+      {
+        success: true,
+        message: 'User created successfully',
+        user: newUser,
+      },
+      { status: 201 }
+    );
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return NextResponse.json({
-        error: 'Validation failed',
-        details: error.issues
-      }, { status: 400 });
+      return NextResponse.json(
+        {
+          error: 'Validation failed',
+          details: error.issues,
+        },
+        { status: 400 }
+      );
     }
 
     console.error('User creation error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
   }
 }

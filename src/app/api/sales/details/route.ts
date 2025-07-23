@@ -14,20 +14,26 @@ export async function GET(request: NextRequest) {
     const salesIdsParam = searchParams.get('salesIds');
 
     if (!salesIdsParam) {
-      return NextResponse.json({ error: 'Sales IDs are required' }, { status: 400 });
+      return NextResponse.json(
+        { error: 'Sales IDs are required' },
+        { status: 400 }
+      );
     }
 
-    const salesIds = salesIdsParam.split(',').filter(id => id.trim() !== '');
+    const salesIds = salesIdsParam.split(',').filter((id) => id.trim() !== '');
 
     if (salesIds.length === 0) {
-      return NextResponse.json({ error: 'Valid sales IDs are required' }, { status: 400 });
+      return NextResponse.json(
+        { error: 'Valid sales IDs are required' },
+        { status: 400 }
+      );
     }
 
     // Fetch sales details with related data
     const sales = await prisma.sale.findMany({
       where: {
         id: { in: salesIds },
-        tenantId
+        tenantId,
       },
       include: {
         driver: {
@@ -35,8 +41,8 @@ export async function GET(request: NextRequest) {
             id: true,
             name: true,
             phone: true,
-            route: true
-          }
+            route: true,
+          },
         },
         product: {
           select: {
@@ -45,26 +51,23 @@ export async function GET(request: NextRequest) {
             size: true,
             company: {
               select: {
-                name: true
-              }
-            }
-          }
+                name: true,
+              },
+            },
+          },
         },
         user: {
           select: {
             id: true,
-            name: true
-          }
-        }
+            name: true,
+          },
+        },
       },
-      orderBy: [
-        { saleDate: 'desc' },
-        { createdAt: 'desc' }
-      ]
+      orderBy: [{ saleDate: 'desc' }, { createdAt: 'desc' }],
     });
 
     // Transform data for frontend
-    const transformedSales = sales.map(sale => ({
+    const transformedSales = sales.map((sale) => ({
       id: sale.id,
       saleType: sale.saleType,
       quantity: sale.quantity,
@@ -80,29 +83,31 @@ export async function GET(request: NextRequest) {
       driver: {
         name: sale.driver.name,
         phone: sale.driver.phone,
-        route: sale.driver.route
+        route: sale.driver.route,
       },
       product: {
         id: sale.product.id,
         name: sale.product.name,
         size: sale.product.size,
-        company: sale.product.company?.name
+        company: sale.product.company?.name,
       },
       createdBy: sale.user.name,
-      createdAt: sale.createdAt.toISOString()
+      createdAt: sale.createdAt.toISOString(),
     }));
 
     return NextResponse.json({
       success: true,
       sales: transformedSales,
-      count: transformedSales.length
+      count: transformedSales.length,
     });
-
   } catch (error) {
     console.error('Sales details fetch error:', error);
-    return NextResponse.json({
-      error: 'Internal server error',
-      details: error instanceof Error ? error.message : 'Unknown error'
-    }, { status: 500 });
+    return NextResponse.json(
+      {
+        error: 'Internal server error',
+        details: error instanceof Error ? error.message : 'Unknown error',
+      },
+      { status: 500 }
+    );
   }
 }

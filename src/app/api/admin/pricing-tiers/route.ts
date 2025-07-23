@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { requireAdminAuth, createAdminResponse, createAdminErrorResponse } from '@/lib/admin-auth';
+import {
+  requireAdminAuth,
+  createAdminResponse,
+  createAdminErrorResponse,
+} from '@/lib/admin-auth';
 import { prisma } from '@/lib/prisma';
 import { AuditLogger } from '@/lib/audit-logger';
 
@@ -7,7 +11,7 @@ export async function GET(request: NextRequest) {
   try {
     const session = await requireAdminAuth(request);
     const { searchParams } = new URL(request.url);
-    
+
     const type = searchParams.get('type') || 'both'; // 'company', 'product', or 'both'
     const companyId = searchParams.get('companyId');
     const productId = searchParams.get('productId');
@@ -26,21 +30,18 @@ export async function GET(request: NextRequest) {
         where: companyWhere,
         include: {
           company: {
-            select: { id: true, name: true, code: true }
+            select: { id: true, name: true, code: true },
           },
           distributorTiers: {
             where: { isActive: true },
             include: {
               tenant: {
-                select: { id: true, name: true }
-              }
-            }
-          }
+                select: { id: true, name: true },
+              },
+            },
+          },
         },
-        orderBy: [
-          { company: { name: 'asc' } },
-          { tierName: 'asc' }
-        ]
+        orderBy: [{ company: { name: 'asc' } }, { tierName: 'asc' }],
       });
     }
 
@@ -58,29 +59,29 @@ export async function GET(request: NextRequest) {
         where: productWhere,
         include: {
           product: {
-            select: { 
-              id: true, 
-              name: true, 
+            select: {
+              id: true,
+              name: true,
               size: true,
               company: {
-                select: { id: true, name: true, code: true }
-              }
-            }
+                select: { id: true, name: true, code: true },
+              },
+            },
           },
           distributorTiers: {
             where: { isActive: true },
             include: {
               tenant: {
-                select: { id: true, name: true }
-              }
-            }
-          }
+                select: { id: true, name: true },
+              },
+            },
+          },
         },
         orderBy: [
           { product: { company: { name: 'asc' } } },
           { product: { name: 'asc' } },
-          { tierName: 'asc' }
-        ]
+          { tierName: 'asc' },
+        ],
       });
     }
 
@@ -88,19 +89,24 @@ export async function GET(request: NextRequest) {
       userId: session.user.id,
       action: 'VIEW',
       entityType: 'PricingTier',
-      metadata: { 
+      metadata: {
         type,
-        searchParams: Object.fromEntries(searchParams) 
+        searchParams: Object.fromEntries(searchParams),
       },
-      request
+      request,
     });
 
     return NextResponse.json(createAdminResponse(responses));
   } catch (error) {
     console.error('Get pricing tiers error:', error);
     return NextResponse.json(
-      createAdminErrorResponse(error instanceof Error ? error.message : 'Failed to fetch pricing tiers'),
-      { status: error instanceof Error && error.message.includes('Admin') ? 403 : 500 }
+      createAdminErrorResponse(
+        error instanceof Error ? error.message : 'Failed to fetch pricing tiers'
+      ),
+      {
+        status:
+          error instanceof Error && error.message.includes('Admin') ? 403 : 500,
+      }
     );
   }
 }
@@ -109,7 +115,7 @@ export async function POST(request: NextRequest) {
   try {
     const session = await requireAdminAuth(request);
     const data = await request.json();
-    
+
     const { type, ...tierData } = data;
 
     if (!type || !['company', 'product'].includes(type)) {
@@ -130,7 +136,7 @@ export async function POST(request: NextRequest) {
         minimumOrder,
         paymentTerms,
         creditLimit,
-        isActive = true
+        isActive = true,
       } = tierData;
 
       if (!companyId || !tierName) {
@@ -144,8 +150,8 @@ export async function POST(request: NextRequest) {
       const existingTier = await prisma.companyPricingTier.findFirst({
         where: {
           companyId,
-          tierName: { equals: tierName, mode: 'insensitive' }
-        }
+          tierName: { equals: tierName, mode: 'insensitive' },
+        },
       });
 
       if (existingTier) {
@@ -164,13 +170,13 @@ export async function POST(request: NextRequest) {
           minimumOrder,
           paymentTerms,
           creditLimit,
-          isActive
+          isActive,
         },
         include: {
           company: {
-            select: { id: true, name: true, code: true }
-          }
-        }
+            select: { id: true, name: true, code: true },
+          },
+        },
       });
 
       await AuditLogger.logPricingTierAction(
@@ -191,12 +197,14 @@ export async function POST(request: NextRequest) {
         marginPercent,
         isActive = true,
         effectiveDate,
-        expiryDate
+        expiryDate,
       } = tierData;
 
       if (!productId || !tierName || price === undefined) {
         return NextResponse.json(
-          createAdminErrorResponse('Product ID, tier name, and price are required'),
+          createAdminErrorResponse(
+            'Product ID, tier name, and price are required'
+          ),
           { status: 400 }
         );
       }
@@ -205,8 +213,8 @@ export async function POST(request: NextRequest) {
       const existingTier = await prisma.productPricingTier.findFirst({
         where: {
           productId,
-          tierName: { equals: tierName, mode: 'insensitive' }
-        }
+          tierName: { equals: tierName, mode: 'insensitive' },
+        },
       });
 
       if (existingTier) {
@@ -225,20 +233,20 @@ export async function POST(request: NextRequest) {
           marginPercent,
           isActive,
           effectiveDate: effectiveDate ? new Date(effectiveDate) : new Date(),
-          expiryDate: expiryDate ? new Date(expiryDate) : null
+          expiryDate: expiryDate ? new Date(expiryDate) : null,
         },
         include: {
           product: {
-            select: { 
-              id: true, 
-              name: true, 
+            select: {
+              id: true,
+              name: true,
               size: true,
               company: {
-                select: { id: true, name: true, code: true }
-              }
-            }
-          }
-        }
+                select: { id: true, name: true, code: true },
+              },
+            },
+          },
+        },
       });
 
       await AuditLogger.logPricingTierAction(
@@ -253,14 +261,22 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json(
-      createAdminResponse(createdTier, `${type} pricing tier created successfully`),
+      createAdminResponse(
+        createdTier,
+        `${type} pricing tier created successfully`
+      ),
       { status: 201 }
     );
   } catch (error) {
     console.error('Create pricing tier error:', error);
     return NextResponse.json(
-      createAdminErrorResponse(error instanceof Error ? error.message : 'Failed to create pricing tier'),
-      { status: error instanceof Error && error.message.includes('Admin') ? 403 : 500 }
+      createAdminErrorResponse(
+        error instanceof Error ? error.message : 'Failed to create pricing tier'
+      ),
+      {
+        status:
+          error instanceof Error && error.message.includes('Admin') ? 403 : 500,
+      }
     );
   }
 }

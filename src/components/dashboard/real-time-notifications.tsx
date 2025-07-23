@@ -1,7 +1,13 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -19,7 +25,7 @@ import {
   Users,
   Clock,
   Target,
-  Zap
+  Zap,
 } from 'lucide-react';
 
 interface Notification {
@@ -38,7 +44,9 @@ interface RealTimeNotificationsProps {
   onNotificationAction?: (notification: Notification) => void;
 }
 
-export function RealTimeNotifications({ onNotificationAction }: RealTimeNotificationsProps) {
+export function RealTimeNotifications({
+  onNotificationAction,
+}: RealTimeNotificationsProps) {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
@@ -59,8 +67,12 @@ export function RealTimeNotifications({ onNotificationAction }: RealTimeNotifica
         const data = await response.json();
         if (data.hasUpdates) {
           const newNotifications = generateNotifications(data);
-          setNotifications(prev => [...newNotifications, ...prev].slice(0, 50));
-          setUnreadCount(prev => prev + newNotifications.filter(n => !n.read).length);
+          setNotifications((prev) =>
+            [...newNotifications, ...prev].slice(0, 50)
+          );
+          setUnreadCount(
+            (prev) => prev + newNotifications.filter((n) => !n.read).length
+          );
         }
       }
     } catch (error) {
@@ -82,7 +94,7 @@ export function RealTimeNotifications({ onNotificationAction }: RealTimeNotifica
         category: 'sales',
         priority: 'medium',
         actionable: true,
-        read: false
+        read: false,
       });
     }
 
@@ -97,7 +109,7 @@ export function RealTimeNotifications({ onNotificationAction }: RealTimeNotifica
           category: 'inventory',
           priority: alert.severity === 'critical' ? 'critical' : 'high',
           actionable: true,
-          read: false
+          read: false,
         });
       });
     }
@@ -113,7 +125,7 @@ export function RealTimeNotifications({ onNotificationAction }: RealTimeNotifica
         category: 'receivables',
         priority: 'high',
         actionable: true,
-        read: false
+        read: false,
       });
     }
 
@@ -127,7 +139,7 @@ export function RealTimeNotifications({ onNotificationAction }: RealTimeNotifica
         category: 'performance',
         priority: 'medium',
         actionable: false,
-        read: false
+        read: false,
       });
     }
 
@@ -141,7 +153,7 @@ export function RealTimeNotifications({ onNotificationAction }: RealTimeNotifica
         category: 'performance',
         priority: 'low',
         actionable: false,
-        read: false
+        read: false,
       });
     }
 
@@ -149,24 +161,22 @@ export function RealTimeNotifications({ onNotificationAction }: RealTimeNotifica
   };
 
   const markAsRead = (notificationId: string) => {
-    setNotifications(prev =>
-      prev.map(n =>
-        n.id === notificationId ? { ...n, read: true } : n
-      )
+    setNotifications((prev) =>
+      prev.map((n) => (n.id === notificationId ? { ...n, read: true } : n))
     );
-    setUnreadCount(prev => Math.max(0, prev - 1));
+    setUnreadCount((prev) => Math.max(0, prev - 1));
   };
 
   const markAllAsRead = () => {
-    setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
     setUnreadCount(0);
   };
 
   const dismissNotification = (notificationId: string) => {
-    setNotifications(prev => prev.filter(n => n.id !== notificationId));
-    const notification = notifications.find(n => n.id === notificationId);
+    setNotifications((prev) => prev.filter((n) => n.id !== notificationId));
+    const notification = notifications.find((n) => n.id === notificationId);
     if (notification && !notification.read) {
-      setUnreadCount(prev => Math.max(0, prev - 1));
+      setUnreadCount((prev) => Math.max(0, prev - 1));
     }
   };
 
@@ -230,14 +240,14 @@ export function RealTimeNotifications({ onNotificationAction }: RealTimeNotifica
       >
         <Bell className="h-4 w-4" />
         {unreadCount > 0 && (
-          <span className="absolute -top-2 -right-2 h-5 w-5 rounded-full bg-red-500 text-white text-xs flex items-center justify-center">
+          <span className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-white">
             {unreadCount > 99 ? '99+' : unreadCount}
           </span>
         )}
       </Button>
 
       {isOpen && (
-        <Card className="absolute right-0 top-12 w-80 z-50 shadow-lg">
+        <Card className="absolute right-0 top-12 z-50 w-80 shadow-lg">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <CardTitle className="text-lg">Notifications</CardTitle>
@@ -247,7 +257,11 @@ export function RealTimeNotifications({ onNotificationAction }: RealTimeNotifica
                     Mark all read
                   </Button>
                 )}
-                <Button variant="ghost" size="sm" onClick={() => setIsOpen(false)}>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setIsOpen(false)}
+                >
                   <X className="h-4 w-4" />
                 </Button>
               </div>
@@ -261,8 +275,8 @@ export function RealTimeNotifications({ onNotificationAction }: RealTimeNotifica
           <CardContent className="p-0">
             <ScrollArea className="h-96">
               {notifications.length === 0 ? (
-                <div className="p-4 text-center text-muted-foreground">
-                  <Bell className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                <div className="text-muted-foreground p-4 text-center">
+                  <Bell className="mx-auto mb-2 h-8 w-8 opacity-50" />
                   <p>No notifications</p>
                 </div>
               ) : (
@@ -270,18 +284,23 @@ export function RealTimeNotifications({ onNotificationAction }: RealTimeNotifica
                   {notifications.map((notification, index) => (
                     <div key={notification.id}>
                       <div
-                        className={`p-3 cursor-pointer hover:bg-muted/50 ${
+                        className={`hover:bg-muted/50 cursor-pointer p-3 ${
                           !notification.read ? 'bg-blue-50' : ''
                         }`}
                         onClick={() => markAsRead(notification.id)}
                       >
                         <div className="flex items-start space-x-3">
-                          <div className={`p-1 rounded-full ${getNotificationColor(notification.type)}`}>
-                            {getNotificationIcon(notification.type, notification.category)}
+                          <div
+                            className={`rounded-full p-1 ${getNotificationColor(notification.type)}`}
+                          >
+                            {getNotificationIcon(
+                              notification.type,
+                              notification.category
+                            )}
                           </div>
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center justify-between mb-1">
-                              <p className="text-sm font-medium text-gray-900 truncate">
+                          <div className="min-w-0 flex-1">
+                            <div className="mb-1 flex items-center justify-between">
+                              <p className="truncate text-sm font-medium text-gray-900">
                                 {notification.title}
                               </p>
                               <div className="flex items-center space-x-1">
@@ -299,26 +318,27 @@ export function RealTimeNotifications({ onNotificationAction }: RealTimeNotifica
                                 </Button>
                               </div>
                             </div>
-                            <p className="text-sm text-gray-600 mb-1">
+                            <p className="mb-1 text-sm text-gray-600">
                               {notification.message}
                             </p>
                             <div className="flex items-center justify-between">
                               <p className="text-xs text-gray-400">
                                 {notification.timestamp.toLocaleTimeString()}
                               </p>
-                              {notification.actionable && onNotificationAction && (
-                                <Button
-                                  variant="link"
-                                  size="sm"
-                                  className="h-auto p-0 text-xs"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    onNotificationAction(notification);
-                                  }}
-                                >
-                                  View Details
-                                </Button>
-                              )}
+                              {notification.actionable &&
+                                onNotificationAction && (
+                                  <Button
+                                    variant="link"
+                                    size="sm"
+                                    className="h-auto p-0 text-xs"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      onNotificationAction(notification);
+                                    }}
+                                  >
+                                    View Details
+                                  </Button>
+                                )}
                             </div>
                           </div>
                         </div>
@@ -365,13 +385,14 @@ export function LiveActivityFeed({ maxItems = 10 }: LiveActivityFeedProps) {
             message: `${sale.driver.name} sold ${sale.quantity}x ${sale.product.name}`,
             amount: sale.netValue,
             timestamp: new Date(sale.createdAt),
-            icon: <DollarSign className="h-4 w-4 text-green-600" />
+            icon: <DollarSign className="h-4 w-4 text-green-600" />,
           }));
-          
-          setActivities(prev => {
+
+          setActivities((prev) => {
             const combined = [...newActivities, ...prev];
-            const unique = combined.filter((item, index, self) => 
-              index === self.findIndex(t => t.id === item.id)
+            const unique = combined.filter(
+              (item, index, self) =>
+                index === self.findIndex((t) => t.id === item.id)
             );
             return unique.slice(0, maxItems);
           });
@@ -394,8 +415,10 @@ export function LiveActivityFeed({ maxItems = 10 }: LiveActivityFeedProps) {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex items-center justify-center h-32">
-            <div className="animate-pulse text-muted-foreground">Loading...</div>
+          <div className="flex h-32 items-center justify-center">
+            <div className="text-muted-foreground animate-pulse">
+              Loading...
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -414,20 +437,18 @@ export function LiveActivityFeed({ maxItems = 10 }: LiveActivityFeedProps) {
       <CardContent>
         <ScrollArea className="h-64">
           {activities.length === 0 ? (
-            <div className="text-center text-muted-foreground py-8">
-              <Bell className="h-8 w-8 mx-auto mb-2 opacity-50" />
+            <div className="text-muted-foreground py-8 text-center">
+              <Bell className="mx-auto mb-2 h-8 w-8 opacity-50" />
               <p>No recent activity</p>
             </div>
           ) : (
             <div className="space-y-3">
               {activities.map((activity) => (
                 <div key={activity.id} className="flex items-start space-x-3">
-                  <div className="flex-shrink-0 mt-1">
-                    {activity.icon}
-                  </div>
-                  <div className="flex-1 min-w-0">
+                  <div className="mt-1 flex-shrink-0">{activity.icon}</div>
+                  <div className="min-w-0 flex-1">
                     <p className="text-sm text-gray-900">{activity.message}</p>
-                    <div className="flex items-center justify-between mt-1">
+                    <div className="mt-1 flex items-center justify-between">
                       <p className="text-xs text-gray-500">
                         {activity.timestamp.toLocaleTimeString()}
                       </p>

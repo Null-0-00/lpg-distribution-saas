@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { requireAdminAuth, createAdminResponse, createAdminErrorResponse } from '@/lib/admin-auth';
+import {
+  requireAdminAuth,
+  createAdminResponse,
+  createAdminErrorResponse,
+} from '@/lib/admin-auth';
 import { prisma } from '@/lib/prisma';
 import { AuditLogger } from '@/lib/audit-logger';
 
@@ -10,31 +14,31 @@ export async function GET(
   try {
     const session = await requireAdminAuth(request);
     const { id } = await params;
-    
+
     const assignment = await prisma.distributorPricingAssignment.findUnique({
       where: { id },
       include: {
         tenant: {
-          select: { id: true, name: true, subdomain: true }
+          select: { id: true, name: true, subdomain: true },
         },
         companyTier: {
           include: {
-            company: true
-          }
+            company: true,
+          },
         },
         productTier: {
           include: {
             product: {
               include: {
-                company: true
-              }
-            }
-          }
+                company: true,
+              },
+            },
+          },
         },
         assignedByUser: {
-          select: { id: true, name: true, email: true }
-        }
-      }
+          select: { id: true, name: true, email: true },
+        },
+      },
     });
 
     if (!assignment) {
@@ -57,8 +61,15 @@ export async function GET(
   } catch (error) {
     console.error('Get pricing assignment error:', error);
     return NextResponse.json(
-      createAdminErrorResponse(error instanceof Error ? error.message : 'Failed to fetch pricing assignment'),
-      { status: error instanceof Error && error.message.includes('Admin') ? 403 : 500 }
+      createAdminErrorResponse(
+        error instanceof Error
+          ? error.message
+          : 'Failed to fetch pricing assignment'
+      ),
+      {
+        status:
+          error instanceof Error && error.message.includes('Admin') ? 403 : 500,
+      }
     );
   }
 }
@@ -71,23 +82,19 @@ export async function PUT(
     const session = await requireAdminAuth(request);
     const { id } = await params;
     const data = await request.json();
-    
-    const {
-      companyTierId,
-      productTierId,
-      customPrice,
-      isActive
-    } = data;
+
+    const { companyTierId, productTierId, customPrice, isActive } = data;
 
     // Get existing assignment for audit log
-    const existingAssignment = await prisma.distributorPricingAssignment.findUnique({
-      where: { id },
-      include: {
-        tenant: true,
-        companyTier: { include: { company: true } },
-        productTier: { include: { product: { include: { company: true } } } }
-      }
-    });
+    const existingAssignment =
+      await prisma.distributorPricingAssignment.findUnique({
+        where: { id },
+        include: {
+          tenant: true,
+          companyTier: { include: { company: true } },
+          productTier: { include: { product: { include: { company: true } } } },
+        },
+      });
 
     if (!existingAssignment) {
       return NextResponse.json(
@@ -99,7 +106,7 @@ export async function PUT(
     // Verify company tier exists if provided and changed
     if (companyTierId && companyTierId !== existingAssignment.companyTierId) {
       const companyTier = await prisma.companyPricingTier.findUnique({
-        where: { id: companyTierId }
+        where: { id: companyTierId },
       });
 
       if (!companyTier) {
@@ -113,7 +120,7 @@ export async function PUT(
     // Verify product tier exists if provided and changed
     if (productTierId && productTierId !== existingAssignment.productTierId) {
       const productTier = await prisma.productPricingTier.findUnique({
-        where: { id: productTierId }
+        where: { id: productTierId },
       });
 
       if (!productTier) {
@@ -135,14 +142,14 @@ export async function PUT(
       data: updatedData,
       include: {
         tenant: {
-          select: { id: true, name: true, subdomain: true }
+          select: { id: true, name: true, subdomain: true },
         },
         companyTier: {
           include: {
             company: {
-              select: { id: true, name: true, code: true }
-            }
-          }
+              select: { id: true, name: true, code: true },
+            },
+          },
         },
         productTier: {
           include: {
@@ -150,16 +157,16 @@ export async function PUT(
               select: { id: true, name: true, size: true },
               include: {
                 company: {
-                  select: { id: true, name: true }
-                }
-              }
-            }
-          }
+                  select: { id: true, name: true },
+                },
+              },
+            },
+          },
         },
         assignedByUser: {
-          select: { id: true, name: true, email: true }
-        }
-      }
+          select: { id: true, name: true, email: true },
+        },
+      },
     });
 
     await AuditLogger.logPricingAssignmentAction(
@@ -172,13 +179,23 @@ export async function PUT(
     );
 
     return NextResponse.json(
-      createAdminResponse(updatedAssignment, 'Pricing assignment updated successfully')
+      createAdminResponse(
+        updatedAssignment,
+        'Pricing assignment updated successfully'
+      )
     );
   } catch (error) {
     console.error('Update pricing assignment error:', error);
     return NextResponse.json(
-      createAdminErrorResponse(error instanceof Error ? error.message : 'Failed to update pricing assignment'),
-      { status: error instanceof Error && error.message.includes('Admin') ? 403 : 500 }
+      createAdminErrorResponse(
+        error instanceof Error
+          ? error.message
+          : 'Failed to update pricing assignment'
+      ),
+      {
+        status:
+          error instanceof Error && error.message.includes('Admin') ? 403 : 500,
+      }
     );
   }
 }
@@ -190,16 +207,17 @@ export async function DELETE(
   try {
     const session = await requireAdminAuth(request);
     const { id } = await params;
-    
+
     // Get existing assignment for audit log
-    const existingAssignment = await prisma.distributorPricingAssignment.findUnique({
-      where: { id },
-      include: {
-        tenant: true,
-        companyTier: { include: { company: true } },
-        productTier: { include: { product: { include: { company: true } } } }
-      }
-    });
+    const existingAssignment =
+      await prisma.distributorPricingAssignment.findUnique({
+        where: { id },
+        include: {
+          tenant: true,
+          companyTier: { include: { company: true } },
+          productTier: { include: { product: { include: { company: true } } } },
+        },
+      });
 
     if (!existingAssignment) {
       return NextResponse.json(
@@ -209,10 +227,11 @@ export async function DELETE(
     }
 
     // Soft delete by deactivating
-    const deactivatedAssignment = await prisma.distributorPricingAssignment.update({
-      where: { id },
-      data: { isActive: false }
-    });
+    const deactivatedAssignment =
+      await prisma.distributorPricingAssignment.update({
+        where: { id },
+        data: { isActive: false },
+      });
 
     await AuditLogger.logPricingAssignmentAction(
       session.user.id,
@@ -232,8 +251,15 @@ export async function DELETE(
   } catch (error) {
     console.error('Delete pricing assignment error:', error);
     return NextResponse.json(
-      createAdminErrorResponse(error instanceof Error ? error.message : 'Failed to delete pricing assignment'),
-      { status: error instanceof Error && error.message.includes('Admin') ? 403 : 500 }
+      createAdminErrorResponse(
+        error instanceof Error
+          ? error.message
+          : 'Failed to delete pricing assignment'
+      ),
+      {
+        status:
+          error instanceof Error && error.message.includes('Admin') ? 403 : 500,
+      }
     );
   }
 }

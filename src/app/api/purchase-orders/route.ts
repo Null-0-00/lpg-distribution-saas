@@ -23,11 +23,11 @@ export async function GET(request: NextRequest) {
 
     if (status) whereClause.status = status;
     if (companyId) whereClause.companyId = companyId;
-    
+
     if (startDate && endDate) {
       whereClause.orderDate = {
         gte: new Date(startDate),
-        lte: new Date(endDate + 'T23:59:59.999Z')
+        lte: new Date(endDate + 'T23:59:59.999Z'),
       };
     }
 
@@ -39,41 +39,47 @@ export async function GET(request: NextRequest) {
           driver: true,
           items: {
             include: {
-              product: true
-            }
+              product: true,
+            },
           },
           createdByUser: {
-            select: { id: true, name: true, email: true }
-          }
+            select: { id: true, name: true, email: true },
+          },
         },
         orderBy: { orderDate: 'desc' },
         take: limit,
-        skip: offset
+        skip: offset,
       }),
-      prisma.purchaseOrder.count({ where: whereClause })
+      prisma.purchaseOrder.count({ where: whereClause }),
     ]);
 
     // Calculate summary statistics
     const summary = {
       totalOrders: totalCount,
       totalValue: purchaseOrders.reduce((sum, po) => sum + po.totalAmount, 0),
-      byStatus: purchaseOrders.reduce((acc, po) => {
-        if (!acc[po.status]) {
-          acc[po.status] = { count: 0, value: 0 };
-        }
-        acc[po.status].count += 1;
-        acc[po.status].value += po.totalAmount;
-        return acc;
-      }, {} as Record<string, { count: number; value: number }>),
-      byCompany: purchaseOrders.reduce((acc, po) => {
-        const companyName = po.company.name;
-        if (!acc[companyName]) {
-          acc[companyName] = { count: 0, value: 0 };
-        }
-        acc[companyName].count += 1;
-        acc[companyName].value += po.totalAmount;
-        return acc;
-      }, {} as Record<string, { count: number; value: number }>)
+      byStatus: purchaseOrders.reduce(
+        (acc, po) => {
+          if (!acc[po.status]) {
+            acc[po.status] = { count: 0, value: 0 };
+          }
+          acc[po.status].count += 1;
+          acc[po.status].value += po.totalAmount;
+          return acc;
+        },
+        {} as Record<string, { count: number; value: number }>
+      ),
+      byCompany: purchaseOrders.reduce(
+        (acc, po) => {
+          const companyName = po.company.name;
+          if (!acc[companyName]) {
+            acc[companyName] = { count: 0, value: 0 };
+          }
+          acc[companyName].count += 1;
+          acc[companyName].value += po.totalAmount;
+          return acc;
+        },
+        {} as Record<string, { count: number; value: number }>
+      ),
     };
 
     return NextResponse.json({
@@ -83,8 +89,8 @@ export async function GET(request: NextRequest) {
         total: totalCount,
         limit,
         offset,
-        hasMore: offset + limit < totalCount
-      }
+        hasMore: offset + limit < totalCount,
+      },
     });
   } catch (error) {
     console.error('Get purchase orders error:', error);
@@ -110,11 +116,17 @@ export async function POST(request: NextRequest) {
       expectedDeliveryDate,
       items, // Array of { productId, quantity, unitPrice }
       notes,
-      priority
+      priority,
     } = data;
 
     // Validation
-    if (!companyId || !driverId || !items || !Array.isArray(items) || items.length === 0) {
+    if (
+      !companyId ||
+      !driverId ||
+      !items ||
+      !Array.isArray(items) ||
+      items.length === 0
+    ) {
       return NextResponse.json(
         { error: 'Company, driver, and items are required' },
         { status: 400 }
@@ -131,7 +143,10 @@ export async function POST(request: NextRequest) {
       }
       if (item.quantity <= 0 || item.unitPrice < 0) {
         return NextResponse.json(
-          { error: 'Quantity must be greater than 0 and unit price must be non-negative' },
+          {
+            error:
+              'Quantity must be greater than 0 and unit price must be non-negative',
+          },
           { status: 400 }
         );
       }
@@ -142,35 +157,29 @@ export async function POST(request: NextRequest) {
 
     // Verify company belongs to tenant
     const company = await prisma.company.findFirst({
-      where: { id: companyId, tenantId }
+      where: { id: companyId, tenantId },
     });
 
     if (!company) {
-      return NextResponse.json(
-        { error: 'Company not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Company not found' }, { status: 404 });
     }
 
     // Verify driver belongs to tenant
     const driver = await prisma.driver.findFirst({
-      where: { id: driverId, tenantId }
+      where: { id: driverId, tenantId },
     });
 
     if (!driver) {
-      return NextResponse.json(
-        { error: 'Driver not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Driver not found' }, { status: 404 });
     }
 
     // Verify all products belong to tenant
-    const productIds = items.map(item => item.productId);
+    const productIds = items.map((item) => item.productId);
     const products = await prisma.product.findMany({
       where: {
         id: { in: productIds },
-        tenantId
-      }
+        tenantId,
+      },
     });
 
     if (products.length !== productIds.length) {
@@ -181,10 +190,15 @@ export async function POST(request: NextRequest) {
     }
 
     // Calculate total amount
-    const totalAmount = items.reduce((sum, item) => sum + (item.quantity * item.unitPrice), 0);
+    const totalAmount = items.reduce(
+      (sum, item) => sum + item.quantity * item.unitPrice,
+      0
+    );
 
     // Generate PO number
-    const orderCount = await prisma.purchaseOrder.count({ where: { tenantId } });
+    const orderCount = await prisma.purchaseOrder.count({
+      where: { tenantId },
+    });
     const poNumber = `PO-${new Date().getFullYear()}-${String(orderCount + 1).padStart(4, '0')}`;
 
     // Create purchase order with items
@@ -195,38 +209,40 @@ export async function POST(request: NextRequest) {
         driverId,
         poNumber,
         orderDate: orderDate ? new Date(orderDate) : new Date(),
-        expectedDeliveryDate: expectedDeliveryDate ? new Date(expectedDeliveryDate) : null,
+        expectedDeliveryDate: expectedDeliveryDate
+          ? new Date(expectedDeliveryDate)
+          : null,
         status: 'PENDING',
         totalAmount,
         notes,
         priority: priority || 'NORMAL',
         createdBy: userId,
         items: {
-          create: items.map(item => ({
+          create: items.map((item) => ({
             productId: item.productId,
             quantity: item.quantity,
             unitPrice: item.unitPrice,
-            totalPrice: item.quantity * item.unitPrice
-          }))
-        }
+            totalPrice: item.quantity * item.unitPrice,
+          })),
+        },
       },
       include: {
         company: true,
         driver: true,
         items: {
           include: {
-            product: true
-          }
+            product: true,
+          },
         },
         createdByUser: {
-          select: { id: true, name: true, email: true }
-        }
-      }
+          select: { id: true, name: true, email: true },
+        },
+      },
     });
 
     return NextResponse.json({
       purchaseOrder,
-      message: 'Purchase order created successfully'
+      message: 'Purchase order created successfully',
     });
   } catch (error) {
     console.error('Create purchase order error:', error);

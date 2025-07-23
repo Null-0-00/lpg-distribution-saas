@@ -20,23 +20,23 @@ export async function GET(request: NextRequest) {
 
     const tenantId = session.user.tenantId;
 
-    const whereClause: any = { 
+    const whereClause: any = {
       tenantId,
       shipmentType: {
-        in: ['INCOMING_EMPTY', 'OUTGOING_EMPTY']
-      }
+        in: ['INCOMING_EMPTY', 'OUTGOING_EMPTY'],
+      },
     };
 
     if (startDate && endDate) {
       whereClause.shipmentDate = {
         gte: new Date(startDate),
-        lte: new Date(endDate + 'T23:59:59.999Z')
+        lte: new Date(endDate + 'T23:59:59.999Z'),
       };
     }
 
     if (companyId) whereClause.companyId = companyId;
     if (productId) whereClause.productId = productId;
-    
+
     if (transactionType === 'BUY') {
       whereClause.shipmentType = 'INCOMING_EMPTY';
     } else if (transactionType === 'SELL') {
@@ -48,51 +48,78 @@ export async function GET(request: NextRequest) {
         where: whereClause,
         include: {
           company: true,
-          product: true
+          product: true,
         },
         orderBy: { shipmentDate: 'desc' },
         take: limit,
-        skip: offset
+        skip: offset,
       }),
-      prisma.shipment.count({ where: whereClause })
+      prisma.shipment.count({ where: whereClause }),
     ]);
 
     // Calculate summary statistics
     const summary = {
       totalTransactions: totalCount,
-      totalQuantity: transactions.reduce((sum, transaction) => sum + transaction.quantity, 0),
-      totalValue: transactions.reduce((sum, transaction) => sum + (transaction.totalCost || 0), 0),
+      totalQuantity: transactions.reduce(
+        (sum, transaction) => sum + transaction.quantity,
+        0
+      ),
+      totalValue: transactions.reduce(
+        (sum, transaction) => sum + (transaction.totalCost || 0),
+        0
+      ),
       purchases: {
-        count: transactions.filter(t => t.shipmentType === 'INCOMING_EMPTY').length,
-        quantity: transactions.filter(t => t.shipmentType === 'INCOMING_EMPTY').reduce((sum, t) => sum + t.quantity, 0),
-        value: transactions.filter(t => t.shipmentType === 'INCOMING_EMPTY').reduce((sum, t) => sum + (t.totalCost || 0), 0)
+        count: transactions.filter((t) => t.shipmentType === 'INCOMING_EMPTY')
+          .length,
+        quantity: transactions
+          .filter((t) => t.shipmentType === 'INCOMING_EMPTY')
+          .reduce((sum, t) => sum + t.quantity, 0),
+        value: transactions
+          .filter((t) => t.shipmentType === 'INCOMING_EMPTY')
+          .reduce((sum, t) => sum + (t.totalCost || 0), 0),
       },
       sales: {
-        count: transactions.filter(t => t.shipmentType === 'OUTGOING_EMPTY').length,
-        quantity: transactions.filter(t => t.shipmentType === 'OUTGOING_EMPTY').reduce((sum, t) => sum + t.quantity, 0),
-        value: transactions.filter(t => t.shipmentType === 'OUTGOING_EMPTY').reduce((sum, t) => sum + (t.totalCost || 0), 0)
+        count: transactions.filter((t) => t.shipmentType === 'OUTGOING_EMPTY')
+          .length,
+        quantity: transactions
+          .filter((t) => t.shipmentType === 'OUTGOING_EMPTY')
+          .reduce((sum, t) => sum + t.quantity, 0),
+        value: transactions
+          .filter((t) => t.shipmentType === 'OUTGOING_EMPTY')
+          .reduce((sum, t) => sum + (t.totalCost || 0), 0),
       },
-      netProfit: transactions.filter(t => t.shipmentType === 'OUTGOING_EMPTY').reduce((sum, t) => sum + (t.totalCost || 0), 0) - 
-                 transactions.filter(t => t.shipmentType === 'INCOMING_EMPTY').reduce((sum, t) => sum + (t.totalCost || 0), 0),
-      byCompany: transactions.reduce((acc, transaction) => {
-        const companyName = transaction.company?.name;
-        if (!companyName) return acc;
-        
-        const type = transaction.shipmentType === 'INCOMING_EMPTY' ? 'purchases' : 'sales';
-        
-        if (!acc[companyName]) {
-          acc[companyName] = { 
-            purchases: { count: 0, quantity: 0, value: 0 },
-            sales: { count: 0, quantity: 0, value: 0 }
-          };
-        }
-        
-        acc[companyName][type].count += 1;
-        acc[companyName][type].quantity += transaction.quantity;
-        acc[companyName][type].value += transaction.totalCost || 0;
-        
-        return acc;
-      }, {} as Record<string, any>)
+      netProfit:
+        transactions
+          .filter((t) => t.shipmentType === 'OUTGOING_EMPTY')
+          .reduce((sum, t) => sum + (t.totalCost || 0), 0) -
+        transactions
+          .filter((t) => t.shipmentType === 'INCOMING_EMPTY')
+          .reduce((sum, t) => sum + (t.totalCost || 0), 0),
+      byCompany: transactions.reduce(
+        (acc, transaction) => {
+          const companyName = transaction.company?.name;
+          if (!companyName) return acc;
+
+          const type =
+            transaction.shipmentType === 'INCOMING_EMPTY'
+              ? 'purchases'
+              : 'sales';
+
+          if (!acc[companyName]) {
+            acc[companyName] = {
+              purchases: { count: 0, quantity: 0, value: 0 },
+              sales: { count: 0, quantity: 0, value: 0 },
+            };
+          }
+
+          acc[companyName][type].count += 1;
+          acc[companyName][type].quantity += transaction.quantity;
+          acc[companyName][type].value += transaction.totalCost || 0;
+
+          return acc;
+        },
+        {} as Record<string, any>
+      ),
     };
 
     return NextResponse.json({
@@ -102,8 +129,8 @@ export async function GET(request: NextRequest) {
         total: totalCount,
         limit,
         offset,
-        hasMore: offset + limit < totalCount
-      }
+        hasMore: offset + limit < totalCount,
+      },
     });
   } catch (error) {
     console.error('Get empty cylinder transactions error:', error);
@@ -131,13 +158,22 @@ export async function POST(request: NextRequest) {
       transactionDate,
       invoiceNumber,
       vehicleNumber,
-      notes
+      notes,
     } = data;
 
     // Validation
-    if (!companyId || !productId || !transactionType || !quantity || !unitPrice) {
+    if (
+      !companyId ||
+      !productId ||
+      !transactionType ||
+      !quantity ||
+      !unitPrice
+    ) {
       return NextResponse.json(
-        { error: 'Missing required fields: companyId, productId, transactionType, quantity, unitPrice' },
+        {
+          error:
+            'Missing required fields: companyId, productId, transactionType, quantity, unitPrice',
+        },
         { status: 400 }
       );
     }
@@ -151,7 +187,10 @@ export async function POST(request: NextRequest) {
 
     if (quantity <= 0 || unitPrice < 0) {
       return NextResponse.json(
-        { error: 'Quantity must be greater than 0 and price must be non-negative' },
+        {
+          error:
+            'Quantity must be greater than 0 and price must be non-negative',
+        },
         { status: 400 }
       );
     }
@@ -162,40 +201,40 @@ export async function POST(request: NextRequest) {
     // Verify company and product belong to tenant
     const [company, product] = await Promise.all([
       prisma.company.findFirst({
-        where: { id: companyId, tenantId }
+        where: { id: companyId, tenantId },
       }),
       prisma.product.findFirst({
-        where: { id: productId, tenantId }
-      })
+        where: { id: productId, tenantId },
+      }),
     ]);
 
     if (!company) {
-      return NextResponse.json(
-        { error: 'Company not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Company not found' }, { status: 404 });
     }
 
     if (!product) {
-      return NextResponse.json(
-        { error: 'Product not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Product not found' }, { status: 404 });
     }
 
     // For SELL transactions, check if we have enough empty cylinders
     if (transactionType === 'SELL') {
-      const currentInventory = await getCurrentEmptyInventory(tenantId, productId);
+      const currentInventory = await getCurrentEmptyInventory(
+        tenantId,
+        productId
+      );
       if (currentInventory < quantity) {
         return NextResponse.json(
-          { error: `Insufficient empty cylinder inventory. Available: ${currentInventory}, Required: ${quantity}` },
+          {
+            error: `Insufficient empty cylinder inventory. Available: ${currentInventory}, Required: ${quantity}`,
+          },
           { status: 400 }
         );
       }
     }
 
     const totalValue = unitPrice * quantity;
-    const shipmentType = transactionType === 'BUY' ? 'INCOMING_EMPTY' : 'OUTGOING_EMPTY';
+    const shipmentType =
+      transactionType === 'BUY' ? 'INCOMING_EMPTY' : 'OUTGOING_EMPTY';
 
     // Create shipment record for the empty cylinder transaction
     const transaction = await prisma.shipment.create({
@@ -210,26 +249,32 @@ export async function POST(request: NextRequest) {
         shipmentDate: transactionDate ? new Date(transactionDate) : new Date(),
         invoiceNumber,
         vehicleNumber,
-        notes: notes ? `Empty Cylinder ${transactionType}: ${notes}` : `Empty Cylinder ${transactionType}`
+        notes: notes
+          ? `Empty Cylinder ${transactionType}: ${notes}`
+          : `Empty Cylinder ${transactionType}`,
       },
       include: {
         company: true,
-        product: true
-      }
+        product: true,
+      },
     });
 
     // Update inventory
-    const emptyCylinderChange = transactionType === 'BUY' ? quantity : -quantity;
-    
+    const emptyCylinderChange =
+      transactionType === 'BUY' ? quantity : -quantity;
+
     await prisma.inventoryMovement.create({
       data: {
         tenantId,
         productId,
-        type: transactionType === 'BUY' ? 'EMPTY_CYLINDER_BUY' : 'EMPTY_CYLINDER_SELL',
+        type:
+          transactionType === 'BUY'
+            ? 'EMPTY_CYLINDER_BUY'
+            : 'EMPTY_CYLINDER_SELL',
         quantity: Math.abs(emptyCylinderChange),
         description: `Empty cylinder ${transactionType.toLowerCase()}: ${Math.abs(emptyCylinderChange)} cylinders`,
-        reference: `Empty Cylinder Transaction: ${transaction.invoiceNumber || transaction.id}`
-      }
+        reference: `Empty Cylinder Transaction: ${transaction.invoiceNumber || transaction.id}`,
+      },
     });
 
     // Calculate profit/loss for this transaction
@@ -245,7 +290,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       transaction,
       profitLoss,
-      message: `Empty cylinder ${transactionType.toLowerCase()} transaction created successfully`
+      message: `Empty cylinder ${transactionType.toLowerCase()} transaction created successfully`,
     });
   } catch (error) {
     console.error('Create empty cylinder transaction error:', error);
@@ -256,19 +301,25 @@ export async function POST(request: NextRequest) {
   }
 }
 
-async function getCurrentEmptyInventory(tenantId: string, productId: string): Promise<number> {
+async function getCurrentEmptyInventory(
+  tenantId: string,
+  productId: string
+): Promise<number> {
   const movements = await prisma.inventoryMovement.findMany({
     where: {
       tenantId,
       productId,
       type: {
-        in: ['EMPTY_CYLINDER_BUY', 'EMPTY_CYLINDER_SELL']
-      }
-    }
+        in: ['EMPTY_CYLINDER_BUY', 'EMPTY_CYLINDER_SELL'],
+      },
+    },
   });
 
   return movements.reduce((total, movement) => {
-    const change = movement.type === 'EMPTY_CYLINDER_BUY' ? movement.quantity : -movement.quantity;
+    const change =
+      movement.type === 'EMPTY_CYLINDER_BUY'
+        ? movement.quantity
+        : -movement.quantity;
     return total + change;
   }, 0);
 }

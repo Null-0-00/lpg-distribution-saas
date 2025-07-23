@@ -1,7 +1,13 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -15,7 +21,7 @@ import {
   Clock,
   CheckCircle,
   AlertTriangle,
-  HardDrive
+  HardDrive,
 } from 'lucide-react';
 import { offlineStorage } from '@/lib/offline-storage';
 
@@ -62,7 +68,7 @@ export function OfflineIndicator({ onSyncRequest }: OfflineIndicatorProps) {
 
   const handleSync = async () => {
     if (!isOnline) return;
-    
+
     setIsSyncing(true);
     try {
       if (onSyncRequest) {
@@ -114,29 +120,34 @@ export function OfflineIndicator({ onSyncRequest }: OfflineIndicatorProps) {
         icon: <Wifi className="h-4 w-4 text-green-500" />,
         text: 'Online',
         color: 'text-green-600',
-        bgColor: 'bg-green-50'
+        bgColor: 'bg-green-50',
       };
     } else {
       return {
         icon: <WifiOff className="h-4 w-4 text-red-500" />,
         text: 'Offline',
         color: 'text-red-600',
-        bgColor: 'bg-red-50'
+        bgColor: 'bg-red-50',
       };
     }
   };
 
   const status = getConnectionStatus();
-  const cacheUsagePercent = cacheSize.available > 0 ? (cacheSize.used / cacheSize.available) * 100 : 0;
+  const cacheUsagePercent =
+    cacheSize.available > 0 ? (cacheSize.used / cacheSize.available) * 100 : 0;
 
   return (
     <div className="space-y-4">
-      <Card className={`border-l-4 ${isOnline ? 'border-l-green-500' : 'border-l-red-500'}`}>
+      <Card
+        className={`border-l-4 ${isOnline ? 'border-l-green-500' : 'border-l-red-500'}`}
+      >
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
               {status.icon}
-              <CardTitle className="text-sm font-medium">Connection Status</CardTitle>
+              <CardTitle className="text-sm font-medium">
+                Connection Status
+              </CardTitle>
             </div>
             <Badge variant={isOnline ? 'default' : 'destructive'}>
               {status.text}
@@ -155,15 +166,15 @@ export function OfflineIndicator({ onSyncRequest }: OfflineIndicatorProps) {
 
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div>
-              <div className="flex items-center space-x-1 text-muted-foreground mb-1">
+              <div className="text-muted-foreground mb-1 flex items-center space-x-1">
                 <Clock className="h-3 w-3" />
                 <span>Last Sync</span>
               </div>
               <div className="font-medium">{formatLastSync(lastSync)}</div>
             </div>
-            
+
             <div>
-              <div className="flex items-center space-x-1 text-muted-foreground mb-1">
+              <div className="text-muted-foreground mb-1 flex items-center space-x-1">
                 <Database className="h-3 w-3" />
                 <span>Cache Status</span>
               </div>
@@ -180,17 +191,19 @@ export function OfflineIndicator({ onSyncRequest }: OfflineIndicatorProps) {
               disabled={!isOnline || isSyncing}
               className="flex-1"
             >
-              <RefreshCw className={`h-3 w-3 mr-1 ${isSyncing ? 'animate-spin' : ''}`} />
+              <RefreshCw
+                className={`mr-1 h-3 w-3 ${isSyncing ? 'animate-spin' : ''}`}
+              />
               {isSyncing ? 'Syncing...' : 'Sync Now'}
             </Button>
-            
+
             <Button
               variant="outline"
               size="sm"
               onClick={clearCache}
               disabled={cacheSize.used === 0}
             >
-              <HardDrive className="h-3 w-3 mr-1" />
+              <HardDrive className="mr-1 h-3 w-3" />
               Clear Cache
             </Button>
           </div>
@@ -200,7 +213,7 @@ export function OfflineIndicator({ onSyncRequest }: OfflineIndicatorProps) {
       {cacheSize.available > 0 && (
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium flex items-center space-x-2">
+            <CardTitle className="flex items-center space-x-2 text-sm font-medium">
               <HardDrive className="h-4 w-4" />
               <span>Storage Usage</span>
             </CardTitle>
@@ -209,13 +222,14 @@ export function OfflineIndicator({ onSyncRequest }: OfflineIndicatorProps) {
             <div className="flex items-center justify-between text-sm">
               <span>Cache Size</span>
               <span className="font-medium">
-                {formatBytes(cacheSize.used)} of {formatBytes(cacheSize.available)}
+                {formatBytes(cacheSize.used)} of{' '}
+                {formatBytes(cacheSize.available)}
               </span>
             </div>
-            
+
             <Progress value={cacheUsagePercent} className="h-2" />
-            
-            <div className="text-xs text-muted-foreground">
+
+            <div className="text-muted-foreground text-xs">
               {cacheUsagePercent.toFixed(1)}% of available storage used
             </div>
 
@@ -250,7 +264,7 @@ export function OfflineDataViewer() {
 
       const [snapshot, metrics] = await Promise.all([
         offlineStorage.getLatestSnapshot(),
-        offlineStorage.getOfflineMetrics()
+        offlineStorage.getOfflineMetrics(),
       ]);
 
       if (!snapshot && !metrics) {
@@ -264,8 +278,8 @@ export function OfflineDataViewer() {
         availableCharts: {
           sales: await offlineStorage.getChartData('sales-trend'),
           inventory: await offlineStorage.getChartData('inventory-movement'),
-          financial: await offlineStorage.getChartData('financial-ratios')
-        }
+          financial: await offlineStorage.getChartData('financial-ratios'),
+        },
       });
     } catch (err) {
       setError('Failed to load offline data');
@@ -278,7 +292,7 @@ export function OfflineDataViewer() {
   if (isLoading) {
     return (
       <Card>
-        <CardContent className="flex items-center justify-center h-32">
+        <CardContent className="flex h-32 items-center justify-center">
           <div className="flex items-center space-x-2">
             <RefreshCw className="h-4 w-4 animate-spin" />
             <span>Loading offline data...</span>
@@ -291,12 +305,13 @@ export function OfflineDataViewer() {
   if (error || !offlineData) {
     return (
       <Card>
-        <CardContent className="flex flex-col items-center justify-center h-32 space-y-2">
-          <Database className="h-8 w-8 text-muted-foreground" />
+        <CardContent className="flex h-32 flex-col items-center justify-center space-y-2">
+          <Database className="text-muted-foreground h-8 w-8" />
           <div className="text-center">
             <p className="text-sm font-medium">No Offline Data</p>
-            <p className="text-xs text-muted-foreground">
-              {error || 'Connect to the internet to cache data for offline viewing'}
+            <p className="text-muted-foreground text-xs">
+              {error ||
+                'Connect to the internet to cache data for offline viewing'}
             </p>
           </div>
         </CardContent>
@@ -305,15 +320,18 @@ export function OfflineDataViewer() {
   }
 
   const { snapshot, metrics } = offlineData;
-  const syncDate = snapshot?.lastUpdated ? new Date(snapshot.lastUpdated) : null;
+  const syncDate = snapshot?.lastUpdated
+    ? new Date(snapshot.lastUpdated)
+    : null;
 
   return (
     <div className="space-y-4">
       <Alert>
         <Database className="h-4 w-4" />
         <AlertDescription>
-          Viewing cached data from {syncDate ? syncDate.toLocaleString() : 'unknown time'}.
-          Some information may be outdated.
+          Viewing cached data from{' '}
+          {syncDate ? syncDate.toLocaleString() : 'unknown time'}. Some
+          information may be outdated.
         </AlertDescription>
       </Alert>
 
@@ -328,7 +346,7 @@ export function OfflineDataViewer() {
                 <div className="text-lg font-bold">
                   ৳{metrics.sales.totalRevenue?.toLocaleString() || 0}
                 </div>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-muted-foreground text-xs">
                   {metrics.sales.totalOrders || 0} orders
                 </p>
               </CardContent>
@@ -344,7 +362,7 @@ export function OfflineDataViewer() {
                 <div className="text-lg font-bold">
                   {metrics.inventory.fullCylinders || 0}
                 </div>
-                <p className="text-xs text-muted-foreground">Full cylinders</p>
+                <p className="text-muted-foreground text-xs">Full cylinders</p>
               </CardContent>
             </Card>
           )}
@@ -358,7 +376,7 @@ export function OfflineDataViewer() {
                 <div className="text-lg font-bold">
                   {metrics.drivers.totalActiveDrivers || 0}
                 </div>
-                <p className="text-xs text-muted-foreground">Active drivers</p>
+                <p className="text-muted-foreground text-xs">Active drivers</p>
               </CardContent>
             </Card>
           )}
@@ -372,7 +390,7 @@ export function OfflineDataViewer() {
                 <div className="text-lg font-bold">
                   {metrics.financial.profitMargin?.toFixed(1) || 0}%
                 </div>
-                <p className="text-xs text-muted-foreground">Profit margin</p>
+                <p className="text-muted-foreground text-xs">Profit margin</p>
               </CardContent>
             </Card>
           )}
@@ -380,7 +398,7 @@ export function OfflineDataViewer() {
       )}
 
       <Button onClick={loadOfflineData} variant="outline" className="w-full">
-        <RefreshCw className="h-4 w-4 mr-2" />
+        <RefreshCw className="mr-2 h-4 w-4" />
         Refresh Offline Data
       </Button>
     </div>

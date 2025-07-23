@@ -4,7 +4,13 @@ import { useState } from 'react';
 import { SaleType, PaymentType } from '@prisma/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Eye, Edit, Trash2, Search, Filter, Download } from 'lucide-react';
 import { format } from 'date-fns';
 import { formatCurrency } from '@/lib/utils/formatters';
@@ -44,32 +50,35 @@ interface SalesTableProps {
   onRefresh?: () => void;
 }
 
-export function SalesTable({ 
-  sales, 
-  loading = false, 
-  onView, 
-  onEdit, 
+export function SalesTable({
+  sales,
+  loading = false,
+  onView,
+  onEdit,
   onDelete,
-  onRefresh 
+  onRefresh,
 }: SalesTableProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [saleTypeFilter, setSaleTypeFilter] = useState<string>('all');
   const [paymentFilter, setPaymentFilter] = useState<string>('all');
 
   // Filter sales based on search and filters
-  const filteredSales = sales.filter(sale => {
-    const matchesSearch = 
+  const filteredSales = sales.filter((sale) => {
+    const matchesSearch =
       sale.driver.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       sale.product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       sale.createdBy.toLowerCase().includes(searchTerm.toLowerCase());
 
-    const matchesSaleType = saleTypeFilter === 'all' || sale.saleType === saleTypeFilter;
-    const matchesPayment = paymentFilter === 'all' || sale.paymentType === paymentFilter;
+    const matchesSaleType =
+      saleTypeFilter === 'all' || sale.saleType === saleTypeFilter;
+    const matchesPayment =
+      paymentFilter === 'all' || sale.paymentType === paymentFilter;
 
     return matchesSearch && matchesSaleType && matchesPayment;
   });
 
-  const formatDate = (dateString: string) => format(new Date(dateString), 'MMM dd, yyyy HH:mm');
+  const formatDate = (dateString: string) =>
+    format(new Date(dateString), 'MMM dd, yyyy HH:mm');
 
   const getSaleTypeLabel = (type: SaleType) => {
     return type === SaleType.PACKAGE ? 'Package' : 'Refill';
@@ -77,10 +86,14 @@ export function SalesTable({
 
   const getPaymentTypeLabel = (type: PaymentType) => {
     switch (type) {
-      case PaymentType.CASH: return 'Cash';
-      case PaymentType.CREDIT: return 'Credit';
-      case PaymentType.CYLINDER_CREDIT: return 'Cylinder Credit';
-      default: return type;
+      case PaymentType.CASH:
+        return 'Cash';
+      case PaymentType.CREDIT:
+        return 'Credit';
+      case PaymentType.CYLINDER_CREDIT:
+        return 'Cylinder Credit';
+      default:
+        return type;
     }
   };
 
@@ -105,7 +118,7 @@ export function SalesTable({
   if (loading) {
     return (
       <div className="flex items-center justify-center p-8">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-blue-600"></div>
         <span className="ml-2">Loading sales...</span>
       </div>
     );
@@ -114,21 +127,21 @@ export function SalesTable({
   return (
     <div className="space-y-4">
       {/* Search and Filters */}
-      <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
-        <div className="flex flex-col sm:flex-row gap-4 items-center">
+      <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
+        <div className="flex flex-col items-center gap-4 sm:flex-row">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-gray-400" />
             <Input
               placeholder="Search sales..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 w-64"
+              className="w-64 pl-10"
             />
           </div>
 
           <Select value={saleTypeFilter} onValueChange={setSaleTypeFilter}>
             <SelectTrigger className="w-40">
-              <Filter className="h-4 w-4 mr-2" />
+              <Filter className="mr-2 h-4 w-4" />
               <SelectValue placeholder="Sale Type" />
             </SelectTrigger>
             <SelectContent>
@@ -140,14 +153,16 @@ export function SalesTable({
 
           <Select value={paymentFilter} onValueChange={setPaymentFilter}>
             <SelectTrigger className="w-40">
-              <Filter className="h-4 w-4 mr-2" />
+              <Filter className="mr-2 h-4 w-4" />
               <SelectValue placeholder="Payment" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Payments</SelectItem>
               <SelectItem value={PaymentType.CASH}>Cash</SelectItem>
               <SelectItem value={PaymentType.CREDIT}>Credit</SelectItem>
-              <SelectItem value={PaymentType.CYLINDER_CREDIT}>Cylinder Credit</SelectItem>
+              <SelectItem value={PaymentType.CYLINDER_CREDIT}>
+                Cylinder Credit
+              </SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -157,42 +172,45 @@ export function SalesTable({
             Refresh
           </Button>
           <Button variant="outline" size="sm">
-            <Download className="h-4 w-4 mr-2" />
+            <Download className="mr-2 h-4 w-4" />
             Export
           </Button>
         </div>
       </div>
 
       {/* Sales Table */}
-      <div className="bg-card rounded-lg border shadow-sm overflow-hidden">
+      <div className="bg-card overflow-hidden rounded-lg border shadow-sm">
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-gray-50 border-b">
+            <thead className="border-b bg-gray-50">
               <tr>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                   Sale Details
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                   Driver & Product
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                   Quantity & Amount
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                   Payment Status
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                   Date
                 </th>
-                <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500">
                   Actions
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="divide-y divide-gray-200 bg-white">
               {filteredSales.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-4 py-8 text-center text-gray-500">
+                  <td
+                    colSpan={6}
+                    className="px-4 py-8 text-center text-gray-500"
+                  >
                     No sales found matching your criteria.
                   </td>
                 </tr>
@@ -236,7 +254,9 @@ export function SalesTable({
                     </td>
                     <td className="px-4 py-4">
                       <div className="flex flex-col space-y-1">
-                        <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(sale)}`}>
+                        <span
+                          className={`inline-flex rounded-full px-2 py-1 text-xs font-medium ${getStatusColor(sale)}`}
+                        >
                           {getStatusText(sale)}
                         </span>
                         <div className="text-xs text-gray-500">
@@ -301,27 +321,39 @@ export function SalesTable({
 
       {/* Summary Stats */}
       {filteredSales.length > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="bg-card p-4 rounded-lg border">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
+          <div className="bg-card rounded-lg border p-4">
             <div className="text-sm font-medium text-gray-500">Total Sales</div>
-            <div className="text-2xl font-bold text-gray-900">{filteredSales.length}</div>
+            <div className="text-2xl font-bold text-gray-900">
+              {filteredSales.length}
+            </div>
           </div>
-          <div className="bg-card p-4 rounded-lg border">
-            <div className="text-sm font-medium text-gray-500">Total Quantity</div>
+          <div className="bg-card rounded-lg border p-4">
+            <div className="text-sm font-medium text-gray-500">
+              Total Quantity
+            </div>
             <div className="text-2xl font-bold text-gray-900">
               {filteredSales.reduce((sum, sale) => sum + sale.quantity, 0)}
             </div>
           </div>
-          <div className="bg-card p-4 rounded-lg border">
-            <div className="text-sm font-medium text-gray-500">Total Revenue</div>
+          <div className="bg-card rounded-lg border p-4">
+            <div className="text-sm font-medium text-gray-500">
+              Total Revenue
+            </div>
             <div className="text-2xl font-bold text-gray-900">
-              {formatCurrency(filteredSales.reduce((sum, sale) => sum + sale.netValue, 0))}
+              {formatCurrency(
+                filteredSales.reduce((sum, sale) => sum + sale.netValue, 0)
+              )}
             </div>
           </div>
-          <div className="bg-card p-4 rounded-lg border">
-            <div className="text-sm font-medium text-gray-500">Cash Collected</div>
+          <div className="bg-card rounded-lg border p-4">
+            <div className="text-sm font-medium text-gray-500">
+              Cash Collected
+            </div>
             <div className="text-2xl font-bold text-gray-900">
-              {formatCurrency(filteredSales.reduce((sum, sale) => sum + sale.cashDeposited, 0))}
+              {formatCurrency(
+                filteredSales.reduce((sum, sale) => sum + sale.cashDeposited, 0)
+              )}
             </div>
           </div>
         </div>

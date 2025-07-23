@@ -1,11 +1,9 @@
-import type { Metadata, Viewport } from "next";
-import "./globals.css";
-import { APP_CONFIG } from "@/lib/utils/constants";
-import { SessionProvider } from "@/components/providers/SessionProvider";
-import { ThemeProvider } from "@/providers/ThemeProvider";
-import { SettingsProvider } from "@/contexts/SettingsContext";
-
-
+import type { Metadata, Viewport } from 'next';
+import './globals.css';
+import { APP_CONFIG } from '@/lib/utils/constants';
+import { SessionProvider } from '@/components/providers/SessionProvider';
+import { ThemeProvider } from '@/providers/ThemeProvider';
+import { SettingsProvider } from '@/contexts/SettingsContext';
 
 export const metadata: Metadata = {
   title: {
@@ -13,25 +11,25 @@ export const metadata: Metadata = {
     template: `%s | ${APP_CONFIG.name}`,
   },
   description: APP_CONFIG.description,
-  keywords: ["LPG", "distributor", "management", "SaaS", "inventory", "sales"],
-  authors: [{ name: "LPG Distributor SaaS Team" }],
-  creator: "LPG Distributor SaaS",
-  publisher: "LPG Distributor SaaS",
+  keywords: ['LPG', 'distributor', 'management', 'SaaS', 'inventory', 'sales'],
+  authors: [{ name: 'LPG Distributor SaaS Team' }],
+  creator: 'LPG Distributor SaaS',
+  publisher: 'LPG Distributor SaaS',
   formatDetection: {
     email: false,
     address: false,
     telephone: false,
   },
   metadataBase: new URL(APP_CONFIG.url),
-  manifest: "/manifest.json",
+  manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
-    statusBarStyle: "default",
+    statusBarStyle: 'default',
     title: APP_CONFIG.name,
   },
   openGraph: {
-    type: "website",
-    locale: "en_US",
+    type: 'website',
+    locale: 'en_US',
     url: APP_CONFIG.url,
     title: APP_CONFIG.name,
     description: APP_CONFIG.description,
@@ -48,11 +46,11 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  width: "device-width",
+  width: 'device-width',
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
-  themeColor: "#0ea5e9",
+  themeColor: '#0ea5e9',
 };
 
 export default function RootLayout({
@@ -70,11 +68,29 @@ export default function RootLayout({
         <meta name="msapplication-TileColor" content="#0ea5e9" />
         <meta name="msapplication-tap-highlight" content="no" />
         <link rel="apple-touch-icon" href="/images/icons/icon-192x192.png" />
-        <link rel="icon" type="image/png" sizes="32x32" href="/images/icons/icon-32x32.png" />
-        <link rel="icon" type="image/png" sizes="16x16" href="/images/icons/icon-16x16.png" />
-        <link rel="mask-icon" href="/images/icons/safari-pinned-tab.svg" color="#0ea5e9" />
+        <link
+          rel="icon"
+          type="image/png"
+          sizes="32x32"
+          href="/images/icons/icon-32x32.png"
+        />
+        <link
+          rel="icon"
+          type="image/png"
+          sizes="16x16"
+          href="/images/icons/icon-16x16.png"
+        />
+        <link
+          rel="mask-icon"
+          href="/images/icons/safari-pinned-tab.svg"
+          color="#0ea5e9"
+        />
       </head>
-      <body className={`font-sans antialiased`} suppressHydrationWarning data-suppress-hydration-warning>
+      <body
+        className={`font-sans antialiased`}
+        suppressHydrationWarning
+        data-suppress-hydration-warning
+      >
         <script
           dangerouslySetInnerHTML={{
             __html: `
@@ -96,9 +112,7 @@ export default function RootLayout({
         />
         <SessionProvider>
           <SettingsProvider>
-            <ThemeProvider>
-              {children}
-            </ThemeProvider>
+            <ThemeProvider>{children}</ThemeProvider>
           </SettingsProvider>
         </SessionProvider>
         <script

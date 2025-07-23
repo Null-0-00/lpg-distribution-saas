@@ -1,7 +1,13 @@
 'use client';
 
 import { Progress } from '@/components/ui/progress';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import {
   Target,
@@ -9,7 +15,7 @@ import {
   TrendingDown,
   Clock,
   CheckCircle,
-  AlertCircle
+  AlertCircle,
 } from 'lucide-react';
 
 interface ProgressIndicatorProps {
@@ -35,11 +41,11 @@ export function ProgressIndicator({
   period = 'today',
   trend,
   status,
-  description
+  description,
 }: ProgressIndicatorProps) {
   const percentage = Math.min(100, (current / target) * 100);
   const isOverTarget = current > target;
-  
+
   const getStatusColor = () => {
     if (isOverTarget) return 'text-green-600';
     if (percentage >= 90) return 'text-green-600';
@@ -61,24 +67,51 @@ export function ProgressIndicator({
     if (status) {
       switch (status) {
         case 'ahead':
-          return <Badge variant="default" className="bg-green-100 text-green-800">Ahead</Badge>;
+          return (
+            <Badge variant="default" className="bg-green-100 text-green-800">
+              Ahead
+            </Badge>
+          );
         case 'on-track':
-          return <Badge variant="default" className="bg-blue-100 text-blue-800">On Track</Badge>;
+          return (
+            <Badge variant="default" className="bg-blue-100 text-blue-800">
+              On Track
+            </Badge>
+          );
         case 'behind':
-          return <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">Behind</Badge>;
+          return (
+            <Badge
+              variant="secondary"
+              className="bg-yellow-100 text-yellow-800"
+            >
+              Behind
+            </Badge>
+          );
         case 'at-risk':
           return <Badge variant="destructive">At Risk</Badge>;
       }
     }
-    
+
     if (isOverTarget) {
-      return <Badge variant="default" className="bg-green-100 text-green-800">Exceeded</Badge>;
+      return (
+        <Badge variant="default" className="bg-green-100 text-green-800">
+          Exceeded
+        </Badge>
+      );
     }
     if (percentage >= 90) {
-      return <Badge variant="default" className="bg-blue-100 text-blue-800">On Track</Badge>;
+      return (
+        <Badge variant="default" className="bg-blue-100 text-blue-800">
+          On Track
+        </Badge>
+      );
     }
     if (percentage >= 70) {
-      return <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">Behind</Badge>;
+      return (
+        <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">
+          Behind
+        </Badge>
+      );
     }
     return <Badge variant="destructive">At Risk</Badge>;
   };
@@ -97,24 +130,24 @@ export function ProgressIndicator({
     <Card>
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-sm font-medium flex items-center space-x-2">
+          <CardTitle className="flex items-center space-x-2 text-sm font-medium">
             <Target className="h-4 w-4" />
             <span>{title}</span>
           </CardTitle>
           {getStatusIcon()}
         </div>
-        {description && (
-          <CardDescription>{description}</CardDescription>
-        )}
+        {description && <CardDescription>{description}</CardDescription>}
       </CardHeader>
       <CardContent className="space-y-3">
         <div className="flex items-center justify-between">
           <div>
             <div className="text-2xl font-bold">
-              {formatValue(current)}{unit}
+              {formatValue(current)}
+              {unit}
             </div>
-            <div className="text-sm text-muted-foreground">
-              of {formatValue(target)}{unit} target
+            <div className="text-muted-foreground text-sm">
+              of {formatValue(target)}
+              {unit} target
             </div>
           </div>
           <div className="text-right">
@@ -125,23 +158,19 @@ export function ProgressIndicator({
           </div>
         </div>
 
-        <Progress 
-          value={percentage} 
-          className="h-2"
-        />
+        <Progress value={percentage} className="h-2" />
 
-        <div className="flex items-center justify-between text-xs text-muted-foreground">
+        <div className="text-muted-foreground flex items-center justify-between text-xs">
           <span>{period}</span>
           <span>
-            {isOverTarget 
+            {isOverTarget
               ? `+${formatValue(current - target)}${unit} over target`
-              : `${formatValue(target - current)}${unit} to go`
-            }
+              : `${formatValue(target - current)}${unit} to go`}
           </span>
         </div>
 
         {trend && (
-          <div className="flex items-center space-x-2 pt-2 border-t">
+          <div className="flex items-center space-x-2 border-t pt-2">
             {trend.direction === 'up' ? (
               <TrendingUp className="h-3 w-3 text-green-500" />
             ) : trend.direction === 'down' ? (
@@ -149,15 +178,23 @@ export function ProgressIndicator({
             ) : (
               <div className="h-3 w-3 rounded-full bg-gray-400" />
             )}
-            <span className={`text-xs font-medium ${
-              trend.direction === 'up' ? 'text-green-500' : 
-              trend.direction === 'down' ? 'text-red-500' : 
-              'text-gray-500'
-            }`}>
-              {trend.direction === 'up' ? '+' : trend.direction === 'down' ? '' : ''}
+            <span
+              className={`text-xs font-medium ${
+                trend.direction === 'up'
+                  ? 'text-green-500'
+                  : trend.direction === 'down'
+                    ? 'text-red-500'
+                    : 'text-gray-500'
+              }`}
+            >
+              {trend.direction === 'up'
+                ? '+'
+                : trend.direction === 'down'
+                  ? ''
+                  : ''}
               {trend.value}%
             </span>
-            <span className="text-xs text-muted-foreground">{trend.label}</span>
+            <span className="text-muted-foreground text-xs">{trend.label}</span>
           </div>
         )}
       </CardContent>
@@ -210,7 +247,7 @@ export function CircularProgress({
   strokeWidth = 8,
   label,
   showPercentage = true,
-  color = 'hsl(var(--primary))'
+  color = 'hsl(var(--primary))',
 }: CircularProgressProps) {
   const percentage = Math.min(100, (value / max) * 100);
   const radius = (size - strokeWidth) / 2;
@@ -220,11 +257,7 @@ export function CircularProgress({
 
   return (
     <div className="relative inline-flex items-center justify-center">
-      <svg
-        className="transform -rotate-90"
-        width={size}
-        height={size}
-      >
+      <svg className="-rotate-90 transform" width={size} height={size}>
         <circle
           cx={size / 2}
           cy={size / 2}
@@ -248,12 +281,10 @@ export function CircularProgress({
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
         {showPercentage && (
-          <span className="text-lg font-bold">
-            {percentage.toFixed(0)}%
-          </span>
+          <span className="text-lg font-bold">{percentage.toFixed(0)}%</span>
         )}
         {label && (
-          <span className="text-xs text-muted-foreground text-center">
+          <span className="text-muted-foreground text-center text-xs">
             {label}
           </span>
         )}

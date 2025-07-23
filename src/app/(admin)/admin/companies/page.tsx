@@ -5,15 +5,46 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Plus, Search, Edit, Trash2, Eye, Filter, Building2, MapPin, Phone, Mail } from 'lucide-react';
+import {
+  Plus,
+  Search,
+  Edit,
+  Trash2,
+  Eye,
+  Filter,
+  Building2,
+  MapPin,
+  Phone,
+  Mail,
+} from 'lucide-react';
 
 interface Company {
   id: string;
@@ -84,7 +115,7 @@ export default function AdminCompaniesPage() {
     contactInfo: '',
     businessTerms: '',
     supplierInfo: '',
-    analytics: ''
+    analytics: '',
   });
   const [submitting, setSubmitting] = useState(false);
 
@@ -95,7 +126,15 @@ export default function AdminCompaniesPage() {
       return;
     }
     fetchCompanies();
-  }, [session, status, router, page, searchTerm, filterActive, filterTerritory]);
+  }, [
+    session,
+    status,
+    router,
+    page,
+    searchTerm,
+    filterActive,
+    filterTerritory,
+  ]);
 
   const fetchCompanies = async () => {
     try {
@@ -105,7 +144,7 @@ export default function AdminCompaniesPage() {
         limit: '20',
         ...(searchTerm && { search: searchTerm }),
         ...(filterActive !== 'all' && { isActive: filterActive }),
-        ...(filterTerritory !== 'all' && { territory: filterTerritory })
+        ...(filterTerritory !== 'all' && { territory: filterTerritory }),
       });
 
       const response = await fetch(`/api/admin/companies?${params}`);
@@ -119,14 +158,14 @@ export default function AdminCompaniesPage() {
         toast({
           title: 'Error',
           description: result.error || 'Failed to fetch companies',
-          variant: 'destructive'
+          variant: 'destructive',
         });
       }
     } catch (error) {
       toast({
         title: 'Error',
         description: 'Failed to fetch companies',
-        variant: 'destructive'
+        variant: 'destructive',
       });
     } finally {
       setLoading(false);
@@ -144,7 +183,7 @@ export default function AdminCompaniesPage() {
       contactInfo: '',
       businessTerms: '',
       supplierInfo: '',
-      analytics: ''
+      analytics: '',
     });
   };
 
@@ -162,10 +201,18 @@ export default function AdminCompaniesPage() {
       phone: company.phone || '',
       email: company.email || '',
       territory: company.territory || '',
-      contactInfo: company.contactInfo ? JSON.stringify(company.contactInfo, null, 2) : '',
-      businessTerms: company.businessTerms ? JSON.stringify(company.businessTerms, null, 2) : '',
-      supplierInfo: company.supplierInfo ? JSON.stringify(company.supplierInfo, null, 2) : '',
-      analytics: company.analytics ? JSON.stringify(company.analytics, null, 2) : ''
+      contactInfo: company.contactInfo
+        ? JSON.stringify(company.contactInfo, null, 2)
+        : '',
+      businessTerms: company.businessTerms
+        ? JSON.stringify(company.businessTerms, null, 2)
+        : '',
+      supplierInfo: company.supplierInfo
+        ? JSON.stringify(company.supplierInfo, null, 2)
+        : '',
+      analytics: company.analytics
+        ? JSON.stringify(company.analytics, null, 2)
+        : '',
     });
     setSelectedCompany(company);
     setIsEditDialogOpen(true);
@@ -178,22 +225,28 @@ export default function AdminCompaniesPage() {
     try {
       const payload = {
         ...formData,
-        contactInfo: formData.contactInfo ? JSON.parse(formData.contactInfo) : null,
-        businessTerms: formData.businessTerms ? JSON.parse(formData.businessTerms) : null,
-        supplierInfo: formData.supplierInfo ? JSON.parse(formData.supplierInfo) : null,
-        analytics: formData.analytics ? JSON.parse(formData.analytics) : null
+        contactInfo: formData.contactInfo
+          ? JSON.parse(formData.contactInfo)
+          : null,
+        businessTerms: formData.businessTerms
+          ? JSON.parse(formData.businessTerms)
+          : null,
+        supplierInfo: formData.supplierInfo
+          ? JSON.parse(formData.supplierInfo)
+          : null,
+        analytics: formData.analytics ? JSON.parse(formData.analytics) : null,
       };
 
-      const url = selectedCompany 
+      const url = selectedCompany
         ? `/api/admin/companies/${selectedCompany.id}`
         : '/api/admin/companies';
-      
+
       const method = selectedCompany ? 'PUT' : 'POST';
 
       const response = await fetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
       });
 
       const result = await response.json();
@@ -201,7 +254,7 @@ export default function AdminCompaniesPage() {
       if (result.success) {
         toast({
           title: 'Success',
-          description: result.message
+          description: result.message,
         });
         setIsCreateDialogOpen(false);
         setIsEditDialogOpen(false);
@@ -210,14 +263,14 @@ export default function AdminCompaniesPage() {
         toast({
           title: 'Error',
           description: result.error || 'Failed to save company',
-          variant: 'destructive'
+          variant: 'destructive',
         });
       }
     } catch (error) {
       toast({
         title: 'Error',
         description: 'Failed to save company',
-        variant: 'destructive'
+        variant: 'destructive',
       });
     } finally {
       setSubmitting(false);
@@ -229,7 +282,7 @@ export default function AdminCompaniesPage() {
       const response = await fetch(`/api/admin/companies/${company.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ isActive: !company.isActive })
+        body: JSON.stringify({ isActive: !company.isActive }),
       });
 
       const result = await response.json();
@@ -237,21 +290,21 @@ export default function AdminCompaniesPage() {
       if (result.success) {
         toast({
           title: 'Success',
-          description: `Company ${company.isActive ? 'deactivated' : 'activated'} successfully`
+          description: `Company ${company.isActive ? 'deactivated' : 'activated'} successfully`,
         });
         fetchCompanies();
       } else {
         toast({
           title: 'Error',
           description: result.error || 'Failed to update company status',
-          variant: 'destructive'
+          variant: 'destructive',
         });
       }
     } catch (error) {
       toast({
         title: 'Error',
         description: 'Failed to update company status',
-        variant: 'destructive'
+        variant: 'destructive',
       });
     }
   };
@@ -266,10 +319,12 @@ export default function AdminCompaniesPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
+      <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">Company Management</h1>
-          <p className="text-muted-foreground">Manage LPG companies and suppliers</p>
+          <p className="text-muted-foreground">
+            Manage LPG companies and suppliers
+          </p>
         </div>
         <Button onClick={handleCreate}>
           <Plus className="mr-2 h-4 w-4" />
@@ -286,9 +341,9 @@ export default function AdminCompaniesPage() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
             <div className="relative">
-              <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Search className="text-muted-foreground absolute left-2 top-2.5 h-4 w-4" />
               <Input
                 placeholder="Search companies..."
                 value={searchTerm}
@@ -327,30 +382,35 @@ export default function AdminCompaniesPage() {
       </Card>
 
       {/* Companies Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
         {loading ? (
           Array.from({ length: 6 }).map((_, i) => (
             <Card key={i}>
               <CardContent className="p-6">
-                <Skeleton className="h-4 w-3/4 mb-2" />
-                <Skeleton className="h-4 w-1/2 mb-4" />
+                <Skeleton className="mb-2 h-4 w-3/4" />
+                <Skeleton className="mb-4 h-4 w-1/2" />
                 <Skeleton className="h-20 w-full" />
               </CardContent>
             </Card>
           ))
         ) : companies.length === 0 ? (
-          <div className="col-span-full text-center py-12">
-            <Building2 className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
+          <div className="col-span-full py-12 text-center">
+            <Building2 className="text-muted-foreground mx-auto mb-4 h-12 w-12" />
             <h3 className="text-lg font-medium">No companies found</h3>
-            <p className="text-muted-foreground">Get started by adding your first company.</p>
+            <p className="text-muted-foreground">
+              Get started by adding your first company.
+            </p>
           </div>
         ) : (
           companies.map((company) => (
-            <Card key={company.id} className="hover:shadow-md transition-shadow">
+            <Card
+              key={company.id}
+              className="transition-shadow hover:shadow-md"
+            >
               <CardHeader className="pb-3">
                 <div className="flex items-start justify-between">
                   <div>
-                    <CardTitle className="text-lg flex items-center gap-2">
+                    <CardTitle className="flex items-center gap-2 text-lg">
                       <Building2 className="h-5 w-5" />
                       {company.name}
                     </CardTitle>
@@ -365,49 +425,69 @@ export default function AdminCompaniesPage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 {company.territory && (
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <div className="text-muted-foreground flex items-center gap-2 text-sm">
                     <MapPin className="h-4 w-4" />
                     {company.territory}
                   </div>
                 )}
                 {company.phone && (
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <div className="text-muted-foreground flex items-center gap-2 text-sm">
                     <Phone className="h-4 w-4" />
                     {company.phone}
                   </div>
                 )}
                 {company.email && (
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <div className="text-muted-foreground flex items-center gap-2 text-sm">
                     <Mail className="h-4 w-4" />
                     {company.email}
                   </div>
                 )}
-                
-                <div className="grid grid-cols-3 gap-2 text-center border-t pt-4">
+
+                <div className="grid grid-cols-3 gap-2 border-t pt-4 text-center">
                   <div>
-                    <div className="font-semibold">{company._count.products}</div>
-                    <div className="text-xs text-muted-foreground">Products</div>
+                    <div className="font-semibold">
+                      {company._count.products}
+                    </div>
+                    <div className="text-muted-foreground text-xs">
+                      Products
+                    </div>
                   </div>
                   <div>
-                    <div className="font-semibold">{company._count.purchases}</div>
-                    <div className="text-xs text-muted-foreground">Purchases</div>
+                    <div className="font-semibold">
+                      {company._count.purchases}
+                    </div>
+                    <div className="text-muted-foreground text-xs">
+                      Purchases
+                    </div>
                   </div>
                   <div>
-                    <div className="font-semibold">{company.distributorAssignments.length}</div>
-                    <div className="text-xs text-muted-foreground">Distributors</div>
+                    <div className="font-semibold">
+                      {company.distributorAssignments.length}
+                    </div>
+                    <div className="text-muted-foreground text-xs">
+                      Distributors
+                    </div>
                   </div>
                 </div>
 
                 <div className="flex gap-2 pt-2">
-                  <Button variant="outline" size="sm" onClick={() => handleEdit(company)}>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleEdit(company)}
+                  >
                     <Edit className="h-4 w-4" />
                   </Button>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
+                  <Button
+                    variant="outline"
+                    size="sm"
                     onClick={() => handleToggleActive(company)}
                   >
-                    {company.isActive ? <Trash2 className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    {company.isActive ? (
+                      <Trash2 className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
                   </Button>
                 </div>
               </CardContent>
@@ -421,17 +501,17 @@ export default function AdminCompaniesPage() {
         <div className="flex justify-center gap-2">
           <Button
             variant="outline"
-            onClick={() => setPage(p => Math.max(1, p - 1))}
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
             disabled={page === 1}
           >
             Previous
           </Button>
-          <span className="py-2 px-4">
+          <span className="px-4 py-2">
             Page {page} of {totalPages}
           </span>
           <Button
             variant="outline"
-            onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
             disabled={page === totalPages}
           >
             Next
@@ -440,19 +520,22 @@ export default function AdminCompaniesPage() {
       )}
 
       {/* Create/Edit Dialog */}
-      <Dialog open={isCreateDialogOpen || isEditDialogOpen} onOpenChange={(open) => {
-        if (!open) {
-          setIsCreateDialogOpen(false);
-          setIsEditDialogOpen(false);
-        }
-      }}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <Dialog
+        open={isCreateDialogOpen || isEditDialogOpen}
+        onOpenChange={(open) => {
+          if (!open) {
+            setIsCreateDialogOpen(false);
+            setIsEditDialogOpen(false);
+          }
+        }}
+      >
+        <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
               {selectedCompany ? 'Edit Company' : 'Create Company'}
             </DialogTitle>
             <DialogDescription>
-              {selectedCompany 
+              {selectedCompany
                 ? 'Update company information and settings.'
                 : 'Add a new LPG company to the system.'}
             </DialogDescription>
@@ -464,7 +547,9 @@ export default function AdminCompaniesPage() {
                 <Input
                   id="name"
                   value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, name: e.target.value })
+                  }
                   required
                 />
               </div>
@@ -473,17 +558,21 @@ export default function AdminCompaniesPage() {
                 <Input
                   id="code"
                   value={formData.code}
-                  onChange={(e) => setFormData({ ...formData, code: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, code: e.target.value })
+                  }
                 />
               </div>
             </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="address">Address</Label>
               <Input
                 id="address"
                 value={formData.address}
-                onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, address: e.target.value })
+                }
               />
             </div>
 
@@ -493,7 +582,9 @@ export default function AdminCompaniesPage() {
                 <Input
                   id="phone"
                   value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, phone: e.target.value })
+                  }
                 />
               </div>
               <div className="space-y-2">
@@ -502,7 +593,9 @@ export default function AdminCompaniesPage() {
                   id="email"
                   type="email"
                   value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, email: e.target.value })
+                  }
                 />
               </div>
             </div>
@@ -512,7 +605,9 @@ export default function AdminCompaniesPage() {
               <Input
                 id="territory"
                 value={formData.territory}
-                onChange={(e) => setFormData({ ...formData, territory: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, territory: e.target.value })
+                }
               />
             </div>
 
@@ -521,7 +616,9 @@ export default function AdminCompaniesPage() {
               <Textarea
                 id="contactInfo"
                 value={formData.contactInfo}
-                onChange={(e) => setFormData({ ...formData, contactInfo: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, contactInfo: e.target.value })
+                }
                 placeholder='{"primaryContact": "John Doe", "department": "Sales"}'
                 rows={3}
               />
@@ -532,7 +629,9 @@ export default function AdminCompaniesPage() {
               <Textarea
                 id="businessTerms"
                 value={formData.businessTerms}
-                onChange={(e) => setFormData({ ...formData, businessTerms: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, businessTerms: e.target.value })
+                }
                 placeholder='{"paymentTerms": "NET30", "creditLimit": 100000}'
                 rows={3}
               />
@@ -543,7 +642,9 @@ export default function AdminCompaniesPage() {
               <Textarea
                 id="supplierInfo"
                 value={formData.supplierInfo}
-                onChange={(e) => setFormData({ ...formData, supplierInfo: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, supplierInfo: e.target.value })
+                }
                 placeholder='{"supplierType": "Primary", "contractDate": "2024-01-01"}'
                 rows={3}
               />
@@ -554,7 +655,9 @@ export default function AdminCompaniesPage() {
               <Textarea
                 id="analytics"
                 value={formData.analytics}
-                onChange={(e) => setFormData({ ...formData, analytics: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, analytics: e.target.value })
+                }
                 placeholder='{"marketShare": 25, "growthRate": 15}'
                 rows={3}
               />
@@ -572,7 +675,11 @@ export default function AdminCompaniesPage() {
                 Cancel
               </Button>
               <Button type="submit" disabled={submitting}>
-                {submitting ? 'Saving...' : (selectedCompany ? 'Update' : 'Create')}
+                {submitting
+                  ? 'Saving...'
+                  : selectedCompany
+                    ? 'Update'
+                    : 'Create'}
               </Button>
             </DialogFooter>
           </form>

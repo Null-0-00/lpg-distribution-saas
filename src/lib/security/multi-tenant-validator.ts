@@ -41,7 +41,9 @@ export class MultiTenantValidator {
   /**
    * Validate tenant access for incoming requests
    */
-  async validateTenantAccess(request: NextRequest): Promise<TenantValidationResult> {
+  async validateTenantAccess(
+    request: NextRequest
+  ): Promise<TenantValidationResult> {
     const errors: string[] = [];
     const warnings: string[] = [];
 
@@ -82,18 +84,19 @@ export class MultiTenantValidator {
         ipAddress: this.getClientIP(request),
         userAgent: request.headers.get('user-agent') || '',
         success: errors.length === 0,
-        details: { headerTenantId, urlTenantId, sessionTenantId }
+        details: { headerTenantId, urlTenantId, sessionTenantId },
       });
 
       return {
         isValid: errors.length === 0,
         tenantId: sessionTenantId,
         errors,
-        warnings
+        warnings,
       };
-
     } catch (error) {
-      errors.push(`Validation error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      errors.push(
+        `Validation error: ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
       return { isValid: false, errors, warnings };
     }
   }
@@ -112,25 +115,37 @@ export class MultiTenantValidator {
     try {
       // Check if query includes tenant filtering
       const queryLower = query.toLowerCase();
-      
+
       // Ensure tenant ID is included in WHERE clause for main tables
-      const mainTables = ['companies', 'products', 'drivers', 'sales', 'inventoryrecords', 'expenses', 'users'];
-      const tableInQuery = mainTables.find(table => queryLower.includes(table.toLowerCase()));
-      
+      const mainTables = [
+        'companies',
+        'products',
+        'drivers',
+        'sales',
+        'inventoryrecords',
+        'expenses',
+        'users',
+      ];
+      const tableInQuery = mainTables.find((table) =>
+        queryLower.includes(table.toLowerCase())
+      );
+
       if (tableInQuery && !queryLower.includes('tenantid')) {
-        errors.push(`Query on ${tableInQuery} does not include tenant isolation`);
+        errors.push(
+          `Query on ${tableInQuery} does not include tenant isolation`
+        );
       }
 
       // Validate that tenant ID parameter is present
-      const hasTenantParam = params.some(param => param === expectedTenantId);
+      const hasTenantParam = params.some((param) => param === expectedTenantId);
       if (tableInQuery && !hasTenantParam) {
         errors.push('Query parameters do not include expected tenant ID');
       }
 
       // Check for dangerous operations without tenant filtering
       const dangerousOps = ['delete', 'update', 'truncate'];
-      const hasDangerousOp = dangerousOps.some(op => queryLower.includes(op));
-      
+      const hasDangerousOp = dangerousOps.some((op) => queryLower.includes(op));
+
       if (hasDangerousOp && !queryLower.includes('tenantid')) {
         errors.push('Dangerous operation detected without tenant filtering');
       }
@@ -139,11 +154,12 @@ export class MultiTenantValidator {
         isValid: errors.length === 0,
         tenantId: expectedTenantId,
         errors,
-        warnings
+        warnings,
       };
-
     } catch (error) {
-      errors.push(`Query validation error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      errors.push(
+        `Query validation error: ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
       return { isValid: false, errors, warnings };
     }
   }
@@ -163,13 +179,22 @@ export class MultiTenantValidator {
 
     try {
       // Check if resource belongs to the tenant
-      const resourceOwnership = await this.verifyResourceOwnership(tenantId, resourceType, resourceId);
+      const resourceOwnership = await this.verifyResourceOwnership(
+        tenantId,
+        resourceType,
+        resourceId
+      );
       if (!resourceOwnership.isValid) {
         errors.push(...resourceOwnership.errors);
       }
 
       // Check user permissions for the action
-      const userPermissions = await this.checkUserPermissions(userId, tenantId, resourceType, action);
+      const userPermissions = await this.checkUserPermissions(
+        userId,
+        tenantId,
+        resourceType,
+        action
+      );
       if (!userPermissions.isValid) {
         errors.push(...userPermissions.errors);
       }
@@ -184,18 +209,19 @@ export class MultiTenantValidator {
         ipAddress: '', // Will be filled by middleware
         userAgent: '',
         success: errors.length === 0,
-        details: { resourceType, resourceId, action }
+        details: { resourceType, resourceId, action },
       });
 
       return {
         isValid: errors.length === 0,
         tenantId,
         errors,
-        warnings
+        warnings,
       };
-
     } catch (error) {
-      errors.push(`Resource access validation error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      errors.push(
+        `Resource access validation error: ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
       return { isValid: false, errors, warnings };
     }
   }
@@ -236,14 +262,14 @@ export class MultiTenantValidator {
       const score = this.calculateSecurityScore(vulnerabilities);
 
       return { vulnerabilities, score };
-
     } catch (error) {
       vulnerabilities.push({
         type: 'SCAN_ERROR',
         severity: 'medium' as const,
         description: `Data leakage scan failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
         affected: 'Security scan',
-        recommendation: 'Investigate scan failure and ensure security monitoring is operational'
+        recommendation:
+          'Investigate scan failure and ensure security monitoring is operational',
       });
 
       return { vulnerabilities, score: 0 };
@@ -275,35 +301,39 @@ export class MultiTenantValidator {
       checks.push(await this.checkNetworkSecurity(tenantId));
 
       // Generate recommendations based on failed checks
-      const failedChecks = checks.filter(check => check.status === 'fail');
-      failedChecks.forEach(check => {
+      const failedChecks = checks.filter((check) => check.status === 'fail');
+      failedChecks.forEach((check) => {
         recommendations.push(`Fix: ${check.check} - ${check.details}`);
       });
 
-      const warningChecks = checks.filter(check => check.status === 'warning');
-      warningChecks.forEach(check => {
+      const warningChecks = checks.filter(
+        (check) => check.status === 'warning'
+      );
+      warningChecks.forEach((check) => {
         recommendations.push(`Improve: ${check.check} - ${check.details}`);
       });
 
       // Determine overall compliance level
-      const complianceLevel = failedChecks.length === 0 
-        ? (warningChecks.length === 0 ? 'compliant' : 'partial')
-        : 'non-compliant';
+      const complianceLevel =
+        failedChecks.length === 0
+          ? warningChecks.length === 0
+            ? 'compliant'
+            : 'partial'
+          : 'non-compliant';
 
       return { complianceLevel, checks, recommendations };
-
     } catch (error) {
       checks.push({
         category: 'COMPLIANCE_SCAN',
         check: 'Compliance Report Generation',
         status: 'fail' as const,
-        details: `Report generation failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+        details: `Report generation failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
       });
 
       return {
         complianceLevel: 'non-compliant' as const,
         checks,
-        recommendations: ['Fix compliance report generation system']
+        recommendations: ['Fix compliance report generation system'],
       };
     }
   }
@@ -315,17 +345,19 @@ export class MultiTenantValidator {
     return urlMatch ? urlMatch[1] : null;
   }
 
-  private async validateTenantExists(tenantId: string): Promise<TenantValidationResult> {
+  private async validateTenantExists(
+    tenantId: string
+  ): Promise<TenantValidationResult> {
     try {
       const tenant = await this.prisma.tenant.findUnique({
-        where: { id: tenantId }
+        where: { id: tenantId },
       });
 
       if (!tenant) {
         return {
           isValid: false,
           errors: ['Tenant does not exist'],
-          warnings: []
+          warnings: [],
         };
       }
 
@@ -333,7 +365,7 @@ export class MultiTenantValidator {
         return {
           isValid: false,
           errors: ['Tenant is not active'],
-          warnings: []
+          warnings: [],
         };
       }
 
@@ -341,13 +373,15 @@ export class MultiTenantValidator {
         isValid: true,
         tenantId,
         errors: [],
-        warnings: []
+        warnings: [],
       };
     } catch (error) {
       return {
         isValid: false,
-        errors: [`Tenant validation failed: ${error instanceof Error ? error.message : 'Unknown error'}`],
-        warnings: []
+        errors: [
+          `Tenant validation failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        ],
+        warnings: [],
       };
     }
   }
@@ -363,38 +397,44 @@ export class MultiTenantValidator {
       switch (resourceType) {
         case 'sale':
           resourceExists = !!(await this.prisma.sale.findFirst({
-            where: { id: resourceId, tenantId }
+            where: { id: resourceId, tenantId },
           }));
           break;
         case 'product':
           resourceExists = !!(await this.prisma.product.findFirst({
-            where: { id: resourceId, tenantId }
+            where: { id: resourceId, tenantId },
           }));
           break;
         case 'driver':
           resourceExists = !!(await this.prisma.driver.findFirst({
-            where: { id: resourceId, tenantId }
+            where: { id: resourceId, tenantId },
           }));
           break;
         default:
           return {
             isValid: false,
             errors: [`Unknown resource type: ${resourceType}`],
-            warnings: []
+            warnings: [],
           };
       }
 
       return {
         isValid: resourceExists,
         tenantId,
-        errors: resourceExists ? [] : [`Resource ${resourceType}:${resourceId} not found or not owned by tenant`],
-        warnings: []
+        errors: resourceExists
+          ? []
+          : [
+              `Resource ${resourceType}:${resourceId} not found or not owned by tenant`,
+            ],
+        warnings: [],
       };
     } catch (error) {
       return {
         isValid: false,
-        errors: [`Resource ownership verification failed: ${error instanceof Error ? error.message : 'Unknown error'}`],
-        warnings: []
+        errors: [
+          `Resource ownership verification failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        ],
+        warnings: [],
       };
     }
   }
@@ -408,55 +448,67 @@ export class MultiTenantValidator {
     try {
       const user = await this.prisma.user.findUnique({
         where: { id: userId },
-        include: { tenant: true }
+        include: { tenant: true },
       });
 
       if (!user || user.tenantId !== tenantId) {
         return {
           isValid: false,
           errors: ['User does not belong to tenant'],
-          warnings: []
+          warnings: [],
         };
       }
 
       // Check role-based permissions
-      const hasPermission = this.checkRolePermissions(user.role, resourceType, action);
+      const hasPermission = this.checkRolePermissions(
+        user.role,
+        resourceType,
+        action
+      );
 
       return {
         isValid: hasPermission,
         tenantId,
-        errors: hasPermission ? [] : [`User lacks permission for ${action} on ${resourceType}`],
-        warnings: []
+        errors: hasPermission
+          ? []
+          : [`User lacks permission for ${action} on ${resourceType}`],
+        warnings: [],
       };
     } catch (error) {
       return {
         isValid: false,
-        errors: [`Permission check failed: ${error instanceof Error ? error.message : 'Unknown error'}`],
-        warnings: []
+        errors: [
+          `Permission check failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        ],
+        warnings: [],
       };
     }
   }
 
-  private checkRolePermissions(role: string, resourceType: string, action: string): boolean {
+  private checkRolePermissions(
+    role: string,
+    resourceType: string,
+    action: string
+  ): boolean {
     const permissions: Record<string, Record<string, string[]>> = {
       ADMIN: {
         sale: ['read', 'write', 'delete'],
         product: ['read', 'write', 'delete'],
         driver: ['read', 'write', 'delete'],
-        expense: ['read', 'write', 'delete']
+        expense: ['read', 'write', 'delete'],
       },
       MANAGER: {
         sale: ['read', 'write'],
         product: ['read', 'write'],
         driver: ['read'],
-        expense: ['read', 'write']
+        expense: ['read', 'write'],
       },
       OPERATOR: {
         sale: ['read', 'write'],
         product: ['read'],
         driver: ['read'],
-        expense: ['read']
-      }
+        expense: ['read'],
+      },
     };
 
     return permissions[role]?.[resourceType]?.includes(action) || false;
@@ -475,8 +527,8 @@ export class MultiTenantValidator {
           ipAddress: event.ipAddress,
           userAgent: event.userAgent,
           success: event.success,
-          details: event.details ? JSON.stringify(event.details) : null
-        }
+          details: event.details ? JSON.stringify(event.details) : null,
+        },
       });
 
       // Cache recent events for quick access
@@ -487,17 +539,18 @@ export class MultiTenantValidator {
         event,
         3600 // 1 hour
       );
-
     } catch (error) {
       console.error('Failed to log security event:', error);
     }
   }
 
   private getClientIP(request: NextRequest): string {
-    return request.headers.get('x-forwarded-for')?.split(',')[0] ||
-           request.headers.get('x-real-ip') ||
-           request.ip ||
-           'unknown';
+    return (
+      request.headers.get('x-forwarded-for')?.split(',')[0] ||
+      request.headers.get('x-real-ip') ||
+      request.ip ||
+      'unknown'
+    );
   }
 
   private async detectSuspiciousQueries(tenantId: string): Promise<any[]> {
@@ -522,7 +575,10 @@ export class MultiTenantValidator {
 
   private calculateSecurityScore(vulnerabilities: any[]): number {
     const weights = { critical: 40, high: 20, medium: 10, low: 5 };
-    const totalDeductions = vulnerabilities.reduce((sum, vuln) => sum + (weights[vuln.severity] || 0), 0);
+    const totalDeductions = vulnerabilities.reduce(
+      (sum, vuln) => sum + (weights[vuln.severity] || 0),
+      0
+    );
     return Math.max(0, 100 - totalDeductions);
   }
 
@@ -531,7 +587,7 @@ export class MultiTenantValidator {
       category: 'Data Isolation',
       check: 'Tenant Data Separation',
       status: 'pass' as const,
-      details: 'All queries properly filtered by tenant ID'
+      details: 'All queries properly filtered by tenant ID',
     };
   }
 
@@ -540,7 +596,7 @@ export class MultiTenantValidator {
       category: 'Access Control',
       check: 'Role-Based Access Control',
       status: 'pass' as const,
-      details: 'RBAC properly implemented and enforced'
+      details: 'RBAC properly implemented and enforced',
     };
   }
 
@@ -549,7 +605,7 @@ export class MultiTenantValidator {
       category: 'Audit & Compliance',
       check: 'Security Event Logging',
       status: 'pass' as const,
-      details: 'All security events are properly logged'
+      details: 'All security events are properly logged',
     };
   }
 
@@ -558,7 +614,8 @@ export class MultiTenantValidator {
       category: 'Data Protection',
       check: 'Data Encryption',
       status: 'warning' as const,
-      details: 'Encryption in transit enabled, at-rest encryption needs verification'
+      details:
+        'Encryption in transit enabled, at-rest encryption needs verification',
     };
   }
 
@@ -567,7 +624,7 @@ export class MultiTenantValidator {
       category: 'Network Security',
       check: 'Network Isolation',
       status: 'pass' as const,
-      details: 'Proper network security controls in place'
+      details: 'Proper network security controls in place',
     };
   }
 }
@@ -580,19 +637,19 @@ export async function createTenantValidationMiddleware(prisma: PrismaClient) {
 
   return async function validateTenant(request: NextRequest) {
     const result = await validator.validateTenantAccess(request);
-    
+
     if (!result.isValid) {
       return {
         status: 403,
         error: 'Tenant access denied',
-        details: result.errors
+        details: result.errors,
       };
     }
 
     return {
       status: 200,
       tenantId: result.tenantId,
-      warnings: result.warnings
+      warnings: result.warnings,
     };
   };
 }
@@ -605,13 +662,19 @@ export function createTenantSafeQuery(prisma: PrismaClient, tenantId: string) {
 
   return {
     async execute(query: string, params: any[]) {
-      const validation = await validator.validateQueryTenantIsolation(query, params, tenantId);
-      
+      const validation = await validator.validateQueryTenantIsolation(
+        query,
+        params,
+        tenantId
+      );
+
       if (!validation.isValid) {
-        throw new Error(`Tenant isolation violation: ${validation.errors.join(', ')}`);
+        throw new Error(
+          `Tenant isolation violation: ${validation.errors.join(', ')}`
+        );
       }
 
       return prisma.$queryRawUnsafe(query, ...params);
-    }
+    },
   };
 }

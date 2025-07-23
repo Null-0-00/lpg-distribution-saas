@@ -17,7 +17,16 @@ export interface SanitizationOptions {
 
 export interface ValidationRule {
   field: string;
-  type: 'string' | 'number' | 'email' | 'phone' | 'url' | 'date' | 'boolean' | 'enum' | 'json';
+  type:
+    | 'string'
+    | 'number'
+    | 'email'
+    | 'phone'
+    | 'url'
+    | 'date'
+    | 'boolean'
+    | 'enum'
+    | 'json';
   required?: boolean;
   minLength?: number;
   maxLength?: number;
@@ -52,7 +61,7 @@ export class InputSanitizer {
     /(;|\-\-|\/\*|\*\/|xp_|sp_)/gi,
     /(\b(or|and)\s+\d+\s*=\s*\d+)/gi,
     /('|\"|`|;|--|\/\*|\*\/)/gi,
-    /(\bscript\b|\bonload\b|\bonerror\b)/gi
+    /(\bscript\b|\bonload\b|\bonerror\b)/gi,
   ];
 
   private static readonly XSS_PATTERNS = [
@@ -63,12 +72,12 @@ export class InputSanitizer {
     /javascript:/gi,
     /vbscript:/gi,
     /data:text\/html/gi,
-    /on\w+\s*=/gi
+    /on\w+\s*=/gi,
   ];
 
   private static readonly LDAP_INJECTION_PATTERNS = [
     /[\(\)\*\|&=!<>~]/g,
-    /[\x00-\x1f\x7f]/g
+    /[\x00-\x1f\x7f]/g,
   ];
 
   /**
@@ -94,7 +103,7 @@ export class InputSanitizer {
           errors.push({
             field: 'body',
             message: 'Invalid JSON format',
-            code: 'INVALID_JSON'
+            code: 'INVALID_JSON',
           });
           return { isValid: false, sanitizedData: {}, errors, warnings };
         }
@@ -133,14 +142,13 @@ export class InputSanitizer {
         isValid: errors.length === 0,
         sanitizedData,
         errors,
-        warnings
+        warnings,
       };
-
     } catch (error) {
       errors.push({
         field: 'request',
         message: `Request processing error: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        code: 'PROCESSING_ERROR'
+        code: 'PROCESSING_ERROR',
       });
 
       return { isValid: false, sanitizedData: {}, errors, warnings };
@@ -163,17 +171,23 @@ export class InputSanitizer {
     let sanitizedValue: any;
 
     // Handle required fields
-    if (rule.required && (value === undefined || value === null || value === '')) {
+    if (
+      rule.required &&
+      (value === undefined || value === null || value === '')
+    ) {
       errors.push({
         field: rule.field,
         message: `${rule.field} is required`,
-        code: 'REQUIRED_FIELD'
+        code: 'REQUIRED_FIELD',
       });
       return { errors, warnings };
     }
 
     // Skip validation for optional empty fields
-    if (!rule.required && (value === undefined || value === null || value === '')) {
+    if (
+      !rule.required &&
+      (value === undefined || value === null || value === '')
+    ) {
       return { sanitizedValue: value, errors, warnings };
     }
 
@@ -227,7 +241,7 @@ export class InputSanitizer {
         errors.push({
           field: rule.field,
           message: `Unknown validation type: ${rule.type}`,
-          code: 'UNKNOWN_TYPE'
+          code: 'UNKNOWN_TYPE',
         });
         return { errors, warnings };
     }
@@ -237,7 +251,7 @@ export class InputSanitizer {
       errors.push({
         field: rule.field,
         message: `${rule.field} failed custom validation`,
-        code: 'CUSTOM_VALIDATION_FAILED'
+        code: 'CUSTOM_VALIDATION_FAILED',
       });
     }
 
@@ -254,7 +268,10 @@ export class InputSanitizer {
   /**
    * Sanitize string input
    */
-  private static sanitizeString(value: any, options: SanitizationOptions = {}): string {
+  private static sanitizeString(
+    value: any,
+    options: SanitizationOptions = {}
+  ): string {
     if (typeof value !== 'string') {
       value = String(value);
     }
@@ -308,7 +325,7 @@ export class InputSanitizer {
       errors.push({
         field: rule.field,
         message: `${rule.field} must be at least ${rule.minLength} characters`,
-        code: 'MIN_LENGTH'
+        code: 'MIN_LENGTH',
       });
     }
 
@@ -316,7 +333,7 @@ export class InputSanitizer {
       errors.push({
         field: rule.field,
         message: `${rule.field} must not exceed ${rule.maxLength} characters`,
-        code: 'MAX_LENGTH'
+        code: 'MAX_LENGTH',
       });
     }
 
@@ -324,7 +341,7 @@ export class InputSanitizer {
       errors.push({
         field: rule.field,
         message: `${rule.field} format is invalid`,
-        code: 'INVALID_FORMAT'
+        code: 'INVALID_FORMAT',
       });
     }
   }
@@ -351,7 +368,7 @@ export class InputSanitizer {
       errors.push({
         field: rule.field,
         message: `${rule.field} must be a valid number`,
-        code: 'INVALID_NUMBER'
+        code: 'INVALID_NUMBER',
       });
       return;
     }
@@ -360,7 +377,7 @@ export class InputSanitizer {
       errors.push({
         field: rule.field,
         message: `${rule.field} must be at least ${rule.min}`,
-        code: 'MIN_VALUE'
+        code: 'MIN_VALUE',
       });
     }
 
@@ -368,7 +385,7 @@ export class InputSanitizer {
       errors.push({
         field: rule.field,
         message: `${rule.field} must not exceed ${rule.max}`,
-        code: 'MAX_VALUE'
+        code: 'MAX_VALUE',
       });
     }
   }
@@ -393,7 +410,7 @@ export class InputSanitizer {
       errors.push({
         field: rule.field,
         message: `${rule.field} must be a valid email address`,
-        code: 'INVALID_EMAIL'
+        code: 'INVALID_EMAIL',
       });
     }
   }
@@ -418,7 +435,7 @@ export class InputSanitizer {
       errors.push({
         field: rule.field,
         message: `${rule.field} must be a valid phone number`,
-        code: 'INVALID_PHONE'
+        code: 'INVALID_PHONE',
       });
     }
   }
@@ -438,12 +455,13 @@ export class InputSanitizer {
     warnings: Array<{ field: string; message: string }>
   ): void {
     // Simple URL validation
-    const urlRegex = /^https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)$/;
+    const urlRegex =
+      /^https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)$/;
     if (!urlRegex.test(value)) {
       errors.push({
         field: rule.field,
         message: `${rule.field} must be a valid URL`,
-        code: 'INVALID_URL'
+        code: 'INVALID_URL',
       });
     }
   }
@@ -470,7 +488,7 @@ export class InputSanitizer {
       errors.push({
         field: rule.field,
         message: `${rule.field} must be a valid date`,
-        code: 'INVALID_DATE'
+        code: 'INVALID_DATE',
       });
     }
   }
@@ -508,7 +526,7 @@ export class InputSanitizer {
       errors.push({
         field: rule.field,
         message: `${rule.field} must be one of: ${rule.enumValues.join(', ')}`,
-        code: 'INVALID_ENUM'
+        code: 'INVALID_ENUM',
       });
     }
   }
@@ -537,7 +555,7 @@ export class InputSanitizer {
       errors.push({
         field: rule.field,
         message: `${rule.field} must be valid JSON`,
-        code: 'INVALID_JSON'
+        code: 'INVALID_JSON',
       });
     }
   }
@@ -566,7 +584,7 @@ export class InputSanitizer {
         errors.push({
           field: fieldName,
           message: 'Potential SQL injection detected',
-          code: 'SQL_INJECTION'
+          code: 'SQL_INJECTION',
         });
         break;
       }
@@ -578,7 +596,7 @@ export class InputSanitizer {
         errors.push({
           field: fieldName,
           message: 'Potential XSS attack detected',
-          code: 'XSS_ATTACK'
+          code: 'XSS_ATTACK',
         });
         break;
       }
@@ -589,7 +607,7 @@ export class InputSanitizer {
       if (pattern.test(value)) {
         warnings.push({
           field: fieldName,
-          message: 'Potential LDAP injection characters detected'
+          message: 'Potential LDAP injection characters detected',
         });
         break;
       }
@@ -600,14 +618,14 @@ export class InputSanitizer {
       errors.push({
         field: fieldName,
         message: 'Path traversal attempt detected',
-        code: 'PATH_TRAVERSAL'
+        code: 'PATH_TRAVERSAL',
       });
     }
 
     // Check for command injection
     const commandPatterns = [
       /[;&|`$(){}]/g,
-      /(wget|curl|nc|netcat|bash|sh|powershell|cmd)/gi
+      /(wget|curl|nc|netcat|bash|sh|powershell|cmd)/gi,
     ];
 
     for (const pattern of commandPatterns) {
@@ -615,7 +633,7 @@ export class InputSanitizer {
         errors.push({
           field: fieldName,
           message: 'Potential command injection detected',
-          code: 'COMMAND_INJECTION'
+          code: 'COMMAND_INJECTION',
         });
         break;
       }
@@ -624,7 +642,7 @@ export class InputSanitizer {
     return {
       hasThreats: errors.length > 0 || warnings.length > 0,
       errors,
-      warnings
+      warnings,
     };
   }
 
@@ -633,20 +651,23 @@ export class InputSanitizer {
    */
   static createSanitizationMiddleware(validationRules: ValidationRule[]) {
     return async function sanitizeMiddleware(request: NextRequest) {
-      const result = await InputSanitizer.sanitizeRequest(request, validationRules);
-      
+      const result = await InputSanitizer.sanitizeRequest(
+        request,
+        validationRules
+      );
+
       if (!result.isValid) {
         return {
           status: 400,
           error: 'Input validation failed',
-          details: result.errors
+          details: result.errors,
         };
       }
 
       return {
         status: 200,
         sanitizedData: result.sanitizedData,
-        warnings: result.warnings
+        warnings: result.warnings,
       };
     };
   }
@@ -661,20 +682,31 @@ export class InputSanitizer {
   /**
    * Validate SQL query for safety
    */
-  static validateSqlQuery(query: string, allowedTables: string[] = []): boolean {
+  static validateSqlQuery(
+    query: string,
+    allowedTables: string[] = []
+  ): boolean {
     const queryLower = query.toLowerCase();
-    
+
     // Check for forbidden SQL operations
-    const forbiddenOperations = ['drop', 'truncate', 'alter', 'create', 'exec', 'execute'];
+    const forbiddenOperations = [
+      'drop',
+      'truncate',
+      'alter',
+      'create',
+      'exec',
+      'execute',
+    ];
     for (const op of forbiddenOperations) {
       if (queryLower.includes(op)) return false;
     }
 
     // If table whitelist is provided, validate table names
     if (allowedTables.length > 0) {
-      const tablePattern = /(?:from|join|into|update)\s+([a-zA-Z_][a-zA-Z0-9_]*)/gi;
+      const tablePattern =
+        /(?:from|join|into|update)\s+([a-zA-Z_][a-zA-Z0-9_]*)/gi;
       const matches = query.match(tablePattern);
-      
+
       if (matches) {
         for (const match of matches) {
           const tableName = match.split(/\s+/)[1];

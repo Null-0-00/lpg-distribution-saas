@@ -14,40 +14,54 @@ const expenseQuerySchema = z.object({
   dateTo: z.string().optional(),
   userId: z.string().optional(),
   search: z.string().optional(),
-  page: z.union([z.string(), z.number()]).transform(val => {
-    const num = typeof val === 'number' ? val : parseInt(val);
-    return isNaN(num) ? 1 : num;
-  }).optional().default(1),
-  limit: z.union([z.string(), z.number()]).transform(val => {
-    const num = typeof val === 'number' ? val : parseInt(val);
-    return isNaN(num) ? 20 : Math.min(num, 100);
-  }).optional().default(20),
+  page: z
+    .union([z.string(), z.number()])
+    .transform((val) => {
+      const num = typeof val === 'number' ? val : parseInt(val);
+      return isNaN(num) ? 1 : num;
+    })
+    .optional()
+    .default(1),
+  limit: z
+    .union([z.string(), z.number()])
+    .transform((val) => {
+      const num = typeof val === 'number' ? val : parseInt(val);
+      return isNaN(num) ? 20 : Math.min(num, 100);
+    })
+    .optional()
+    .default(20),
 });
 
 const createExpenseSchema = z.object({
   categoryId: z.string().min(1, 'Category is required'),
   amount: z.union([
     z.number().min(0.01, 'Amount must be greater than 0'),
-    z.string().regex(/^\d+(\.\d{1,2})?$/, 'Invalid amount format').transform(val => {
-      const num = parseFloat(val);
-      if (num <= 0) {
-        throw new Error('Amount must be greater than 0');
-      }
-      return num;
-    })
+    z
+      .string()
+      .regex(/^\d+(\.\d{1,2})?$/, 'Invalid amount format')
+      .transform((val) => {
+        const num = parseFloat(val);
+        if (num <= 0) {
+          throw new Error('Amount must be greater than 0');
+        }
+        return num;
+      }),
   ]),
   description: z.string().optional().default(''),
   particulars: z.string().optional(),
   expenseDate: z.union([
-    z.string().datetime().transform(val => new Date(val)),
-    z.string().transform(val => {
+    z
+      .string()
+      .datetime()
+      .transform((val) => new Date(val)),
+    z.string().transform((val) => {
       const date = new Date(val);
       if (isNaN(date.getTime())) {
         throw new Error('Invalid date format');
       }
       return date;
     }),
-    z.date()
+    z.date(),
   ]),
   receiptUrl: z.string().url().optional().or(z.literal('')).or(z.undefined()),
   notes: z.string().optional(),
@@ -61,7 +75,7 @@ export async function GET(request: NextRequest) {
     }
 
     const { searchParams } = new URL(request.url);
-    
+
     // Create query object with defaults
     const queryParams = {
       categoryId: searchParams.get('categoryId') || undefined,
@@ -73,12 +87,14 @@ export async function GET(request: NextRequest) {
       page: searchParams.get('page') || '1',
       limit: searchParams.get('limit') || '20',
     };
-    
+
     // Remove null/undefined values
     const cleanedParams = Object.fromEntries(
-      Object.entries(queryParams).filter(([_, value]) => value !== undefined && value !== null)
+      Object.entries(queryParams).filter(
+        ([_, value]) => value !== undefined && value !== null
+      )
     );
-    
+
     const {
       categoryId,
       status,
@@ -87,7 +103,7 @@ export async function GET(request: NextRequest) {
       userId,
       search,
       page,
-      limit
+      limit,
     } = expenseQuerySchema.parse(cleanedParams);
 
     const tenantId = session.user.tenantId;
@@ -111,7 +127,7 @@ export async function GET(request: NextRequest) {
       where.OR = [
         { description: { contains: search, mode: 'insensitive' } },
         { notes: { contains: search, mode: 'insensitive' } },
-        { category: { name: { contains: search, mode: 'insensitive' } } }
+        { category: { name: { contains: search, mode: 'insensitive' } } },
       ];
     }
 
@@ -128,27 +144,24 @@ export async function GET(request: NextRequest) {
               parent: {
                 select: {
                   id: true,
-                  name: true
-                }
-              }
-            }
+                  name: true,
+                },
+              },
+            },
           },
           user: {
             select: {
               id: true,
               name: true,
-              email: true
-            }
-          }
+              email: true,
+            },
+          },
         },
-        orderBy: [
-          { expenseDate: 'desc' },
-          { createdAt: 'desc' }
-        ],
+        orderBy: [{ expenseDate: 'desc' }, { createdAt: 'desc' }],
         skip,
-        take: Number(limit)
+        take: Number(limit),
       }),
-      prisma.expense.count({ where })
+      prisma.expense.count({ where }),
     ]);
 
     // Get approval statistics using the same where clause to ensure month-specific data
@@ -156,14 +169,14 @@ export async function GET(request: NextRequest) {
       by: ['isApproved'],
       where,
       _count: true,
-      _sum: { amount: true }
+      _sum: { amount: true },
     });
 
-    const pending = approvalStats.find(stat => !stat.isApproved);
-    const approved = approvalStats.find(stat => stat.isApproved);
+    const pending = approvalStats.find((stat) => !stat.isApproved);
+    const approved = approvalStats.find((stat) => stat.isApproved);
 
     return NextResponse.json({
-      expenses: expenses.map(expense => ({
+      expenses: expenses.map((expense) => ({
         id: expense.id,
         amount: expense.amount,
         description: expense.description,
@@ -177,40 +190,48 @@ export async function GET(request: NextRequest) {
         category: expense.category,
         user: expense.user,
         createdAt: expense.createdAt,
-        updatedAt: expense.updatedAt
+        updatedAt: expense.updatedAt,
       })),
       pagination: {
         page,
         limit,
         total: totalCount,
-        pages: Math.ceil(totalCount / limit)
+        pages: Math.ceil(totalCount / limit),
       },
       summary: {
         total: {
           count: approvalStats.reduce((sum, stat) => sum + stat._count, 0),
-          amount: approvalStats.reduce((sum, stat) => sum + (stat._sum.amount || 0), 0)
+          amount: approvalStats.reduce(
+            (sum, stat) => sum + (stat._sum.amount || 0),
+            0
+          ),
         },
         pending: {
           count: pending?._count || 0,
-          amount: pending?._sum.amount || 0
+          amount: pending?._sum.amount || 0,
         },
         approved: {
           count: approved?._count || 0,
-          amount: approved?._sum.amount || 0
-        }
-      }
+          amount: approved?._sum.amount || 0,
+        },
+      },
     });
-
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return NextResponse.json({ 
-        error: 'Validation failed', 
-        details: error.errors,
-        message: error.errors.map(e => e.message).join(', ')
-      }, { status: 400 });
+      return NextResponse.json(
+        {
+          error: 'Validation failed',
+          details: error.errors,
+          message: error.errors.map((e) => e.message).join(', '),
+        },
+        { status: 400 }
+      );
     }
     console.error('Expenses fetch error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
   }
 }
 
@@ -223,10 +244,10 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json();
     console.log('POST /api/expenses - Received body:', body);
-    
+
     const validatedData = createExpenseSchema.parse(body);
     console.log('POST /api/expenses - Validated data:', validatedData);
-    
+
     const tenantId = session.user.tenantId;
     const userId = session.user.id;
 
@@ -235,17 +256,28 @@ export async function POST(request: NextRequest) {
       where: {
         id: validatedData.categoryId,
         tenantId,
-        isActive: true
-      }
+        isActive: true,
+      },
     });
 
     if (!category) {
-      return NextResponse.json({ error: 'Category not found or inactive' }, { status: 400 });
+      return NextResponse.json(
+        { error: 'Category not found or inactive' },
+        { status: 400 }
+      );
     }
 
     // Check if expense would exceed monthly budget
-    const monthStart = new Date(validatedData.expenseDate.getFullYear(), validatedData.expenseDate.getMonth(), 1);
-    const monthEnd = new Date(validatedData.expenseDate.getFullYear(), validatedData.expenseDate.getMonth() + 1, 1);
+    const monthStart = new Date(
+      validatedData.expenseDate.getFullYear(),
+      validatedData.expenseDate.getMonth(),
+      1
+    );
+    const monthEnd = new Date(
+      validatedData.expenseDate.getFullYear(),
+      validatedData.expenseDate.getMonth() + 1,
+      1
+    );
 
     const currentMonthSpending = await prisma.expense.aggregate({
       where: {
@@ -253,17 +285,21 @@ export async function POST(request: NextRequest) {
         isApproved: true,
         expenseDate: {
           gte: monthStart,
-          lt: monthEnd
-        }
+          lt: monthEnd,
+        },
       },
-      _sum: { amount: true }
+      _sum: { amount: true },
     });
 
-    const projectedSpending = (currentMonthSpending._sum.amount || 0) + validatedData.amount;
-    const isBudgetExceeded = category.budget && projectedSpending > category.budget;
+    const projectedSpending =
+      (currentMonthSpending._sum.amount || 0) + validatedData.amount;
+    const isBudgetExceeded =
+      category.budget && projectedSpending > category.budget;
 
     // Auto-approve for managers and admins
-    const isApproved = session.user.role === UserRole.ADMIN || session.user.role === UserRole.MANAGER;
+    const isApproved =
+      session.user.role === UserRole.ADMIN ||
+      session.user.role === UserRole.MANAGER;
 
     const expense = await prisma.expense.create({
       data: {
@@ -277,27 +313,29 @@ export async function POST(request: NextRequest) {
         receiptUrl: validatedData.receiptUrl,
         notes: validatedData.notes,
         isApproved,
-        ...(isApproved && (session.user.role === UserRole.ADMIN || session.user.role === UserRole.MANAGER) && {
-          approvedBy: userId,
-          approvedAt: new Date()
-        })
+        ...(isApproved &&
+          (session.user.role === UserRole.ADMIN ||
+            session.user.role === UserRole.MANAGER) && {
+            approvedBy: userId,
+            approvedAt: new Date(),
+          }),
       },
       include: {
         category: {
           select: {
             id: true,
             name: true,
-            budget: true
-          }
+            budget: true,
+          },
         },
         user: {
           select: {
             id: true,
             name: true,
-            email: true
-          }
-        }
-      }
+            email: true,
+          },
+        },
+      },
     });
 
     return NextResponse.json({
@@ -315,41 +353,55 @@ export async function POST(request: NextRequest) {
         approvedAt: expense.approvedAt,
         category: expense.category,
         user: expense.user,
-        createdAt: expense.createdAt
+        createdAt: expense.createdAt,
       },
-      budgetWarning: isBudgetExceeded ? {
-        message: 'This expense exceeds the monthly budget for this category',
-        budgetAmount: category.budget,
-        currentSpending: currentMonthSpending._sum.amount || 0,
-        projectedSpending,
-        autoApproved: isApproved
-      } : null
+      budgetWarning: isBudgetExceeded
+        ? {
+            message:
+              'This expense exceeds the monthly budget for this category',
+            budgetAmount: category.budget,
+            currentSpending: currentMonthSpending._sum.amount || 0,
+            projectedSpending,
+            autoApproved: isApproved,
+          }
+        : null,
     });
-
   } catch (error) {
     console.error('Expense creation error type:', error.constructor.name);
     console.error('Expense creation error:', error);
-    
+
     if (error instanceof z.ZodError) {
-      console.error('Zod validation errors:', JSON.stringify(error.errors, null, 2));
+      console.error(
+        'Zod validation errors:',
+        JSON.stringify(error.errors, null, 2)
+      );
       const errorDetails = error.errors || [];
-      return NextResponse.json({ 
-        error: 'Validation failed', 
-        details: errorDetails,
-        message: errorDetails.map(e => `${e.path.join('.')}: ${e.message}`).join(', ') || 'Validation failed'
-      }, { status: 400 });
+      return NextResponse.json(
+        {
+          error: 'Validation failed',
+          details: errorDetails,
+          message:
+            errorDetails
+              .map((e) => `${e.path.join('.')}: ${e.message}`)
+              .join(', ') || 'Validation failed',
+        },
+        { status: 400 }
+      );
     }
-    
+
     // Check if it's a custom error that might contain validation info
     if (error instanceof Error) {
       console.error('Generic error message:', error.message);
       console.error('Generic error stack:', error.stack);
     }
-    
-    return NextResponse.json({ 
-      error: 'Internal server error',
-      message: error instanceof Error ? error.message : 'Unknown error'
-    }, { status: 500 });
+
+    return NextResponse.json(
+      {
+        error: 'Internal server error',
+        message: error instanceof Error ? error.message : 'Unknown error',
+      },
+      { status: 500 }
+    );
   }
 }
 
@@ -358,17 +410,22 @@ export async function PATCH(request: NextRequest) {
   try {
     const session = await auth();
     if (!session?.user?.tenantId || session.user.role !== UserRole.ADMIN) {
-      return NextResponse.json({ error: 'Unauthorized - Admin access required' }, { status: 401 });
+      return NextResponse.json(
+        { error: 'Unauthorized - Admin access required' },
+        { status: 401 }
+      );
     }
 
     const body = await request.json();
     console.log('PATCH request body:', body);
-    
-    const { expenseIds, action } = z.object({
-      expenseIds: z.array(z.string()),
-      action: z.enum(['approve', 'reject'])
-    }).parse(body);
-    
+
+    const { expenseIds, action } = z
+      .object({
+        expenseIds: z.array(z.string()),
+        action: z.enum(['approve', 'reject']),
+      })
+      .parse(body);
+
     console.log('Parsed data:', { expenseIds, action });
 
     const tenantId = session.user.tenantId;
@@ -379,19 +436,19 @@ export async function PATCH(request: NextRequest) {
         where: {
           id: { in: expenseIds },
           tenantId,
-          isApproved: false
+          isApproved: false,
         },
         data: {
           isApproved: true,
           approvedBy: userId,
-          approvedAt: new Date()
-        }
+          approvedAt: new Date(),
+        },
       });
 
       return NextResponse.json({
         success: true,
         message: `${result.count} expenses approved successfully`,
-        approvedCount: result.count
+        approvedCount: result.count,
       });
     } else {
       // For rejection, we might want to add a rejection reason field
@@ -400,29 +457,37 @@ export async function PATCH(request: NextRequest) {
         where: {
           id: { in: expenseIds },
           tenantId,
-          isApproved: false
-        }
+          isApproved: false,
+        },
       });
 
       return NextResponse.json({
         success: true,
         message: `${result.count} expenses rejected and removed`,
-        rejectedCount: result.count
+        rejectedCount: result.count,
       });
     }
-
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return NextResponse.json({ 
-        error: 'Validation failed', 
-        details: error.errors,
-        message: error.errors?.map(e => `${e.path.join('.')}: ${e.message}`).join(', ') || 'Validation failed'
-      }, { status: 400 });
+      return NextResponse.json(
+        {
+          error: 'Validation failed',
+          details: error.errors,
+          message:
+            error.errors
+              ?.map((e) => `${e.path.join('.')}: ${e.message}`)
+              .join(', ') || 'Validation failed',
+        },
+        { status: 400 }
+      );
     }
     console.error('Bulk approval error:', error);
-    return NextResponse.json({ 
-      error: 'Internal server error',
-      message: error instanceof Error ? error.message : 'Unknown error'
-    }, { status: 500 });
+    return NextResponse.json(
+      {
+        error: 'Internal server error',
+        message: error instanceof Error ? error.message : 'Unknown error',
+      },
+      { status: 500 }
+    );
   }
 }

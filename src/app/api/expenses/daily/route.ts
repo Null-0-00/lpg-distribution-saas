@@ -13,7 +13,10 @@ export async function GET(request: NextRequest) {
     const date = searchParams.get('date');
 
     if (!date) {
-      return NextResponse.json({ error: 'Date parameter is required' }, { status: 400 });
+      return NextResponse.json(
+        { error: 'Date parameter is required' },
+        { status: 400 }
+      );
     }
 
     const expenses = await prisma.expense.findMany({
@@ -21,29 +24,32 @@ export async function GET(request: NextRequest) {
         tenantId: session.user.tenantId,
         expenseDate: {
           gte: new Date(date),
-          lt: new Date(new Date(date).getTime() + 24 * 60 * 60 * 1000)
-        }
+          lt: new Date(new Date(date).getTime() + 24 * 60 * 60 * 1000),
+        },
       },
       include: {
         category: {
           select: {
-            name: true
-          }
+            name: true,
+          },
         },
         user: {
           select: {
-            name: true
-          }
-        }
+            name: true,
+          },
+        },
       },
       orderBy: {
-        expenseDate: 'desc'
-      }
+        expenseDate: 'desc',
+      },
     });
 
     return NextResponse.json(expenses);
   } catch (error) {
     console.error('Error fetching daily expenses:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
   }
 }

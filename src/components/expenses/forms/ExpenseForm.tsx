@@ -23,7 +23,7 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
   initialData,
   title,
   submitLabel,
-  isSubmitting
+  isSubmitting,
 }) => {
   const [formData, setFormData] = useState<ExpenseFormData>({
     amount: 0,
@@ -32,14 +32,14 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
     categoryId: '',
     expenseDate: new Date().toISOString().slice(0, 10),
     receiptUrl: '',
-    notes: ''
+    notes: '',
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [subCategories, setSubCategories] = useState<ExpenseCategory[]>([]);
 
   useEffect(() => {
     if (initialData) {
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
         ...initialData,
         parentCategoryId: initialData.parentCategoryId || '',
@@ -49,7 +49,9 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
 
   useEffect(() => {
     if (formData.parentCategoryId) {
-      const parentCategory = parentCategories.find(c => c.id === formData.parentCategoryId);
+      const parentCategory = parentCategories.find(
+        (c) => c.id === formData.parentCategoryId
+      );
       setSubCategories(parentCategory?.categories || []);
     } else {
       setSubCategories([]);
@@ -64,7 +66,7 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
     } catch (error) {
       if (error instanceof z.ZodError) {
         const newErrors: Record<string, string> = {};
-        error.errors.forEach(err => {
+        error.errors.forEach((err) => {
           if (err.path.length > 0) {
             newErrors[err.path[0]] = err.message;
           }
@@ -77,7 +79,7 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
@@ -97,35 +99,36 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
       categoryId: '',
       expenseDate: '',
       receiptUrl: '',
-      notes: ''
+      notes: '',
     });
     setErrors({});
     onClose();
   };
 
-  const handleInputChange = (field: keyof ExpenseFormData, value: string | number) => {
-    setFormData(prev => ({
+  const handleInputChange = (
+    field: keyof ExpenseFormData,
+    value: string | number
+  ) => {
+    setFormData((prev) => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
-    
+
     // Clear error when user starts typing
     if (errors[field]) {
-      setErrors(prev => ({
+      setErrors((prev) => ({
         ...prev,
-        [field]: ''
+        [field]: '',
       }));
     }
   };
 
-  
-
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-black bg-opacity-50 flex items-center justify-center p-4">
-      <div className="bg-card rounded-lg shadow-xl w-full max-w-md max-h-[90vh] overflow-y-auto">
-        <div className="flex items-center justify-between p-6 border-b border-border">
+    <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black bg-opacity-50 p-4">
+      <div className="bg-card max-h-[90vh] w-full max-w-md overflow-y-auto rounded-lg shadow-xl">
+        <div className="border-border flex items-center justify-between border-b p-6">
           <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
             {title}
           </h2>
@@ -137,10 +140,10 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4 p-6">
           {/* Amount */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
               Amount *
             </label>
             <input
@@ -148,158 +151,190 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
               step="0.01"
               min="0"
               value={formData.amount || ''}
-              onChange={(e) => handleInputChange('amount', parseFloat(e.target.value) || 0)}
-              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white ${
-                errors.amount ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+              onChange={(e) =>
+                handleInputChange('amount', parseFloat(e.target.value) || 0)
+              }
+              className={`w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white ${
+                errors.amount
+                  ? 'border-red-500'
+                  : 'border-gray-300 dark:border-gray-600'
               }`}
               placeholder="0.00"
             />
             {errors.amount && (
-              <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.amount}</p>
+              <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+                {errors.amount}
+              </p>
             )}
           </div>
 
           {/* Description */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
               Description
             </label>
             <input
               type="text"
               value={formData.description}
               onChange={(e) => handleInputChange('description', e.target.value)}
-              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white ${
-                errors.description ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+              className={`w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white ${
+                errors.description
+                  ? 'border-red-500'
+                  : 'border-gray-300 dark:border-gray-600'
               }`}
               placeholder="Enter expense description"
             />
             {errors.description && (
-              <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.description}</p>
+              <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+                {errors.description}
+              </p>
             )}
           </div>
 
           {/* Parent Category */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
               Parent Category *
             </label>
             <select
               value={formData.parentCategoryId}
-              onChange={(e) => handleInputChange('parentCategoryId', e.target.value)}
-              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white ${
-                errors.parentCategoryId ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+              onChange={(e) =>
+                handleInputChange('parentCategoryId', e.target.value)
+              }
+              className={`w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white ${
+                errors.parentCategoryId
+                  ? 'border-red-500'
+                  : 'border-gray-300 dark:border-gray-600'
               }`}
             >
               <option value="">Select a parent category</option>
-              {parentCategories.map(category => (
+              {parentCategories.map((category) => (
                 <option key={category.id} value={category.id}>
                   {category.name}
                 </option>
               ))}
             </select>
             {errors.parentCategoryId && (
-              <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.parentCategoryId}</p>
+              <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+                {errors.parentCategoryId}
+              </p>
             )}
           </div>
 
           {/* Category */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
               Category *
             </label>
             <select
               value={formData.categoryId}
               onChange={(e) => handleInputChange('categoryId', e.target.value)}
               disabled={!formData.parentCategoryId}
-              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white ${
-                errors.categoryId ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+              className={`w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white ${
+                errors.categoryId
+                  ? 'border-red-500'
+                  : 'border-gray-300 dark:border-gray-600'
               }`}
             >
               <option value="">Select a category</option>
-              {subCategories.map(category => (
+              {subCategories.map((category) => (
                 <option key={category.id} value={category.id}>
                   {category.name}
                 </option>
               ))}
             </select>
             {errors.categoryId && (
-              <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.categoryId}</p>
+              <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+                {errors.categoryId}
+              </p>
             )}
           </div>
 
           {/* Expense Date */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
               Expense Date *
             </label>
             <input
               type="date"
               value={formData.expenseDate}
               onChange={(e) => handleInputChange('expenseDate', e.target.value)}
-              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white ${
-                errors.expenseDate ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+              className={`w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white ${
+                errors.expenseDate
+                  ? 'border-red-500'
+                  : 'border-gray-300 dark:border-gray-600'
               }`}
             />
             {errors.expenseDate && (
-              <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.expenseDate}</p>
+              <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+                {errors.expenseDate}
+              </p>
             )}
           </div>
 
           {/* Receipt URL */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
               Receipt URL
             </label>
             <input
               type="url"
               value={formData.receiptUrl || ''}
               onChange={(e) => handleInputChange('receiptUrl', e.target.value)}
-              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white ${
-                errors.receiptUrl ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+              className={`w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white ${
+                errors.receiptUrl
+                  ? 'border-red-500'
+                  : 'border-gray-300 dark:border-gray-600'
               }`}
               placeholder="https://example.com/receipt.pdf"
             />
             {errors.receiptUrl && (
-              <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.receiptUrl}</p>
+              <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+                {errors.receiptUrl}
+              </p>
             )}
           </div>
 
           {/* Notes */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
               Notes
             </label>
             <textarea
               value={formData.notes || ''}
               onChange={(e) => handleInputChange('notes', e.target.value)}
               rows={3}
-              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white ${
-                errors.notes ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+              className={`w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white ${
+                errors.notes
+                  ? 'border-red-500'
+                  : 'border-gray-300 dark:border-gray-600'
               }`}
               placeholder="Additional notes..."
             />
             {errors.notes && (
-              <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.notes}</p>
+              <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+                {errors.notes}
+              </p>
             )}
           </div>
 
           {/* Form Actions */}
-          <div className="flex justify-end space-x-3 pt-4 border-t border-gray-200 dark:border-gray-700">
+          <div className="flex justify-end space-x-3 border-t border-gray-200 pt-4 dark:border-gray-700">
             <button
               type="button"
               onClick={handleClose}
-              className="px-4 py-2 text-muted-foreground border border-border rounded-md hover:bg-muted/50 transition-colors"
+              className="text-muted-foreground border-border hover:bg-muted/50 rounded-md border px-4 py-2 transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center transition-colors"
+              className="flex items-center rounded-md bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
             >
               {isSubmitting ? (
                 <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                  <div className="mr-2 h-4 w-4 animate-spin rounded-full border-b-2 border-white"></div>
                   Submitting...
                 </>
               ) : (

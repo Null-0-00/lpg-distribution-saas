@@ -44,11 +44,7 @@ export async function GET(request: NextRequest) {
           },
         },
       },
-      orderBy: [
-        { year: 'desc' },
-        { month: 'desc' },
-        { productId: 'asc' },
-      ],
+      orderBy: [{ year: 'desc' }, { month: 'desc' }, { productId: 'asc' }],
     });
 
     return NextResponse.json(fixedCostStructures);

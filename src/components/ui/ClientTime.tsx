@@ -9,17 +9,21 @@ interface ClientTimeProps {
   className?: string;
 }
 
-export function ClientTime({ timestamp, format = 'time', className }: ClientTimeProps) {
+export function ClientTime({
+  timestamp,
+  format = 'time',
+  className,
+}: ClientTimeProps) {
   const { formatDate, formatDateTime, formatTime } = useSettings();
   const [mounted, setMounted] = useState(false);
   const [currentTime, setCurrentTime] = useState<string>('--:--');
 
   useEffect(() => {
     setMounted(true);
-    
+
     const updateTime = () => {
       const date = timestamp ? new Date(timestamp) : new Date();
-      
+
       try {
         switch (format) {
           case 'time':
@@ -56,7 +60,7 @@ export function ClientTime({ timestamp, format = 'time', className }: ClientTime
     };
 
     updateTime();
-    
+
     // Update current time every second for live timestamps
     if (!timestamp) {
       const interval = setInterval(updateTime, 1000);
@@ -65,7 +69,11 @@ export function ClientTime({ timestamp, format = 'time', className }: ClientTime
   }, [timestamp, format, formatDate, formatDateTime, formatTime]);
 
   if (!mounted) {
-    return <span className={className}>{format === 'date' ? '--/--/----' : '--:--'}</span>;
+    return (
+      <span className={className}>
+        {format === 'date' ? '--/--/----' : '--:--'}
+      </span>
+    );
   }
 
   return <span className={className}>{currentTime}</span>;

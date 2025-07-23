@@ -445,6 +445,7 @@ k8s/
 ## File Naming Conventions
 
 ### Consistency Rules
+
 - **React Components**: PascalCase (e.g., `SaleForm.tsx`, `InventoryOverview.tsx`)
 - **Utility Files**: camelCase (e.g., `inventory.ts`, `businessValidator.ts`)
 - **API Routes**: kebab-case directories with `route.ts` files
@@ -452,6 +453,7 @@ k8s/
 - **Documentation**: kebab-case (e.g., `coding-standards.md`, `tech-stack.md`)
 
 ### File Extensions
+
 - **TypeScript Files**: `.ts` for utilities, `.tsx` for React components
 - **Configuration**: `.js`, `.mjs`, or `.ts` based on requirements
 - **Styling**: `.css` for stylesheets
@@ -460,6 +462,7 @@ k8s/
 ## Import Path Conventions
 
 ### Path Aliases
+
 The project uses TypeScript path aliases for clean imports:
 
 ```typescript
@@ -474,7 +477,9 @@ import { Button } from '../../components/ui/button';
 ```
 
 ### Import Organization
+
 Imports are organized in a specific order:
+
 1. External library imports
 2. Internal imports (using path aliases)
 3. Type-only imports
@@ -483,12 +488,14 @@ Imports are organized in a specific order:
 ## Architecture Patterns
 
 ### Layered Architecture
+
 1. **Presentation Layer**: React components and pages (`src/app/`, `src/components/`)
 2. **Business Logic Layer**: Business rules and calculations (`src/lib/business/`)
 3. **Data Access Layer**: Database operations and ORM (`src/lib/database/`, `prisma/`)
 4. **Infrastructure Layer**: Security, monitoring, caching (`src/lib/security/`, `src/lib/monitoring/`)
 
 ### Design Patterns Used
+
 - **Repository Pattern**: Database access abstraction
 - **Factory Pattern**: Component and service creation
 - **Observer Pattern**: Real-time updates and notifications
@@ -498,16 +505,19 @@ Imports are organized in a specific order:
 ## Key Architectural Decisions
 
 ### Multi-tenant Architecture
+
 - **Row-Level Security**: All database queries include tenant isolation
 - **Middleware Enforcement**: Authentication and authorization at the route level
 - **Data Isolation**: Complete separation of tenant data
 
 ### Type Safety
+
 - **End-to-End Types**: From database to UI components
 - **Schema Validation**: Runtime validation with compile-time types
 - **Business Logic Types**: Domain-specific type definitions
 
 ### Performance Optimizations
+
 - **Code Splitting**: Automatic and manual code splitting strategies
 - **Caching**: Multiple levels of caching (browser, API, database)
 - **Lazy Loading**: Component and data lazy loading
@@ -518,6 +528,7 @@ Imports are organized in a specific order:
 This source tree structure provides a scalable, maintainable, and well-organized foundation for the LPG Distributor SaaS platform. The organization follows industry best practices while accommodating the specific needs of a multi-tenant business application.
 
 The structure supports:
+
 - **Developer Productivity**: Clear organization and conventions
 - **Scalability**: Modular architecture that grows with the application
 - **Maintainability**: Separation of concerns and clear dependencies

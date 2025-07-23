@@ -5,7 +5,7 @@ const nextConfig = {
     ignoreDuringBuilds: true,
     dirs: [], // Only run ESLint on these directories - empty means disable
   },
-  
+
   // Disable TypeScript errors during build for deployment
   typescript: {
     ignoreBuildErrors: true,
@@ -16,7 +16,11 @@ const nextConfig = {
 
   // Basic experimental features
   experimental: {
-    optimizePackageImports: ['@radix-ui/react-icons', 'lucide-react', 'date-fns'],
+    optimizePackageImports: [
+      '@radix-ui/react-icons',
+      'lucide-react',
+      'date-fns',
+    ],
     webVitalsAttribution: ['CLS', 'LCP'],
   },
 
@@ -28,7 +32,7 @@ const nextConfig = {
 
   // Output optimization
   output: 'standalone',
-  
+
   // Compiler optimizations
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',

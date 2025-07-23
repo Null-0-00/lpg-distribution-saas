@@ -7,8 +7,10 @@ import { prisma } from '@/lib/database/client';
 import { z } from 'zod';
 
 const bulkDeleteSchema = z.object({
-  salesIds: z.array(z.string().cuid()).min(1, 'At least one sale ID is required'),
-  date: z.string().optional() // Allow specifying which date's sales to delete
+  salesIds: z
+    .array(z.string().cuid())
+    .min(1, 'At least one sale ID is required'),
+  date: z.string().optional(), // Allow specifying which date's sales to delete
 });
 
 export async function POST(request: NextRequest) {
@@ -28,22 +30,25 @@ export async function POST(request: NextRequest) {
     const allSalesInfo = await prisma.sale.findMany({
       where: {
         id: { in: salesIds },
-        tenantId
+        tenantId,
       },
       select: {
         id: true,
         saleDate: true,
         driver: { select: { name: true } },
-        product: { select: { name: true } }
-      }
+        product: { select: { name: true } },
+      },
     });
 
-    console.log('Found sales info:', allSalesInfo.map(s => ({
-      id: s.id,
-      saleDate: s.saleDate,
-      driver: s.driver.name,
-      product: s.product.name
-    })));
+    console.log(
+      'Found sales info:',
+      allSalesInfo.map((s) => ({
+        id: s.id,
+        saleDate: s.saleDate,
+        driver: s.driver.name,
+        product: s.product.name,
+      }))
+    );
 
     // Allow deletion of sales from the specified date or today
     const targetDate = date ? new Date(date) : new Date();
@@ -60,32 +65,44 @@ export async function POST(request: NextRequest) {
         tenantId,
         saleDate: {
           gte: targetDate,
-          lte: endOfDay
-        }
+          lte: endOfDay,
+        },
       },
       include: {
         driver: { select: { name: true } },
-        product: { select: { name: true } }
-      }
+        product: { select: { name: true } },
+      },
     });
 
-    console.log('Sales to delete (filtered by target date):', salesToDelete.length);
+    console.log(
+      'Sales to delete (filtered by target date):',
+      salesToDelete.length
+    );
 
     if (salesToDelete.length !== salesIds.length) {
-      const foundIds = salesToDelete.map(s => s.id);
-      const missingIds = salesIds.filter(id => !foundIds.includes(id));
-      
-      console.log('Validation failed:', { 
-        requestedIds: salesIds, 
-        foundIds, 
+      const foundIds = salesToDelete.map((s) => s.id);
+      const missingIds = salesIds.filter((id) => !foundIds.includes(id));
+
+      console.log('Validation failed:', {
+        requestedIds: salesIds,
+        foundIds,
         missingIds,
-        targetDateRange: { targetDate, endOfDay }
+        targetDateRange: { targetDate, endOfDay },
       });
-      
-      return NextResponse.json({
-        error: 'Some sales not found, do not belong to your account, or are not from the target date',
-        details: { requestedIds: salesIds, foundIds, missingIds, targetDateRange: { targetDate, endOfDay } }
-      }, { status: 404 });
+
+      return NextResponse.json(
+        {
+          error:
+            'Some sales not found, do not belong to your account, or are not from the target date',
+          details: {
+            requestedIds: salesIds,
+            foundIds,
+            missingIds,
+            targetDateRange: { targetDate, endOfDay },
+          },
+        },
+        { status: 404 }
+      );
     }
 
     // Delete sales in a transaction
@@ -94,16 +111,16 @@ export async function POST(request: NextRequest) {
       await tx.inventoryMovement.deleteMany({
         where: {
           tenantId,
-          reference: { in: salesIds }
-        }
+          reference: { in: salesIds },
+        },
       });
 
       // Then delete the sales
       const deletedSales = await tx.sale.deleteMany({
         where: {
           id: { in: salesIds },
-          tenantId
-        }
+          tenantId,
+        },
       });
 
       return deletedSales;
@@ -111,38 +128,43 @@ export async function POST(request: NextRequest) {
 
     console.log('Bulk delete completed:', {
       deletedCount: result.count,
-      salesDetails: salesToDelete.map(s => ({
+      salesDetails: salesToDelete.map((s) => ({
         id: s.id,
         driver: s.driver.name,
         product: s.product.name,
         quantity: s.quantity,
-        value: s.totalValue
-      }))
+        value: s.totalValue,
+      })),
     });
 
     return NextResponse.json({
       success: true,
       message: `Successfully deleted ${result.count} sales entries`,
       deletedCount: result.count,
-      deletedSales: salesToDelete.map(s => ({
+      deletedSales: salesToDelete.map((s) => ({
         id: s.id,
         driver: s.driver.name,
         product: s.product.name,
         quantity: s.quantity,
-        value: s.totalValue
-      }))
+        value: s.totalValue,
+      })),
     });
-
   } catch (error) {
     console.error('Bulk delete error:', error);
-    
+
     if (error instanceof z.ZodError) {
-      return NextResponse.json({
-        error: 'Invalid request data',
-        details: error.errors
-      }, { status: 400 });
+      return NextResponse.json(
+        {
+          error: 'Invalid request data',
+          details: error.errors,
+        },
+        { status: 400 }
+      );
     }
 
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
   }
 }

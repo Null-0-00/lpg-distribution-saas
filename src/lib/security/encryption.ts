@@ -3,7 +3,14 @@
  * Comprehensive encryption utilities for securing sensitive data
  */
 
-import { createCipheriv, createDecipheriv, randomBytes, scrypt, createHash, pbkdf2Sync } from 'crypto';
+import {
+  createCipheriv,
+  createDecipheriv,
+  randomBytes,
+  scrypt,
+  createHash,
+  pbkdf2Sync,
+} from 'crypto';
 import { promisify } from 'util';
 
 const scryptAsync = promisify(scrypt);
@@ -52,10 +59,10 @@ export class EncryptionManager {
     algorithm: 'aes-256-gcm',
     keyDerivation: 'scrypt',
     keyLength: 32, // 256 bits
-    ivLength: 16,  // 128 bits
+    ivLength: 16, // 128 bits
     saltLength: 32, // 256 bits
     iterations: 100000, // PBKDF2 iterations
-    hashAlgorithm: 'sha256'
+    hashAlgorithm: 'sha256',
   };
 
   private config: EncryptionConfig;
@@ -74,27 +81,27 @@ export class EncryptionManager {
   ): Promise<EncryptedData> {
     try {
       const config = { ...this.config, ...options };
-      
+
       // Generate cryptographically secure random values
       const salt = randomBytes(config.saltLength);
       const iv = randomBytes(config.ivLength);
-      
+
       // Derive encryption key
       const key = await this.deriveKey(password, salt, config);
-      
+
       // Create cipher
       const cipher = createCipheriv(config.algorithm, key, iv);
-      
+
       // Encrypt data
       let encrypted = cipher.update(plaintext, 'utf8', 'hex');
       encrypted += cipher.final('hex');
-      
+
       // Get authentication tag for GCM mode
       let tag: string | undefined;
       if (config.algorithm.includes('gcm')) {
         tag = (cipher as any).getAuthTag().toString('hex');
       }
-      
+
       return {
         data: encrypted,
         iv: iv.toString('hex'),
@@ -102,51 +109,57 @@ export class EncryptionManager {
         algorithm: config.algorithm,
         keyDerivation: config.keyDerivation,
         iterations: config.iterations,
-        tag
+        tag,
       };
-      
     } catch (error) {
-      throw new Error(`Encryption failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      throw new Error(
+        `Encryption failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
     }
   }
 
   /**
    * Decrypt encrypted data with authentication verification
    */
-  async decryptData(encryptedData: EncryptedData, password: string): Promise<string> {
+  async decryptData(
+    encryptedData: EncryptedData,
+    password: string
+  ): Promise<string> {
     try {
-      const { data, iv, salt, algorithm, keyDerivation, iterations, tag } = encryptedData;
-      
+      const { data, iv, salt, algorithm, keyDerivation, iterations, tag } =
+        encryptedData;
+
       // Convert hex strings back to buffers
       const ivBuffer = Buffer.from(iv, 'hex');
       const saltBuffer = Buffer.from(salt, 'hex');
-      
+
       // Derive the same key
       const config = {
         ...this.config,
         algorithm,
         keyDerivation,
-        iterations
+        iterations,
       } as EncryptionConfig;
-      
+
       const key = await this.deriveKey(password, saltBuffer, config);
-      
+
       // Create decipher
       const decipher = createDecipheriv(algorithm, key, ivBuffer);
-      
+
       // Set authentication tag for GCM mode
       if (algorithm.includes('gcm') && tag) {
         (decipher as any).setAuthTag(Buffer.from(tag, 'hex'));
       }
-      
+
       // Decrypt data
       let decrypted = decipher.update(data, 'hex', 'utf8');
       decrypted += decipher.final('utf8');
-      
+
       return decrypted;
-      
     } catch (error) {
-      throw new Error(`Decryption failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      throw new Error(
+        `Decryption failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
     }
   }
 
@@ -158,7 +171,10 @@ export class EncryptionManager {
     fieldConfig: DatabaseFieldEncryption
   ): Promise<string> {
     const plaintext = typeof value === 'string' ? value : JSON.stringify(value);
-    const encrypted = await this.encryptData(plaintext, fieldConfig.encryptionKey);
+    const encrypted = await this.encryptData(
+      plaintext,
+      fieldConfig.encryptionKey
+    );
     return JSON.stringify(encrypted);
   }
 
@@ -171,8 +187,11 @@ export class EncryptionManager {
   ): Promise<any> {
     try {
       const encryptedData: EncryptedData = JSON.parse(encryptedValue);
-      const decrypted = await this.decryptData(encryptedData, fieldConfig.encryptionKey);
-      
+      const decrypted = await this.decryptData(
+        encryptedData,
+        fieldConfig.encryptionKey
+      );
+
       // Try to parse as JSON, fallback to string
       try {
         return JSON.parse(decrypted);
@@ -180,7 +199,9 @@ export class EncryptionManager {
         return decrypted;
       }
     } catch (error) {
-      throw new Error(`Field decryption failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      throw new Error(
+        `Field decryption failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
     }
   }
 
@@ -199,7 +220,7 @@ export class EncryptionManager {
     const hash = createHash(this.config.hashAlgorithm)
       .update(data + actualSalt)
       .digest('hex');
-    
+
     return { hash, salt: actualSalt };
   }
 
@@ -210,7 +231,7 @@ export class EncryptionManager {
     const computed = createHash(this.config.hashAlgorithm)
       .update(data + salt)
       .digest('hex');
-    
+
     return this.constantTimeCompare(computed, hash);
   }
 
@@ -248,18 +269,24 @@ export class EncryptionManager {
     if (config.keyDerivation === 'scrypt') {
       return (await scryptAsync(password, salt, config.keyLength)) as Buffer;
     } else {
-      return pbkdf2Sync(password, salt, config.iterations, config.keyLength, config.hashAlgorithm);
+      return pbkdf2Sync(
+        password,
+        salt,
+        config.iterations,
+        config.keyLength,
+        config.hashAlgorithm
+      );
     }
   }
 
   private constantTimeCompare(a: string, b: string): boolean {
     if (a.length !== b.length) return false;
-    
+
     let result = 0;
     for (let i = 0; i < a.length; i++) {
       result |= a.charCodeAt(i) ^ b.charCodeAt(i);
     }
-    
+
     return result === 0;
   }
 }
@@ -289,7 +316,7 @@ export class DatabaseEncryption {
     this.fieldConfigs.set(configKey, {
       fieldName,
       encryptionKey,
-      algorithm
+      algorithm,
     });
   }
 
@@ -303,11 +330,11 @@ export class DatabaseEncryption {
   ): Promise<string> {
     const configKey = `${tableName}.${fieldName}`;
     const fieldConfig = this.fieldConfigs.get(configKey);
-    
+
     if (!fieldConfig) {
       throw new Error(`No encryption config found for ${configKey}`);
     }
-    
+
     return this.encryptionManager.encryptFieldValue(value, fieldConfig);
   }
 
@@ -321,12 +348,15 @@ export class DatabaseEncryption {
   ): Promise<any> {
     const configKey = `${tableName}.${fieldName}`;
     const fieldConfig = this.fieldConfigs.get(configKey);
-    
+
     if (!fieldConfig) {
       throw new Error(`No encryption config found for ${configKey}`);
     }
-    
-    return this.encryptionManager.decryptFieldValue(encryptedValue, fieldConfig);
+
+    return this.encryptionManager.decryptFieldValue(
+      encryptedValue,
+      fieldConfig
+    );
   }
 
   /**
@@ -338,26 +368,26 @@ export class DatabaseEncryption {
       if (['create', 'update', 'upsert'].includes(params.action)) {
         await this.encryptPrismaData(params);
       }
-      
+
       const result = await next(params);
-      
+
       // Decrypt on read operations
       if (['findUnique', 'findFirst', 'findMany'].includes(params.action)) {
         await this.decryptPrismaData(result, params.model);
       }
-      
+
       return result;
     };
   }
 
   private async encryptPrismaData(params: any): Promise<void> {
     if (!params.args.data) return;
-    
+
     const tableName = params.model.toLowerCase();
-    
+
     for (const [fieldName, value] of Object.entries(params.args.data)) {
       const configKey = `${tableName}.${fieldName}`;
-      
+
       if (this.fieldConfigs.has(configKey)) {
         params.args.data[fieldName] = await this.encryptForStorage(
           tableName,
@@ -368,16 +398,19 @@ export class DatabaseEncryption {
     }
   }
 
-  private async decryptPrismaData(result: any, modelName: string): Promise<void> {
+  private async decryptPrismaData(
+    result: any,
+    modelName: string
+  ): Promise<void> {
     if (!result) return;
-    
+
     const tableName = modelName.toLowerCase();
     const records = Array.isArray(result) ? result : [result];
-    
+
     for (const record of records) {
       for (const fieldName of Object.keys(record)) {
         const configKey = `${tableName}.${fieldName}`;
-        
+
         if (this.fieldConfigs.has(configKey) && record[fieldName]) {
           try {
             record[fieldName] = await this.decryptFromStorage(
@@ -396,20 +429,22 @@ export class DatabaseEncryption {
 
   private setupFieldConfigurations(): void {
     // Configure sensitive fields for encryption
-    const masterKey = process.env.DATABASE_ENCRYPTION_KEY || this.encryptionManager.generateEncryptionKey();
-    
+    const masterKey =
+      process.env.DATABASE_ENCRYPTION_KEY ||
+      this.encryptionManager.generateEncryptionKey();
+
     // User sensitive data
     this.registerField('users', 'email', masterKey);
     this.registerField('users', 'phone', masterKey);
-    
+
     // Driver sensitive data
     this.registerField('drivers', 'phone', masterKey);
     this.registerField('drivers', 'address', masterKey);
-    
+
     // Financial data
     this.registerField('sales', 'notes', masterKey);
     this.registerField('expenses', 'description', masterKey);
-    
+
     // Add more fields as needed
   }
 }
@@ -431,7 +466,9 @@ export class TransportSecurity {
     return {
       cert: this.loadCertificate(this.config.certificatePath),
       key: this.loadPrivateKey(this.config.privateKeyPath),
-      ca: this.config.caCertPath ? this.loadCertificate(this.config.caCertPath) : undefined,
+      ca: this.config.caCertPath
+        ? this.loadCertificate(this.config.caCertPath)
+        : undefined,
       secureProtocol: 'TLSv1_2_method',
       ciphers: this.config.ciphers.join(':'),
       honorCipherOrder: this.config.honorCipherOrder,
@@ -447,7 +484,9 @@ export class TransportSecurity {
       httpsAgent: new (require('https').Agent)({
         cert: this.loadCertificate(this.config.certificatePath),
         key: this.loadPrivateKey(this.config.privateKeyPath),
-        ca: this.config.caCertPath ? this.loadCertificate(this.config.caCertPath) : undefined,
+        ca: this.config.caCertPath
+          ? this.loadCertificate(this.config.caCertPath)
+          : undefined,
         rejectUnauthorized: true,
         checkServerIdentity: this.checkServerIdentity.bind(this),
       }),
@@ -457,7 +496,10 @@ export class TransportSecurity {
   /**
    * Validate SSL certificate
    */
-  async validateCertificate(hostname: string, port: number = 443): Promise<{
+  async validateCertificate(
+    hostname: string,
+    port: number = 443
+  ): Promise<{
     valid: boolean;
     issuer?: string;
     subject?: string;
@@ -467,30 +509,35 @@ export class TransportSecurity {
     errors: string[];
   }> {
     return new Promise((resolve) => {
-      const socket = require('tls').connect({
-        host: hostname,
-        port,
-        rejectUnauthorized: false,
-      }, () => {
-        const cert = socket.getPeerCertificate();
-        
-        resolve({
-          valid: socket.authorized,
-          issuer: cert.issuer?.CN,
-          subject: cert.subject?.CN,
-          validFrom: new Date(cert.valid_from),
-          validTo: new Date(cert.valid_to),
-          fingerprint: cert.fingerprint,
-          errors: socket.authorizationError ? [socket.authorizationError] : []
-        });
-        
-        socket.end();
-      });
-      
+      const socket = require('tls').connect(
+        {
+          host: hostname,
+          port,
+          rejectUnauthorized: false,
+        },
+        () => {
+          const cert = socket.getPeerCertificate();
+
+          resolve({
+            valid: socket.authorized,
+            issuer: cert.issuer?.CN,
+            subject: cert.subject?.CN,
+            validFrom: new Date(cert.valid_from),
+            validTo: new Date(cert.valid_to),
+            fingerprint: cert.fingerprint,
+            errors: socket.authorizationError
+              ? [socket.authorizationError]
+              : [],
+          });
+
+          socket.end();
+        }
+      );
+
       socket.on('error', (error: Error) => {
         resolve({
           valid: false,
-          errors: [error.message]
+          errors: [error.message],
         });
       });
     });
@@ -554,10 +601,13 @@ export class KeyManager {
   /**
    * Rotate encryption key
    */
-  rotateKey(keyId: string, length: number = 32): { oldKey: string; newKey: string } {
+  rotateKey(
+    keyId: string,
+    length: number = 32
+  ): { oldKey: string; newKey: string } {
     const oldKey = this.getKey(keyId);
     const newKey = this.generateKey(keyId, length);
-    
+
     return { oldKey, newKey };
   }
 
@@ -566,11 +616,14 @@ export class KeyManager {
    */
   setupKeyRotation(keyId: string, intervalHours: number = 24 * 30): void {
     this.rotationIntervals.set(keyId, intervalHours);
-    
-    setInterval(() => {
-      this.rotateKey(keyId);
-      console.log(`Key rotated: ${keyId}`);
-    }, intervalHours * 60 * 60 * 1000);
+
+    setInterval(
+      () => {
+        this.rotateKey(keyId);
+        console.log(`Key rotated: ${keyId}`);
+      },
+      intervalHours * 60 * 60 * 1000
+    );
   }
 
   /**
@@ -579,23 +632,28 @@ export class KeyManager {
   async exportKeys(masterPassword: string): Promise<string> {
     const encryptionManager = new EncryptionManager();
     const keyData = Object.fromEntries(this.keys);
-    
-    return encryptionManager.encryptData(
-      JSON.stringify(keyData),
-      masterPassword
-    ).then(encrypted => JSON.stringify(encrypted));
+
+    return encryptionManager
+      .encryptData(JSON.stringify(keyData), masterPassword)
+      .then((encrypted) => JSON.stringify(encrypted));
   }
 
   /**
    * Import keys from backup
    */
-  async importKeys(encryptedKeyData: string, masterPassword: string): Promise<void> {
+  async importKeys(
+    encryptedKeyData: string,
+    masterPassword: string
+  ): Promise<void> {
     const encryptionManager = new EncryptionManager();
     const encryptedData: EncryptedData = JSON.parse(encryptedKeyData);
-    
-    const decrypted = await encryptionManager.decryptData(encryptedData, masterPassword);
+
+    const decrypted = await encryptionManager.decryptData(
+      encryptedData,
+      masterPassword
+    );
     const keyData = JSON.parse(decrypted);
-    
+
     for (const [keyId, key] of Object.entries(keyData)) {
       this.keys.set(keyId, key as string);
     }
@@ -617,8 +675,8 @@ export const DEFAULT_TRANSIT_CONFIG: TransitEncryptionConfig = {
     'ECDHE-RSA-AES128-GCM-SHA256',
     'ECDHE-RSA-AES256-GCM-SHA384',
     'ECDHE-RSA-AES128-SHA256',
-    'ECDHE-RSA-AES256-SHA384'
+    'ECDHE-RSA-AES256-SHA384',
   ],
   honorCipherOrder: true,
-  secureRenegotiation: true
+  secureRenegotiation: true,
 };

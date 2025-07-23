@@ -1,19 +1,34 @@
-"use client";
+'use client';
 
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { FallbackDataService, type TrendData } from '@/lib/services/fallback-data';
-import { 
-  BarChart3, 
-  TrendingUp, 
-  TrendingDown, 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
+  FallbackDataService,
+  type TrendData,
+} from '@/lib/services/fallback-data';
+import {
+  BarChart3,
+  TrendingUp,
+  TrendingDown,
   Calendar,
   RefreshCw,
   Maximize,
-  Filter
+  Filter,
 } from 'lucide-react';
 
 // Using TrendData from centralized service
@@ -27,7 +42,9 @@ export function InteractiveTrendChart() {
   const [data, setData] = useState<TrendData[]>([]);
   const [loading, setLoading] = useState(true);
   const [timeRange, setTimeRange] = useState<'7d' | '30d' | '90d'>('7d');
-  const [metric, setMetric] = useState<'sales' | 'revenue' | 'drivers' | 'efficiency'>('sales');
+  const [metric, setMetric] = useState<
+    'sales' | 'revenue' | 'drivers' | 'efficiency'
+  >('sales');
   const [isExpanded, setIsExpanded] = useState(false);
 
   useEffect(() => {
@@ -37,8 +54,10 @@ export function InteractiveTrendChart() {
   const loadTrendData = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`/api/dashboard/trends?range=${timeRange}&metric=${metric}`);
-      
+      const response = await fetch(
+        `/api/dashboard/trends?range=${timeRange}&metric=${metric}`
+      );
+
       if (response.ok) {
         const trendData = await response.json();
         setData(trendData.data || []);
@@ -54,7 +73,6 @@ export function InteractiveTrendChart() {
     }
   };
 
-
   const getMetricConfig = () => {
     const configs = {
       sales: {
@@ -63,7 +81,7 @@ export function InteractiveTrendChart() {
         lightColor: 'bg-blue-100',
         textColor: 'text-blue-600',
         unit: 'cylinders',
-        icon: <BarChart3 className="h-4 w-4" />
+        icon: <BarChart3 className="h-4 w-4" />,
       },
       revenue: {
         label: 'Revenue',
@@ -71,7 +89,7 @@ export function InteractiveTrendChart() {
         lightColor: 'bg-green-100',
         textColor: 'text-green-600',
         unit: '৳',
-        icon: <TrendingUp className="h-4 w-4" />
+        icon: <TrendingUp className="h-4 w-4" />,
       },
       drivers: {
         label: 'Active Drivers',
@@ -79,7 +97,7 @@ export function InteractiveTrendChart() {
         lightColor: 'bg-purple-100',
         textColor: 'text-purple-600',
         unit: 'drivers',
-        icon: <Calendar className="h-4 w-4" />
+        icon: <Calendar className="h-4 w-4" />,
       },
       efficiency: {
         label: 'Efficiency',
@@ -87,28 +105,29 @@ export function InteractiveTrendChart() {
         lightColor: 'bg-orange-100',
         textColor: 'text-orange-600',
         unit: '%',
-        icon: <TrendingUp className="h-4 w-4" />
-      }
+        icon: <TrendingUp className="h-4 w-4" />,
+      },
     };
     return configs[metric];
   };
 
   const config = getMetricConfig();
-  const maxValue = Math.max(...data.map(d => d[metric]));
-  const minValue = Math.min(...data.map(d => d[metric]));
+  const maxValue = Math.max(...data.map((d) => d[metric]));
+  const minValue = Math.min(...data.map((d) => d[metric]));
   const avgValue = data.reduce((sum, d) => sum + d[metric], 0) / data.length;
 
   const calculateTrend = () => {
     if (data.length < 2) return { direction: 'stable', percentage: 0 };
-    
+
     const recent = data.slice(-3).reduce((sum, d) => sum + d[metric], 0) / 3;
-    const previous = data.slice(0, 3).reduce((sum, d) => sum + d[metric], 0) / 3;
-    
+    const previous =
+      data.slice(0, 3).reduce((sum, d) => sum + d[metric], 0) / 3;
+
     const change = ((recent - previous) / previous) * 100;
-    
+
     return {
       direction: Math.abs(change) < 5 ? 'stable' : change > 0 ? 'up' : 'down',
-      percentage: Math.abs(change)
+      percentage: Math.abs(change),
     };
   };
 
@@ -134,20 +153,26 @@ export function InteractiveTrendChart() {
               Interactive performance analytics over time
             </CardDescription>
           </div>
-          
+
           <div className="flex items-center space-x-2">
-            <Badge 
-              variant={trend.direction === 'up' ? 'default' : trend.direction === 'down' ? 'destructive' : 'secondary'}
+            <Badge
+              variant={
+                trend.direction === 'up'
+                  ? 'default'
+                  : trend.direction === 'down'
+                    ? 'destructive'
+                    : 'secondary'
+              }
               className="flex items-center"
             >
               {trend.direction === 'up' ? (
-                <TrendingUp className="h-3 w-3 mr-1" />
+                <TrendingUp className="mr-1 h-3 w-3" />
               ) : trend.direction === 'down' ? (
-                <TrendingDown className="h-3 w-3 mr-1" />
+                <TrendingDown className="mr-1 h-3 w-3" />
               ) : null}
               {trend.percentage.toFixed(1)}%
             </Badge>
-            
+
             <Button
               variant="outline"
               size="sm"
@@ -157,10 +182,13 @@ export function InteractiveTrendChart() {
             </Button>
           </div>
         </div>
-        
+
         {/* Controls */}
         <div className="flex flex-wrap items-center gap-2 pt-2">
-          <Select value={timeRange} onValueChange={(value: any) => setTimeRange(value)}>
+          <Select
+            value={timeRange}
+            onValueChange={(value: any) => setTimeRange(value)}
+          >
             <SelectTrigger className="w-32">
               <SelectValue />
             </SelectTrigger>
@@ -170,8 +198,11 @@ export function InteractiveTrendChart() {
               <SelectItem value="90d">Last 90 days</SelectItem>
             </SelectContent>
           </Select>
-          
-          <Select value={metric} onValueChange={(value: any) => setMetric(value)}>
+
+          <Select
+            value={metric}
+            onValueChange={(value: any) => setMetric(value)}
+          >
             <SelectTrigger className="w-36">
               <SelectValue />
             </SelectTrigger>
@@ -182,7 +213,7 @@ export function InteractiveTrendChart() {
               <SelectItem value="efficiency">Efficiency</SelectItem>
             </SelectContent>
           </Select>
-          
+
           <Button
             variant="outline"
             size="sm"
@@ -193,32 +224,44 @@ export function InteractiveTrendChart() {
           </Button>
         </div>
       </CardHeader>
-      
+
       <CardContent>
         {loading ? (
           <div className="flex items-center justify-center py-8">
-            <RefreshCw className="h-6 w-6 animate-spin mr-2" />
+            <RefreshCw className="mr-2 h-6 w-6 animate-spin" />
             <span>Loading trend data...</span>
           </div>
         ) : (
           <>
             {/* Summary Stats */}
-            <div className="grid grid-cols-3 gap-4 mb-6">
-              <div className={`${config.lightColor} rounded-lg p-3 text-center`}>
+            <div className="mb-6 grid grid-cols-3 gap-4">
+              <div
+                className={`${config.lightColor} rounded-lg p-3 text-center`}
+              >
                 <div className={`text-lg font-bold ${config.textColor}`}>
-                  {metric === 'revenue' ? '৳' : ''}{formatValue(maxValue)}{metric === 'efficiency' ? '%' : ''}
+                  {metric === 'revenue' ? '৳' : ''}
+                  {formatValue(maxValue)}
+                  {metric === 'efficiency' ? '%' : ''}
                 </div>
                 <div className="text-xs text-gray-600">Peak</div>
               </div>
-              <div className={`${config.lightColor} rounded-lg p-3 text-center`}>
+              <div
+                className={`${config.lightColor} rounded-lg p-3 text-center`}
+              >
                 <div className={`text-lg font-bold ${config.textColor}`}>
-                  {metric === 'revenue' ? '৳' : ''}{formatValue(avgValue)}{metric === 'efficiency' ? '%' : ''}
+                  {metric === 'revenue' ? '৳' : ''}
+                  {formatValue(avgValue)}
+                  {metric === 'efficiency' ? '%' : ''}
                 </div>
                 <div className="text-xs text-gray-600">Average</div>
               </div>
-              <div className={`${config.lightColor} rounded-lg p-3 text-center`}>
+              <div
+                className={`${config.lightColor} rounded-lg p-3 text-center`}
+              >
                 <div className={`text-lg font-bold ${config.textColor}`}>
-                  {metric === 'revenue' ? '৳' : ''}{formatValue(minValue)}{metric === 'efficiency' ? '%' : ''}
+                  {metric === 'revenue' ? '৳' : ''}
+                  {formatValue(minValue)}
+                  {metric === 'efficiency' ? '%' : ''}
                 </div>
                 <div className="text-xs text-gray-600">Lowest</div>
               </div>
@@ -227,20 +270,30 @@ export function InteractiveTrendChart() {
             {/* Chart */}
             <div className="space-y-4">
               {/* X-axis labels */}
-              <div className="grid gap-1 text-center text-xs text-gray-500" style={{ gridTemplateColumns: `repeat(${data.length}, 1fr)` }}>
+              <div
+                className="grid gap-1 text-center text-xs text-gray-500"
+                style={{ gridTemplateColumns: `repeat(${data.length}, 1fr)` }}
+              >
                 {data.map((item, index) => (
                   <div key={index}>{item.period}</div>
                 ))}
               </div>
-              
+
               {/* Chart bars */}
-              <div className={`grid gap-1 items-end ${isExpanded ? 'h-64' : 'h-32'}`} style={{ gridTemplateColumns: `repeat(${data.length}, 1fr)` }}>
+              <div
+                className={`grid items-end gap-1 ${isExpanded ? 'h-64' : 'h-32'}`}
+                style={{ gridTemplateColumns: `repeat(${data.length}, 1fr)` }}
+              >
                 {data.map((item, index) => {
-                  const height = maxValue > 0 ? (item[metric] / maxValue) * 100 : 0;
+                  const height =
+                    maxValue > 0 ? (item[metric] / maxValue) * 100 : 0;
                   const isHighest = item[metric] === maxValue;
-                  
+
                   return (
-                    <div key={index} className="flex flex-col items-center group relative">
+                    <div
+                      key={index}
+                      className="group relative flex flex-col items-center"
+                    >
                       <div
                         className={`w-full rounded-t transition-all duration-300 hover:opacity-80 ${
                           isHighest ? config.color : 'bg-gray-300'
@@ -248,14 +301,17 @@ export function InteractiveTrendChart() {
                         style={{ height: `${height}%` }}
                       >
                         {/* Tooltip */}
-                        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity bg-black text-white text-xs rounded py-1 px-2 whitespace-nowrap">
-                          {metric === 'revenue' ? '৳' : ''}{item[metric].toLocaleString()}{metric === 'efficiency' ? '%' : ''}
+                        <div className="absolute bottom-full left-1/2 mb-2 -translate-x-1/2 transform whitespace-nowrap rounded bg-black px-2 py-1 text-xs text-white opacity-0 transition-opacity group-hover:opacity-100">
+                          {metric === 'revenue' ? '৳' : ''}
+                          {item[metric].toLocaleString()}
+                          {metric === 'efficiency' ? '%' : ''}
                         </div>
                       </div>
-                      
+
                       {/* Value label */}
-                      <div className="text-xs text-gray-600 mt-1">
-                        {formatValue(item[metric])}{metric === 'efficiency' ? '%' : ''}
+                      <div className="mt-1 text-xs text-gray-600">
+                        {formatValue(item[metric])}
+                        {metric === 'efficiency' ? '%' : ''}
                       </div>
                     </div>
                   );

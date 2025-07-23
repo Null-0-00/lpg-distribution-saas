@@ -25,7 +25,10 @@ interface AssetResponse {
 
 const assetQuerySchema = z.object({
   category: z.nativeEnum(AssetCategory).optional(),
-  includeAutoCalculated: z.string().transform(val => val === 'true').default(false),
+  includeAutoCalculated: z
+    .string()
+    .transform((val) => val === 'true')
+    .default(false),
   asOfDate: z.string().optional(),
 });
 
@@ -35,7 +38,10 @@ const createAssetSchema = z.object({
   subCategory: z.string().optional(),
   value: z.number().min(0, 'Asset value must be non-negative'),
   description: z.string().optional(),
-  purchaseDate: z.string().transform(val => val ? new Date(val) : undefined).optional(),
+  purchaseDate: z
+    .string()
+    .transform((val) => (val ? new Date(val) : undefined))
+    .optional(),
   depreciationRate: z.number().min(0).max(100).optional(),
 });
 
@@ -47,9 +53,8 @@ export async function GET(request: NextRequest) {
     }
 
     const { searchParams } = new URL(request.url);
-    const { category, includeAutoCalculated, asOfDate } = assetQuerySchema.parse(
-      Object.fromEntries(searchParams.entries())
-    );
+    const { category, includeAutoCalculated, asOfDate } =
+      assetQuerySchema.parse(Object.fromEntries(searchParams.entries()));
 
     const tenantId = session.user.tenantId;
     const reportDate = asOfDate ? new Date(asOfDate) : new Date();
@@ -60,17 +65,20 @@ export async function GET(request: NextRequest) {
 
     const manualAssets = await prisma.asset.findMany({
       where,
-      orderBy: [{ category: 'asc' }, { name: 'asc' }]
+      orderBy: [{ category: 'asc' }, { name: 'asc' }],
     });
 
     // Calculate current values with depreciation
-    const assetsWithCurrentValue = manualAssets.map(asset => {
+    const assetsWithCurrentValue = manualAssets.map((asset) => {
       let currentValue = asset.value;
-      
+
       // Apply depreciation if applicable
       if (asset.depreciationRate && asset.purchaseDate) {
-        const yearsOwned = (reportDate.getTime() - asset.purchaseDate.getTime()) / (1000 * 60 * 60 * 24 * 365);
-        const depreciationAmount = asset.value * (asset.depreciationRate / 100) * yearsOwned;
+        const yearsOwned =
+          (reportDate.getTime() - asset.purchaseDate.getTime()) /
+          (1000 * 60 * 60 * 24 * 365);
+        const depreciationAmount =
+          asset.value * (asset.depreciationRate / 100) * yearsOwned;
         currentValue = Math.max(0, asset.value - depreciationAmount);
       }
 
@@ -86,30 +94,45 @@ export async function GET(request: NextRequest) {
         depreciationRate: asset.depreciationRate,
         isAutoCalculated: false,
         createdAt: asset.createdAt,
-        updatedAt: asset.updatedAt
+        updatedAt: asset.updatedAt,
       };
     });
 
     let autoCalculatedAssets: AssetResponse[] = [];
 
     // Add auto-calculated current assets if requested
-    if (includeAutoCalculated || !category || category === AssetCategory.CURRENT_ASSET) {
+    if (
+      includeAutoCalculated ||
+      !category ||
+      category === AssetCategory.CURRENT_ASSET
+    ) {
       autoCalculatedAssets = await calculateCurrentAssets(tenantId, reportDate);
     }
 
     // Combine and categorize assets
-    const allAssets: AssetResponse[] = [...assetsWithCurrentValue, ...autoCalculatedAssets];
-    
+    const allAssets: AssetResponse[] = [
+      ...assetsWithCurrentValue,
+      ...autoCalculatedAssets,
+    ];
+
     const categorizedAssets = {
-      FIXED: allAssets.filter(a => a.category === AssetCategory.FIXED_ASSET),
-      CURRENT: allAssets.filter(a => a.category === AssetCategory.CURRENT_ASSET)
+      FIXED: allAssets.filter((a) => a.category === AssetCategory.FIXED_ASSET),
+      CURRENT: allAssets.filter(
+        (a) => a.category === AssetCategory.CURRENT_ASSET
+      ),
     };
 
     // Calculate totals
     const totals = {
-      FIXED: categorizedAssets.FIXED.reduce((sum, a) => sum + a.currentValue, 0),
-      CURRENT: categorizedAssets.CURRENT.reduce((sum, a) => sum + a.currentValue, 0),
-      TOTAL: allAssets.reduce((sum, a) => sum + a.currentValue, 0)
+      FIXED: categorizedAssets.FIXED.reduce(
+        (sum, a) => sum + a.currentValue,
+        0
+      ),
+      CURRENT: categorizedAssets.CURRENT.reduce(
+        (sum, a) => sum + a.currentValue,
+        0
+      ),
+      TOTAL: allAssets.reduce((sum, a) => sum + a.currentValue, 0),
     };
 
     return NextResponse.json({
@@ -120,13 +143,15 @@ export async function GET(request: NextRequest) {
       summary: {
         totalAssets: allAssets.length,
         manualAssets: assetsWithCurrentValue.length,
-        autoCalculatedAssets: autoCalculatedAssets.length
-      }
+        autoCalculatedAssets: autoCalculatedAssets.length,
+      },
     });
-
   } catch (error) {
     console.error('Assets fetch error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
   }
 }
 
@@ -134,7 +159,10 @@ export async function POST(request: NextRequest) {
   try {
     const session = await auth();
     if (!session?.user?.tenantId || session.user.role !== UserRole.ADMIN) {
-      return NextResponse.json({ error: 'Unauthorized - Admin access required' }, { status: 401 });
+      return NextResponse.json(
+        { error: 'Unauthorized - Admin access required' },
+        { status: 401 }
+      );
     }
 
     const body = await request.json();
@@ -150,8 +178,8 @@ export async function POST(request: NextRequest) {
         value: validatedData.value,
         description: validatedData.description ?? null,
         purchaseDate: validatedData.purchaseDate ?? null,
-        depreciationRate: validatedData.depreciationRate ?? null
-      }
+        depreciationRate: validatedData.depreciationRate ?? null,
+      },
     });
 
     return NextResponse.json({
@@ -166,18 +194,23 @@ export async function POST(request: NextRequest) {
         purchaseDate: asset.purchaseDate,
         depreciationRate: asset.depreciationRate,
         isAutoCalculated: false,
-        createdAt: asset.createdAt
-      }
+        createdAt: asset.createdAt,
+      },
     });
-
   } catch (error) {
     console.error('Asset creation error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
   }
 }
 
 // AUTO-CALCULATED CURRENT ASSETS
-async function calculateCurrentAssets(tenantId: string, asOfDate: Date): Promise<AssetResponse[]> {
+async function calculateCurrentAssets(
+  tenantId: string,
+  asOfDate: Date
+): Promise<AssetResponse[]> {
   const assets: AssetResponse[] = [];
 
   try {
@@ -185,56 +218,58 @@ async function calculateCurrentAssets(tenantId: string, asOfDate: Date): Promise
     const latestInventory = await prisma.inventoryRecord.findFirst({
       where: {
         tenantId,
-        date: { lte: asOfDate }
+        date: { lte: asOfDate },
       },
-      orderBy: { date: 'desc' }
+      orderBy: { date: 'desc' },
     });
 
     if (latestInventory && latestInventory.productId) {
       const product = await prisma.product.findUnique({
         where: { id: latestInventory.productId },
-        select: { currentPrice: true, name: true }
+        select: { currentPrice: true, name: true },
       });
 
       if (product) {
-        const fullCylindersValue = latestInventory.fullCylinders * product.currentPrice;
-      assets.push({
-        id: 'auto-full-cylinders',
-        name: `Full Cylinders (${product.name})`,
-        category: AssetCategory.CURRENT_ASSET,
-        subCategory: 'Inventory',
-        originalValue: fullCylindersValue,
-        currentValue: fullCylindersValue,
-        description: `${latestInventory.fullCylinders} cylinders @ ${product.currentPrice} each`,
-        isAutoCalculated: true,
-        details: {
-          quantity: latestInventory.fullCylinders,
-          unitPrice: product.currentPrice,
-          date: latestInventory.date
-        },
-        createdAt: latestInventory.date,
-        updatedAt: latestInventory.date
-      });
+        const fullCylindersValue =
+          latestInventory.fullCylinders * product.currentPrice;
+        assets.push({
+          id: 'auto-full-cylinders',
+          name: `Full Cylinders (${product.name})`,
+          category: AssetCategory.CURRENT_ASSET,
+          subCategory: 'Inventory',
+          originalValue: fullCylindersValue,
+          currentValue: fullCylindersValue,
+          description: `${latestInventory.fullCylinders} cylinders @ ${product.currentPrice} each`,
+          isAutoCalculated: true,
+          details: {
+            quantity: latestInventory.fullCylinders,
+            unitPrice: product.currentPrice,
+            date: latestInventory.date,
+          },
+          createdAt: latestInventory.date,
+          updatedAt: latestInventory.date,
+        });
 
         // 2. Empty Cylinders (auto from inventory) - Assuming 20% of full cylinder value
-        const emptyCylindersValue = latestInventory.emptyCylinders * (product.currentPrice * 0.2);
-      assets.push({
-        id: 'auto-empty-cylinders',
-        name: `Empty Cylinders (${product.name})`,
-        category: AssetCategory.CURRENT_ASSET,
-        subCategory: 'Inventory',
-        originalValue: emptyCylindersValue,
-        currentValue: emptyCylindersValue,
-        description: `${latestInventory.emptyCylinders} empty cylinders @ 20% of full price`,
-        isAutoCalculated: true,
-        details: {
-          quantity: latestInventory.emptyCylinders,
-          unitPrice: product.currentPrice * 0.2,
-          date: latestInventory.date
-        },
-        createdAt: latestInventory.date,
-        updatedAt: latestInventory.date
-      });
+        const emptyCylindersValue =
+          latestInventory.emptyCylinders * (product.currentPrice * 0.2);
+        assets.push({
+          id: 'auto-empty-cylinders',
+          name: `Empty Cylinders (${product.name})`,
+          category: AssetCategory.CURRENT_ASSET,
+          subCategory: 'Inventory',
+          originalValue: emptyCylindersValue,
+          currentValue: emptyCylindersValue,
+          description: `${latestInventory.emptyCylinders} empty cylinders @ 20% of full price`,
+          isAutoCalculated: true,
+          details: {
+            quantity: latestInventory.emptyCylinders,
+            unitPrice: product.currentPrice * 0.2,
+            date: latestInventory.date,
+          },
+          createdAt: latestInventory.date,
+          updatedAt: latestInventory.date,
+        });
       }
     }
 
@@ -242,11 +277,11 @@ async function calculateCurrentAssets(tenantId: string, asOfDate: Date): Promise
     const cashReceivables = await prisma.receivableRecord.aggregate({
       where: {
         tenantId,
-        date: { lte: asOfDate }
+        date: { lte: asOfDate },
       },
       _sum: {
-        totalCashReceivables: true
-      }
+        totalCashReceivables: true,
+      },
     });
 
     const totalCashReceivables = cashReceivables._sum.totalCashReceivables || 0;
@@ -262,10 +297,10 @@ async function calculateCurrentAssets(tenantId: string, asOfDate: Date): Promise
         isAutoCalculated: true,
         details: {
           totalAmount: totalCashReceivables,
-          date: asOfDate
+          date: asOfDate,
         },
         createdAt: asOfDate,
-        updatedAt: asOfDate
+        updatedAt: asOfDate,
       });
     }
 
@@ -273,42 +308,44 @@ async function calculateCurrentAssets(tenantId: string, asOfDate: Date): Promise
     const cylinderReceivables = await prisma.receivableRecord.aggregate({
       where: {
         tenantId,
-        date: { lte: asOfDate }
+        date: { lte: asOfDate },
       },
       _sum: {
-        totalCylinderReceivables: true
-      }
+        totalCylinderReceivables: true,
+      },
     });
 
-    const totalCylinderReceivables = cylinderReceivables._sum.totalCylinderReceivables || 0;
+    const totalCylinderReceivables =
+      cylinderReceivables._sum.totalCylinderReceivables || 0;
     if (totalCylinderReceivables > 0) {
       // Get the most recent product for pricing cylinder receivables
       const recentProduct = await prisma.product.findFirst({
         where: { tenantId, isActive: true },
         select: { currentPrice: true, name: true },
-        orderBy: { updatedAt: 'desc' }
+        orderBy: { updatedAt: 'desc' },
       });
 
       if (recentProduct) {
         // Assume cylinder receivables are valued at current product price
-        const cylinderReceivablesValue = totalCylinderReceivables * recentProduct.currentPrice;
-      assets.push({
-        id: 'auto-cylinder-receivables',
-        name: 'Cylinder Receivables',
-        category: AssetCategory.CURRENT_ASSET,
-        subCategory: 'Receivables',
-        originalValue: cylinderReceivablesValue,
-        currentValue: cylinderReceivablesValue,
-        description: `${totalCylinderReceivables} cylinders receivable @ current price`,
-        isAutoCalculated: true,
-        details: {
-          quantity: totalCylinderReceivables,
-          unitPrice: recentProduct.currentPrice,
-          date: asOfDate
-        },
-        createdAt: asOfDate,
-        updatedAt: asOfDate
-      });
+        const cylinderReceivablesValue =
+          totalCylinderReceivables * recentProduct.currentPrice;
+        assets.push({
+          id: 'auto-cylinder-receivables',
+          name: 'Cylinder Receivables',
+          category: AssetCategory.CURRENT_ASSET,
+          subCategory: 'Receivables',
+          originalValue: cylinderReceivablesValue,
+          currentValue: cylinderReceivablesValue,
+          description: `${totalCylinderReceivables} cylinders receivable @ current price`,
+          isAutoCalculated: true,
+          details: {
+            quantity: totalCylinderReceivables,
+            unitPrice: recentProduct.currentPrice,
+            date: asOfDate,
+          },
+          createdAt: asOfDate,
+          updatedAt: asOfDate,
+        });
       }
     }
 
@@ -317,30 +354,30 @@ async function calculateCurrentAssets(tenantId: string, asOfDate: Date): Promise
       prisma.sale.aggregate({
         where: {
           tenantId,
-          saleDate: { lte: asOfDate }
+          saleDate: { lte: asOfDate },
         },
         _sum: {
           cashDeposited: true,
-          totalValue: true
-        }
+          totalValue: true,
+        },
       }),
       prisma.expense.aggregate({
         where: {
           tenantId,
-          expenseDate: { lte: asOfDate }
+          expenseDate: { lte: asOfDate },
         },
         _sum: {
-          amount: true
-        }
-      })
+          amount: true,
+        },
+      }),
     ]);
 
     const totalCashDeposited = totalSales._sum.cashDeposited || 0;
     const totalExpenseAmount = totalExpenses._sum.amount || 0;
-    
+
     // Simple cash in hand calculation: deposits - expenses
     const cashInHand = Math.max(0, totalCashDeposited - totalExpenseAmount);
-    
+
     if (cashInHand > 0) {
       assets.push({
         id: 'auto-cash-in-hand',
@@ -354,13 +391,12 @@ async function calculateCurrentAssets(tenantId: string, asOfDate: Date): Promise
         details: {
           totalDeposits: totalCashDeposited,
           totalExpenses: totalExpenseAmount,
-          date: asOfDate
+          date: asOfDate,
         },
         createdAt: asOfDate,
-        updatedAt: asOfDate
+        updatedAt: asOfDate,
       });
     }
-
   } catch (error) {
     console.error('Auto-calculation error:', error);
   }

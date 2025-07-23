@@ -1,19 +1,24 @@
-import { SequentialThinkingProcessor, SequentialThinkingResult } from './sequential-thinking';
+import {
+  SequentialThinkingProcessor,
+  SequentialThinkingResult,
+} from './sequential-thinking';
 
 export class MCPProblemSolver extends SequentialThinkingProcessor {
   constructor() {
     super(40);
   }
 
-  async diagnoseDataInconsistency(
-    issue: {
-      type: 'inventory_mismatch' | 'receivables_discrepancy' | 'financial_imbalance' | 'multi_tenant_leak';
-      description: string;
-      affectedTenantId: string;
-      reportedValues: Record<string, any>;
-      expectedValues: Record<string, any>;
-    }
-  ): Promise<SequentialThinkingResult> {
+  async diagnoseDataInconsistency(issue: {
+    type:
+      | 'inventory_mismatch'
+      | 'receivables_discrepancy'
+      | 'financial_imbalance'
+      | 'multi_tenant_leak';
+    description: string;
+    affectedTenantId: string;
+    reportedValues: Record<string, any>;
+    expectedValues: Record<string, any>;
+  }): Promise<SequentialThinkingResult> {
     this.reset();
     this.setContext(`Data Inconsistency Diagnosis: ${issue.type}`);
 
@@ -38,7 +43,10 @@ export class MCPProblemSolver extends SequentialThinkingProcessor {
       totalThoughts: 15,
     });
 
-    const discrepancies = this.identifyDiscrepancies(issue.reportedValues, issue.expectedValues);
+    const discrepancies = this.identifyDiscrepancies(
+      issue.reportedValues,
+      issue.expectedValues
+    );
     this.addThought({
       thought: `Key discrepancies identified: ${discrepancies.length} fields with variance > 0.01`,
       nextThoughtNeeded: true,
@@ -64,7 +72,10 @@ export class MCPProblemSolver extends SequentialThinkingProcessor {
       totalThoughts: 15,
     });
 
-    const resolutionSteps = this.generateResolutionSteps(issue.type, rootCauses);
+    const resolutionSteps = this.generateResolutionSteps(
+      issue.type,
+      rootCauses
+    );
     this.addThought({
       thought: `Resolution plan generated: ${resolutionSteps.length} steps with priority rankings`,
       nextThoughtNeeded: true,
@@ -88,7 +99,10 @@ export class MCPProblemSolver extends SequentialThinkingProcessor {
         resolutionSteps,
         preventionMeasures,
       },
-      recommendation: this.generateFinalRecommendation(issue.type, rootCauses.length),
+      recommendation: this.generateFinalRecommendation(
+        issue.type,
+        rootCauses.length
+      ),
     };
 
     this.addThought({
@@ -105,7 +119,9 @@ export class MCPProblemSolver extends SequentialThinkingProcessor {
     };
   }
 
-  private async diagnoseInventoryMismatch(discrepancies: Array<{ field: string; variance: number }>) {
+  private async diagnoseInventoryMismatch(
+    discrepancies: Array<{ field: string; variance: number }>
+  ) {
     this.addThought({
       thought: `Inventory mismatch diagnosis: Checking cylinder counting methodology, sales recording accuracy, and purchase order processing`,
       nextThoughtNeeded: true,
@@ -128,7 +144,9 @@ export class MCPProblemSolver extends SequentialThinkingProcessor {
     });
   }
 
-  private async diagnoseReceivablesDiscrepancy(discrepancies: Array<{ field: string; variance: number }>) {
+  private async diagnoseReceivablesDiscrepancy(
+    discrepancies: Array<{ field: string; variance: number }>
+  ) {
     this.addThought({
       thought: `Receivables discrepancy diagnosis: Examining cash vs cylinder receivables calculations and deposit processing`,
       nextThoughtNeeded: true,
@@ -151,7 +169,9 @@ export class MCPProblemSolver extends SequentialThinkingProcessor {
     });
   }
 
-  private async diagnoseFinancialImbalance(discrepancies: Array<{ field: string; variance: number }>) {
+  private async diagnoseFinancialImbalance(
+    discrepancies: Array<{ field: string; variance: number }>
+  ) {
     this.addThought({
       thought: `Financial imbalance diagnosis: Checking Assets = Liabilities + Equity equation and sub-ledger reconciliation`,
       nextThoughtNeeded: true,
@@ -197,27 +217,51 @@ export class MCPProblemSolver extends SequentialThinkingProcessor {
     });
   }
 
-  private identifyDiscrepancies(reported: Record<string, any>, expected: Record<string, any>): Array<{ field: string; variance: number; reported: any; expected: any }> {
-    const discrepancies: Array<{ field: string; variance: number; reported: any; expected: any }> = [];
-    
+  private identifyDiscrepancies(
+    reported: Record<string, any>,
+    expected: Record<string, any>
+  ): Array<{ field: string; variance: number; reported: any; expected: any }> {
+    const discrepancies: Array<{
+      field: string;
+      variance: number;
+      reported: any;
+      expected: any;
+    }> = [];
+
     for (const [field, expectedValue] of Object.entries(expected)) {
       const reportedValue = reported[field];
-      if (typeof expectedValue === 'number' && typeof reportedValue === 'number') {
+      if (
+        typeof expectedValue === 'number' &&
+        typeof reportedValue === 'number'
+      ) {
         const variance = Math.abs(expectedValue - reportedValue);
         if (variance > 0.01) {
-          discrepancies.push({ field, variance, reported: reportedValue, expected: expectedValue });
+          discrepancies.push({
+            field,
+            variance,
+            reported: reportedValue,
+            expected: expectedValue,
+          });
         }
       } else if (expectedValue !== reportedValue) {
-        discrepancies.push({ field, variance: 1, reported: reportedValue, expected: expectedValue });
+        discrepancies.push({
+          field,
+          variance: 1,
+          reported: reportedValue,
+          expected: expectedValue,
+        });
       }
     }
-    
+
     return discrepancies;
   }
 
-  private identifyRootCauses(issueType: string, discrepancies: Array<{ field: string; variance: number }>): string[] {
+  private identifyRootCauses(
+    issueType: string,
+    discrepancies: Array<{ field: string; variance: number }>
+  ): string[] {
     const causes: string[] = [];
-    
+
     switch (issueType) {
       case 'inventory_mismatch':
         causes.push('Incorrect sales type classification (package vs refill)');
@@ -244,25 +288,64 @@ export class MCPProblemSolver extends SequentialThinkingProcessor {
         causes.push('Database constraint violations');
         break;
     }
-    
+
     return causes.slice(0, Math.min(causes.length, discrepancies.length + 2));
   }
 
-  private generateResolutionSteps(issueType: string, rootCauses: string[]): Array<{ step: string; priority: 'high' | 'medium' | 'low'; estimatedHours: number }> {
-    const steps: Array<{ step: string; priority: 'high' | 'medium' | 'low'; estimatedHours: number }> = [];
-    
-    steps.push({ step: 'Create database backup before making corrections', priority: 'high', estimatedHours: 0.5 });
-    steps.push({ step: 'Implement data validation checks', priority: 'high', estimatedHours: 4 });
-    steps.push({ step: 'Run comprehensive data reconciliation', priority: 'high', estimatedHours: 6 });
-    
+  private generateResolutionSteps(
+    issueType: string,
+    rootCauses: string[]
+  ): Array<{
+    step: string;
+    priority: 'high' | 'medium' | 'low';
+    estimatedHours: number;
+  }> {
+    const steps: Array<{
+      step: string;
+      priority: 'high' | 'medium' | 'low';
+      estimatedHours: number;
+    }> = [];
+
+    steps.push({
+      step: 'Create database backup before making corrections',
+      priority: 'high',
+      estimatedHours: 0.5,
+    });
+    steps.push({
+      step: 'Implement data validation checks',
+      priority: 'high',
+      estimatedHours: 4,
+    });
+    steps.push({
+      step: 'Run comprehensive data reconciliation',
+      priority: 'high',
+      estimatedHours: 6,
+    });
+
     if (issueType === 'multi_tenant_leak') {
-      steps.push({ step: 'Audit all database queries for tenant isolation', priority: 'high', estimatedHours: 8 });
-      steps.push({ step: 'Implement row-level security policies', priority: 'high', estimatedHours: 6 });
+      steps.push({
+        step: 'Audit all database queries for tenant isolation',
+        priority: 'high',
+        estimatedHours: 8,
+      });
+      steps.push({
+        step: 'Implement row-level security policies',
+        priority: 'high',
+        estimatedHours: 6,
+      });
     }
-    
-    steps.push({ step: 'Create automated monitoring alerts', priority: 'medium', estimatedHours: 3 });
-    steps.push({ step: 'Update documentation and procedures', priority: 'low', estimatedHours: 2 });
-    
+
+    steps.push({
+      step: 'Create automated monitoring alerts',
+      priority: 'medium',
+      estimatedHours: 3,
+    });
+    steps.push({
+      step: 'Update documentation and procedures',
+      priority: 'low',
+      estimatedHours: 2,
+    });
+
     return steps;
   }
 
@@ -273,16 +356,19 @@ export class MCPProblemSolver extends SequentialThinkingProcessor {
       'Create automated reconciliation jobs',
       'Establish daily data integrity checks',
     ];
-    
+
     if (issueType === 'multi_tenant_leak') {
       measures.push('Implement mandatory tenant context middleware');
       measures.push('Add database-level tenant isolation constraints');
     }
-    
+
     return measures;
   }
 
-  private generateFinalRecommendation(issueType: string, rootCauseCount: number): string {
+  private generateFinalRecommendation(
+    issueType: string,
+    rootCauseCount: number
+  ): string {
     if (rootCauseCount > 3) {
       return 'Critical issue requiring immediate attention and systematic resolution approach';
     } else if (rootCauseCount > 1) {

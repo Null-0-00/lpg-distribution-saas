@@ -21,12 +21,12 @@ async function createTestUser() {
           tenant: {
             select: {
               name: true,
-              subdomain: true
-            }
-          }
-        }
+              subdomain: true,
+            },
+          },
+        },
       });
-      
+
       console.table(users);
       return;
     }
@@ -61,7 +61,6 @@ async function createTestUser() {
     console.log(`Password: password123`);
     console.log(`Role: ${user.role}`);
     console.log(`Tenant: ${tenant.name}`);
-    
   } catch (error) {
     console.error('Error creating test user:', error);
   } finally {

@@ -32,9 +32,11 @@ class OfflineStorage {
 
       request.onupgradeneeded = (event) => {
         const db = (event.target as IDBOpenDBRequest).result;
-        
+
         if (!db.objectStoreNames.contains('dashboard-cache')) {
-          const store = db.createObjectStore('dashboard-cache', { keyPath: 'key' });
+          const store = db.createObjectStore('dashboard-cache', {
+            keyPath: 'key',
+          });
           store.createIndex('timestamp', 'timestamp', { unique: false });
         }
 
@@ -49,14 +51,19 @@ class OfflineStorage {
     });
   }
 
-  async storeData(storeName: string, key: string, data: any, expiryMinutes = 60): Promise<void> {
+  async storeData(
+    storeName: string,
+    key: string,
+    data: any,
+    expiryMinutes = 60
+  ): Promise<void> {
     if (!this.db) await this.init();
-    
+
     const cachedData: CachedData = {
       key,
       data,
       timestamp: Date.now(),
-      expiry: Date.now() + (expiryMinutes * 60 * 1000)
+      expiry: Date.now() + expiryMinutes * 60 * 1000,
     };
 
     return new Promise((resolve, reject) => {
@@ -138,7 +145,7 @@ class OfflineStorage {
       this.getData('metrics-cache', 'sales'),
       this.getData('metrics-cache', 'inventory'),
       this.getData('metrics-cache', 'drivers'),
-      this.getData('metrics-cache', 'financial')
+      this.getData('metrics-cache', 'financial'),
     ]);
 
     if (!sales && !inventory && !drivers && !financial) {
@@ -153,8 +160,8 @@ class OfflineStorage {
       lastSync: Math.min(
         ...[sales, inventory, drivers, financial]
           .filter(Boolean)
-          .map(data => data.timestamp || 0)
-      )
+          .map((data) => data.timestamp || 0)
+      ),
     };
   }
 
@@ -162,16 +169,24 @@ class OfflineStorage {
     const promises = [];
 
     if (metrics.sales) {
-      promises.push(this.storeData('metrics-cache', 'sales', metrics.sales, 120));
+      promises.push(
+        this.storeData('metrics-cache', 'sales', metrics.sales, 120)
+      );
     }
     if (metrics.inventory) {
-      promises.push(this.storeData('metrics-cache', 'inventory', metrics.inventory, 120));
+      promises.push(
+        this.storeData('metrics-cache', 'inventory', metrics.inventory, 120)
+      );
     }
     if (metrics.drivers) {
-      promises.push(this.storeData('metrics-cache', 'drivers', metrics.drivers, 120));
+      promises.push(
+        this.storeData('metrics-cache', 'drivers', metrics.drivers, 120)
+      );
     }
     if (metrics.financial) {
-      promises.push(this.storeData('metrics-cache', 'financial', metrics.financial, 120));
+      promises.push(
+        this.storeData('metrics-cache', 'financial', metrics.financial, 120)
+      );
     }
 
     await Promise.all(promises);
@@ -197,10 +212,10 @@ class OfflineStorage {
     if (!navigator.onLine) return false;
 
     try {
-      const response = await fetch('/api/health', { 
+      const response = await fetch('/api/health', {
         method: 'HEAD',
         cache: 'no-cache',
-        signal: AbortSignal.timeout(5000)
+        signal: AbortSignal.timeout(5000),
       });
       return response.ok;
     } catch {
@@ -227,7 +242,7 @@ class OfflineStorage {
       const estimate = await navigator.storage.estimate();
       return {
         used: estimate.usage || 0,
-        available: estimate.quota || 0
+        available: estimate.quota || 0,
       };
     }
     return { used: 0, available: 0 };
@@ -237,7 +252,7 @@ class OfflineStorage {
     if (!this.db) await this.init();
 
     const stores = ['dashboard-cache', 'metrics-cache', 'chart-data'];
-    
+
     for (const storeName of stores) {
       const transaction = this.db!.transaction([storeName], 'readwrite');
       const store = transaction.objectStore(storeName);

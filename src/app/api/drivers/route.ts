@@ -35,23 +35,35 @@ type DriverWithMetrics = {
 
 const createDriverSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
-  phone: z.string().regex(/^[0-9+\-\s()]+$/, 'Invalid phone number format').optional(),
+  phone: z
+    .string()
+    .regex(/^[0-9+\-\s()]+$/, 'Invalid phone number format')
+    .optional(),
   email: z.string().email('Invalid email format').optional(),
   address: z.string().optional(),
   licenseNumber: z.string().optional(),
   route: z.string().optional(),
   driverType: z.enum(['RETAIL', 'SHIPMENT']).optional(),
-  joiningDate: z.string().transform(val => val ? new Date(val) : new Date()).optional(),
+  joiningDate: z
+    .string()
+    .transform((val) => (val ? new Date(val) : new Date()))
+    .optional(),
 });
 
 const driverQuerySchema = z.object({
   status: z.enum(['ACTIVE', 'INACTIVE']).optional(),
-  active: z.string().transform(val => val === 'true').optional(),
+  active: z
+    .string()
+    .transform((val) => val === 'true')
+    .optional(),
   driverType: z.enum(['RETAIL', 'SHIPMENT']).optional(),
   route: z.string().optional(),
-  page: z.string().transform(val => parseInt(val) || 1),
-  limit: z.string().transform(val => Math.min(parseInt(val) || 20, 100)),
-  includeMetrics: z.string().transform(val => val === 'true').optional(),
+  page: z.string().transform((val) => parseInt(val) || 1),
+  limit: z.string().transform((val) => Math.min(parseInt(val) || 20, 100)),
+  includeMetrics: z
+    .string()
+    .transform((val) => val === 'true')
+    .optional(),
 });
 
 export async function GET(request: NextRequest) {
@@ -74,30 +86,34 @@ export async function GET(request: NextRequest) {
       limit: searchParams.get('limit'),
       includeMetrics: searchParams.get('includeMetrics'),
     };
-    
+
     // Filter out null values and keep only truthy values, but ensure page and limit have defaults
     const queryParams = Object.fromEntries(
       Object.entries(rawQueryParams).filter(([_, value]) => value !== null)
     );
-    
+
     // Add default values for page and limit if not provided
     if (!queryParams.page) queryParams.page = '1';
     if (!queryParams.limit) queryParams.limit = '20';
-    
+
     const queryResult = driverQuerySchema.safeParse(queryParams);
 
     if (!queryResult.success) {
-      return NextResponse.json({
-        error: 'Invalid query parameters',
-        details: queryResult.error.issues
-      }, { status: 400 });
+      return NextResponse.json(
+        {
+          error: 'Invalid query parameters',
+          details: queryResult.error.issues,
+        },
+        { status: 400 }
+      );
     }
 
-    const { status, active, driverType, route, page, limit, includeMetrics } = queryResult.data;
+    const { status, active, driverType, route, page, limit, includeMetrics } =
+      queryResult.data;
 
     // Build where clause
     const where: Record<string, unknown> = { tenantId };
-    
+
     if (status) where.status = status;
     if (active !== undefined) where.status = active ? 'ACTIVE' : 'INACTIVE';
     if (driverType) where.driverType = driverType;
@@ -112,15 +128,15 @@ export async function GET(request: NextRequest) {
             select: {
               sales: true,
               receivableRecords: true,
-              inventoryMovements: true
-            }
-          }
+              inventoryMovements: true,
+            },
+          },
         },
         orderBy: { name: 'asc' },
         skip: (page - 1) * limit,
         take: limit,
       }),
-      prisma.driver.count({ where })
+      prisma.driver.count({ where }),
     ]);
 
     // Add performance metrics if requested
@@ -138,29 +154,36 @@ export async function GET(request: NextRequest) {
                 tenantId,
                 driverId: driver.id,
                 saleDate: {
-                  gte: thirtyDaysAgo
-                }
+                  gte: thirtyDaysAgo,
+                },
               },
               select: {
                 netValue: true,
                 cashDeposited: true,
-                cylindersDeposited: true
-              }
+                cylindersDeposited: true,
+              },
             }),
             prisma.receivableRecord.findFirst({
               where: {
                 tenantId,
-                driverId: driver.id
+                driverId: driver.id,
               },
               orderBy: {
-                date: 'desc'
-              }
-            })
+                date: 'desc',
+              },
+            }),
           ]);
 
-          const totalRevenue = recentSales.reduce((sum, sale) => sum + sale.netValue, 0);
-          const totalCashCollected = recentSales.reduce((sum, sale) => sum + sale.cashDeposited, 0);
-          const collectionEfficiency = totalRevenue > 0 ? (totalCashCollected / totalRevenue) * 100 : 100;
+          const totalRevenue = recentSales.reduce(
+            (sum, sale) => sum + sale.netValue,
+            0
+          );
+          const totalCashCollected = recentSales.reduce(
+            (sum, sale) => sum + sale.cashDeposited,
+            0
+          );
+          const collectionEfficiency =
+            totalRevenue > 0 ? (totalCashCollected / totalRevenue) * 100 : 100;
 
           return {
             ...driver,
@@ -169,8 +192,9 @@ export async function GET(request: NextRequest) {
               recentRevenue: totalRevenue,
               collectionEfficiency,
               outstandingCash: latestReceivables?.totalCashReceivables || 0,
-              outstandingCylinders: latestReceivables?.totalCylinderReceivables || 0
-            }
+              outstandingCylinders:
+                latestReceivables?.totalCylinderReceivables || 0,
+            },
           };
         })
       );
@@ -179,16 +203,20 @@ export async function GET(request: NextRequest) {
     // Calculate summary statistics
     const summary = {
       totalDrivers: totalCount,
-      activeDrivers: drivers.filter(d => d.status === 'ACTIVE').length,
-      inactiveDrivers: drivers.filter(d => d.status === 'INACTIVE').length,
+      activeDrivers: drivers.filter((d) => d.status === 'ACTIVE').length,
+      inactiveDrivers: drivers.filter((d) => d.status === 'INACTIVE').length,
       totalSales: drivers.reduce((sum, d) => sum + d._count.sales, 0),
-      averageSalesPerDriver: drivers.length > 0 
-        ? Math.round(drivers.reduce((sum, d) => sum + d._count.sales, 0) / drivers.length)
-        : 0
+      averageSalesPerDriver:
+        drivers.length > 0
+          ? Math.round(
+              drivers.reduce((sum, d) => sum + d._count.sales, 0) /
+                drivers.length
+            )
+          : 0,
     };
 
     return NextResponse.json({
-      drivers: driversWithMetrics.map(driver => ({
+      drivers: driversWithMetrics.map((driver) => ({
         id: driver.id,
         name: driver.name,
         phone: driver.phone,
@@ -204,22 +232,26 @@ export async function GET(request: NextRequest) {
         counts: {
           totalSales: driver._count.sales,
           receivableRecords: driver._count.receivableRecords,
-          inventoryMovements: driver._count.inventoryMovements
+          inventoryMovements: driver._count.inventoryMovements,
         },
-        ...(includeMetrics && { metrics: (driver as DriverWithMetrics).metrics })
+        ...(includeMetrics && {
+          metrics: (driver as DriverWithMetrics).metrics,
+        }),
       })),
       pagination: {
         page,
         limit,
         total: totalCount,
-        pages: Math.ceil(totalCount / limit)
+        pages: Math.ceil(totalCount / limit),
       },
-      summary
+      summary,
     });
-
   } catch (error) {
     console.error('Drivers fetch error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
   }
 }
 
@@ -234,7 +266,10 @@ export async function POST(request: NextRequest) {
 
     // Only admins can create drivers
     if (role !== UserRole.ADMIN) {
-      return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
+      return NextResponse.json(
+        { error: 'Insufficient permissions' },
+        { status: 403 }
+      );
     }
 
     const body = await request.json();
@@ -245,12 +280,15 @@ export async function POST(request: NextRequest) {
       const existingDriver = await prisma.driver.findFirst({
         where: {
           tenantId,
-          phone: validatedData.phone
-        }
+          phone: validatedData.phone,
+        },
       });
 
       if (existingDriver) {
-        return NextResponse.json({ error: 'Phone number already exists' }, { status: 400 });
+        return NextResponse.json(
+          { error: 'Phone number already exists' },
+          { status: 400 }
+        );
       }
     }
 
@@ -266,7 +304,7 @@ export async function POST(request: NextRequest) {
         route: validatedData.route || null,
         driverType: validatedData.driverType || 'RETAIL',
         joiningDate: validatedData.joiningDate || null,
-        status: 'ACTIVE'
+        status: 'ACTIVE',
       },
       select: {
         id: true,
@@ -279,26 +317,34 @@ export async function POST(request: NextRequest) {
         driverType: true,
         route: true,
         joiningDate: true,
-        createdAt: true
-      }
+        createdAt: true,
+      },
     });
 
-    return NextResponse.json({
-      success: true,
-      message: 'Driver created successfully',
-      driver: newDriver
-    }, { status: 201 });
-
+    return NextResponse.json(
+      {
+        success: true,
+        message: 'Driver created successfully',
+        driver: newDriver,
+      },
+      { status: 201 }
+    );
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return NextResponse.json({
-        error: 'Validation failed',
-        details: error.issues
-      }, { status: 400 });
+      return NextResponse.json(
+        {
+          error: 'Validation failed',
+          details: error.issues,
+        },
+        { status: 400 }
+      );
     }
 
     console.error('Driver creation error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
   }
 }
 
@@ -313,29 +359,35 @@ export async function DELETE(request: NextRequest) {
 
     // Only admins can delete drivers
     if (role !== UserRole.ADMIN) {
-      return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
+      return NextResponse.json(
+        { error: 'Insufficient permissions' },
+        { status: 403 }
+      );
     }
 
     const { searchParams } = new URL(request.url);
     const driverId = searchParams.get('id');
 
     if (!driverId) {
-      return NextResponse.json({ error: 'Driver ID is required' }, { status: 400 });
+      return NextResponse.json(
+        { error: 'Driver ID is required' },
+        { status: 400 }
+      );
     }
 
     // Check if driver exists and belongs to the tenant
     const driver = await prisma.driver.findFirst({
       where: {
         id: driverId,
-        tenantId
+        tenantId,
       },
       include: {
         _count: {
           select: {
-            sales: true
-          }
-        }
-      }
+            sales: true,
+          },
+        },
+      },
     });
 
     if (!driver) {
@@ -344,27 +396,32 @@ export async function DELETE(request: NextRequest) {
 
     // Check if driver has any sales
     if (driver._count.sales > 0) {
-      return NextResponse.json({ 
-        error: 'Cannot delete driver with existing sales records',
-        details: `Driver has ${driver._count.sales} sales record(s)`
-      }, { status: 400 });
+      return NextResponse.json(
+        {
+          error: 'Cannot delete driver with existing sales records',
+          details: `Driver has ${driver._count.sales} sales record(s)`,
+        },
+        { status: 400 }
+      );
     }
 
     // Delete the driver
     await prisma.driver.delete({
       where: {
         id: driverId,
-        tenantId
-      }
+        tenantId,
+      },
     });
 
     return NextResponse.json({
       success: true,
-      message: 'Driver deleted successfully'
+      message: 'Driver deleted successfully',
     });
-
   } catch (error) {
     console.error('Driver deletion error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
   }
 }

@@ -107,21 +107,23 @@ export class PerformanceMonitor {
   /**
    * Record a performance metric
    */
-  async recordMetric(metric: Omit<PerformanceMetric, 'id' | 'timestamp'>): Promise<void> {
+  async recordMetric(
+    metric: Omit<PerformanceMetric, 'id' | 'timestamp'>
+  ): Promise<void> {
     const fullMetric: PerformanceMetric = {
       id: this.generateId(),
       timestamp: new Date(),
-      ...metric
+      ...metric,
     };
 
     // Store in memory for quick access
     if (!this.metrics.has(metric.name)) {
       this.metrics.set(metric.name, []);
     }
-    
+
     const metricHistory = this.metrics.get(metric.name)!;
     metricHistory.push(fullMetric);
-    
+
     // Keep only last 1000 metrics per type
     if (metricHistory.length > 1000) {
       metricHistory.shift();
@@ -143,7 +145,10 @@ export class PerformanceMonitor {
   /**
    * Start a request trace
    */
-  startTrace(operationName: string, tags: Record<string, string> = {}): RequestTrace {
+  startTrace(
+    operationName: string,
+    tags: Record<string, string> = {}
+  ): RequestTrace {
     const trace: RequestTrace = {
       traceId: this.generateId(),
       spanId: this.generateId(),
@@ -151,7 +156,7 @@ export class PerformanceMonitor {
       startTime: performance.now(),
       status: 'success',
       tags,
-      logs: []
+      logs: [],
     };
 
     this.traces.set(trace.traceId, trace);
@@ -174,7 +179,7 @@ export class PerformanceMonitor {
       startTime: performance.now(),
       status: 'success',
       tags,
-      logs: []
+      logs: [],
     };
 
     return span;
@@ -192,7 +197,7 @@ export class PerformanceMonitor {
       trace.error = {
         message: error.message,
         stack: error.stack,
-        code: (error as any).code
+        code: (error as any).code,
       };
     }
 
@@ -212,8 +217,8 @@ export class PerformanceMonitor {
       unit: 'ms',
       tags: {
         ...trace.tags,
-        status: trace.status
-      }
+        status: trace.status,
+      },
     });
 
     // Clean up memory
@@ -233,7 +238,7 @@ export class PerformanceMonitor {
       timestamp: performance.now(),
       level,
       message,
-      fields
+      fields,
     });
   }
 
@@ -248,7 +253,7 @@ export class PerformanceMonitor {
       disk: await this.getDiskMetrics(),
       network: await this.getNetworkMetrics(),
       database: await this.getDatabaseMetrics(),
-      redis: await this.getRedisMetrics()
+      redis: await this.getRedisMetrics(),
     };
 
     // Store system metrics
@@ -281,16 +286,23 @@ export class PerformanceMonitor {
   }> {
     const metrics = this.metrics.get(metricName) || [];
     const filteredMetrics = metrics.filter(
-      m => m.timestamp >= timeRange.start && m.timestamp <= timeRange.end
+      (m) => m.timestamp >= timeRange.start && m.timestamp <= timeRange.end
     );
 
     if (filteredMetrics.length === 0) {
       return {
-        avg: 0, min: 0, max: 0, p50: 0, p95: 0, p99: 0, count: 0, trend: 'stable'
+        avg: 0,
+        min: 0,
+        max: 0,
+        p50: 0,
+        p95: 0,
+        p99: 0,
+        count: 0,
+        trend: 'stable',
       };
     }
 
-    const values = filteredMetrics.map(m => m.value).sort((a, b) => a - b);
+    const values = filteredMetrics.map((m) => m.value).sort((a, b) => a - b);
     const count = values.length;
 
     const analytics = {
@@ -301,7 +313,10 @@ export class PerformanceMonitor {
       p95: this.percentile(values, 95),
       p99: this.percentile(values, 99),
       count,
-      trend: this.calculateTrend(filteredMetrics) as 'increasing' | 'decreasing' | 'stable'
+      trend: this.calculateTrend(filteredMetrics) as
+        | 'increasing'
+        | 'decreasing'
+        | 'stable',
     };
 
     return analytics;
@@ -315,7 +330,7 @@ export class PerformanceMonitor {
       const trace = this.startTrace('http_request', {
         method: request.method,
         url: request.url,
-        userAgent: request.headers.get('user-agent') || 'unknown'
+        userAgent: request.headers.get('user-agent') || 'unknown',
       });
 
       const startTime = performance.now();
@@ -324,7 +339,7 @@ export class PerformanceMonitor {
         // Monitor request processing
         this.addTraceLog(trace, 'info', 'Request started', {
           method: request.method,
-          url: request.url
+          url: request.url,
         });
 
         // Wait for response (this would be called after route handler)
@@ -339,8 +354,8 @@ export class PerformanceMonitor {
           tags: {
             method: request.method,
             status: response.status.toString(),
-            route: this.extractRoute(request.url)
-          }
+            route: this.extractRoute(request.url),
+          },
         });
 
         await this.recordMetric({
@@ -349,25 +364,27 @@ export class PerformanceMonitor {
           unit: 'count',
           tags: {
             method: request.method,
-            status: response.status.toString()
-          }
+            status: response.status.toString(),
+          },
         });
 
         this.addTraceLog(trace, 'info', 'Request completed', {
           status: response.status,
-          duration
+          duration,
         });
 
         await this.endTrace(trace);
 
         return response;
-
       } catch (error) {
         this.addTraceLog(trace, 'error', 'Request failed', {
-          error: error instanceof Error ? error.message : 'Unknown error'
+          error: error instanceof Error ? error.message : 'Unknown error',
         });
 
-        await this.endTrace(trace, error instanceof Error ? error : new Error('Unknown error'));
+        await this.endTrace(
+          trace,
+          error instanceof Error ? error : new Error('Unknown error')
+        );
         throw error;
       }
     };
@@ -377,17 +394,17 @@ export class PerformanceMonitor {
    * Get current alerts
    */
   getActiveAlerts(): PerformanceAlert[] {
-    return this.alerts.filter(alert => !alert.resolved);
+    return this.alerts.filter((alert) => !alert.resolved);
   }
 
   /**
    * Resolve an alert
    */
   async resolveAlert(alertId: string): Promise<void> {
-    const alert = this.alerts.find(a => a.id === alertId);
+    const alert = this.alerts.find((a) => a.id === alertId);
     if (alert) {
       alert.resolved = true;
-      
+
       // Store resolution in Redis
       await redisCache.set(
         'global',
@@ -409,38 +426,49 @@ export class PerformanceMonitor {
     // In a real implementation, you would use os module or external monitoring
     return {
       usage: Math.random() * 100, // Mock data
-      loadAvg: [1.2, 1.5, 1.3]
+      loadAvg: [1.2, 1.5, 1.3],
     };
   }
 
-  private async getMemoryMetrics(): Promise<{ used: number; total: number; usage: number }> {
+  private async getMemoryMetrics(): Promise<{
+    used: number;
+    total: number;
+    usage: number;
+  }> {
     // Mock memory metrics
     const total = 8 * 1024 * 1024 * 1024; // 8GB
     const used = total * (0.3 + Math.random() * 0.4); // 30-70% usage
-    
+
     return {
       used,
       total,
-      usage: (used / total) * 100
+      usage: (used / total) * 100,
     };
   }
 
-  private async getDiskMetrics(): Promise<{ used: number; total: number; usage: number }> {
+  private async getDiskMetrics(): Promise<{
+    used: number;
+    total: number;
+    usage: number;
+  }> {
     // Mock disk metrics
     const total = 100 * 1024 * 1024 * 1024; // 100GB
     const used = total * (0.2 + Math.random() * 0.3); // 20-50% usage
-    
+
     return {
       used,
       total,
-      usage: (used / total) * 100
+      usage: (used / total) * 100,
     };
   }
 
-  private async getNetworkMetrics(): Promise<{ bytesIn: number; bytesOut: number }> {
+  private async getNetworkMetrics(): Promise<{
+    bytesIn: number;
+    bytesOut: number;
+  }> {
     return {
       bytesIn: Math.random() * 1000000,
-      bytesOut: Math.random() * 1000000
+      bytesOut: Math.random() * 1000000,
     };
   }
 
@@ -452,7 +480,7 @@ export class PerformanceMonitor {
     return {
       activeConnections: Math.floor(Math.random() * 20),
       queuedQueries: Math.floor(Math.random() * 5),
-      avgQueryTime: 50 + Math.random() * 100
+      avgQueryTime: 50 + Math.random() * 100,
     };
   }
 
@@ -468,14 +496,14 @@ export class PerformanceMonitor {
         connectedClients: 5 + Math.floor(Math.random() * 10),
         usedMemory: 50 * 1024 * 1024, // 50MB
         hits: 1000 + Math.floor(Math.random() * 500),
-        misses: 50 + Math.floor(Math.random() * 100)
+        misses: 50 + Math.floor(Math.random() * 100),
       };
     } catch {
       return {
         connectedClients: 0,
         usedMemory: 0,
         hits: 0,
-        misses: 0
+        misses: 0,
       };
     }
   }
@@ -491,8 +519,10 @@ export class PerformanceMonitor {
     const firstHalf = metrics.slice(0, Math.floor(metrics.length / 2));
     const secondHalf = metrics.slice(Math.floor(metrics.length / 2));
 
-    const firstAvg = firstHalf.reduce((sum, m) => sum + m.value, 0) / firstHalf.length;
-    const secondAvg = secondHalf.reduce((sum, m) => sum + m.value, 0) / secondHalf.length;
+    const firstAvg =
+      firstHalf.reduce((sum, m) => sum + m.value, 0) / firstHalf.length;
+    const secondAvg =
+      secondHalf.reduce((sum, m) => sum + m.value, 0) / secondHalf.length;
 
     const changePercent = ((secondAvg - firstAvg) / firstAvg) * 100;
 
@@ -516,20 +546,20 @@ export class PerformanceMonitor {
         metric: 'http.request.duration',
         threshold: 1000, // 1 second
         severity: 'high' as const,
-        message: 'High response time detected'
+        message: 'High response time detected',
       },
       {
         metric: 'cpu.usage',
         threshold: 80,
         severity: 'medium' as const,
-        message: 'High CPU usage'
+        message: 'High CPU usage',
       },
       {
         metric: 'memory.usage',
         threshold: 85,
         severity: 'high' as const,
-        message: 'High memory usage'
-      }
+        message: 'High memory usage',
+      },
     ];
 
     for (const rule of alertRules) {
@@ -543,7 +573,7 @@ export class PerformanceMonitor {
           message: rule.message,
           timestamp: new Date(),
           resolved: false,
-          actions: this.getRecommendedActions(rule.metric, metric.value)
+          actions: this.getRecommendedActions(rule.metric, metric.value),
         };
 
         this.alerts.push(alert);
@@ -566,20 +596,20 @@ export class PerformanceMonitor {
         'Check database query performance',
         'Review external API calls',
         'Consider adding caching',
-        'Optimize business logic'
+        'Optimize business logic',
       ],
       'cpu.usage': [
         'Check for infinite loops',
         'Review resource-intensive operations',
         'Consider horizontal scaling',
-        'Optimize algorithms'
+        'Optimize algorithms',
       ],
       'memory.usage': [
         'Check for memory leaks',
         'Review large object allocations',
         'Implement garbage collection tuning',
-        'Consider increasing memory allocation'
-      ]
+        'Consider increasing memory allocation',
+      ],
     };
 
     return actions[metric] || ['Contact system administrator'];
@@ -606,32 +636,32 @@ export function measurePerformance<T>(
   tags: Record<string, string> = {}
 ): Promise<T> {
   const monitor = PerformanceMonitor.getInstance();
-  
+
   return new Promise(async (resolve, reject) => {
     const startTime = performance.now();
-    
+
     try {
       const result = await fn();
       const duration = performance.now() - startTime;
-      
+
       await monitor.recordMetric({
         name: metricName,
         value: duration,
         unit: 'ms',
-        tags
+        tags,
       });
-      
+
       resolve(result);
     } catch (error) {
       const duration = performance.now() - startTime;
-      
+
       await monitor.recordMetric({
         name: metricName,
         value: duration,
         unit: 'ms',
-        tags: { ...tags, status: 'error' }
+        tags: { ...tags, status: 'error' },
       });
-      
+
       reject(error);
     }
   });
@@ -641,10 +671,15 @@ export function measurePerformance<T>(
  * Decorator for automatic performance monitoring
  */
 export function Monitor(metricName?: string) {
-  return function (target: any, propertyName: string, descriptor: PropertyDescriptor) {
+  return function (
+    target: any,
+    propertyName: string,
+    descriptor: PropertyDescriptor
+  ) {
     const method = descriptor.value;
-    const finalMetricName = metricName || `${target.constructor.name}.${propertyName}`;
-    
+    const finalMetricName =
+      metricName || `${target.constructor.name}.${propertyName}`;
+
     descriptor.value = async function (...args: any[]) {
       return measurePerformance(
         () => method.apply(this, args),

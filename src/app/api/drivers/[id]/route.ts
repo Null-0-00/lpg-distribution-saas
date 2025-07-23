@@ -15,15 +15,24 @@ interface RouteParams {
 
 const updateDriverSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters').optional(),
-  phone: z.string().regex(/^[0-9+\-\s()]+$/, 'Invalid phone number format').optional(),
+  phone: z
+    .string()
+    .regex(/^[0-9+\-\s()]+$/, 'Invalid phone number format')
+    .optional(),
   email: z.string().email('Invalid email format').optional(),
   address: z.string().optional(),
   licenseNumber: z.string().optional(),
   route: z.string().optional(),
   driverType: z.enum(['RETAIL', 'SHIPMENT']).optional(),
   status: z.enum(['ACTIVE', 'INACTIVE']).optional(),
-  joiningDate: z.string().transform(val => val ? new Date(val) : undefined).optional(),
-  leavingDate: z.string().transform(val => val ? new Date(val) : undefined).optional(),
+  joiningDate: z
+    .string()
+    .transform((val) => (val ? new Date(val) : undefined))
+    .optional(),
+  leavingDate: z
+    .string()
+    .transform((val) => (val ? new Date(val) : undefined))
+    .optional(),
 });
 
 export async function GET(request: NextRequest, { params }: RouteParams) {
@@ -37,19 +46,19 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     const { id } = await params;
 
     const driver = await prisma.driver.findFirst({
-      where: { 
-        id, 
-        tenantId 
+      where: {
+        id,
+        tenantId,
       },
       include: {
         _count: {
           select: {
             sales: true,
             receivableRecords: true,
-            inventoryMovements: true
-          }
-        }
-      }
+            inventoryMovements: true,
+          },
+        },
+      },
     });
 
     if (!driver) {
@@ -66,8 +75,8 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
           tenantId,
           driverId: id,
           saleDate: {
-            gte: thirtyDaysAgo
-          }
+            gte: thirtyDaysAgo,
+          },
         },
         select: {
           quantity: true,
@@ -75,30 +84,44 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
           cashDeposited: true,
           cylindersDeposited: true,
           saleDate: true,
-          saleType: true
-        }
+          saleType: true,
+        },
       }),
       prisma.receivableRecord.findFirst({
         where: {
           tenantId,
-          driverId: id
+          driverId: id,
         },
         orderBy: {
-          date: 'desc'
-        }
-      })
+          date: 'desc',
+        },
+      }),
     ]);
 
     // Calculate performance metrics
     const totalSales = recentSales.length;
-    const totalRevenue = recentSales.reduce((sum, sale) => sum + sale.netValue, 0);
-    const totalCashCollected = recentSales.reduce((sum, sale) => sum + sale.cashDeposited, 0);
-    const totalCylindersCollected = recentSales.reduce((sum, sale) => sum + sale.cylindersDeposited, 0);
-    
-    const packageSales = recentSales.filter(sale => sale.saleType === 'PACKAGE').length;
-    const refillSales = recentSales.filter(sale => sale.saleType === 'REFILL').length;
+    const totalRevenue = recentSales.reduce(
+      (sum, sale) => sum + sale.netValue,
+      0
+    );
+    const totalCashCollected = recentSales.reduce(
+      (sum, sale) => sum + sale.cashDeposited,
+      0
+    );
+    const totalCylindersCollected = recentSales.reduce(
+      (sum, sale) => sum + sale.cylindersDeposited,
+      0
+    );
 
-    const collectionEfficiency = totalRevenue > 0 ? (totalCashCollected / totalRevenue) * 100 : 100;
+    const packageSales = recentSales.filter(
+      (sale) => sale.saleType === 'PACKAGE'
+    ).length;
+    const refillSales = recentSales.filter(
+      (sale) => sale.saleType === 'REFILL'
+    ).length;
+
+    const collectionEfficiency =
+      totalRevenue > 0 ? (totalCashCollected / totalRevenue) * 100 : 100;
 
     return NextResponse.json({
       driver: {
@@ -114,7 +137,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
         joiningDate: driver.joiningDate,
         leavingDate: driver.leavingDate,
         createdAt: driver.createdAt,
-        updatedAt: driver.updatedAt
+        updatedAt: driver.updatedAt,
       },
       metrics: {
         totalSales,
@@ -125,18 +148,20 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
         refillSales,
         collectionEfficiency,
         outstandingCash: receivables?.totalCashReceivables || 0,
-        outstandingCylinders: receivables?.totalCylinderReceivables || 0
+        outstandingCylinders: receivables?.totalCylinderReceivables || 0,
       },
       counts: {
         totalSalesCount: driver._count.sales,
         receivableRecords: driver._count.receivableRecords,
-        inventoryMovements: driver._count.inventoryMovements
-      }
+        inventoryMovements: driver._count.inventoryMovements,
+      },
     });
-
   } catch (error) {
     console.error('Driver fetch error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
   }
 }
 
@@ -152,7 +177,10 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 
     // Allow both admins and managers to update drivers
     if (role !== UserRole.ADMIN && role !== UserRole.MANAGER) {
-      return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
+      return NextResponse.json(
+        { error: 'Insufficient permissions' },
+        { status: 403 }
+      );
     }
 
     const body = await request.json();
@@ -160,7 +188,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 
     // Verify driver exists and belongs to tenant
     const existingDriver = await prisma.driver.findFirst({
-      where: { id, tenantId }
+      where: { id, tenantId },
     });
 
     if (!existingDriver) {
@@ -173,12 +201,15 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
         where: {
           tenantId,
           phone: validatedData.phone,
-          id: { not: id }
-        }
+          id: { not: id },
+        },
       });
 
       if (phoneExists) {
-        return NextResponse.json({ error: 'Phone number already exists' }, { status: 400 });
+        return NextResponse.json(
+          { error: 'Phone number already exists' },
+          { status: 400 }
+        );
       }
     }
 
@@ -186,13 +217,13 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     const updateData = Object.fromEntries(
       Object.entries(validatedData).filter(([_, value]) => value !== undefined)
     );
-    
+
     const updatedDriver = await prisma.driver.update({
       where: { id },
       data: {
         ...updateData,
-        updatedAt: new Date()
-      }
+        updatedAt: new Date(),
+      },
     });
 
     return NextResponse.json({
@@ -210,20 +241,25 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
         route: updatedDriver.route,
         joiningDate: updatedDriver.joiningDate,
         leavingDate: updatedDriver.leavingDate,
-        updatedAt: updatedDriver.updatedAt
-      }
+        updatedAt: updatedDriver.updatedAt,
+      },
     });
-
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return NextResponse.json({
-        error: 'Validation failed',
-        details: error.issues
-      }, { status: 400 });
+      return NextResponse.json(
+        {
+          error: 'Validation failed',
+          details: error.issues,
+        },
+        { status: 400 }
+      );
     }
 
     console.error('Driver update error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
   }
 }
 
@@ -239,7 +275,10 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
 
     // Only admins can delete drivers
     if (role !== UserRole.ADMIN) {
-      return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
+      return NextResponse.json(
+        { error: 'Insufficient permissions' },
+        { status: 403 }
+      );
     }
 
     // Verify driver exists and belongs to tenant
@@ -249,10 +288,10 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
         _count: {
           select: {
             sales: true,
-            receivableRecords: true
-          }
-        }
-      }
+            receivableRecords: true,
+          },
+        },
+      },
     });
 
     if (!existingDriver) {
@@ -260,25 +299,34 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
     }
 
     // Check if driver has associated records
-    if (existingDriver._count.sales > 0 || existingDriver._count.receivableRecords > 0) {
-      return NextResponse.json({ 
-        error: 'Cannot delete driver with existing sales or receivable records',
-        details: `Driver has ${existingDriver._count.sales} sales and ${existingDriver._count.receivableRecords} receivable records`
-      }, { status: 400 });
+    if (
+      existingDriver._count.sales > 0 ||
+      existingDriver._count.receivableRecords > 0
+    ) {
+      return NextResponse.json(
+        {
+          error:
+            'Cannot delete driver with existing sales or receivable records',
+          details: `Driver has ${existingDriver._count.sales} sales and ${existingDriver._count.receivableRecords} receivable records`,
+        },
+        { status: 400 }
+      );
     } else {
       // Safe to delete - no associated records
       await prisma.driver.delete({
-        where: { id }
+        where: { id },
       });
 
       return NextResponse.json({
         success: true,
-        message: 'Driver deleted successfully'
+        message: 'Driver deleted successfully',
       });
     }
-
   } catch (error) {
     console.error('Driver deletion error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
   }
 }

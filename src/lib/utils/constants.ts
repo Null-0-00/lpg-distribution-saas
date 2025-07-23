@@ -1,8 +1,8 @@
 export const APP_CONFIG = {
-  name: "LPG Distributor Management System",
-  description: "Comprehensive SaaS platform for LPG distributors",
-  version: "1.0.0",
-  url: process.env.NEXTAUTH_URL || "http://localhost:3000",
+  name: 'LPG Distributor Management System',
+  description: 'Comprehensive SaaS platform for LPG distributors',
+  version: '1.0.0',
+  url: process.env.NEXTAUTH_URL || 'http://localhost:3000',
 } as const;
 
 export const BUSINESS_RULES = {
@@ -15,7 +15,7 @@ export const BUSINESS_RULES = {
     fullCylinders: -1,
     emptyCylinders: 1,
   },
-  
+
   // Receivables aging periods (in days)
   RECEIVABLES_AGING: {
     current: 0,
@@ -23,7 +23,7 @@ export const BUSINESS_RULES = {
     days60: 60,
     days90: 90,
   },
-  
+
   // Default thresholds
   LOW_STOCK_THRESHOLD: 10,
   MAX_DAILY_SALES_ENTRIES: 100,
@@ -42,13 +42,13 @@ export const API_LIMITS = {
 } as const;
 
 export const CURRENCY = {
-  code: "BDT",
-  symbol: "৳",
-  locale: "bn-BD",
+  code: 'BDT',
+  symbol: '৳',
+  locale: 'bn-BD',
 } as const;
 
 export const DATE_FORMATS = {
-  display: "MMM dd, yyyy",
-  input: "yyyy-MM-dd",
-  timestamp: "yyyy-MM-dd HH:mm:ss",
+  display: 'MMM dd, yyyy',
+  input: 'yyyy-MM-dd',
+  timestamp: 'yyyy-MM-dd HH:mm:ss',
 } as const;

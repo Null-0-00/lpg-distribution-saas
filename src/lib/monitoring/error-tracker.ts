@@ -109,21 +109,28 @@ export class ErrorTracker {
     try {
       const errorMessage = typeof error === 'string' ? error : error.message;
       const errorStack = typeof error === 'string' ? undefined : error.stack;
-      
+
       // Generate fingerprint for grouping similar errors
-      const fingerprint = this.generateFingerprint(errorMessage, errorStack, context.source);
-      
+      const fingerprint = this.generateFingerprint(
+        errorMessage,
+        errorStack,
+        context.source
+      );
+
       // Check if error already exists
       let existingError = await this.getErrorByFingerprint(fingerprint);
-      
+
       if (existingError) {
         // Update existing error
         existingError.count += 1;
         existingError.lastSeen = new Date();
-        
+
         // Update metadata if provided
         if (context.metadata) {
-          existingError.metadata = { ...existingError.metadata, ...context.metadata };
+          existingError.metadata = {
+            ...existingError.metadata,
+            ...context.metadata,
+          };
         }
       } else {
         // Create new error event
@@ -147,31 +154,33 @@ export class ErrorTracker {
           firstSeen: new Date(),
           lastSeen: new Date(),
           resolved: false,
-          priority: this.calculatePriority(context.type || 'error', context.source || 'server')
+          priority: this.calculatePriority(
+            context.type || 'error',
+            context.source || 'server'
+          ),
         };
       }
 
       // Store error
       await this.storeError(existingError);
-      
+
       // Buffer for real-time processing
       this.errorBuffer.set(fingerprint, existingError);
-      
+
       // Check alert rules
       await this.checkAlertRules(existingError);
-      
+
       // Log to console in development
       if (process.env.NODE_ENV === 'development') {
         console.error('Error captured:', {
           id: existingError.id,
           message: errorMessage,
           source: existingError.source,
-          fingerprint
+          fingerprint,
         });
       }
 
       return existingError.id;
-
     } catch (captureError) {
       console.error('Failed to capture error:', captureError);
       return 'capture-failed';
@@ -192,37 +201,48 @@ export class ErrorTracker {
   ): Promise<ErrorAnalytics> {
     try {
       const errors = await this.getErrorsInRange(timeRange, filters);
-      
+
       const totalErrors = errors.reduce((sum, error) => sum + error.count, 0);
-      const uniqueUsers = new Set(errors.map(e => e.userId).filter(Boolean)).size;
-      const uniqueTenants = new Set(errors.map(e => e.tenantId).filter(Boolean)).size;
-      
+      const uniqueUsers = new Set(errors.map((e) => e.userId).filter(Boolean))
+        .size;
+      const uniqueTenants = new Set(
+        errors.map((e) => e.tenantId).filter(Boolean)
+      ).size;
+
       // Calculate error rate (errors per hour)
-      const timeRangeHours = (timeRange.end.getTime() - timeRange.start.getTime()) / (1000 * 60 * 60);
+      const timeRangeHours =
+        (timeRange.end.getTime() - timeRange.start.getTime()) /
+        (1000 * 60 * 60);
       const errorRate = totalErrors / Math.max(timeRangeHours, 1);
-      
+
       // Top errors by count
       const topErrors = errors
         .sort((a, b) => b.count - a.count)
         .slice(0, 10)
-        .map(error => ({
+        .map((error) => ({
           fingerprint: error.fingerprint,
           message: error.message,
           count: error.count,
-          lastSeen: error.lastSeen
+          lastSeen: error.lastSeen,
         }));
 
       // Group by source
-      const errorsBySource = errors.reduce((acc, error) => {
-        acc[error.source] = (acc[error.source] || 0) + error.count;
-        return acc;
-      }, {} as Record<string, number>);
+      const errorsBySource = errors.reduce(
+        (acc, error) => {
+          acc[error.source] = (acc[error.source] || 0) + error.count;
+          return acc;
+        },
+        {} as Record<string, number>
+      );
 
       // Group by type
-      const errorsByType = errors.reduce((acc, error) => {
-        acc[error.type] = (acc[error.type] || 0) + error.count;
-        return acc;
-      }, {} as Record<string, number>);
+      const errorsByType = errors.reduce(
+        (acc, error) => {
+          acc[error.type] = (acc[error.type] || 0) + error.count;
+          return acc;
+        },
+        {} as Record<string, number>
+      );
 
       // Generate hourly trends
       const trends = this.generateTrends(errors, timeRange);
@@ -235,9 +255,8 @@ export class ErrorTracker {
         errorsByType,
         trends,
         affectedUsers: uniqueUsers,
-        affectedTenants: uniqueTenants
+        affectedTenants: uniqueTenants,
       };
-
     } catch (error) {
       console.error('Failed to get error analytics:', error);
       throw error;
@@ -250,11 +269,11 @@ export class ErrorTracker {
   async addAlertRule(rule: Omit<AlertRule, 'id'>): Promise<string> {
     const fullRule: AlertRule = {
       id: this.generateId(),
-      ...rule
+      ...rule,
     };
 
     this.alertRules.set(fullRule.id, fullRule);
-    
+
     // Store in Redis
     await redisCache.set(
       'global',
@@ -270,20 +289,17 @@ export class ErrorTracker {
   /**
    * Update alert rule
    */
-  async updateAlertRule(ruleId: string, updates: Partial<AlertRule>): Promise<void> {
+  async updateAlertRule(
+    ruleId: string,
+    updates: Partial<AlertRule>
+  ): Promise<void> {
     const rule = this.alertRules.get(ruleId);
     if (!rule) throw new Error('Alert rule not found');
 
     const updatedRule = { ...rule, ...updates };
     this.alertRules.set(ruleId, updatedRule);
-    
-    await redisCache.set(
-      'global',
-      'alert_rules',
-      ruleId,
-      updatedRule,
-      0
-    );
+
+    await redisCache.set('global', 'alert_rules', ruleId, updatedRule, 0);
   }
 
   /**
@@ -325,12 +341,12 @@ export class ErrorTracker {
         request,
         tags: {
           method: request.method,
-          path: new URL(request.url).pathname
+          path: new URL(request.url).pathname,
         },
         metadata: {
           headers: Object.fromEntries(request.headers.entries()),
-          timestamp: new Date().toISOString()
-        }
+          timestamp: new Date().toISOString(),
+        },
       });
     };
   }
@@ -358,18 +374,22 @@ export class ErrorTracker {
         url: errorData.url,
         line: errorData.line?.toString() || '',
         column: errorData.column?.toString() || '',
-        userAgent: errorData.userAgent
+        userAgent: errorData.userAgent,
       },
       metadata: {
         stack: errorData.stack,
-        ...errorData.metadata
-      }
+        ...errorData.metadata,
+      },
     });
   }
 
   // Private helper methods
 
-  private generateFingerprint(message: string, stack?: string, source?: string): string {
+  private generateFingerprint(
+    message: string,
+    stack?: string,
+    source?: string
+  ): string {
     // Create a consistent fingerprint for grouping similar errors
     const content = `${source || 'unknown'}:${message}:${stack?.split('\n')[0] || ''}`;
     return Buffer.from(content).toString('base64').substring(0, 16);
@@ -381,16 +401,22 @@ export class ErrorTracker {
 
   private getClientIP(request?: NextRequest): string | undefined {
     if (!request) return undefined;
-    
-    return request.headers.get('x-forwarded-for')?.split(',')[0] ||
-           request.headers.get('x-real-ip') ||
-           request.ip ||
-           undefined;
+
+    return (
+      request.headers.get('x-forwarded-for')?.split(',')[0] ||
+      request.headers.get('x-real-ip') ||
+      request.ip ||
+      undefined
+    );
   }
 
-  private calculatePriority(type: string, source: string): 'low' | 'medium' | 'high' | 'critical' {
+  private calculatePriority(
+    type: string,
+    source: string
+  ): 'low' | 'medium' | 'high' | 'critical' {
     if (type === 'critical' || source === 'security') return 'critical';
-    if (type === 'error' && (source === 'database' || source === 'server')) return 'high';
+    if (type === 'error' && (source === 'database' || source === 'server'))
+      return 'high';
     if (type === 'warning') return 'medium';
     return 'low';
   }
@@ -424,19 +450,24 @@ export class ErrorTracker {
         {
           fingerprint: error.fingerprint,
           count: error.count,
-          timestamp: error.timestamp
+          timestamp: error.timestamp,
         },
         30 * 24 * 60 * 60 // 30 days
       );
-
     } catch (storeError) {
       console.error('Failed to store error:', storeError);
     }
   }
 
-  private async getErrorByFingerprint(fingerprint: string): Promise<ErrorEvent | null> {
+  private async getErrorByFingerprint(
+    fingerprint: string
+  ): Promise<ErrorEvent | null> {
     try {
-      return await redisCache.get<ErrorEvent>('global', 'errors_by_fingerprint', fingerprint);
+      return await redisCache.get<ErrorEvent>(
+        'global',
+        'errors_by_fingerprint',
+        fingerprint
+      );
     } catch {
       return null;
     }
@@ -457,12 +488,14 @@ export class ErrorTracker {
     // In a real implementation, this would query a time-series database
     // For now, return from buffer and cache
     const errors: ErrorEvent[] = [];
-    
+
     // Add buffered errors
     for (const error of this.errorBuffer.values()) {
-      if (error.timestamp >= timeRange.start && 
-          error.timestamp <= timeRange.end &&
-          this.matchesFilters(error, filters)) {
+      if (
+        error.timestamp >= timeRange.start &&
+        error.timestamp <= timeRange.end &&
+        this.matchesFilters(error, filters)
+      ) {
         errors.push(error);
       }
     }
@@ -470,7 +503,10 @@ export class ErrorTracker {
     return errors;
   }
 
-  private matchesFilters(error: ErrorEvent, filters: Record<string, any>): boolean {
+  private matchesFilters(
+    error: ErrorEvent,
+    filters: Record<string, any>
+  ): boolean {
     for (const [key, value] of Object.entries(filters)) {
       if (value && (error as any)[key] !== value) {
         return false;
@@ -479,7 +515,10 @@ export class ErrorTracker {
     return true;
   }
 
-  private generateTrends(errors: ErrorEvent[], timeRange: { start: Date; end: Date }): Array<{
+  private generateTrends(
+    errors: ErrorEvent[],
+    timeRange: { start: Date; end: Date }
+  ): Array<{
     timestamp: Date;
     count: number;
   }> {
@@ -495,12 +534,12 @@ export class ErrorTracker {
     // Fill in all hours in range
     const startHour = new Date(timeRange.start);
     startHour.setMinutes(0, 0, 0);
-    
+
     while (startHour <= timeRange.end) {
       const hourKey = startHour.toISOString().substring(0, 13);
       trends.push({
         timestamp: new Date(startHour),
-        count: hourlyBuckets.get(hourKey) || 0
+        count: hourlyBuckets.get(hourKey) || 0,
       });
       startHour.setHours(startHour.getHours() + 1);
     }
@@ -513,8 +552,10 @@ export class ErrorTracker {
       if (!rule.enabled) continue;
 
       // Check cooldown
-      if (rule.lastTriggered && 
-          Date.now() - rule.lastTriggered.getTime() < rule.cooldown * 60 * 1000) {
+      if (
+        rule.lastTriggered &&
+        Date.now() - rule.lastTriggered.getTime() < rule.cooldown * 60 * 1000
+      ) {
         continue;
       }
 
@@ -525,12 +566,16 @@ export class ErrorTracker {
     }
   }
 
-  private async evaluateAlertCondition(rule: AlertRule, error: ErrorEvent): Promise<boolean> {
+  private async evaluateAlertCondition(
+    rule: AlertRule,
+    error: ErrorEvent
+  ): Promise<boolean> {
     const { condition } = rule;
-    
+
     // Check error type and source filters
     if (condition.errorType && error.type !== condition.errorType) return false;
-    if (condition.errorSource && error.source !== condition.errorSource) return false;
+    if (condition.errorSource && error.source !== condition.errorSource)
+      return false;
 
     // Check threshold over time window
     const windowStart = new Date(Date.now() - condition.timeWindow * 60 * 1000);
@@ -538,7 +583,7 @@ export class ErrorTracker {
       { start: windowStart, end: new Date() },
       {
         type: condition.errorType,
-        source: condition.errorSource
+        source: condition.errorSource,
       }
     );
 
@@ -556,11 +601,16 @@ export class ErrorTracker {
     }
   }
 
-  private async triggerAlert(rule: AlertRule, error: ErrorEvent): Promise<void> {
+  private async triggerAlert(
+    rule: AlertRule,
+    error: ErrorEvent
+  ): Promise<void> {
     try {
       // Update last triggered
       rule.lastTriggered = new Date();
-      await this.updateAlertRule(rule.id, { lastTriggered: rule.lastTriggered });
+      await this.updateAlertRule(rule.id, {
+        lastTriggered: rule.lastTriggered,
+      });
 
       // Execute alert actions
       for (const action of rule.actions) {
@@ -569,7 +619,6 @@ export class ErrorTracker {
 
       // Log alert
       console.log(`Alert triggered: ${rule.name} for error: ${error.message}`);
-
     } catch (alertError) {
       console.error('Failed to trigger alert:', alertError);
     }
@@ -599,17 +648,29 @@ export class ErrorTracker {
     }
   }
 
-  private async sendEmailAlert(config: any, rule: AlertRule, error: ErrorEvent): Promise<void> {
+  private async sendEmailAlert(
+    config: any,
+    rule: AlertRule,
+    error: ErrorEvent
+  ): Promise<void> {
     // Email alert implementation would go here
     console.log('Email alert sent:', { rule: rule.name, error: error.message });
   }
 
-  private async sendSlackAlert(config: any, rule: AlertRule, error: ErrorEvent): Promise<void> {
+  private async sendSlackAlert(
+    config: any,
+    rule: AlertRule,
+    error: ErrorEvent
+  ): Promise<void> {
     // Slack alert implementation would go here
     console.log('Slack alert sent:', { rule: rule.name, error: error.message });
   }
 
-  private async sendWebhookAlert(config: any, rule: AlertRule, error: ErrorEvent): Promise<void> {
+  private async sendWebhookAlert(
+    config: any,
+    rule: AlertRule,
+    error: ErrorEvent
+  ): Promise<void> {
     try {
       const payload = {
         rule: rule.name,
@@ -619,31 +680,42 @@ export class ErrorTracker {
           type: error.type,
           source: error.source,
           count: error.count,
-          timestamp: error.timestamp
-        }
+          timestamp: error.timestamp,
+        },
       };
 
       await fetch(config.url, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          ...(config.headers || {})
+          ...(config.headers || {}),
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
       });
     } catch (error) {
       console.error('Failed to send webhook alert:', error);
     }
   }
 
-  private async sendSMSAlert(config: any, rule: AlertRule, error: ErrorEvent): Promise<void> {
+  private async sendSMSAlert(
+    config: any,
+    rule: AlertRule,
+    error: ErrorEvent
+  ): Promise<void> {
     // SMS alert implementation would go here
     console.log('SMS alert sent:', { rule: rule.name, error: error.message });
   }
 
-  private async sendPagerDutyAlert(config: any, rule: AlertRule, error: ErrorEvent): Promise<void> {
+  private async sendPagerDutyAlert(
+    config: any,
+    rule: AlertRule,
+    error: ErrorEvent
+  ): Promise<void> {
     // PagerDuty alert implementation would go here
-    console.log('PagerDuty alert sent:', { rule: rule.name, error: error.message });
+    console.log('PagerDuty alert sent:', {
+      rule: rule.name,
+      error: error.message,
+    });
   }
 
   private setupDefaultAlertRules(): void {
@@ -654,16 +726,16 @@ export class ErrorTracker {
         errorType: 'critical',
         threshold: 1,
         timeWindow: 5,
-        operator: 'greater_than'
+        operator: 'greater_than',
       },
       actions: [
         {
           type: 'email',
-          config: { recipients: ['admin@company.com'] }
-        }
+          config: { recipients: ['admin@company.com'] },
+        },
       ],
       enabled: true,
-      cooldown: 15
+      cooldown: 15,
     });
 
     // High error rate
@@ -672,16 +744,16 @@ export class ErrorTracker {
       condition: {
         threshold: 50,
         timeWindow: 10,
-        operator: 'greater_than'
+        operator: 'greater_than',
       },
       actions: [
         {
           type: 'slack',
-          config: { channel: '#alerts' }
-        }
+          config: { channel: '#alerts' },
+        },
       ],
       enabled: true,
-      cooldown: 30
+      cooldown: 30,
     });
   }
 
@@ -722,7 +794,7 @@ export function setupGlobalErrorHandler(): void {
         source: 'server',
         type: 'critical',
         tags: { type: 'unhandledRejection' },
-        metadata: { promise: promise.toString() }
+        metadata: { promise: promise.toString() },
       }
     );
   });
@@ -732,7 +804,7 @@ export function setupGlobalErrorHandler(): void {
     errorTracker.captureError(error, {
       source: 'server',
       type: 'critical',
-      tags: { type: 'uncaughtException' }
+      tags: { type: 'uncaughtException' },
     });
   });
 }
@@ -743,15 +815,15 @@ export function setupGlobalErrorHandler(): void {
 export class ErrorBoundary {
   static captureError(error: Error, errorInfo: any): void {
     const errorTracker = ErrorTracker.getInstance();
-    
+
     errorTracker.captureError(error, {
       source: 'client',
       type: 'error',
       tags: { type: 'react-error-boundary' },
       metadata: {
         componentStack: errorInfo.componentStack,
-        errorBoundary: true
-      }
+        errorBoundary: true,
+      },
     });
   }
 }

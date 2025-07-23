@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { requireAdminAuth, createAdminResponse, createAdminErrorResponse } from '@/lib/admin-auth';
+import {
+  requireAdminAuth,
+  createAdminResponse,
+  createAdminErrorResponse,
+} from '@/lib/admin-auth';
 import { prisma } from '@/lib/prisma';
 import { AuditLogger } from '@/lib/audit-logger';
 
@@ -7,7 +11,7 @@ export async function GET(request: NextRequest) {
   try {
     const session = await requireAdminAuth(request);
     const { searchParams } = new URL(request.url);
-    
+
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '20');
     const search = searchParams.get('search') || '';
@@ -18,19 +22,19 @@ export async function GET(request: NextRequest) {
     const offset = (page - 1) * limit;
 
     const whereClause: any = {};
-    
+
     if (search) {
       whereClause.OR = [
         { name: { contains: search, mode: 'insensitive' } },
         { size: { contains: search, mode: 'insensitive' } },
-        { company: { name: { contains: search, mode: 'insensitive' } } }
+        { company: { name: { contains: search, mode: 'insensitive' } } },
       ];
     }
-    
+
     if (companyId) {
       whereClause.companyId = companyId;
     }
-    
+
     if (isActive !== null && isActive !== undefined) {
       whereClause.isActive = isActive === 'true';
     }
@@ -46,49 +50,51 @@ export async function GET(request: NextRequest) {
         where: whereClause,
         include: {
           company: {
-            select: { id: true, name: true, code: true, isActive: true }
+            select: { id: true, name: true, code: true, isActive: true },
           },
           productPricingTiers: {
             where: { isActive: true },
-            select: { id: true, tierName: true, price: true, marginPercent: true }
+            select: {
+              id: true,
+              tierName: true,
+              price: true,
+              marginPercent: true,
+            },
           },
           distributorAssignments: {
             where: { isActive: true },
             include: {
               tenant: {
-                select: { id: true, name: true }
-              }
-            }
+                select: { id: true, name: true },
+              },
+            },
           },
           _count: {
             select: {
               sales: true,
               purchases: true,
-              inventoryMovements: true
-            }
-          }
+              inventoryMovements: true,
+            },
+          },
         },
-        orderBy: [
-          { company: { name: 'asc' } },
-          { name: 'asc' }
-        ],
+        orderBy: [{ company: { name: 'asc' } }, { name: 'asc' }],
         take: limit,
-        skip: offset
+        skip: offset,
       }),
-      
+
       prisma.product.count({ where: whereClause }),
-      
+
       prisma.company.findMany({
         where: { isActive: true },
         select: { id: true, name: true, code: true },
-        orderBy: { name: 'asc' }
+        orderBy: { name: 'asc' },
       }),
 
       prisma.product.aggregate({
         _min: { currentPrice: true },
         _max: { currentPrice: true },
-        _avg: { currentPrice: true }
-      })
+        _avg: { currentPrice: true },
+      }),
     ]);
 
     await AuditLogger.logProductAction(
@@ -100,28 +106,35 @@ export async function GET(request: NextRequest) {
       request
     );
 
-    return NextResponse.json(createAdminResponse({
-      products,
-      pagination: {
-        page,
-        limit,
-        total: totalCount,
-        totalPages: Math.ceil(totalCount / limit),
-        hasNext: offset + limit < totalCount,
-        hasPrev: page > 1
-      },
-      companies,
-      priceRange: {
-        min: priceRange._min.currentPrice || 0,
-        max: priceRange._max.currentPrice || 0,
-        average: priceRange._avg.currentPrice || 0
-      }
-    }));
+    return NextResponse.json(
+      createAdminResponse({
+        products,
+        pagination: {
+          page,
+          limit,
+          total: totalCount,
+          totalPages: Math.ceil(totalCount / limit),
+          hasNext: offset + limit < totalCount,
+          hasPrev: page > 1,
+        },
+        companies,
+        priceRange: {
+          min: priceRange._min.currentPrice || 0,
+          max: priceRange._max.currentPrice || 0,
+          average: priceRange._avg.currentPrice || 0,
+        },
+      })
+    );
   } catch (error) {
     console.error('Get products error:', error);
     return NextResponse.json(
-      createAdminErrorResponse(error instanceof Error ? error.message : 'Failed to fetch products'),
-      { status: error instanceof Error && error.message.includes('Admin') ? 403 : 500 }
+      createAdminErrorResponse(
+        error instanceof Error ? error.message : 'Failed to fetch products'
+      ),
+      {
+        status:
+          error instanceof Error && error.message.includes('Admin') ? 403 : 500,
+      }
     );
   }
 }
@@ -130,7 +143,7 @@ export async function POST(request: NextRequest) {
   try {
     const session = await requireAdminAuth(request);
     const data = await request.json();
-    
+
     const {
       companyId,
       name,
@@ -144,39 +157,42 @@ export async function POST(request: NextRequest) {
       specifications,
       performanceMetrics,
       analytics,
-      isActive = true
+      isActive = true,
     } = data;
 
     if (!companyId || !name || !size) {
       return NextResponse.json(
-        createAdminErrorResponse('Company, product name, and size are required'),
+        createAdminErrorResponse(
+          'Company, product name, and size are required'
+        ),
         { status: 400 }
       );
     }
 
     // Verify company exists
     const company = await prisma.company.findUnique({
-      where: { id: companyId }
+      where: { id: companyId },
     });
 
     if (!company) {
-      return NextResponse.json(
-        createAdminErrorResponse('Company not found'),
-        { status: 404 }
-      );
+      return NextResponse.json(createAdminErrorResponse('Company not found'), {
+        status: 404,
+      });
     }
 
     // Check if product with same name already exists for this company
     const existingProduct = await prisma.product.findFirst({
-      where: { 
+      where: {
         companyId,
-        name: { equals: name, mode: 'insensitive' }
-      }
+        name: { equals: name, mode: 'insensitive' },
+      },
     });
 
     if (existingProduct) {
       return NextResponse.json(
-        createAdminErrorResponse('Product with this name already exists for this company'),
+        createAdminErrorResponse(
+          'Product with this name already exists for this company'
+        ),
         { status: 409 }
       );
     }
@@ -197,19 +213,19 @@ export async function POST(request: NextRequest) {
         specifications: specifications || null,
         performanceMetrics: performanceMetrics || null,
         analytics: analytics || null,
-        isActive
+        isActive,
       },
       include: {
         company: {
-          select: { id: true, name: true, code: true }
+          select: { id: true, name: true, code: true },
         },
         _count: {
           select: {
             sales: true,
-            distributorAssignments: true
-          }
-        }
-      }
+            distributorAssignments: true,
+          },
+        },
+      },
     });
 
     await AuditLogger.logProductAction(
@@ -228,8 +244,13 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Create product error:', error);
     return NextResponse.json(
-      createAdminErrorResponse(error instanceof Error ? error.message : 'Failed to create product'),
-      { status: error instanceof Error && error.message.includes('Admin') ? 403 : 500 }
+      createAdminErrorResponse(
+        error instanceof Error ? error.message : 'Failed to create product'
+      ),
+      {
+        status:
+          error instanceof Error && error.message.includes('Admin') ? 403 : 500,
+      }
     );
   }
 }

@@ -14,7 +14,7 @@ export interface Translations {
   productManagement: string;
   dailySalesReport: string;
   analytics: string;
-  
+
   // Common Actions
   save: string;
   cancel: string;
@@ -42,7 +42,7 @@ export interface Translations {
   back: string;
   next: string;
   previous: string;
-  
+
   // Forms
   name: string;
   phone: string;
@@ -65,7 +65,7 @@ export interface Translations {
   route: string;
   area: string;
   joiningDate: string;
-  
+
   // Sales & Inventory
   packageSale: string;
   refillSale: string;
@@ -84,7 +84,7 @@ export interface Translations {
   salesValue: string;
   fullCylinders: string;
   emptyCylinders: string;
-  
+
   // Drivers
   addDriver: string;
   driverName: string;
@@ -96,7 +96,7 @@ export interface Translations {
   shipmentDriver: string;
   allDrivers: string;
   activeDrivers: string;
-  
+
   // Financial
   revenue: string;
   receivables: string;
@@ -107,7 +107,7 @@ export interface Translations {
   credit: string;
   payment: string;
   balance: string;
-  
+
   // Time periods
   today: string;
   thisWeek: string;
@@ -118,7 +118,7 @@ export interface Translations {
   weekly: string;
   monthly: string;
   yearly: string;
-  
+
   // Status
   pending: string;
   approved: string;
@@ -128,13 +128,13 @@ export interface Translations {
   success: string;
   error: string;
   warning: string;
-  
+
   // Settings
   currency: string;
   timezone: string;
   language: string;
   generalSettings: string;
-  
+
   // Messages
   saveSuccess: string;
   saveError: string;
@@ -145,24 +145,24 @@ export interface Translations {
   welcomeBack: string;
   lastUpdated: string;
   pleaseTryAgain: string;
-  
+
   // Management
   salesManagement: string;
   driverManagement: string;
   expenseManagement: string;
   inventoryManagement: string;
-  
+
   // Theme
   lightMode: string;
   darkMode: string;
   systemTheme: string;
-  
+
   // Admin
   adminPanel: string;
   systemAdministration: string;
   viewDistributorDashboard: string;
   signOut: string;
-  
+
   // Dashboard Cards
   recordDailySales: string;
   trackPerformance: string;
@@ -185,20 +185,20 @@ export interface Translations {
   userManagement: string;
   assetsLiabilities: string;
   financialReports: string;
-  
+
   // Actions
   newSale: string;
   checkStock: string;
   addExpense: string;
   updatePayment: string;
   viewReports: string;
-  
+
   // Status
   allGood: string;
   alerts: string;
   kPending: string;
   thisMonth: string;
-  
+
   // Dashboard
   recentActivity: string;
   salesTrend: string;
@@ -207,7 +207,7 @@ export interface Translations {
   lpgDistributorManagementSystem: string;
   lastUpdated: string;
   manageLpgDistributionBusiness: string;
-  
+
   // Dashboard Missing Translations
   tasks: string;
   urgent: string;
@@ -220,14 +220,14 @@ export interface Translations {
   fri: string;
   sat: string;
   sun: string;
-  
+
   // Fallback Activity Messages
   rahmanSoldCylinders: string;
   stockReplenished: string;
   paymentReceived: string;
   fullCylindersText: string;
   abcStore: string;
-  
+
   // Daily Sales Report
   dailySalesReport: string;
   comprehensiveDailySalesReport: string;
@@ -268,7 +268,7 @@ export interface Translations {
   cashDepositsByDriver: string;
   dailyDepositsExpenses: string;
   detailedBreakdownDepositsExpenses: string;
-  
+
   // Common expense categories for replacement
   driverExpense: string;
   fuelExpense: string;
@@ -276,7 +276,7 @@ export interface Translations {
   officeExpense: string;
   transportExpense: string;
   miscellaneousExpense: string;
-  
+
   // Inventory Management
   inventoryManagement: string;
   realTimeInventoryTracking: string;
@@ -348,7 +348,7 @@ export interface Translations {
   sumAllDriversSalesForDate: string;
   sumCompletedShipmentsFromShipmentsPage: string;
   sumCompletedEmptyCylinderShipments: string;
-  
+
   // Shipments Management
   shipmentsManagement: string;
   trackPurchaseOrdersAndShipments: string;
@@ -443,7 +443,7 @@ export interface Translations {
   enterTransactionDetails: string;
   buy: string;
   sell: string;
-  
+
   // Validation Messages
   companyRequired: string;
   driverRequired: string;
@@ -480,7 +480,7 @@ export const translations: Record<string, Translations> = {
     productManagement: 'Product Management',
     dailySalesReport: 'Daily Sales Report',
     analytics: 'Analytics',
-    
+
     // Common Actions
     save: 'Save',
     cancel: 'Cancel',
@@ -508,7 +508,7 @@ export const translations: Record<string, Translations> = {
     back: 'Back',
     next: 'Next',
     previous: 'Previous',
-    
+
     // Forms
     name: 'Name',
     phone: 'Phone',
@@ -531,7 +531,7 @@ export const translations: Record<string, Translations> = {
     route: 'Route',
     area: 'Area',
     joiningDate: 'Joining Date',
-    
+
     // Sales & Inventory
     packageSale: 'Package Sale',
     refillSale: 'Refill Sale',
@@ -550,7 +550,7 @@ export const translations: Record<string, Translations> = {
     salesValue: 'Sales Value',
     fullCylinders: 'Full Cylinders',
     emptyCylinders: 'Empty Cylinders',
-    
+
     // Drivers
     addDriver: 'Add Driver',
     driverName: 'Driver Name',
@@ -562,7 +562,7 @@ export const translations: Record<string, Translations> = {
     shipmentDriver: 'Shipment Driver',
     allDrivers: 'All Drivers',
     activeDrivers: 'Active Drivers',
-    
+
     // Financial
     revenue: 'Revenue',
     receivables: 'Receivables',
@@ -573,7 +573,7 @@ export const translations: Record<string, Translations> = {
     credit: 'Credit',
     payment: 'Payment',
     balance: 'Balance',
-    
+
     // Time periods
     today: 'Today',
     thisWeek: 'This Week',
@@ -584,7 +584,7 @@ export const translations: Record<string, Translations> = {
     weekly: 'Weekly',
     monthly: 'Monthly',
     yearly: 'Yearly',
-    
+
     // Status
     pending: 'Pending',
     approved: 'Approved',
@@ -594,13 +594,13 @@ export const translations: Record<string, Translations> = {
     success: 'Success',
     error: 'Error',
     warning: 'Warning',
-    
+
     // Settings
     currency: 'Currency',
     timezone: 'Timezone',
     language: 'Language',
     generalSettings: 'General Settings',
-    
+
     // Messages
     saveSuccess: 'Saved successfully',
     saveError: 'Error saving data',
@@ -611,24 +611,24 @@ export const translations: Record<string, Translations> = {
     welcomeBack: 'Welcome back',
     lastUpdated: 'Last updated',
     pleaseTryAgain: 'Please try again',
-    
+
     // Management
     salesManagement: 'Sales Management',
     driverManagement: 'Driver Management',
     expenseManagement: 'Expense Management',
     inventoryManagement: 'Inventory Management',
-    
+
     // Theme
     lightMode: 'Light mode',
     darkMode: 'Dark mode',
     systemTheme: 'System theme',
-    
+
     // Admin
     adminPanel: 'Admin Panel',
     systemAdministration: 'System Administration',
     viewDistributorDashboard: 'View Distributor Dashboard',
     signOut: 'Sign Out',
-    
+
     // Dashboard Cards
     recordDailySales: 'Record daily sales',
     trackPerformance: 'track performance',
@@ -651,20 +651,20 @@ export const translations: Record<string, Translations> = {
     userManagement: 'User Management',
     assetsLiabilities: 'Assets & Liabilities',
     financialReports: 'Financial Reports',
-    
+
     // Actions
     newSale: 'New Sale',
     checkStock: 'Check Stock',
     addExpense: 'Add Expense',
     updatePayment: 'Update Payment',
     viewReports: 'View Reports',
-    
+
     // Status
     allGood: 'All good',
     alerts: 'alerts',
     kPending: 'K pending',
     thisMonth: 'this month',
-    
+
     // Dashboard
     recentActivity: 'Recent Activity',
     salesTrend: 'Sales Trend',
@@ -672,8 +672,9 @@ export const translations: Record<string, Translations> = {
     topDriverPerformance: 'Top Driver Performance',
     lpgDistributorManagementSystem: 'LPG Distributor Management System',
     lastUpdated: 'Last updated',
-    manageLpgDistributionBusiness: 'Manage your LPG distribution business efficiently',
-    
+    manageLpgDistributionBusiness:
+      'Manage your LPG distribution business efficiently',
+
     // Dashboard Missing Translations
     tasks: 'Tasks',
     urgent: 'Urgent',
@@ -686,17 +687,18 @@ export const translations: Record<string, Translations> = {
     fri: 'Fri',
     sat: 'Sat',
     sun: 'Sun',
-    
+
     // Fallback Activity Messages
     rahmanSoldCylinders: 'Rahman sold 5 cylinders',
     stockReplenished: 'Stock replenished: 50 full cylinders',
     paymentReceived: 'Payment received from ABC Store',
     fullCylindersText: 'full cylinders',
     abcStore: 'ABC Store',
-    
+
     // Daily Sales Report
     dailySalesReport: 'Daily Sales Report',
-    comprehensiveDailySalesReport: 'Comprehensive daily sales and cash flow report',
+    comprehensiveDailySalesReport:
+      'Comprehensive daily sales and cash flow report',
     totalSalesValue: 'Total Sales Value',
     totalDeposited: 'Total Deposited',
     totalExpenses: 'Total Expenses',
@@ -722,19 +724,22 @@ export const translations: Record<string, Translations> = {
     totalDepositsCalculated: 'Total Deposits',
     totalExpensesCalculated: 'Total Expenses',
     totalAvailableCash: 'Total Available Cash',
-    totalDepositsIncludingSales: 'Total deposits (including sales) minus total expenses',
+    totalDepositsIncludingSales:
+      'Total deposits (including sales) minus total expenses',
     loadingDailySalesReport: 'Loading daily sales report...',
     noReportDataAvailable: 'No report data available',
     tryAgainOrSelectDate: 'Please try again or select a different date.',
     error: 'Error',
-    failedToLoadDailySalesReport: 'Failed to load daily sales report. Please try again.',
+    failedToLoadDailySalesReport:
+      'Failed to load daily sales report. Please try again.',
     tryAgain: 'Please try again.',
     refresh: 'Refresh',
     generalExpense: 'General Expense',
     cashDepositsByDriver: 'Cash deposits by driver',
     dailyDepositsExpenses: 'Daily Deposits & Expenses',
-    detailedBreakdownDepositsExpenses: 'Detailed breakdown of all deposits and expenses',
-    
+    detailedBreakdownDepositsExpenses:
+      'Detailed breakdown of all deposits and expenses',
+
     // Common expense categories for replacement
     driverExpense: 'Driver Expense',
     fuelExpense: 'Fuel Expense',
@@ -742,10 +747,11 @@ export const translations: Record<string, Translations> = {
     officeExpense: 'Office Expense',
     transportExpense: 'Transport Expense',
     miscellaneousExpense: 'Miscellaneous Expense',
-    
+
     // Inventory Management
     inventoryManagement: 'Inventory Management',
-    realTimeInventoryTracking: 'Real-time inventory tracking and stock monitoring',
+    realTimeInventoryTracking:
+      'Real-time inventory tracking and stock monitoring',
     refresh: 'Refresh',
     export: 'Export',
     exportFunctionalityComingSoon: 'Export functionality coming soon!',
@@ -762,19 +768,22 @@ export const translations: Record<string, Translations> = {
     cylindersReceived: 'Cylinders received',
     totalCylinders: 'Total Cylinders',
     allCylinders: 'All cylinders',
-    currentFullCylinderInventory: 'Current full cylinder inventory by company and size',
+    currentFullCylinderInventory:
+      'Current full cylinder inventory by company and size',
     company: 'Company',
     size: 'Size',
     quantity: 'Quantity',
     noFullCylindersInInventory: 'No full cylinders in inventory.',
-    emptyCylinderInventoryAvailability: 'Empty cylinder inventory and availability',
+    emptyCylinderInventoryAvailability:
+      'Empty cylinder inventory and availability',
     emptyCylindersInHand: 'Empty Cylinders in Hand',
     noEmptyCylindersInInventory: 'No empty cylinders in inventory.',
     note: 'Note',
     totalCylinderReceivables: 'Total cylinder receivables',
     cylinders: 'cylinders',
     dailyInventoryTracking: 'Daily Inventory Tracking',
-    automatedCalculationsExactFormulas: 'Automated calculations with exact business formulas',
+    automatedCalculationsExactFormulas:
+      'Automated calculations with exact business formulas',
     date: 'Date',
     packageSalesQty: 'Package Sales (Qty)',
     refillSalesQty: 'Refill Sales (Qty)',
@@ -787,19 +796,24 @@ export const translations: Record<string, Translations> = {
     businessFormulaImplementation: 'Business Formula Implementation',
     dailyCalculations: 'Daily Calculations',
     todaysFullCylinders: "Today's Full Cylinders =",
-    yesterdaysFullPackagePurchase: " Yesterday's Full + Package Purchase + Refill Purchase - Total Sales",
+    yesterdaysFullPackagePurchase:
+      " Yesterday's Full + Package Purchase + Refill Purchase - Total Sales",
     todaysEmptyCylinders: "Today's Empty Cylinders =",
-    yesterdaysEmptyRefillSales: " Yesterday's Empty + Refill Sales + Empty Cylinders Buy/Sell",
+    yesterdaysEmptyRefillSales:
+      " Yesterday's Empty + Refill Sales + Empty Cylinders Buy/Sell",
     totalCylindersFormula: 'Total Cylinders =',
     fullPlusEmptyCylinders: ' Full Cylinders + Empty Cylinders',
     dataSources: 'Data Sources',
     packageRefillSales: 'Package/Refill Sales:',
     sumAllDriversSales: ' SUM(all drivers sales for date)',
     packageRefillPurchase: 'Package/Refill Purchase:',
-    sumCompletedShipments: ' SUM(COMPLETED shipments from Shipments page for date)',
+    sumCompletedShipments:
+      ' SUM(COMPLETED shipments from Shipments page for date)',
     emptyCylindersBuySellData: 'Empty Cylinders Buy/Sell:',
-    sumCompletedEmptyShipments: ' SUM(COMPLETED empty cylinder shipments for date)',
-    allCalculationsUpdatedRealTime: ' All calculations are updated in real-time when shipments are marked as COMPLETED.',
+    sumCompletedEmptyShipments:
+      ' SUM(COMPLETED empty cylinder shipments for date)',
+    allCalculationsUpdatedRealTime:
+      ' All calculations are updated in real-time when shipments are marked as COMPLETED.',
     currentStockHealth: 'Current Stock Health',
     productsInGoodStock: 'Products in Good Stock',
     productsWithLowStockWarning: 'Products with Low Stock Warning',
@@ -812,12 +826,15 @@ export const translations: Record<string, Translations> = {
     yesterdaysEmpty: "Yesterday's Empty",
     refillSales: 'Refill Sales',
     sumAllDriversSalesForDate: 'SUM(all drivers sales for date)',
-    sumCompletedShipmentsFromShipmentsPage: 'SUM(COMPLETED shipments from Shipments page for date)',
-    sumCompletedEmptyCylinderShipments: 'SUM(COMPLETED empty cylinder shipments for date)',
-    
+    sumCompletedShipmentsFromShipmentsPage:
+      'SUM(COMPLETED shipments from Shipments page for date)',
+    sumCompletedEmptyCylinderShipments:
+      'SUM(COMPLETED empty cylinder shipments for date)',
+
     // Shipments Management
     shipmentsManagement: 'Shipments Management',
-    trackPurchaseOrdersAndShipments: 'Track purchase orders and shipments. Outstanding orders can be edited/deleted, completed orders are view-only.',
+    trackPurchaseOrdersAndShipments:
+      'Track purchase orders and shipments. Outstanding orders can be edited/deleted, completed orders are view-only.',
     newPurchase: 'New Purchase',
     emptyCylinderBuySell: 'Empty Cylinder Buy/Sell',
     allShipments: 'All Shipments',
@@ -865,7 +882,8 @@ export const translations: Record<string, Translations> = {
     urgent: 'Urgent',
     vehicleNumber: 'Vehicle Number',
     enterVehicleNumber: 'Enter vehicle number',
-    enterAdditionalNotes: 'Enter any additional notes or special instructions...',
+    enterAdditionalNotes:
+      'Enter any additional notes or special instructions...',
     addLineItem: 'Add Line Item',
     selectProduct: 'Select Product',
     selectCompanyFirst: 'Select Company First',
@@ -876,7 +894,8 @@ export const translations: Record<string, Translations> = {
     taxRate: 'Tax Rate',
     lineTotalPreview: 'Line Total Preview',
     packageInfo: 'Package: Both cylinder and gas costs are recorded separately',
-    refillInfo: 'Refill: Only gas/refill cost, empty cylinders go out of inventory',
+    refillInfo:
+      'Refill: Only gas/refill cost, empty cylinders go out of inventory',
     addItem: 'Add Item',
     purchaseItems: 'Purchase Items',
     qty: 'Qty',
@@ -903,13 +922,14 @@ export const translations: Record<string, Translations> = {
     removeEmptyCylindersFromInventory: 'Remove empty cylinders from inventory',
     cylinderSize: 'Cylinder Size',
     selectCylinderSize: 'Select Cylinder Size',
-    emptyCylindersNote: 'Empty cylinders are categorized by size only, independent of company',
+    emptyCylindersNote:
+      'Empty cylinders are categorized by size only, independent of company',
     unitPrice: 'Unit Price',
     transactionDate: 'Transaction Date',
     enterTransactionDetails: 'Enter transaction details...',
     buy: 'Buy',
     sell: 'Sell',
-    
+
     // Validation Messages
     companyRequired: 'Company is required',
     driverRequired: 'Driver is required',
@@ -918,17 +938,22 @@ export const translations: Record<string, Translations> = {
     productRequired: 'Product is required',
     quantityMustBeGreaterThanZero: 'Quantity must be greater than 0',
     gasPriceMustBeGreaterThanZero: 'Gas price must be greater than 0',
-    cylinderPriceRequiredForPackage: 'Cylinder price is required for package purchases',
-    failedToSavePurchaseOrder: 'Failed to save purchase order. Please try again.',
-    markShipmentAsCompletedConfirm: 'Mark this shipment as completed? This will update the inventory and cannot be undone.',
+    cylinderPriceRequiredForPackage:
+      'Cylinder price is required for package purchases',
+    failedToSavePurchaseOrder:
+      'Failed to save purchase order. Please try again.',
+    markShipmentAsCompletedConfirm:
+      'Mark this shipment as completed? This will update the inventory and cannot be undone.',
     failedToCompleteShipment: 'Failed to complete shipment',
-    failedToCompleteShipmentTryAgain: 'Failed to complete shipment. Please try again.',
+    failedToCompleteShipmentTryAgain:
+      'Failed to complete shipment. Please try again.',
     confirmDeleteShipment: 'Are you sure you want to delete this shipment?',
     errorDeletingShipment: 'Error deleting shipment',
     unknownError: 'Unknown error',
-    failedToDeleteShipmentTryAgain: 'Failed to delete shipment. Please try again.',
+    failedToDeleteShipmentTryAgain:
+      'Failed to delete shipment. Please try again.',
   },
-  
+
   bn: {
     // Navigation
     dashboard: 'ড্যাশবোর্ড',
@@ -945,7 +970,7 @@ export const translations: Record<string, Translations> = {
     productManagement: 'পণ্য ব্যবস্থাপনা',
     dailySalesReport: 'দৈনিক বিক্রয় প্রতিবেদন',
     analytics: 'বিশ্লেষণ',
-    
+
     // Common Actions
     save: 'সেভ করুন',
     cancel: 'বাতিল করুন',
@@ -973,7 +998,7 @@ export const translations: Record<string, Translations> = {
     back: 'ফিরে যান',
     next: 'পরবর্তী',
     previous: 'পূর্ববর্তী',
-    
+
     // Forms
     name: 'নাম',
     phone: 'ফোন নম্বর',
@@ -996,7 +1021,7 @@ export const translations: Record<string, Translations> = {
     route: 'রুট',
     area: 'এলাকা',
     joiningDate: 'যোগদানের তারিখ',
-    
+
     // Sales & Inventory
     packageSale: 'প্যাকেজ বিক্রয়',
     refillSale: 'রিফিল বিক্রয়',
@@ -1015,7 +1040,7 @@ export const translations: Record<string, Translations> = {
     salesValue: 'বিক্রয় মূল্য',
     fullCylinders: 'ভর্তি সিলিন্ডার',
     emptyCylinders: 'খালি সিলিন্ডার',
-    
+
     // Drivers
     addDriver: 'ড্রাইভার যোগ করুন',
     driverName: 'ড্রাইভারের নাম',
@@ -1027,7 +1052,7 @@ export const translations: Record<string, Translations> = {
     shipmentDriver: 'চালান ড্রাইভার',
     allDrivers: 'সকল ড্রাইভার',
     activeDrivers: 'সক্রিয় ড্রাইভার',
-    
+
     // Financial
     revenue: 'আয়',
     receivables: 'পাওনা',
@@ -1038,7 +1063,7 @@ export const translations: Record<string, Translations> = {
     credit: 'বাকী',
     payment: 'পরিশোধ',
     balance: 'ব্যালেন্স',
-    
+
     // Time periods
     today: 'আজ',
     thisWeek: 'এই সপ্তাহ',
@@ -1049,7 +1074,7 @@ export const translations: Record<string, Translations> = {
     weekly: 'সাপ্তাহিক',
     monthly: 'মাসিক',
     yearly: 'বার্ষিক',
-    
+
     // Status
     pending: 'অপেক্ষমান',
     approved: 'অনুমোদিত',
@@ -1059,13 +1084,13 @@ export const translations: Record<string, Translations> = {
     success: 'সফল',
     error: 'ত্রুটি',
     warning: 'সতর্কতা',
-    
+
     // Settings
     currency: 'মুদ্রা',
     timezone: 'সময় অঞ্চল',
     language: 'ভাষা',
     generalSettings: 'সাধারণ সেটিংস',
-    
+
     // Messages
     saveSuccess: 'সফলভাবে সংরক্ষিত',
     saveError: 'ডেটা সংরক্ষণে ত্রুটি',
@@ -1076,24 +1101,24 @@ export const translations: Record<string, Translations> = {
     welcomeBack: 'আবার স্বাগতম',
     lastUpdated: 'সর্বশেষ আপডেট',
     pleaseTryAgain: 'অনুগ্রহ করে আবার চেষ্টা করুন',
-    
+
     // Management
     salesManagement: 'বিক্রয় ব্যবস্থাপনা',
     driverManagement: 'ড্রাইভার ব্যবস্থাপনা',
     expenseManagement: 'খরচ ব্যবস্থাপনা',
     inventoryManagement: 'মজুদ ব্যবস্থাপনা',
-    
+
     // Theme
     lightMode: 'লাইট মোড',
     darkMode: 'ডার্ক মোড',
     systemTheme: 'সিস্টেম থিম',
-    
+
     // Admin
     adminPanel: 'অ্যাডমিন প্যানেল',
     systemAdministration: 'সিস্টেম প্রশাসন',
     viewDistributorDashboard: 'ডিস্ট্রিবিউটর ড্যাশবোর্ড দেখুন',
     signOut: 'সাইন আউট',
-    
+
     // Dashboard Cards
     recordDailySales: 'দৈনিক বিক্রয় রেকর্ড করুন',
     trackPerformance: 'এবং কর্মক্ষমতা ট্র্যাক করুন',
@@ -1116,20 +1141,20 @@ export const translations: Record<string, Translations> = {
     userManagement: 'ব্যবহারকারী ব্যবস্থাপনা',
     assetsLiabilities: 'সম্পদ এবং দায়বদ্ধতা',
     financialReports: 'আর্থিক প্রতিবেদন',
-    
+
     // Actions
     newSale: 'নতুন বিক্রয়',
     checkStock: 'স্টক চেক করুন',
     addExpense: 'খরচ যোগ করুন',
     updatePayment: 'পেমেন্ট আপডেট করুন',
     viewReports: 'প্রতিবেদন দেখুন',
-    
+
     // Status
     allGood: 'সব ঠিক আছে',
     alerts: 'সতর্কতা',
     kPending: 'হাজার অপেক্ষমান',
     thisMonth: 'এই মাসে',
-    
+
     // Dashboard
     recentActivity: 'সাম্প্রতিক কার্যকলাপ',
     salesTrend: 'বিক্রয় প্রবণতা',
@@ -1137,8 +1162,9 @@ export const translations: Record<string, Translations> = {
     topDriverPerformance: 'শীর্ষ ড্রাইভার পারফরম্যান্স',
     lpgDistributorManagementSystem: 'এলপিজি ডিস্ট্রিবিউটর ম্যানেজমেন্ট সিস্টেম',
     lastUpdated: 'সর্বশেষ আপডেট',
-    manageLpgDistributionBusiness: 'আপনার এলপিজি বিতরণ ব্যবসা দক্ষতার সাথে পরিচালনা করুন',
-    
+    manageLpgDistributionBusiness:
+      'আপনার এলপিজি বিতরণ ব্যবসা দক্ষতার সাথে পরিচালনা করুন',
+
     // Dashboard Missing Translations
     tasks: 'কাজ',
     urgent: 'জরুরি',
@@ -1151,17 +1177,18 @@ export const translations: Record<string, Translations> = {
     fri: 'শুক্র',
     sat: 'শনি',
     sun: 'রবি',
-    
+
     // Fallback Activity Messages
     rahmanSoldCylinders: 'রহমান ৫টি সিলিন্ডার বিক্রি করেছেন',
     stockReplenished: 'স্টক পুনরায় পূরণ: ৫০টি ভর্তি সিলিন্ডার',
     paymentReceived: 'এবিসি স্টোর থেকে পেমেন্ট গৃহীত',
     fullCylindersText: 'ভর্তি সিলিন্ডার',
     abcStore: 'এবিসি স্টোর',
-    
+
     // Daily Sales Report
     dailySalesReport: 'দৈনিক বিক্রয় প্রতিবেদন',
-    comprehensiveDailySalesReport: 'ব্যাপক দৈনিক বিক্রয় এবং নগদ প্রবাহ প্রতিবেদন',
+    comprehensiveDailySalesReport:
+      'ব্যাপক দৈনিক বিক্রয় এবং নগদ প্রবাহ প্রতিবেদন',
     totalSalesValue: 'মোট বিক্রয় মূল্য',
     totalDeposited: 'মোট জমা',
     totalExpenses: 'মোট খরচ',
@@ -1190,16 +1217,18 @@ export const translations: Record<string, Translations> = {
     totalDepositsIncludingSales: 'মোট জমা (বিক্রয় সহ) বিয়োগ মোট খরচ',
     loadingDailySalesReport: 'দৈনিক বিক্রয় প্রতিবেদন লোড হচ্ছে...',
     noReportDataAvailable: 'কোনো প্রতিবেদন ডেটা উপলব্ধ নেই',
-    tryAgainOrSelectDate: 'অনুগ্রহ করে আবার চেষ্টা করুন বা একটি ভিন্ন তারিখ নির্বাচন করুন।',
+    tryAgainOrSelectDate:
+      'অনুগ্রহ করে আবার চেষ্টা করুন বা একটি ভিন্ন তারিখ নির্বাচন করুন।',
     error: 'ত্রুটি',
-    failedToLoadDailySalesReport: 'দৈনিক বিক্রয় প্রতিবেদন লোড করতে ব্যর্থ। অনুগ্রহ করে আবার চেষ্টা করুন।',
+    failedToLoadDailySalesReport:
+      'দৈনিক বিক্রয় প্রতিবেদন লোড করতে ব্যর্থ। অনুগ্রহ করে আবার চেষ্টা করুন।',
     tryAgain: 'অনুগ্রহ করে আবার চেষ্টা করুন।',
     refresh: 'রিফ্রেশ',
     generalExpense: 'সাধারণ খরচ',
     cashDepositsByDriver: 'চালকের নগদ জমা',
     dailyDepositsExpenses: 'দৈনিক জমা এবং খরচ',
     detailedBreakdownDepositsExpenses: 'সমস্ত জমা এবং খরচের বিস্তারিত বিভাজন',
-    
+
     // Common expense categories for replacement
     driverExpense: 'চালক খরচ',
     fuelExpense: 'জ্বালানি খরচ',
@@ -1207,7 +1236,7 @@ export const translations: Record<string, Translations> = {
     officeExpense: 'অফিস খরচ',
     transportExpense: 'পরিবহন খরচ',
     miscellaneousExpense: 'বিবিধ খরচ',
-    
+
     // Inventory Management
     inventoryManagement: 'মজুদ ব্যবস্থাপনা',
     realTimeInventoryTracking: 'রিয়েল-টাইম মজুদ ট্র্যাকিং এবং স্টক মনিটরিং',
@@ -1227,7 +1256,8 @@ export const translations: Record<string, Translations> = {
     cylindersReceived: 'সিলিন্ডার গৃহীত',
     totalCylinders: 'মোট সিলিন্ডার',
     allCylinders: 'সব সিলিন্ডার',
-    currentFullCylinderInventory: 'কোম্পানী এবং আকার অনুযায়ী বর্তমান ভর্তি সিলিন্ডার মজুদ',
+    currentFullCylinderInventory:
+      'কোম্পানী এবং আকার অনুযায়ী বর্তমান ভর্তি সিলিন্ডার মজুদ',
     company: 'কোম্পানী',
     size: 'আকার',
     quantity: 'পরিমাণ',
@@ -1239,7 +1269,8 @@ export const translations: Record<string, Translations> = {
     totalCylinderReceivables: 'মোট সিলিন্ডার প্রাপ্য',
     cylinders: 'সিলিন্ডার',
     dailyInventoryTracking: 'দৈনিক মজুদ ট্র্যাকিং',
-    automatedCalculationsExactFormulas: 'সঠিক ব্যবসায়িক সূত্র সহ স্বয়ংক্রিয় গণনা',
+    automatedCalculationsExactFormulas:
+      'সঠিক ব্যবসায়িক সূত্র সহ স্বয়ংক্রিয় গণনা',
     date: 'তারিখ',
     packageSalesQty: 'প্যাকেজ বিক্রয় (পরিমাণ)',
     refillSalesQty: 'রিফিল বিক্রয় (পরিমাণ)',
@@ -1252,19 +1283,24 @@ export const translations: Record<string, Translations> = {
     businessFormulaImplementation: 'ব্যবসায়িক সূত্র বাস্তবায়ন',
     dailyCalculations: 'দৈনিক গণনা',
     todaysFullCylinders: 'আজকের ভর্তি সিলিন্ডার =',
-    yesterdaysFullPackagePurchase: ' গতকালের ভর্তি + প্যাকেজ ক্রয় + রিফিল ক্রয় - মোট বিক্রয়',
+    yesterdaysFullPackagePurchase:
+      ' গতকালের ভর্তি + প্যাকেজ ক্রয় + রিফিল ক্রয় - মোট বিক্রয়',
     todaysEmptyCylinders: 'আজকের খালি সিলিন্ডার =',
-    yesterdaysEmptyRefillSales: ' গতকালের খালি + রিফিল বিক্রয় + খালি সিলিন্ডার ক্রয়/বিক্রয়',
+    yesterdaysEmptyRefillSales:
+      ' গতকালের খালি + রিফিল বিক্রয় + খালি সিলিন্ডার ক্রয়/বিক্রয়',
     totalCylindersFormula: 'মোট সিলিন্ডার =',
     fullPlusEmptyCylinders: ' ভর্তি সিলিন্ডার + খালি সিলিন্ডার',
     dataSources: 'ডেটা উৎস',
     packageRefillSales: 'প্যাকেজ/রিফিল বিক্রয়:',
     sumAllDriversSales: ' তারিখের জন্য সব চালকের বিক্রয়ের সমষ্টি',
     packageRefillPurchase: 'প্যাকেজ/রিফিল ক্রয়:',
-    sumCompletedShipments: ' শিপমেন্ট পেজ থেকে তারিখের জন্য সম্পন্ন শিপমেন্টের সমষ্টি',
+    sumCompletedShipments:
+      ' শিপমেন্ট পেজ থেকে তারিখের জন্য সম্পন্ন শিপমেন্টের সমষ্টি',
     emptyCylindersBuySellData: 'খালি সিলিন্ডার ক্রয়/বিক্রয়:',
-    sumCompletedEmptyShipments: ' তারিখের জন্য সম্পন্ন খালি সিলিন্ডার শিপমেন্টের সমষ্টি',
-    allCalculationsUpdatedRealTime: ' শিপমেন্ট সম্পন্ন হিসাবে চিহ্নিত হলে সব গণনা রিয়েল-টাইমে আপডেট হয়।',
+    sumCompletedEmptyShipments:
+      ' তারিখের জন্য সম্পন্ন খালি সিলিন্ডার শিপমেন্টের সমষ্টি',
+    allCalculationsUpdatedRealTime:
+      ' শিপমেন্ট সম্পন্ন হিসাবে চিহ্নিত হলে সব গণনা রিয়েল-টাইমে আপডেট হয়।',
     currentStockHealth: 'বর্তমান স্টক স্বাস্থ্য',
     productsInGoodStock: 'ভাল স্টকে পণ্য',
     productsWithLowStockWarning: 'কম স্টক সতর্কতা সহ পণ্য',
@@ -1277,12 +1313,15 @@ export const translations: Record<string, Translations> = {
     yesterdaysEmpty: 'গতকালের খালি',
     refillSales: 'রিফিল বিক্রয়',
     sumAllDriversSalesForDate: 'তারিখের জন্য সমস্ত চালকের বিক্রয়ের সমষ্টি',
-    sumCompletedShipmentsFromShipmentsPage: 'শিপমেন্ট পেজ থেকে তারিখের জন্য সম্পন্ন শিপমেন্টের সমষ্টি',
-    sumCompletedEmptyCylinderShipments: 'তারিখের জন্য সম্পন্ন খালি সিলিন্ডার শিপমেন্টের সমষ্টি',
-    
+    sumCompletedShipmentsFromShipmentsPage:
+      'শিপমেন্ট পেজ থেকে তারিখের জন্য সম্পন্ন শিপমেন্টের সমষ্টি',
+    sumCompletedEmptyCylinderShipments:
+      'তারিখের জন্য সম্পন্ন খালি সিলিন্ডার শিপমেন্টের সমষ্টি',
+
     // Shipments Management
     shipmentsManagement: 'শিপমেন্ট ব্যবস্থাপনা',
-    trackPurchaseOrdersAndShipments: 'ক্রয় আদেশ এবং শিপমেন্ট ট্র্যাক করুন। অসম্পূর্ণ অর্ডার সম্পাদনা/মুছে ফেলা যায়, সম্পন্ন অর্ডার শুধুমাত্র দেখার জন্য।',
+    trackPurchaseOrdersAndShipments:
+      'ক্রয় আদেশ এবং শিপমেন্ট ট্র্যাক করুন। অসম্পূর্ণ অর্ডার সম্পাদনা/মুছে ফেলা যায়, সম্পন্ন অর্ডার শুধুমাত্র দেখার জন্য।',
     newPurchase: 'নতুন ক্রয়',
     emptyCylinderBuySell: 'খালি সিলিন্ডার ক্রয়/বিক্রয়',
     allShipments: 'সব শিপমেন্ট',
@@ -1340,8 +1379,10 @@ export const translations: Record<string, Translations> = {
     cylinderPrice: 'সিলিন্ডারের দাম',
     taxRate: 'কর হার',
     lineTotalPreview: 'লাইন মোট প্রিভিউ',
-    packageInfo: 'প্যাকেজ: সিলিন্ডার এবং গ্যাস উভয় খরচ আলাদাভাবে রেকর্ড করা হয়',
-    refillInfo: 'রিফিল: শুধুমাত্র গ্যাস/রিফিল খরচ, খালি সিলিন্ডার ইনভেন্টরি থেকে বের হয়ে যায়',
+    packageInfo:
+      'প্যাকেজ: সিলিন্ডার এবং গ্যাস উভয় খরচ আলাদাভাবে রেকর্ড করা হয়',
+    refillInfo:
+      'রিফিল: শুধুমাত্র গ্যাস/রিফিল খরচ, খালি সিলিন্ডার ইনভেন্টরি থেকে বের হয়ে যায়',
     addItem: 'আইটেম যোগ করুন',
     purchaseItems: 'ক্রয় আইটেম',
     qty: 'পরিমাণ',
@@ -1368,13 +1409,14 @@ export const translations: Record<string, Translations> = {
     removeEmptyCylindersFromInventory: 'ইনভেন্টরি থেকে খালি সিলিন্ডার সরান',
     cylinderSize: 'সিলিন্ডারের আকার',
     selectCylinderSize: 'সিলিন্ডারের আকার নির্বাচন করুন',
-    emptyCylindersNote: 'খালি সিলিন্ডার শুধুমাত্র আকার অনুযায়ী শ্রেণীবদ্ধ, কোম্পানী নিরপেক্ষ',
+    emptyCylindersNote:
+      'খালি সিলিন্ডার শুধুমাত্র আকার অনুযায়ী শ্রেণীবদ্ধ, কোম্পানী নিরপেক্ষ',
     unitPrice: 'একক দাম',
     transactionDate: 'লেনদেনের তারিখ',
     enterTransactionDetails: 'লেনদেনের বিবরণ লিখুন...',
     buy: 'কিনুন',
     sell: 'বিক্রি করুন',
-    
+
     // Validation Messages
     companyRequired: 'কোম্পানী আবশ্যক',
     driverRequired: 'চালক আবশ্যক',
@@ -1383,19 +1425,28 @@ export const translations: Record<string, Translations> = {
     productRequired: 'পণ্য আবশ্যক',
     quantityMustBeGreaterThanZero: 'পরিমাণ ০ এর চেয়ে বেশি হতে হবে',
     gasPriceMustBeGreaterThanZero: 'গ্যাসের দাম ০ এর চেয়ে বেশি হতে হবে',
-    cylinderPriceRequiredForPackage: 'প্যাকেজ ক্রয়ের জন্য সিলিন্ডারের দাম আবশ্যক',
-    failedToSavePurchaseOrder: 'ক্রয় আদেশ সংরক্ষণ করতে ব্যর্থ। অনুগ্রহ করে আবার চেষ্টা করুন।',
-    markShipmentAsCompletedConfirm: 'এই শিপমেন্টটি সম্পন্ন হিসাবে চিহ্নিত করবেন? এটি ইনভেন্টরি আপডেট করবে এবং পূর্বাবস্থায় ফেরানো যাবে না।',
+    cylinderPriceRequiredForPackage:
+      'প্যাকেজ ক্রয়ের জন্য সিলিন্ডারের দাম আবশ্যক',
+    failedToSavePurchaseOrder:
+      'ক্রয় আদেশ সংরক্ষণ করতে ব্যর্থ। অনুগ্রহ করে আবার চেষ্টা করুন।',
+    markShipmentAsCompletedConfirm:
+      'এই শিপমেন্টটি সম্পন্ন হিসাবে চিহ্নিত করবেন? এটি ইনভেন্টরি আপডেট করবে এবং পূর্বাবস্থায় ফেরানো যাবে না।',
     failedToCompleteShipment: 'শিপমেন্ট সম্পন্ন করতে ব্যর্থ',
-    failedToCompleteShipmentTryAgain: 'শিপমেন্ট সম্পন্ন করতে ব্যর্থ। অনুগ্রহ করে আবার চেষ্টা করুন।',
-    confirmDeleteShipment: 'আপনি কি নিশ্চিত যে আপনি এই শিপমেন্টটি মুছে ফেলতে চান?',
+    failedToCompleteShipmentTryAgain:
+      'শিপমেন্ট সম্পন্ন করতে ব্যর্থ। অনুগ্রহ করে আবার চেষ্টা করুন।',
+    confirmDeleteShipment:
+      'আপনি কি নিশ্চিত যে আপনি এই শিপমেন্টটি মুছে ফেলতে চান?',
     errorDeletingShipment: 'শিপমেন্ট মুছে ফেলতে ত্রুটি',
     unknownError: 'অজানা ত্রুটি',
-    failedToDeleteShipmentTryAgain: 'শিপমেন্ট মুছে ফেলতে ব্যর্থ। অনুগ্রহ করে আবার চেষ্টা করুন।',
-  }
+    failedToDeleteShipmentTryAgain:
+      'শিপমেন্ট মুছে ফেলতে ব্যর্থ। অনুগ্রহ করে আবার চেষ্টা করুন।',
+  },
 };
 
-export function getTranslation(language: string, key: keyof Translations): string {
+export function getTranslation(
+  language: string,
+  key: keyof Translations
+): string {
   const lang = translations[language] || translations.en;
   return lang[key] || translations.en[key] || key;
 }

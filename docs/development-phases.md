@@ -3,10 +3,13 @@
 ## **Phase 1: Foundation Setup**
 
 ### **Prompt 1: Project Architecture & Setup**
+
 ```bash
 @architect @security-engineer --thinking --evidence --deep --batch --secure
 ```
+
 **Prompt:**
+
 ```
 Create a production-ready Next.js 14 TypeScript SaaS application for LPG distributors with:
 
@@ -26,10 +29,13 @@ Set up environment configuration, security headers, and deployment-ready structu
 ```
 
 ### **Prompt 2: Database Schema & Business Logic**
+
 ```bash
 @architect @data-engineer --thinking --evidence --precise --validate --deep
 ```
+
 **Prompt:**
+
 ```
 Design and implement comprehensive Prisma schema for LPG business with:
 
@@ -60,10 +66,13 @@ Include proper indexes, constraints, and seed data.
 ## **Phase 2: Core Sales & Inventory**
 
 ### **Prompt 3: Daily Sales System**
+
 ```bash
 @fullstack-dev --thinking --compress --batch --responsive --validate
 ```
+
 **Prompt:**
+
 ```
 Implement complete Daily Sales module:
 
@@ -84,10 +93,13 @@ Include form validation, error handling, and mobile-responsive design.
 ```
 
 ### **Prompt 4: Inventory Management System**
+
 ```bash
 @data-engineer @backend-dev --thinking --evidence --precise --automate --validate
 ```
+
 **Prompt:**
+
 ```
 Create Inventory page with exact formula implementation:
 
@@ -95,7 +107,7 @@ TABLE COLUMNS: Date, Package Sales(Qty), Refill Sales(Qty), Total Sales(Qty), Pa
 
 EXACT FORMULAS:
 - Package Sales = SUM(all drivers package sales for date)
-- Refill Sales = SUM(all drivers refill sales for date)  
+- Refill Sales = SUM(all drivers refill sales for date)
 - Total Sales = Package Sales + Refill Sales
 - Package Purchase = SUM(shipments.package_quantity for date)
 - Refill Purchase = SUM(shipments.refill_quantity for date)
@@ -110,10 +122,13 @@ Create automated daily calculation service and historical tracking.
 ## **Phase 3: User & Financial Management**
 
 ### **Prompt 5: Driver & User Management**
+
 ```bash
 @backend-dev @frontend-dev --thinking --compress --batch --secure
 ```
+
 **Prompt:**
+
 ```
 Implement comprehensive user management:
 
@@ -133,10 +148,13 @@ Include proper authorization checks and audit trails.
 ```
 
 ### **Prompt 6: Receivables Tracking System**
+
 ```bash
 @data-engineer @analyst --thinking --evidence --precise --validate --automate
 ```
+
 **Prompt:**
+
 ```
 Create Receivables system with exact calculations:
 
@@ -162,10 +180,13 @@ Create automated daily calculation service and alert system for overdue amounts.
 ## **Phase 4: Advanced Financial Features**
 
 ### **Prompt 7: Assets & Liabilities Management**
+
 ```bash
 @analyst @backend-dev --thinking --evidence --precise --validate --track
 ```
+
 **Prompt:**
+
 ```
 Build comprehensive Assets & Liabilities system:
 
@@ -173,7 +194,7 @@ Build comprehensive Assets & Liabilities system:
    - Fixed Assets (manual entry/editing)
    - Current Assets:
      - Full Cylinders (auto from inventory)
-     - Empty Cylinders (auto from inventory)  
+     - Empty Cylinders (auto from inventory)
      - Cash Receivables (auto from receivables)
      - Cylinder Receivables (auto from receivables)
      - Cash in Hand (auto calculated)
@@ -194,10 +215,13 @@ Ensure all changes reflect immediately in financial reports.
 ```
 
 ### **Prompt 8: Expense Management System**
+
 ```bash
 @backend-dev @frontend-dev --thinking --compress --batch --categorize
 ```
+
 **Prompt:**
+
 ```
 Create comprehensive expense tracking:
 
@@ -224,10 +248,13 @@ Include expense approval workflows and budget alerts.
 ## **Phase 5: Financial Reporting & Analytics**
 
 ### **Prompt 9: Financial Reports Engine**
+
 ```bash
 @analyst @backend-dev @frontend-dev --thinking --evidence --batch --export --validate
 ```
+
 **Prompt:**
+
 ```
 Implement comprehensive financial reporting system:
 
@@ -260,10 +287,13 @@ Ensure all reports reflect real-time data changes.
 ```
 
 ### **Prompt 10: Purchase & Shipment Management**
+
 ```bash
 @backend-dev @frontend-dev --thinking --compress --integrate --validate
 ```
+
 **Prompt:**
+
 ```
 Create Purchase & Shipment management:
 
@@ -291,10 +321,13 @@ Include proper validation and business rule enforcement.
 ## **Phase 6: Dashboard & Production Features**
 
 ### **Prompt 11: Executive Dashboard**
+
 ```bash
 @frontend-dev @analyst --thinking --compress --realtime --optimize --responsive
 ```
+
 **Prompt:**
+
 ```
 Build comprehensive executive dashboard:
 
@@ -328,10 +361,13 @@ Include real-time data updates and mobile-first design.
 ```
 
 ### **Prompt 12: Company & Product Management**
+
 ```bash
 @backend-dev @frontend-dev --thinking --compress --batch --secure
 ```
+
 **Prompt:**
+
 ```
 Create admin-only Company & Product management:
 
@@ -356,10 +392,13 @@ Include proper admin authorization and audit logging.
 ## **Phase 7: Production & Optimization**
 
 ### **Prompt 13: Performance & Security**
+
 ```bash
 @performance-engineer @security-engineer --thinking --evidence --optimize --secure --monitor
 ```
+
 **Prompt:**
+
 ```
 Implement production-ready optimizations:
 
@@ -388,10 +427,13 @@ Include comprehensive security testing and performance benchmarks.
 ```
 
 ### **Prompt 14: Mobile & PWA Features**
+
 ```bash
 @mobile-specialist @frontend-dev --compress --responsive --offline --touch
 ```
+
 **Prompt:**
+
 ```
 Optimize for mobile field operations:
 
@@ -416,10 +458,13 @@ Include comprehensive mobile testing and offline scenario handling.
 ```
 
 ### **Prompt 15: Deployment & DevOps**
+
 ```bash
 @devops-engineer --thinking --evidence --deploy --monitor --backup
 ```
+
 **Prompt:**
+
 ```
 Set up production deployment pipeline:
 

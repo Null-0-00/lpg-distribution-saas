@@ -11,7 +11,7 @@
   "categories": ["business", "productivity", "utilities"],
   "lang": "en-US",
   "dir": "ltr",
-  
+
   "icons": [
     {
       "src": "/images/icons/icon-72x72.png",
@@ -62,7 +62,7 @@
       "purpose": "any maskable"
     }
   ],
-  
+
   "screenshots": [
     {
       "src": "/images/screenshots/dashboard-mobile.png",
@@ -74,7 +74,7 @@
     {
       "src": "/images/screenshots/sales-mobile.png",
       "sizes": "390x844",
-      "type": "image/png", 
+      "type": "image/png",
       "platform": "narrow",
       "label": "Sales entry on mobile"
     },
@@ -86,7 +86,7 @@
       "label": "Dashboard view on tablet"
     }
   ],
-  
+
   "shortcuts": [
     {
       "name": "Quick Sale",
@@ -141,17 +141,17 @@
       ]
     }
   ],
-  
+
   "related_applications": [],
   "prefer_related_applications": false,
-  
+
   "protocol_handlers": [
     {
       "protocol": "web+lpgsale",
       "url": "/sales/new?data=%s"
     }
   ],
-  
+
   "file_handlers": [
     {
       "action": "/import",
@@ -161,7 +161,7 @@
       }
     }
   ],
-  
+
   "share_target": {
     "action": "/share",
     "method": "POST",
@@ -178,28 +178,27 @@
       ]
     }
   },
-  
-  "display_override": ["window-controls-overlay", "minimal-ui", "standalone", "browser"],
-  
+
+  "display_override": [
+    "window-controls-overlay",
+    "minimal-ui",
+    "standalone",
+    "browser"
+  ],
+
   "edge_side_panel": {
     "preferred_width": 400
   },
-  
+
   "handle_links": "preferred",
-  
+
   "launch_handler": {
     "client_mode": ["navigate-existing", "navigate-new"]
   },
-  
+
   "iarc_rating_id": "",
-  
-  "permissions": [
-    "geolocation",
-    "notifications",
-    "persistent-storage"
-  ],
-  
-  "features": [
-    "cross-origin-isolated"
-  ]
+
+  "permissions": ["geolocation", "notifications", "persistent-storage"],
+
+  "features": ["cross-origin-isolated"]
 }

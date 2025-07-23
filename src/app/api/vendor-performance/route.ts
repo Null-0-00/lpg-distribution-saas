@@ -44,15 +44,15 @@ export async function GET(request: NextRequest) {
 
     // Get vendor performance data
     const vendorPerformance = await calculateVendorPerformance(
-      tenantId, 
-      companyId, 
-      dateFrom, 
+      tenantId,
+      companyId,
+      dateFrom,
       dateTo
     );
 
     return NextResponse.json({
       vendorPerformance,
-      period: { from: dateFrom, to: dateTo }
+      period: { from: dateFrom, to: dateTo },
     });
   } catch (error) {
     console.error('Get vendor performance error:', error);
@@ -71,7 +71,7 @@ async function calculateVendorPerformance(
 ) {
   const whereClause: any = {
     tenantId,
-    createdAt: { gte: dateFrom, lte: dateTo }
+    createdAt: { gte: dateFrom, lte: dateTo },
   };
 
   if (companyId) {
@@ -80,10 +80,10 @@ async function calculateVendorPerformance(
 
   // Get all companies for this tenant
   const companies = await prisma.company.findMany({
-    where: { 
+    where: {
       tenantId,
-      ...(companyId && { id: companyId })
-    }
+      ...(companyId && { id: companyId }),
+    },
   });
 
   const vendorMetrics = await Promise.all(
@@ -93,11 +93,11 @@ async function calculateVendorPerformance(
         where: {
           tenantId,
           companyId: company.id,
-          orderDate: { gte: dateFrom, lte: dateTo }
+          orderDate: { gte: dateFrom, lte: dateTo },
         },
         include: {
-          items: true
-        }
+          items: true,
+        },
       });
 
       // Purchases
@@ -105,8 +105,8 @@ async function calculateVendorPerformance(
         where: {
           tenantId,
           companyId: company.id,
-          purchaseDate: { gte: dateFrom, lte: dateTo }
-        }
+          purchaseDate: { gte: dateFrom, lte: dateTo },
+        },
       });
 
       // Shipments
@@ -114,28 +114,40 @@ async function calculateVendorPerformance(
         where: {
           tenantId,
           companyId: company.id,
-          shipmentDate: { gte: dateFrom, lte: dateTo }
-        }
+          shipmentDate: { gte: dateFrom, lte: dateTo },
+        },
       });
 
       // Calculate metrics
       const totalPurchaseOrders = purchaseOrders.length;
-      const totalPurchaseValue = purchases.reduce((sum, p) => sum + p.totalCost, 0);
+      const totalPurchaseValue = purchases.reduce(
+        (sum, p) => sum + p.totalCost,
+        0
+      );
       const totalShipments = shipments.length;
-      const totalShipmentQuantity = shipments.reduce((sum, s) => sum + s.quantity, 0);
+      const totalShipmentQuantity = shipments.reduce(
+        (sum, s) => sum + s.quantity,
+        0
+      );
 
       // On-time delivery calculation
-      const completedPOs = purchaseOrders.filter(po => po.status === 'RECEIVED');
-      const onTimeDeliveries = completedPOs.filter(po => 
-        po.actualDeliveryDate && po.expectedDeliveryDate &&
-        po.actualDeliveryDate <= po.expectedDeliveryDate
+      const completedPOs = purchaseOrders.filter(
+        (po) => po.status === 'RECEIVED'
+      );
+      const onTimeDeliveries = completedPOs.filter(
+        (po) =>
+          po.actualDeliveryDate &&
+          po.expectedDeliveryDate &&
+          po.actualDeliveryDate <= po.expectedDeliveryDate
       ).length;
-      const onTimeDeliveryRate = completedPOs.length > 0 ? 
-        (onTimeDeliveries / completedPOs.length) * 100 : 0;
+      const onTimeDeliveryRate =
+        completedPOs.length > 0
+          ? (onTimeDeliveries / completedPOs.length) * 100
+          : 0;
 
       // Average delivery time
-      const deliveredPOs = completedPOs.filter(po => 
-        po.actualDeliveryDate && po.orderDate
+      const deliveredPOs = completedPOs.filter(
+        (po) => po.actualDeliveryDate && po.orderDate
       );
       const totalDeliveryDays = deliveredPOs.reduce((sum, po) => {
         const orderDate = new Date(po.orderDate);
@@ -144,34 +156,48 @@ async function calculateVendorPerformance(
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
         return sum + diffDays;
       }, 0);
-      const avgDeliveryTime = deliveredPOs.length > 0 ? 
-        totalDeliveryDays / deliveredPOs.length : 0;
+      const avgDeliveryTime =
+        deliveredPOs.length > 0 ? totalDeliveryDays / deliveredPOs.length : 0;
 
       // Quality metrics (based on shipment types)
-      const incomingShipments = shipments.filter(s => 
-        s.shipmentType === 'INCOMING_FULL' || s.shipmentType === 'INCOMING_EMPTY'
+      const incomingShipments = shipments.filter(
+        (s) =>
+          s.shipmentType === 'INCOMING_FULL' ||
+          s.shipmentType === 'INCOMING_EMPTY'
       );
       const qualityScore = 100; // Placeholder - would be based on actual quality assessments
 
       // Cost efficiency (average cost per unit)
-      const avgCostPerUnit = totalShipmentQuantity > 0 ? 
-        totalPurchaseValue / totalShipmentQuantity : 0;
+      const avgCostPerUnit =
+        totalShipmentQuantity > 0
+          ? totalPurchaseValue / totalShipmentQuantity
+          : 0;
 
       // Order fulfillment rate
-      const totalOrderedQuantity = purchaseOrders.reduce((sum, po) => 
-        sum + po.items.reduce((itemSum, item) => itemSum + item.quantity, 0), 0
+      const totalOrderedQuantity = purchaseOrders.reduce(
+        (sum, po) =>
+          sum + po.items.reduce((itemSum, item) => itemSum + item.quantity, 0),
+        0
       );
-      const totalReceivedQuantity = purchaseOrders.reduce((sum, po) => 
-        sum + po.items.reduce((itemSum, item) => itemSum + item.receivedQuantity, 0), 0
+      const totalReceivedQuantity = purchaseOrders.reduce(
+        (sum, po) =>
+          sum +
+          po.items.reduce(
+            (itemSum, item) => itemSum + item.receivedQuantity,
+            0
+          ),
+        0
       );
-      const fulfillmentRate = totalOrderedQuantity > 0 ? 
-        (totalReceivedQuantity / totalOrderedQuantity) * 100 : 0;
+      const fulfillmentRate =
+        totalOrderedQuantity > 0
+          ? (totalReceivedQuantity / totalOrderedQuantity) * 100
+          : 0;
 
       // Monthly breakdown
       const monthlyData = await getMonthlyVendorData(
-        tenantId, 
-        company.id, 
-        dateFrom, 
+        tenantId,
+        company.id,
+        dateFrom,
         dateTo
       );
 
@@ -181,7 +207,7 @@ async function calculateVendorPerformance(
           name: company.name,
           code: company.code,
           address: company.address,
-          contactInfo: company.contactInfo
+          contactInfo: company.contactInfo,
         },
         metrics: {
           totalPurchaseOrders,
@@ -192,20 +218,24 @@ async function calculateVendorPerformance(
           avgDeliveryTime,
           qualityScore,
           avgCostPerUnit,
-          fulfillmentRate
+          fulfillmentRate,
         },
         performance: {
           reliability: onTimeDeliveryRate,
-          efficiency: Math.min(100, (100 - (avgDeliveryTime - 7) * 2)), // Penalty for delays beyond 7 days
+          efficiency: Math.min(100, 100 - (avgDeliveryTime - 7) * 2), // Penalty for delays beyond 7 days
           costEffectiveness: 85, // Placeholder - would compare against market rates
-          overall: (onTimeDeliveryRate + qualityScore + fulfillmentRate) / 3
+          overall: (onTimeDeliveryRate + qualityScore + fulfillmentRate) / 3,
         },
         monthlyData,
         trends: {
-          purchaseValueTrend: calculateTrend(monthlyData.map(m => m.purchaseValue)),
-          deliveryTimeTrend: calculateTrend(monthlyData.map(m => m.avgDeliveryTime)),
-          qualityTrend: calculateTrend(monthlyData.map(m => m.qualityScore))
-        }
+          purchaseValueTrend: calculateTrend(
+            monthlyData.map((m) => m.purchaseValue)
+          ),
+          deliveryTimeTrend: calculateTrend(
+            monthlyData.map((m) => m.avgDeliveryTime)
+          ),
+          qualityTrend: calculateTrend(monthlyData.map((m) => m.qualityScore)),
+        },
       };
     })
   );
@@ -217,11 +247,18 @@ async function calculateVendorPerformance(
     vendors: vendorMetrics,
     summary: {
       totalVendors: vendorMetrics.length,
-      avgPerformance: vendorMetrics.reduce((sum, v) => sum + v.performance.overall, 0) / vendorMetrics.length,
+      avgPerformance:
+        vendorMetrics.reduce((sum, v) => sum + v.performance.overall, 0) /
+        vendorMetrics.length,
       topPerformer: vendorMetrics[0]?.company.name || 'N/A',
-      totalPurchaseValue: vendorMetrics.reduce((sum, v) => sum + v.metrics.totalPurchaseValue, 0),
-      avgDeliveryTime: vendorMetrics.reduce((sum, v) => sum + v.metrics.avgDeliveryTime, 0) / vendorMetrics.length
-    }
+      totalPurchaseValue: vendorMetrics.reduce(
+        (sum, v) => sum + v.metrics.totalPurchaseValue,
+        0
+      ),
+      avgDeliveryTime:
+        vendorMetrics.reduce((sum, v) => sum + v.metrics.avgDeliveryTime, 0) /
+        vendorMetrics.length,
+    },
   };
 }
 
@@ -235,8 +272,16 @@ async function getMonthlyVendorData(
   const currentDate = new Date(dateFrom);
 
   while (currentDate <= dateTo) {
-    const monthStart = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-    const monthEnd = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+    const monthStart = new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth(),
+      1
+    );
+    const monthEnd = new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth() + 1,
+      0
+    );
 
     // Get data for this month
     const [purchases, shipments, purchaseOrders] = await Promise.all([
@@ -244,23 +289,23 @@ async function getMonthlyVendorData(
         where: {
           tenantId,
           companyId,
-          purchaseDate: { gte: monthStart, lte: monthEnd }
-        }
+          purchaseDate: { gte: monthStart, lte: monthEnd },
+        },
       }),
       prisma.shipment.findMany({
         where: {
           tenantId,
           companyId,
-          shipmentDate: { gte: monthStart, lte: monthEnd }
-        }
+          shipmentDate: { gte: monthStart, lte: monthEnd },
+        },
       }),
       prisma.purchaseOrder.findMany({
         where: {
           tenantId,
           companyId,
-          orderDate: { gte: monthStart, lte: monthEnd }
-        }
-      })
+          orderDate: { gte: monthStart, lte: monthEnd },
+        },
+      }),
     ]);
 
     const purchaseValue = purchases.reduce((sum, p) => sum + p.totalCost, 0);
@@ -268,16 +313,18 @@ async function getMonthlyVendorData(
     const orderCount = purchaseOrders.length;
 
     // Calculate average delivery time for this month
-    const completedPOs = purchaseOrders.filter(po => 
-      po.status === 'RECEIVED' && po.actualDeliveryDate
+    const completedPOs = purchaseOrders.filter(
+      (po) => po.status === 'RECEIVED' && po.actualDeliveryDate
     );
-    const avgDeliveryTime = completedPOs.length > 0 ? 
-      completedPOs.reduce((sum, po) => {
-        const orderDate = new Date(po.orderDate);
-        const deliveryDate = new Date(po.actualDeliveryDate!);
-        const diffTime = deliveryDate.getTime() - orderDate.getTime();
-        return sum + Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-      }, 0) / completedPOs.length : 0;
+    const avgDeliveryTime =
+      completedPOs.length > 0
+        ? completedPOs.reduce((sum, po) => {
+            const orderDate = new Date(po.orderDate);
+            const deliveryDate = new Date(po.actualDeliveryDate!);
+            const diffTime = deliveryDate.getTime() - orderDate.getTime();
+            return sum + Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+          }, 0) / completedPOs.length
+        : 0;
 
     monthlyData.push({
       month: monthStart.toISOString().slice(0, 7), // YYYY-MM format
@@ -285,7 +332,7 @@ async function getMonthlyVendorData(
       shipmentCount,
       orderCount,
       avgDeliveryTime,
-      qualityScore: 100 // Placeholder
+      qualityScore: 100, // Placeholder
     });
 
     currentDate.setMonth(currentDate.getMonth() + 1);
@@ -294,19 +341,22 @@ async function getMonthlyVendorData(
   return monthlyData;
 }
 
-function calculateTrend(values: number[]): 'improving' | 'stable' | 'declining' {
+function calculateTrend(
+  values: number[]
+): 'improving' | 'stable' | 'declining' {
   if (values.length < 2) return 'stable';
-  
+
   const recent = values.slice(-3);
   const earlier = values.slice(0, -3);
-  
+
   if (recent.length === 0 || earlier.length === 0) return 'stable';
-  
+
   const recentAvg = recent.reduce((sum, val) => sum + val, 0) / recent.length;
-  const earlierAvg = earlier.reduce((sum, val) => sum + val, 0) / earlier.length;
-  
+  const earlierAvg =
+    earlier.reduce((sum, val) => sum + val, 0) / earlier.length;
+
   const changePercent = ((recentAvg - earlierAvg) / earlierAvg) * 100;
-  
+
   if (changePercent > 5) return 'improving';
   if (changePercent < -5) return 'declining';
   return 'stable';

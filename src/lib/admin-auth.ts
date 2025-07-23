@@ -4,7 +4,7 @@ import { prisma } from '@/lib/prisma';
 
 export async function requireAdminAuth(request: NextRequest) {
   const session = await auth();
-  
+
   if (!session) {
     throw new Error('Authentication required');
   }
@@ -18,7 +18,7 @@ export async function requireAdminAuth(request: NextRequest) {
 
 export async function requireAdminOrManager(request: NextRequest) {
   const session = await auth();
-  
+
   if (!session) {
     throw new Error('Authentication required');
   }
@@ -34,7 +34,7 @@ export async function checkAdminPermission(userId: string): Promise<boolean> {
   try {
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      select: { role: true, isActive: true }
+      select: { role: true, isActive: true },
     });
 
     return user?.isActive === true && user.role === 'ADMIN';
@@ -46,12 +46,13 @@ export async function checkAdminPermission(userId: string): Promise<boolean> {
 
 export async function getRequestMetadata(request: NextRequest) {
   return {
-    ipAddress: request.ip || 
-               request.headers.get('x-forwarded-for')?.split(',')[0] || 
-               request.headers.get('x-real-ip') || 
-               'unknown',
+    ipAddress:
+      request.ip ||
+      request.headers.get('x-forwarded-for')?.split(',')[0] ||
+      request.headers.get('x-real-ip') ||
+      'unknown',
     userAgent: request.headers.get('user-agent') || 'unknown',
-    timestamp: new Date()
+    timestamp: new Date(),
   };
 }
 
@@ -60,7 +61,7 @@ export function createAdminResponse(data: any, message?: string) {
     success: true,
     data,
     message: message || 'Operation completed successfully',
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   };
 }
 
@@ -69,6 +70,6 @@ export function createAdminErrorResponse(error: string, code: number = 400) {
     success: false,
     error,
     timestamp: new Date().toISOString(),
-    statusCode: code
+    statusCode: code,
   };
 }

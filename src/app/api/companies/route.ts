@@ -18,16 +18,16 @@ export async function GET(request: NextRequest) {
     const includeProducts = searchParams.get('includeProducts') === 'true';
 
     const whereClause: any = {};
-    
+
     // For companies, we need to get companies that this distributor works with
     // This could be via distributor assignments or generally available companies
     if (search) {
       whereClause.OR = [
         { name: { contains: search, mode: 'insensitive' } },
-        { code: { contains: search, mode: 'insensitive' } }
+        { code: { contains: search, mode: 'insensitive' } },
       ];
     }
-    
+
     if (isActive !== null && isActive !== undefined) {
       whereClause.isActive = isActive === 'true';
     }
@@ -42,50 +42,52 @@ export async function GET(request: NextRequest) {
             distributorAssignments: {
               some: {
                 tenantId: session.user.tenantId,
-                isActive: true
-              }
-            }
+                isActive: true,
+              },
+            },
           },
           // Or generally available companies (no specific assignments)
           {
             distributorAssignments: {
-              none: {}
+              none: {},
             },
-            isActive: true
-          }
-        ]
+            isActive: true,
+          },
+        ],
       },
       include: {
-        products: includeProducts ? {
-          where: { isActive: true },
-          select: {
-            id: true,
-            name: true,
-            size: true,
-            currentPrice: true,
-            lowStockThreshold: true,
-            isActive: true
-          }
-        } : false,
+        products: includeProducts
+          ? {
+              where: { isActive: true },
+              select: {
+                id: true,
+                name: true,
+                size: true,
+                currentPrice: true,
+                lowStockThreshold: true,
+                isActive: true,
+              },
+            }
+          : false,
         distributorAssignments: {
           where: {
             tenantId: session.user.tenantId,
-            isActive: true
+            isActive: true,
           },
           select: {
             id: true,
             territory: true,
             notes: true,
             effectiveDate: true,
-            expiryDate: true
-          }
-        }
+            expiryDate: true,
+          },
+        },
       },
-      orderBy: { name: 'asc' }
+      orderBy: { name: 'asc' },
     });
 
     // Format response to include distributor-specific info
-    const formattedCompanies = companies.map(company => ({
+    const formattedCompanies = companies.map((company) => ({
       id: company.id,
       name: company.name,
       code: company.code,
@@ -98,15 +100,14 @@ export async function GET(request: NextRequest) {
       products: company.products || [],
       distributorAssignment: company.distributorAssignments[0] || null,
       createdAt: company.createdAt,
-      updatedAt: company.updatedAt
+      updatedAt: company.updatedAt,
     }));
 
     return NextResponse.json({
       success: true,
       companies: formattedCompanies,
-      total: formattedCompanies.length
+      total: formattedCompanies.length,
     });
-
   } catch (error) {
     console.error('Get companies error:', error);
     return NextResponse.json(
@@ -138,11 +139,11 @@ export async function POST(request: NextRequest) {
 
     // Check if company with same name already exists for this tenant
     const existingCompany = await prisma.company.findFirst({
-      where: { 
+      where: {
         name: { equals: name, mode: 'insensitive' },
         // For companies, we might want to allow same name across tenants
         // or enforce uniqueness globally - adjust as needed
-      }
+      },
     });
 
     if (existingCompany) {
@@ -160,7 +161,7 @@ export async function POST(request: NextRequest) {
         address,
         phone,
         email,
-        isActive
+        isActive,
       },
       include: {
         products: {
@@ -171,18 +172,20 @@ export async function POST(request: NextRequest) {
             size: true,
             currentPrice: true,
             lowStockThreshold: true,
-            isActive: true
-          }
-        }
-      }
+            isActive: true,
+          },
+        },
+      },
     });
 
-    return NextResponse.json({
-      success: true,
-      company,
-      message: 'Company created successfully'
-    }, { status: 201 });
-
+    return NextResponse.json(
+      {
+        success: true,
+        company,
+        message: 'Company created successfully',
+      },
+      { status: 201 }
+    );
   } catch (error) {
     console.error('Create company error:', error);
     return NextResponse.json(

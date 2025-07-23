@@ -1,26 +1,26 @@
-"use client";
+'use client';
 
-import React from "react";
-import { useTheme } from "@/providers/ThemeProvider";
-import { useSettings } from "@/contexts/SettingsContext";
+import React from 'react';
+import { useTheme } from '@/providers/ThemeProvider';
+import { useSettings } from '@/contexts/SettingsContext';
 
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme();
   const { t } = useSettings();
 
   const toggleTheme = () => {
-    if (theme === "light") {
-      setTheme("dark");
-    } else if (theme === "dark") {
-      setTheme("system");
+    if (theme === 'light') {
+      setTheme('dark');
+    } else if (theme === 'dark') {
+      setTheme('system');
     } else {
-      setTheme("light");
+      setTheme('light');
     }
   };
 
   const getIcon = () => {
     switch (theme) {
-      case "light":
+      case 'light':
         return (
           <svg
             width="20"
@@ -36,7 +36,7 @@ export function ThemeToggle() {
             <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
           </svg>
         );
-      case "dark":
+      case 'dark':
         return (
           <svg
             width="20"
@@ -51,7 +51,7 @@ export function ThemeToggle() {
             <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
           </svg>
         );
-      case "system":
+      case 'system':
       default:
         return (
           <svg
@@ -74,20 +74,20 @@ export function ThemeToggle() {
 
   const getLabel = () => {
     switch (theme) {
-      case "light":
-        return t('lightMode') || "Light mode";
-      case "dark":
-        return t('darkMode') || "Dark mode";
-      case "system":
+      case 'light':
+        return t('lightMode') || 'Light mode';
+      case 'dark':
+        return t('darkMode') || 'Dark mode';
+      case 'system':
       default:
-        return t('systemTheme') || "System theme";
+        return t('systemTheme') || 'System theme';
     }
   };
 
   return (
     <button
       onClick={toggleTheme}
-      className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-border bg-background hover:bg-muted/50 text-foreground h-10 w-10"
+      className="border-border bg-background hover:bg-muted/50 text-foreground inline-flex h-10 w-10 items-center justify-center rounded-md border text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
       title={getLabel()}
       aria-label={getLabel()}
     >

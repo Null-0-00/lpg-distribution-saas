@@ -21,14 +21,26 @@ export async function POST(request: NextRequest) {
 
     // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
-      return NextResponse.json({ error: 'File size exceeds 5MB limit' }, { status: 400 });
+      return NextResponse.json(
+        { error: 'File size exceeds 5MB limit' },
+        { status: 400 }
+      );
     }
 
     // Validate file type
-    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'application/pdf'];
+    const allowedTypes = [
+      'image/jpeg',
+      'image/jpg',
+      'image/png',
+      'image/gif',
+      'application/pdf',
+    ];
     if (!allowedTypes.includes(file.type)) {
       return NextResponse.json(
-        { error: 'Invalid file type. Only images (JPEG, PNG, GIF) and PDF files are allowed' },
+        {
+          error:
+            'Invalid file type. Only images (JPEG, PNG, GIF) and PDF files are allowed',
+        },
         { status: 400 }
       );
     }
@@ -36,10 +48,15 @@ export async function POST(request: NextRequest) {
     // Create unique filename
     const fileExtension = file.name.split('.').pop() || '';
     const uniqueFilename = `${randomUUID()}.${fileExtension}`;
-    
+
     // Determine upload directory based on type
-    const uploadDir = join(process.cwd(), 'public', 'uploads', type || 'general');
-    
+    const uploadDir = join(
+      process.cwd(),
+      'public',
+      'uploads',
+      type || 'general'
+    );
+
     // Ensure upload directory exists
     try {
       await mkdir(uploadDir, { recursive: true });
@@ -51,7 +68,7 @@ export async function POST(request: NextRequest) {
     const filePath = join(uploadDir, uniqueFilename);
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
-    
+
     await writeFile(filePath, buffer);
 
     // Return public URL
@@ -63,9 +80,8 @@ export async function POST(request: NextRequest) {
       filename: uniqueFilename,
       originalName: file.name,
       size: file.size,
-      type: file.type
+      type: file.type,
     });
-
   } catch (error) {
     console.error('File upload error:', error);
     return NextResponse.json(

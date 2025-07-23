@@ -51,7 +51,7 @@ export interface NotificationPreferences {
   quietHours: {
     enabled: boolean;
     start: string; // HH:MM
-    end: string;   // HH:MM
+    end: string; // HH:MM
   };
   frequency: 'immediate' | 'hourly' | 'daily';
 }
@@ -132,14 +132,14 @@ export class PushNotificationManager {
   async requestPermission(): Promise<NotificationPermission> {
     try {
       const permission = await Notification.requestPermission();
-      
+
       if (permission === 'granted') {
         console.log('Notification permission granted');
         await this.subscribeUser();
       } else {
         console.log('Notification permission denied');
       }
-      
+
       return permission;
     } catch (error) {
       console.error('Error requesting notification permission:', error);
@@ -158,7 +158,7 @@ export class PushNotificationManager {
 
       // Check if already subscribed
       this.subscription = await this.registration.pushManager.getSubscription();
-      
+
       if (this.subscription) {
         console.log('User already subscribed');
         await this.savePushSubscription(this.subscription);
@@ -168,12 +168,12 @@ export class PushNotificationManager {
       // Subscribe to push notifications
       this.subscription = await this.registration.pushManager.subscribe({
         userVisibleOnly: true,
-        applicationServerKey: this.urlBase64ToUint8Array(this.vapidPublicKey)
+        applicationServerKey: this.urlBase64ToUint8Array(this.vapidPublicKey),
       });
 
       console.log('User subscribed to push notifications');
       await this.savePushSubscription(this.subscription);
-      
+
       return this.subscription;
     } catch (error) {
       console.error('Failed to subscribe user:', error);
@@ -191,13 +191,13 @@ export class PushNotificationManager {
       }
 
       const unsubscribed = await this.subscription.unsubscribe();
-      
+
       if (unsubscribed) {
         console.log('User unsubscribed from push notifications');
         await this.removePushSubscription();
         this.subscription = null;
       }
-      
+
       return unsubscribed;
     } catch (error) {
       console.error('Failed to unsubscribe user:', error);
@@ -233,10 +233,10 @@ export class PushNotificationManager {
           category: template.category,
           priority: template.priority,
           timestamp: Date.now(),
-          ...options.data
+          ...options.data,
         },
         actions: template.actions,
-        ...options
+        ...options,
       };
 
       // Check if we should send based on user preferences
@@ -252,7 +252,7 @@ export class PushNotificationManager {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
       });
 
       return response.ok;
@@ -265,7 +265,9 @@ export class PushNotificationManager {
   /**
    * Show local notification (for immediate display)
    */
-  async showLocalNotification(payload: PushNotificationPayload): Promise<boolean> {
+  async showLocalNotification(
+    payload: PushNotificationPayload
+  ): Promise<boolean> {
     try {
       if (!this.registration) {
         throw new Error('Service worker not registered');
@@ -283,7 +285,7 @@ export class PushNotificationManager {
         tag: payload.tag,
         renotify: payload.renotify || false,
         timestamp: payload.timestamp || Date.now(),
-        vibrate: payload.vibrate || [200, 100, 200]
+        vibrate: payload.vibrate || [200, 100, 200],
       });
 
       return true;
@@ -317,23 +319,25 @@ export class PushNotificationManager {
       quietHours: {
         enabled: false,
         start: '22:00',
-        end: '08:00'
+        end: '08:00',
       },
-      frequency: 'immediate'
+      frequency: 'immediate',
     };
   }
 
   /**
    * Update notification preferences
    */
-  async updateNotificationPreferences(preferences: Partial<NotificationPreferences>): Promise<boolean> {
+  async updateNotificationPreferences(
+    preferences: Partial<NotificationPreferences>
+  ): Promise<boolean> {
     try {
       const response = await fetch('/api/notifications/preferences', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(preferences)
+        body: JSON.stringify(preferences),
       });
 
       return response.ok;
@@ -371,9 +375,9 @@ export class PushNotificationManager {
       actions: [
         {
           action: 'acknowledge',
-          title: 'OK'
-        }
-      ]
+          title: 'OK',
+        },
+      ],
     });
   }
 
@@ -391,22 +395,20 @@ export class PushNotificationManager {
         icon: '/images/icons/inventory-alert.png',
         actions: [
           { action: 'view-inventory', title: 'View Inventory' },
-          { action: 'order-stock', title: 'Order Stock' }
+          { action: 'order-stock', title: 'Order Stock' },
         ],
-        variables: ['productName', 'currentStock']
+        variables: ['productName', 'currentStock'],
       },
       {
         id: 'daily-sales-summary',
         name: 'Daily Sales Summary',
         title: 'Daily Sales Report',
-        body: 'Today\'s sales: {{totalSales}} with {{totalRevenue}} revenue',
+        body: "Today's sales: {{totalSales}} with {{totalRevenue}} revenue",
         category: 'report',
         priority: 'normal',
         icon: '/images/icons/sales-report.png',
-        actions: [
-          { action: 'view-report', title: 'View Report' }
-        ],
-        variables: ['totalSales', 'totalRevenue']
+        actions: [{ action: 'view-report', title: 'View Report' }],
+        variables: ['totalSales', 'totalRevenue'],
       },
       {
         id: 'payment-reminder',
@@ -418,9 +420,9 @@ export class PushNotificationManager {
         icon: '/images/icons/payment-reminder.png',
         actions: [
           { action: 'view-payment', title: 'View Details' },
-          { action: 'mark-paid', title: 'Mark as Paid' }
+          { action: 'mark-paid', title: 'Mark as Paid' },
         ],
-        variables: ['amount', 'customerName']
+        variables: ['amount', 'customerName'],
       },
       {
         id: 'driver-alert',
@@ -430,10 +432,8 @@ export class PushNotificationManager {
         category: 'alert',
         priority: 'high',
         icon: '/images/icons/driver-alert.png',
-        actions: [
-          { action: 'view-drivers', title: 'View Drivers' }
-        ],
-        variables: ['driverName', 'action']
+        actions: [{ action: 'view-drivers', title: 'View Drivers' }],
+        variables: ['driverName', 'action'],
       },
       {
         id: 'system-maintenance',
@@ -443,11 +443,11 @@ export class PushNotificationManager {
         category: 'alert',
         priority: 'normal',
         icon: '/images/icons/maintenance-alert.png',
-        variables: ['maintenanceTime']
-      }
+        variables: ['maintenanceTime'],
+      },
     ];
 
-    templates.forEach(template => {
+    templates.forEach((template) => {
       this.templates.set(template.id, template);
     });
   }
@@ -455,7 +455,7 @@ export class PushNotificationManager {
   private setupMessageListener(): void {
     navigator.serviceWorker.addEventListener('message', (event) => {
       const { type, payload } = event.data;
-      
+
       switch (type) {
         case 'NOTIFICATION_CLICKED':
           this.handleNotificationClick(payload);
@@ -467,17 +467,25 @@ export class PushNotificationManager {
     });
   }
 
-  private async savePushSubscription(subscription: PushSubscription): Promise<void> {
+  private async savePushSubscription(
+    subscription: PushSubscription
+  ): Promise<void> {
     try {
       const subscriptionData: PushSubscriptionData = {
         endpoint: subscription.endpoint,
         keys: {
-          p256dh: btoa(String.fromCharCode(...new Uint8Array(subscription.getKey('p256dh')!))),
-          auth: btoa(String.fromCharCode(...new Uint8Array(subscription.getKey('auth')!)))
+          p256dh: btoa(
+            String.fromCharCode(
+              ...new Uint8Array(subscription.getKey('p256dh')!)
+            )
+          ),
+          auth: btoa(
+            String.fromCharCode(...new Uint8Array(subscription.getKey('auth')!))
+          ),
         },
         userAgent: navigator.userAgent,
         deviceId: await this.getDeviceId(),
-        preferences: await this.getNotificationPreferences()
+        preferences: await this.getNotificationPreferences(),
       };
 
       await fetch('/api/notifications/subscribe', {
@@ -485,7 +493,7 @@ export class PushNotificationManager {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(subscriptionData)
+        body: JSON.stringify(subscriptionData),
       });
     } catch (error) {
       console.error('Failed to save push subscription:', error);
@@ -498,7 +506,7 @@ export class PushNotificationManager {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-        }
+        },
       });
     } catch (error) {
       console.error('Failed to remove push subscription:', error);
@@ -506,7 +514,7 @@ export class PushNotificationManager {
   }
 
   private urlBase64ToUint8Array(base64String: string): Uint8Array {
-    const padding = '='.repeat((4 - base64String.length % 4) % 4);
+    const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
     const base64 = (base64String + padding)
       .replace(/-/g, '+')
       .replace(/_/g, '/');
@@ -517,23 +525,28 @@ export class PushNotificationManager {
     for (let i = 0; i < rawData.length; ++i) {
       outputArray[i] = rawData.charCodeAt(i);
     }
-    
+
     return outputArray;
   }
 
-  private replaceVariables(text: string, variables: Record<string, string>): string {
+  private replaceVariables(
+    text: string,
+    variables: Record<string, string>
+  ): string {
     let result = text;
-    
+
     Object.entries(variables).forEach(([key, value]) => {
       result = result.replace(new RegExp(`{{${key}}}`, 'g'), value);
     });
-    
+
     return result;
   }
 
-  private async shouldSendNotification(template: NotificationTemplate): Promise<boolean> {
+  private async shouldSendNotification(
+    template: NotificationTemplate
+  ): Promise<boolean> {
     const preferences = await this.getNotificationPreferences();
-    
+
     if (!preferences.enabled) {
       return false;
     }
@@ -562,7 +575,7 @@ export class PushNotificationManager {
       const now = new Date();
       const currentTime = now.toTimeString().substr(0, 5);
       const { start, end } = preferences.quietHours;
-      
+
       if (this.isInQuietHours(currentTime, start, end)) {
         // Only allow urgent notifications during quiet hours
         return template.priority === 'urgent';
@@ -572,7 +585,11 @@ export class PushNotificationManager {
     return true;
   }
 
-  private isInQuietHours(currentTime: string, start: string, end: string): boolean {
+  private isInQuietHours(
+    currentTime: string,
+    start: string,
+    end: string
+  ): boolean {
     if (start <= end) {
       return currentTime >= start && currentTime <= end;
     } else {
@@ -584,21 +601,22 @@ export class PushNotificationManager {
   private async getDeviceId(): Promise<string> {
     // Generate or retrieve a unique device ID
     let deviceId = localStorage.getItem('deviceId');
-    
+
     if (!deviceId) {
-      deviceId = 'device_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+      deviceId =
+        'device_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
       localStorage.setItem('deviceId', deviceId);
     }
-    
+
     return deviceId;
   }
 
   private handleNotificationClick(payload: any): void {
     console.log('Notification clicked:', payload);
-    
+
     // Track notification interaction
     this.trackNotificationInteraction('click', payload);
-    
+
     // Handle specific actions
     if (payload.action) {
       this.handleNotificationAction(payload.action, payload.data);
@@ -607,12 +625,15 @@ export class PushNotificationManager {
 
   private handleNotificationClose(payload: any): void {
     console.log('Notification closed:', payload);
-    
+
     // Track notification interaction
     this.trackNotificationInteraction('close', payload);
   }
 
-  private async trackNotificationInteraction(action: string, payload: any): Promise<void> {
+  private async trackNotificationInteraction(
+    action: string,
+    payload: any
+  ): Promise<void> {
     try {
       await fetch('/api/notifications/track', {
         method: 'POST',
@@ -623,8 +644,8 @@ export class PushNotificationManager {
           action,
           notificationId: payload.notificationId,
           templateId: payload.templateId,
-          timestamp: Date.now()
-        })
+          timestamp: Date.now(),
+        }),
       });
     } catch (error) {
       console.error('Failed to track notification interaction:', error);
@@ -659,19 +680,21 @@ export const pushNotificationManager = PushNotificationManager.getInstance();
  */
 export function usePushNotifications() {
   const [isSupported, setIsSupported] = React.useState(false);
-  const [permission, setPermission] = React.useState<NotificationPermission>('default');
+  const [permission, setPermission] =
+    React.useState<NotificationPermission>('default');
   const [isSubscribed, setIsSubscribed] = React.useState(false);
 
   React.useEffect(() => {
     const initializeNotifications = async () => {
       const supported = await pushNotificationManager.initialize();
       setIsSupported(supported);
-      
+
       if (supported) {
         setPermission(Notification.permission);
         // Check subscription status
-        const subscription = await navigator.serviceWorker.ready
-          .then(reg => reg.pushManager.getSubscription());
+        const subscription = await navigator.serviceWorker.ready.then((reg) =>
+          reg.pushManager.getSubscription()
+        );
         setIsSubscribed(!!subscription);
       }
     };
@@ -700,7 +723,10 @@ export function usePushNotifications() {
     return success;
   };
 
-  const sendNotification = (templateId: string, variables?: Record<string, string>) => {
+  const sendNotification = (
+    templateId: string,
+    variables?: Record<string, string>
+  ) => {
     return pushNotificationManager.sendNotification(templateId, variables);
   };
 
@@ -716,6 +742,6 @@ export function usePushNotifications() {
     subscribe,
     unsubscribe,
     sendNotification,
-    testNotification
+    testNotification,
   };
 }

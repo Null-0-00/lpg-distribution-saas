@@ -26,7 +26,7 @@ export async function PUT(
 
     // Check if cylinder size exists and belongs to tenant
     const existingSize = await prisma.cylinderSize.findFirst({
-      where: { id, tenantId }
+      where: { id, tenantId },
     });
 
     if (!existingSize) {
@@ -41,8 +41,8 @@ export async function PUT(
       where: {
         size: { equals: size, mode: 'insensitive' },
         tenantId,
-        id: { not: id }
-      }
+        id: { not: id },
+      },
     });
 
     if (duplicateSize) {
@@ -57,13 +57,13 @@ export async function PUT(
       data: {
         size: size.trim(),
         description: description?.trim() || null,
-        ...(isActive !== undefined && { isActive })
-      }
+        ...(isActive !== undefined && { isActive }),
+      },
     });
 
     return NextResponse.json({
       cylinderSize,
-      message: 'Cylinder size updated successfully'
+      message: 'Cylinder size updated successfully',
     });
   } catch (error) {
     console.error('Update cylinder size error:', error);
@@ -89,7 +89,7 @@ export async function DELETE(
 
     // Check if cylinder size exists and belongs to tenant
     const existingSize = await prisma.cylinderSize.findFirst({
-      where: { id, tenantId }
+      where: { id, tenantId },
     });
 
     if (!existingSize) {
@@ -101,7 +101,7 @@ export async function DELETE(
 
     // Check if any products are using this cylinder size
     const productsUsingSize = await prisma.product.findFirst({
-      where: { cylinderSizeId: id, tenantId }
+      where: { cylinderSizeId: id, tenantId },
     });
 
     if (productsUsingSize) {
@@ -112,11 +112,11 @@ export async function DELETE(
     }
 
     await prisma.cylinderSize.delete({
-      where: { id }
+      where: { id },
     });
 
     return NextResponse.json({
-      message: 'Cylinder size deleted successfully'
+      message: 'Cylinder size deleted successfully',
     });
   } catch (error) {
     console.error('Delete cylinder size error:', error);

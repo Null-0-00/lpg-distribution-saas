@@ -1,9 +1,22 @@
-"use client";
+'use client';
 
 import { useState, useEffect } from 'react';
-import { TrendingUp, Plus, Filter, Download, Edit2, Trash2, RefreshCw } from 'lucide-react';
+import {
+  TrendingUp,
+  Plus,
+  Filter,
+  Download,
+  Edit2,
+  Trash2,
+  RefreshCw,
+} from 'lucide-react';
 import { CombinedSaleForm } from '@/components/forms/CombinedSaleForm';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useToast } from '@/hooks/use-toast';
@@ -64,11 +77,15 @@ interface DailySalesData {
 
 export default function SalesPage() {
   const { formatCurrency, t } = useSettings();
-  const [dailySalesData, setDailySalesData] = useState<DailySalesData | null>(null);
+  const [dailySalesData, setDailySalesData] = useState<DailySalesData | null>(
+    null
+  );
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [showNewSaleForm, setShowNewSaleForm] = useState(false);
-  const [editingEntry, setEditingEntry] = useState<DailySalesEntry | null>(null);
+  const [editingEntry, setEditingEntry] = useState<DailySalesEntry | null>(
+    null
+  );
   const [editingEntryData, setEditingEntryData] = useState<any>(null);
   const [loadingEditData, setLoadingEditData] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -83,17 +100,17 @@ export default function SalesPage() {
       } else {
         setLoading(true);
       }
-      
+
       const today = new Date().toISOString().split('T')[0];
       console.log('Fetching daily sales summary for date:', today);
-      
+
       const response = await fetch(`/api/sales/daily-summary?date=${today}`, {
         cache: 'no-cache',
         headers: {
-          'Cache-Control': 'no-cache'
-        }
+          'Cache-Control': 'no-cache',
+        },
       });
-      
+
       if (response.ok) {
         const data = await response.json();
         console.log('Daily sales data received:', data);
@@ -103,14 +120,16 @@ export default function SalesPage() {
       } else {
         const errorText = await response.text();
         console.error('Daily sales API error:', response.status, errorText);
-        throw new Error(`Failed to load daily sales data: ${response.status} ${errorText}`);
+        throw new Error(
+          `Failed to load daily sales data: ${response.status} ${errorText}`
+        );
       }
     } catch (error) {
       console.error('Failed to load daily sales:', error);
       toast({
-        title: "Error",
-        description: "Failed to load daily sales data. Please try again.",
-        variant: "destructive"
+        title: 'Error',
+        description: 'Failed to load daily sales data. Please try again.',
+        variant: 'destructive',
       });
     } finally {
       setLoading(false);
@@ -120,12 +139,12 @@ export default function SalesPage() {
 
   useEffect(() => {
     loadSalesData();
-    
+
     // Set up automatic refresh every 30 seconds
     const interval = setInterval(() => {
       loadSalesData(true); // Pass true to indicate this is a refresh
     }, 30000); // 30 seconds
-    
+
     return () => clearInterval(interval);
   }, []);
 
@@ -136,14 +155,14 @@ export default function SalesPage() {
       const response = await fetch('/api/sales/combined', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(formData),
       });
 
       if (response.ok) {
         const result = await response.json();
         toast({
-          title: "Success",
-          description: result.message || "Combined sale created successfully!"
+          title: 'Success',
+          description: result.message || 'Combined sale created successfully!',
         });
         setShowNewSaleForm(false);
         await loadSalesData(); // Reload data
@@ -154,9 +173,10 @@ export default function SalesPage() {
     } catch (error) {
       console.error('Failed to create sale:', error);
       toast({
-        title: "Error",
-        description: error instanceof Error ? error.message : "Failed to create sale",
-        variant: "destructive"
+        title: 'Error',
+        description:
+          error instanceof Error ? error.message : 'Failed to create sale',
+        variant: 'destructive',
       });
       throw error;
     } finally {
@@ -168,12 +188,14 @@ export default function SalesPage() {
   const loadEntryForEdit = async (entry: DailySalesEntry) => {
     try {
       setLoadingEditData(true);
-      const response = await fetch(`/api/sales/details?salesIds=${entry.salesIds.join(',')}`);
-      
+      const response = await fetch(
+        `/api/sales/details?salesIds=${entry.salesIds.join(',')}`
+      );
+
       if (response.ok) {
         const data = await response.json();
         const sales = data.sales;
-        
+
         // Transform sales data into form format
         const saleItems = sales.map((sale: any) => ({
           productId: sale.product.id || '',
@@ -182,7 +204,7 @@ export default function SalesPage() {
           packagePrice: sale.saleType === 'PACKAGE' ? sale.unitPrice : 0,
           refillPrice: sale.saleType === 'REFILL' ? sale.unitPrice : 0,
         }));
-        
+
         // Group by product if there are both package and refill sales for same product
         const groupedItems: { [key: string]: any } = {};
         saleItems.forEach((item: any) => {
@@ -190,19 +212,22 @@ export default function SalesPage() {
           if (groupedItems[key]) {
             groupedItems[key].packageSale += item.packageSale;
             groupedItems[key].refillSale += item.refillSale;
-            if (item.packagePrice > 0) groupedItems[key].packagePrice = item.packagePrice;
-            if (item.refillPrice > 0) groupedItems[key].refillPrice = item.refillPrice;
+            if (item.packagePrice > 0)
+              groupedItems[key].packagePrice = item.packagePrice;
+            if (item.refillPrice > 0)
+              groupedItems[key].refillPrice = item.refillPrice;
           } else {
             groupedItems[key] = { ...item };
           }
         });
-        
+
         // Convert old cylindersDeposited to new cylinderDeposits format by size
         const cylinderDepositsBySize: { [size: string]: number } = {};
         sales.forEach((sale: any) => {
           if (sale.cylindersDeposited > 0 && sale.product?.size) {
             const size = sale.product.size;
-            cylinderDepositsBySize[size] = (cylinderDepositsBySize[size] || 0) + sale.cylindersDeposited;
+            cylinderDepositsBySize[size] =
+              (cylinderDepositsBySize[size] || 0) + sale.cylindersDeposited;
           }
         });
 
@@ -211,12 +236,18 @@ export default function SalesPage() {
           customerName: sales[0]?.customerName || '',
           saleItems: Object.values(groupedItems),
           paymentType: sales[0]?.paymentType || 'CASH',
-          discount: sales.reduce((sum: number, sale: any) => sum + sale.discount, 0),
-          cashDeposited: sales.reduce((sum: number, sale: any) => sum + sale.cashDeposited, 0),
+          discount: sales.reduce(
+            (sum: number, sale: any) => sum + sale.discount,
+            0
+          ),
+          cashDeposited: sales.reduce(
+            (sum: number, sale: any) => sum + sale.cashDeposited,
+            0
+          ),
           cylinderDeposits: cylinderDepositsBySize,
-          notes: sales[0]?.notes || ''
+          notes: sales[0]?.notes || '',
         };
-        
+
         setEditingEntryData(formData);
         setEditingEntry(entry);
       } else {
@@ -225,9 +256,9 @@ export default function SalesPage() {
     } catch (error) {
       console.error('Failed to load entry data:', error);
       toast({
-        title: "Error",
-        description: "Failed to load entry data for editing",
-        variant: "destructive"
+        title: 'Error',
+        description: 'Failed to load entry data for editing',
+        variant: 'destructive',
       });
     } finally {
       setLoadingEditData(false);
@@ -237,36 +268,36 @@ export default function SalesPage() {
   // Handle entry edit submission
   const handleEditEntrySubmit = async (formData: any) => {
     if (!editingEntry) return;
-    
+
     try {
       setSubmitting(true);
-      
+
       // First delete the existing sales
       const deleteResponse = await fetch('/api/sales/bulk-delete', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           salesIds: editingEntry.salesIds,
-          date: editingEntry.date
-        })
+          date: editingEntry.date,
+        }),
       });
-      
+
       if (!deleteResponse.ok) {
         throw new Error('Failed to delete existing sales');
       }
-      
+
       // Then create new sales with updated data
       const createResponse = await fetch('/api/sales/combined', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(formData),
       });
-      
+
       if (createResponse.ok) {
         const result = await createResponse.json();
         toast({
-          title: "Success",
-          description: "Sales entry updated successfully!"
+          title: 'Success',
+          description: 'Sales entry updated successfully!',
         });
         setEditingEntry(null);
         setEditingEntryData(null);
@@ -278,9 +309,12 @@ export default function SalesPage() {
     } catch (error) {
       console.error('Failed to update sales entry:', error);
       toast({
-        title: "Error",
-        description: error instanceof Error ? error.message : "Failed to update sales entry",
-        variant: "destructive"
+        title: 'Error',
+        description:
+          error instanceof Error
+            ? error.message
+            : 'Failed to update sales entry',
+        variant: 'destructive',
       });
       throw error;
     } finally {
@@ -290,7 +324,11 @@ export default function SalesPage() {
 
   // Handle bulk delete for a driver's daily sales
   const handleDeleteDailyEntry = async (entry: DailySalesEntry) => {
-    if (!confirm(`Are you sure you want to delete all sales for ${entry.driverName} on ${entry.date}? This will delete ${entry.salesIds.length} sales entries and cannot be undone.`)) {
+    if (
+      !confirm(
+        `Are you sure you want to delete all sales for ${entry.driverName} on ${entry.date}? This will delete ${entry.salesIds.length} sales entries and cannot be undone.`
+      )
+    ) {
       return;
     }
 
@@ -298,19 +336,19 @@ export default function SalesPage() {
       const response = await fetch('/api/sales/bulk-delete', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           salesIds: entry.salesIds,
-          date: entry.date
-        })
+          date: entry.date,
+        }),
       });
 
       if (response.ok) {
         const result = await response.json();
         toast({
-          title: "Success",
-          description: `Successfully deleted ${result.deletedCount} sales entries for ${entry.driverName}`
+          title: 'Success',
+          description: `Successfully deleted ${result.deletedCount} sales entries for ${entry.driverName}`,
         });
         await loadSalesData();
       } else {
@@ -320,19 +358,19 @@ export default function SalesPage() {
     } catch (error) {
       console.error('Failed to delete daily sales:', error);
       toast({
-        title: "Error",
-        description: error instanceof Error ? error.message : "Failed to delete sales",
-        variant: "destructive"
+        title: 'Error',
+        description:
+          error instanceof Error ? error.message : 'Failed to delete sales',
+        variant: 'destructive',
       });
     }
   };
 
-
   if (loading) {
     return (
       <div className="p-6">
-        <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <div className="flex h-64 items-center justify-center">
+          <div className="h-12 w-12 animate-spin rounded-full border-b-2 border-blue-600"></div>
           <span className="ml-3">Loading sales data...</span>
         </div>
       </div>
@@ -340,111 +378,131 @@ export default function SalesPage() {
   }
 
   const dailySummary = dailySalesData?.dailySummary || [];
-  const summary = dailySalesData?.summary || { 
-    totalDrivers: 0, 
-    totalPackageSales: 0, 
-    totalRefillSales: 0, 
-    totalSalesValue: 0, 
-    totalCashDeposited: 0, 
-    totalCylinderDeposited: 0 
+  const summary = dailySalesData?.summary || {
+    totalDrivers: 0,
+    totalPackageSales: 0,
+    totalRefillSales: 0,
+    totalSalesValue: 0,
+    totalCashDeposited: 0,
+    totalCylinderDeposited: 0,
   };
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="space-y-6 p-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">{t('salesManagement')}</h1>
-          <p className="text-muted-foreground">Record and track daily sales performance</p>
+          <h1 className="text-foreground text-2xl font-bold">
+            {t('salesManagement')}
+          </h1>
+          <p className="text-muted-foreground">
+            Record and track daily sales performance
+          </p>
         </div>
         <div className="flex items-center space-x-2">
-          <Button 
+          <Button
             onClick={() => loadSalesData(true)}
             variant="outline"
             className="flex items-center"
             disabled={refreshing}
           >
-            <RefreshCw className={`h-4 w-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
+            <RefreshCw
+              className={`mr-2 h-4 w-4 ${refreshing ? 'animate-spin' : ''}`}
+            />
             Refresh
           </Button>
-          <Button 
+          <Button
             onClick={() => setShowNewSaleForm(true)}
-            className="flex items-center bg-blue-600 hover:bg-blue-700 text-white"
+            className="flex items-center bg-blue-600 text-white hover:bg-blue-700"
           >
-            <Plus className="h-4 w-4 mr-2" />
+            <Plus className="mr-2 h-4 w-4" />
             {t('create')} {t('sales')}
           </Button>
         </div>
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-card rounded-lg shadow p-6 border border-border transition-colors">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
+        <div className="bg-card border-border rounded-lg border p-6 shadow transition-colors">
           <div className="flex items-center">
             <TrendingUp className="h-8 w-8 text-blue-500" />
             <div className="ml-4">
-              <p className="text-sm text-muted-foreground">{t('packageSale')}</p>
-              <p className="text-2xl font-bold text-foreground">{summary.totalPackageSales}</p>
-              <p className="text-xs text-muted-foreground">Cylinders sold</p>
+              <p className="text-muted-foreground text-sm">
+                {t('packageSale')}
+              </p>
+              <p className="text-foreground text-2xl font-bold">
+                {summary.totalPackageSales}
+              </p>
+              <p className="text-muted-foreground text-xs">Cylinders sold</p>
             </div>
           </div>
         </div>
-        <div className="bg-card rounded-lg shadow p-6 border border-border transition-colors">
+        <div className="bg-card border-border rounded-lg border p-6 shadow transition-colors">
           <div className="flex items-center">
             <TrendingUp className="h-8 w-8 text-green-500" />
             <div className="ml-4">
-              <p className="text-sm text-muted-foreground">{t('refillSale')}</p>
-              <p className="text-2xl font-bold text-foreground">{summary.totalRefillSales}</p>
-              <p className="text-xs text-muted-foreground">Cylinders refilled</p>
+              <p className="text-muted-foreground text-sm">{t('refillSale')}</p>
+              <p className="text-foreground text-2xl font-bold">
+                {summary.totalRefillSales}
+              </p>
+              <p className="text-muted-foreground text-xs">
+                Cylinders refilled
+              </p>
             </div>
           </div>
         </div>
-        <div className="bg-card rounded-lg shadow p-6 border border-border transition-colors">
+        <div className="bg-card border-border rounded-lg border p-6 shadow transition-colors">
           <div className="flex items-center">
             <TrendingUp className="h-8 w-8 text-purple-500" />
             <div className="ml-4">
-              <p className="text-sm text-muted-foreground">Total Revenue</p>
-              <p className="text-2xl font-bold text-foreground">{formatCurrency(summary.totalSalesValue)}</p>
-              <p className="text-xs text-muted-foreground">Sales value</p>
+              <p className="text-muted-foreground text-sm">Total Revenue</p>
+              <p className="text-foreground text-2xl font-bold">
+                {formatCurrency(summary.totalSalesValue)}
+              </p>
+              <p className="text-muted-foreground text-xs">Sales value</p>
             </div>
           </div>
         </div>
-        <div className="bg-card rounded-lg shadow p-6 border border-border transition-colors">
+        <div className="bg-card border-border rounded-lg border p-6 shadow transition-colors">
           <div className="flex items-center">
             <TrendingUp className="h-8 w-8 text-orange-500" />
             <div className="ml-4">
-              <p className="text-sm text-muted-foreground">Cash Collected</p>
-              <p className="text-2xl font-bold text-foreground">{formatCurrency(summary.totalCashDeposited)}</p>
-              <p className="text-xs text-muted-foreground">Cash deposited</p>
+              <p className="text-muted-foreground text-sm">Cash Collected</p>
+              <p className="text-foreground text-2xl font-bold">
+                {formatCurrency(summary.totalCashDeposited)}
+              </p>
+              <p className="text-muted-foreground text-xs">Cash deposited</p>
             </div>
           </div>
         </div>
       </div>
 
       {/* Sales Table */}
-      <div className="bg-card rounded-lg shadow border border-border transition-colors">
-        <div className="px-6 py-4 border-b border-border flex items-center justify-between">
+      <div className="bg-card border-border rounded-lg border shadow transition-colors">
+        <div className="border-border flex items-center justify-between border-b px-6 py-4">
           <div className="flex items-center space-x-4">
-            <h2 className="text-lg font-semibold text-foreground">Today's Sales</h2>
+            <h2 className="text-foreground text-lg font-semibold">
+              Today's Sales
+            </h2>
             {refreshing && (
-              <div className="flex items-center text-sm text-muted-foreground">
-                <RefreshCw className="h-4 w-4 mr-1 animate-spin" />
+              <div className="text-muted-foreground flex items-center text-sm">
+                <RefreshCw className="mr-1 h-4 w-4 animate-spin" />
                 Refreshing...
               </div>
             )}
             {lastUpdated && !refreshing && (
-              <div className="text-sm text-muted-foreground">
+              <div className="text-muted-foreground text-sm">
                 Last updated: {lastUpdated.toLocaleTimeString()}
               </div>
             )}
           </div>
           <div className="flex space-x-2">
             <Button variant="outline" size="sm">
-              <Filter className="h-4 w-4 mr-2" />
+              <Filter className="mr-2 h-4 w-4" />
               Filter
             </Button>
             <Button variant="outline" size="sm">
-              <Download className="h-4 w-4 mr-2" />
+              <Download className="mr-2 h-4 w-4" />
               Export
             </Button>
           </div>
@@ -453,56 +511,80 @@ export default function SalesPage() {
           <table className="w-full">
             <thead className="bg-muted">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">{t('date')}</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">{t('drivers')}</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">{t('packageSale')} ({t('quantity')})</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">{t('refillSale')} ({t('quantity')})</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">{t('totalValue')}</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">{t('discount')}</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">Total Cash Deposited</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">Total Cylinder Deposited</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">{t('actions')}</th>
+                <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase">
+                  {t('date')}
+                </th>
+                <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase">
+                  {t('drivers')}
+                </th>
+                <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase">
+                  {t('packageSale')} ({t('quantity')})
+                </th>
+                <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase">
+                  {t('refillSale')} ({t('quantity')})
+                </th>
+                <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase">
+                  {t('totalValue')}
+                </th>
+                <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase">
+                  {t('discount')}
+                </th>
+                <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase">
+                  Total Cash Deposited
+                </th>
+                <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase">
+                  Total Cylinder Deposited
+                </th>
+                <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase">
+                  {t('actions')}
+                </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-border">
+            <tbody className="divide-border divide-y">
               {dailySummary.length === 0 ? (
                 <tr>
-                  <td colSpan={9} className="px-6 py-8 text-center text-muted-foreground">
+                  <td
+                    colSpan={9}
+                    className="text-muted-foreground px-6 py-8 text-center"
+                  >
                     {t('noDataFound')}. {t('create')} {t('sales')} {t('add')}.
                   </td>
                 </tr>
               ) : (
                 dailySummary.map((entry) => (
-                  <tr key={entry.id} className="hover:bg-muted/50 transition-colors">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">
+                  <tr
+                    key={entry.id}
+                    className="hover:bg-muted/50 transition-colors"
+                  >
+                    <td className="text-foreground whitespace-nowrap px-6 py-4 text-sm">
                       {new Date(entry.date).toLocaleDateString()}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-foreground">
+                    <td className="text-foreground whitespace-nowrap px-6 py-4 text-sm font-medium">
                       {entry.driverName}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">
-                      <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                    <td className="text-foreground whitespace-nowrap px-6 py-4 text-sm">
+                      <span className="inline-flex rounded-full bg-blue-100 px-2 py-1 text-xs font-semibold text-blue-800 dark:bg-blue-900 dark:text-blue-200">
                         {entry.packageSalesQty}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">
-                      <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                    <td className="text-foreground whitespace-nowrap px-6 py-4 text-sm">
+                      <span className="inline-flex rounded-full bg-green-100 px-2 py-1 text-xs font-semibold text-green-800 dark:bg-green-900 dark:text-green-200">
                         {entry.refillSalesQty}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-foreground">
+                    <td className="text-foreground whitespace-nowrap px-6 py-4 text-sm font-medium">
                       {formatCurrency(entry.totalSalesValue)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">
+                    <td className="text-foreground whitespace-nowrap px-6 py-4 text-sm">
                       {formatCurrency(entry.totalDiscount)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">
+                    <td className="text-foreground whitespace-nowrap px-6 py-4 text-sm">
                       {formatCurrency(entry.totalCashDeposited)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">
+                    <td className="text-foreground whitespace-nowrap px-6 py-4 text-sm">
                       {entry.totalCylinderDeposited}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <td className="whitespace-nowrap px-6 py-4 text-sm font-medium">
                       {entry.canEdit || entry.canDelete ? (
                         <div className="flex space-x-2">
                           {entry.canEdit && (
@@ -528,7 +610,9 @@ export default function SalesPage() {
                           )}
                         </div>
                       ) : (
-                        <span className="text-muted-foreground text-xs">Read only</span>
+                        <span className="text-muted-foreground text-xs">
+                          Read only
+                        </span>
                       )}
                     </td>
                   </tr>
@@ -541,9 +625,11 @@ export default function SalesPage() {
 
       {/* New Sale Dialog */}
       <Dialog open={showNewSaleForm} onOpenChange={setShowNewSaleForm}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-h-[90vh] max-w-4xl overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>{t('create')} {t('sales')}</DialogTitle>
+            <DialogTitle>
+              {t('create')} {t('sales')}
+            </DialogTitle>
           </DialogHeader>
           <CombinedSaleForm
             onSubmit={handleCreateSale}
@@ -554,10 +640,18 @@ export default function SalesPage() {
       </Dialog>
 
       {/* Edit Daily Entry Dialog */}
-      <Dialog open={!!editingEntry} onOpenChange={() => { setEditingEntry(null); setEditingEntryData(null); }}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+      <Dialog
+        open={!!editingEntry}
+        onOpenChange={() => {
+          setEditingEntry(null);
+          setEditingEntryData(null);
+        }}
+      >
+        <DialogContent className="max-h-[90vh] max-w-4xl overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Edit Sales Entry - {editingEntry?.driverName}</DialogTitle>
+            <DialogTitle>
+              Edit Sales Entry - {editingEntry?.driverName}
+            </DialogTitle>
           </DialogHeader>
           {loadingEditData ? (
             <div className="flex items-center justify-center p-8">
@@ -567,15 +661,20 @@ export default function SalesPage() {
           ) : editingEntryData ? (
             <CombinedSaleForm
               onSubmit={handleEditEntrySubmit}
-              onCancel={() => { setEditingEntry(null); setEditingEntryData(null); }}
+              onCancel={() => {
+                setEditingEntry(null);
+                setEditingEntryData(null);
+              }}
               loading={submitting}
               initialData={editingEntryData}
             />
           ) : editingEntry ? (
             <div className="p-4 text-center">
-              <p className="text-gray-600 mb-4">Failed to load entry data for editing.</p>
-              <Button 
-                variant="outline" 
+              <p className="mb-4 text-gray-600">
+                Failed to load entry data for editing.
+              </p>
+              <Button
+                variant="outline"
                 onClick={() => setEditingEntry(null)}
                 className="mt-4"
               >

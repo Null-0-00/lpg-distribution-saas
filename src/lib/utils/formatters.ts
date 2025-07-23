@@ -1,9 +1,9 @@
-import { format } from "date-fns";
-import { CURRENCY, DATE_FORMATS } from "./constants";
+import { format } from 'date-fns';
+import { CURRENCY, DATE_FORMATS } from './constants';
 
 export function formatCurrency(amount: number): string {
   return new Intl.NumberFormat(CURRENCY.locale, {
-    style: "currency",
+    style: 'currency',
     currency: CURRENCY.code,
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
@@ -17,8 +17,11 @@ export function formatNumber(value: number, decimals: number = 0): string {
   }).format(value);
 }
 
-export function formatDate(date: Date | string, formatString: string = DATE_FORMATS.display): string {
-  const dateObj = typeof date === "string" ? new Date(date) : date;
+export function formatDate(
+  date: Date | string,
+  formatString: string = DATE_FORMATS.display
+): string {
+  const dateObj = typeof date === 'string' ? new Date(date) : date;
   return format(dateObj, formatString);
 }
 
@@ -32,28 +35,28 @@ export function formatQuantity(quantity: number): string {
 
 export function parseCurrency(value: string): number {
   // Remove currency symbol and parse
-  const cleanValue = value.replace(/[^0-9.-]/g, "");
+  const cleanValue = value.replace(/[^0-9.-]/g, '');
   return parseFloat(cleanValue) || 0;
 }
 
 export function formatPhoneNumber(phone: string): string {
   // Format Bangladeshi phone numbers
-  const cleaned = phone.replace(/\D/g, "");
-  
-  if (cleaned.length === 11 && cleaned.startsWith("01")) {
+  const cleaned = phone.replace(/\D/g, '');
+
+  if (cleaned.length === 11 && cleaned.startsWith('01')) {
     return `+88${cleaned}`;
   }
-  
-  if (cleaned.length === 13 && cleaned.startsWith("880")) {
+
+  if (cleaned.length === 13 && cleaned.startsWith('880')) {
     return `+${cleaned}`;
   }
-  
+
   return phone;
 }
 
 export function truncateText(text: string, maxLength: number): string {
   if (text.length <= maxLength) return text;
-  return text.substring(0, maxLength) + "...";
+  return text.substring(0, maxLength) + '...';
 }
 
 export function capitalizeFirst(text: string): string {
@@ -61,14 +64,14 @@ export function capitalizeFirst(text: string): string {
 }
 
 export function formatFileSize(bytes: number): string {
-  const units = ["B", "KB", "MB", "GB"];
+  const units = ['B', 'KB', 'MB', 'GB'];
   let size = bytes;
   let unitIndex = 0;
-  
+
   while (size >= 1024 && unitIndex < units.length - 1) {
     size /= 1024;
     unitIndex++;
   }
-  
+
   return `${formatNumber(size, unitIndex > 0 ? 1 : 0)} ${units[unitIndex]}`;
 }

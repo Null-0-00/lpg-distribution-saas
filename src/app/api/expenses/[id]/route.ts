@@ -9,28 +9,38 @@ import { z } from 'zod';
 
 const updateExpenseSchema = z.object({
   categoryId: z.string().min(1, 'Category is required').optional(),
-  amount: z.union([
-    z.number().min(0.01, 'Amount must be greater than 0'),
-    z.string().regex(/^\d+(\.\d{1,2})?$/, 'Invalid amount format').transform(val => {
-      const num = parseFloat(val);
-      if (num <= 0) {
-        throw new Error('Amount must be greater than 0');
-      }
-      return num;
-    })
-  ]).optional(),
+  amount: z
+    .union([
+      z.number().min(0.01, 'Amount must be greater than 0'),
+      z
+        .string()
+        .regex(/^\d+(\.\d{1,2})?$/, 'Invalid amount format')
+        .transform((val) => {
+          const num = parseFloat(val);
+          if (num <= 0) {
+            throw new Error('Amount must be greater than 0');
+          }
+          return num;
+        }),
+    ])
+    .optional(),
   description: z.string().optional(),
-  expenseDate: z.union([
-    z.string().datetime().transform(val => new Date(val)),
-    z.string().transform(val => {
-      const date = new Date(val);
-      if (isNaN(date.getTime())) {
-        throw new Error('Invalid date format');
-      }
-      return date;
-    }),
-    z.date()
-  ]).optional(),
+  expenseDate: z
+    .union([
+      z
+        .string()
+        .datetime()
+        .transform((val) => new Date(val)),
+      z.string().transform((val) => {
+        const date = new Date(val);
+        if (isNaN(date.getTime())) {
+          throw new Error('Invalid date format');
+        }
+        return date;
+      }),
+      z.date(),
+    ])
+    .optional(),
   receiptUrl: z.string().url().optional().or(z.literal('')).or(z.undefined()),
   notes: z.string().optional(),
 });
@@ -56,25 +66,25 @@ export async function GET(
     const expense = await prisma.expense.findFirst({
       where: {
         id: expenseId,
-        tenantId
+        tenantId,
       },
       include: {
         category: {
           select: {
             id: true,
             name: true,
-            budget: true
-          }
+            budget: true,
+          },
         },
         user: {
           select: {
             id: true,
             name: true,
             email: true,
-            role: true
-          }
-        }
-      }
+            role: true,
+          },
+        },
+      },
     });
 
     if (!expense) {
@@ -82,16 +92,25 @@ export async function GET(
     }
 
     // Check if current user can view this expense
-    const canView = session.user.role === UserRole.ADMIN || 
-                   expense.userId === session.user.id;
+    const canView =
+      session.user.role === UserRole.ADMIN ||
+      expense.userId === session.user.id;
 
     if (!canView) {
       return NextResponse.json({ error: 'Access denied' }, { status: 403 });
     }
 
     // Get budget context for this expense
-    const monthStart = new Date(expense.expenseDate.getFullYear(), expense.expenseDate.getMonth(), 1);
-    const monthEnd = new Date(expense.expenseDate.getFullYear(), expense.expenseDate.getMonth() + 1, 1);
+    const monthStart = new Date(
+      expense.expenseDate.getFullYear(),
+      expense.expenseDate.getMonth(),
+      1
+    );
+    const monthEnd = new Date(
+      expense.expenseDate.getFullYear(),
+      expense.expenseDate.getMonth() + 1,
+      1
+    );
 
     const monthlySpending = await prisma.expense.aggregate({
       where: {
@@ -99,15 +118,16 @@ export async function GET(
         isApproved: true,
         expenseDate: {
           gte: monthStart,
-          lt: monthEnd
+          lt: monthEnd,
         },
-        id: { not: expenseId } // Exclude this expense from calculation
+        id: { not: expenseId }, // Exclude this expense from calculation
       },
-      _sum: { amount: true }
+      _sum: { amount: true },
     });
 
     const otherMonthlySpending = monthlySpending._sum.amount || 0;
-    const totalMonthlySpending = otherMonthlySpending + (expense.isApproved ? expense.amount : 0);
+    const totalMonthlySpending =
+      otherMonthlySpending + (expense.isApproved ? expense.amount : 0);
     const projectedSpending = otherMonthlySpending + expense.amount;
 
     return NextResponse.json({
@@ -124,21 +144,29 @@ export async function GET(
         category: expense.category,
         user: expense.user,
         createdAt: expense.createdAt,
-        updatedAt: expense.updatedAt
+        updatedAt: expense.updatedAt,
       },
-      budgetContext: expense.category.budget ? {
-        categoryBudget: expense.category.budget,
-        currentMonthSpending: totalMonthlySpending,
-        projectedSpending,
-        remainingBudget: Math.max(0, expense.category.budget - projectedSpending),
-        isOverBudget: projectedSpending > expense.category.budget,
-        budgetUtilization: (projectedSpending / expense.category.budget) * 100
-      } : null
+      budgetContext: expense.category.budget
+        ? {
+            categoryBudget: expense.category.budget,
+            currentMonthSpending: totalMonthlySpending,
+            projectedSpending,
+            remainingBudget: Math.max(
+              0,
+              expense.category.budget - projectedSpending
+            ),
+            isOverBudget: projectedSpending > expense.category.budget,
+            budgetUtilization:
+              (projectedSpending / expense.category.budget) * 100,
+          }
+        : null,
     });
-
   } catch (error) {
     console.error('Expense fetch error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
   }
 }
 
@@ -161,8 +189,8 @@ export async function PUT(
     const existingExpense = await prisma.expense.findFirst({
       where: {
         id: expenseId,
-        tenantId
-      }
+        tenantId,
+      },
     });
 
     if (!existingExpense) {
@@ -171,52 +199,73 @@ export async function PUT(
 
     // Check permissions - only admin can edit expenses
     if (session.user.role !== UserRole.ADMIN) {
-      return NextResponse.json({ 
-        error: 'Unauthorized - Admin access required' 
-      }, { status: 401 });
+      return NextResponse.json(
+        {
+          error: 'Unauthorized - Admin access required',
+        },
+        { status: 401 }
+      );
     }
 
     // Verify new category if provided
-    if (validatedData.categoryId && validatedData.categoryId !== existingExpense.categoryId) {
+    if (
+      validatedData.categoryId &&
+      validatedData.categoryId !== existingExpense.categoryId
+    ) {
       const category = await prisma.expenseCategory.findFirst({
         where: {
           id: validatedData.categoryId,
           tenantId,
-          isActive: true
-        }
+          isActive: true,
+        },
       });
 
       if (!category) {
-        return NextResponse.json({ error: 'Category not found or inactive' }, { status: 400 });
+        return NextResponse.json(
+          { error: 'Category not found or inactive' },
+          { status: 400 }
+        );
       }
     }
 
     const updatedExpense = await prisma.expense.update({
       where: { id: expenseId },
       data: {
-        ...(validatedData.categoryId && { categoryId: validatedData.categoryId }),
-        ...(validatedData.amount !== undefined && { amount: validatedData.amount }),
-        ...(validatedData.description && { description: validatedData.description }),
-        ...(validatedData.expenseDate && { expenseDate: validatedData.expenseDate }),
-        ...(validatedData.receiptUrl !== undefined && { receiptUrl: validatedData.receiptUrl }),
-        ...(validatedData.notes !== undefined && { notes: validatedData.notes }),
+        ...(validatedData.categoryId && {
+          categoryId: validatedData.categoryId,
+        }),
+        ...(validatedData.amount !== undefined && {
+          amount: validatedData.amount,
+        }),
+        ...(validatedData.description && {
+          description: validatedData.description,
+        }),
+        ...(validatedData.expenseDate && {
+          expenseDate: validatedData.expenseDate,
+        }),
+        ...(validatedData.receiptUrl !== undefined && {
+          receiptUrl: validatedData.receiptUrl,
+        }),
+        ...(validatedData.notes !== undefined && {
+          notes: validatedData.notes,
+        }),
       },
       include: {
         category: {
           select: {
             id: true,
             name: true,
-            budget: true
-          }
+            budget: true,
+          },
         },
         user: {
           select: {
             id: true,
             name: true,
-            email: true
-          }
-        }
-      }
+            email: true,
+          },
+        },
+      },
     });
 
     return NextResponse.json({
@@ -231,16 +280,21 @@ export async function PUT(
         isApproved: updatedExpense.isApproved,
         category: updatedExpense.category,
         user: updatedExpense.user,
-        updatedAt: updatedExpense.updatedAt
-      }
+        updatedAt: updatedExpense.updatedAt,
+      },
     });
-
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return NextResponse.json({ error: 'Validation failed', details: error.errors }, { status: 400 });
+      return NextResponse.json(
+        { error: 'Validation failed', details: error.errors },
+        { status: 400 }
+      );
     }
     console.error('Expense update error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
   }
 }
 
@@ -261,8 +315,8 @@ export async function DELETE(
     const existingExpense = await prisma.expense.findFirst({
       where: {
         id: expenseId,
-        tenantId
-      }
+        tenantId,
+      },
     });
 
     if (!existingExpense) {
@@ -271,23 +325,28 @@ export async function DELETE(
 
     // Check permissions - only admin can delete expenses
     if (session.user.role !== UserRole.ADMIN) {
-      return NextResponse.json({ 
-        error: 'Unauthorized - Admin access required' 
-      }, { status: 401 });
+      return NextResponse.json(
+        {
+          error: 'Unauthorized - Admin access required',
+        },
+        { status: 401 }
+      );
     }
 
     await prisma.expense.delete({
-      where: { id: expenseId }
+      where: { id: expenseId },
     });
 
     return NextResponse.json({
       success: true,
-      message: 'Expense deleted successfully'
+      message: 'Expense deleted successfully',
     });
-
   } catch (error) {
     console.error('Expense deletion error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
   }
 }
 
@@ -299,7 +358,10 @@ export async function PATCH(
   try {
     const session = await auth();
     if (!session?.user?.tenantId || session.user.role !== UserRole.ADMIN) {
-      return NextResponse.json({ error: 'Unauthorized - Admin access required' }, { status: 401 });
+      return NextResponse.json(
+        { error: 'Unauthorized - Admin access required' },
+        { status: 401 }
+      );
     }
 
     const { id: expenseId } = await context.params;
@@ -311,8 +373,8 @@ export async function PATCH(
     const existingExpense = await prisma.expense.findFirst({
       where: {
         id: expenseId,
-        tenantId
-      }
+        tenantId,
+      },
     });
 
     if (!existingExpense) {
@@ -320,7 +382,10 @@ export async function PATCH(
     }
 
     if (existingExpense.isApproved) {
-      return NextResponse.json({ error: 'Expense already approved' }, { status: 400 });
+      return NextResponse.json(
+        { error: 'Expense already approved' },
+        { status: 400 }
+      );
     }
 
     if (action === 'approve') {
@@ -330,23 +395,27 @@ export async function PATCH(
           isApproved: true,
           approvedBy: session.user.id,
           approvedAt: new Date(),
-          ...(notes && { notes: existingExpense.notes ? `${existingExpense.notes}\n\nApproval notes: ${notes}` : `Approval notes: ${notes}` })
+          ...(notes && {
+            notes: existingExpense.notes
+              ? `${existingExpense.notes}\n\nApproval notes: ${notes}`
+              : `Approval notes: ${notes}`,
+          }),
         },
         include: {
           category: {
             select: {
               id: true,
-              name: true
-            }
+              name: true,
+            },
           },
           user: {
             select: {
               id: true,
               name: true,
-              email: true
-            }
-          }
-        }
+              email: true,
+            },
+          },
+        },
       });
 
       return NextResponse.json({
@@ -360,26 +429,31 @@ export async function PATCH(
           approvedBy: updatedExpense.approvedBy,
           approvedAt: updatedExpense.approvedAt,
           category: updatedExpense.category,
-          user: updatedExpense.user
-        }
+          user: updatedExpense.user,
+        },
       });
     } else {
       // Reject - delete the expense
       await prisma.expense.delete({
-        where: { id: expenseId }
+        where: { id: expenseId },
       });
 
       return NextResponse.json({
         success: true,
-        message: 'Expense rejected and removed'
+        message: 'Expense rejected and removed',
       });
     }
-
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return NextResponse.json({ error: 'Validation failed', details: error.errors }, { status: 400 });
+      return NextResponse.json(
+        { error: 'Validation failed', details: error.errors },
+        { status: 400 }
+      );
     }
     console.error('Expense approval error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
   }
 }

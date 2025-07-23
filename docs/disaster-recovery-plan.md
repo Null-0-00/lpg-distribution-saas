@@ -7,11 +7,13 @@ This document outlines the comprehensive disaster recovery (DR) strategy for the
 ## Recovery Objectives
 
 ### Recovery Time Objective (RTO)
+
 - **Critical Services**: 2 hours
 - **Non-Critical Services**: 4 hours
 - **Full System Recovery**: 8 hours
 
 ### Recovery Point Objective (RPO)
+
 - **Database**: Maximum 15 minutes of data loss
 - **File Storage**: Maximum 1 hour of data loss
 - **Configuration**: Maximum 4 hours of data loss
@@ -21,11 +23,12 @@ This document outlines the comprehensive disaster recovery (DR) strategy for the
 ### Database Backups
 
 #### Primary Database (PostgreSQL)
+
 ```yaml
 # Automated daily backups
 Schedule: Daily at 2:00 AM UTC
 Retention: 30 days
-Location: 
+Location:
   - Primary: AWS S3 (us-east-1)
   - Secondary: AWS S3 (eu-west-1)
 Format: Compressed SQL dump with encryption
@@ -37,6 +40,7 @@ Purpose: Point-in-time recovery
 ```
 
 #### Backup Verification
+
 - Daily backup integrity checks
 - Weekly restore testing to staging environment
 - Monthly full disaster recovery simulation
@@ -44,6 +48,7 @@ Purpose: Point-in-time recovery
 ### Application Data Backups
 
 #### File Storage (S3)
+
 ```yaml
 Replication: Cross-region replication enabled
 Versioning: Enabled with lifecycle policies
@@ -52,6 +57,7 @@ Retention: 90 days for current versions, 30 days for deleted objects
 ```
 
 #### Configuration Backups
+
 ```yaml
 Kubernetes Configs: Daily backup to Git repository
 Secrets: Encrypted backup to secure storage
@@ -62,6 +68,7 @@ Environment Variables: Version controlled and encrypted
 ## Infrastructure Redundancy
 
 ### Multi-Zone Deployment
+
 ```yaml
 Primary Region: us-east-1
   - Availability Zones: us-east-1a, us-east-1b, us-east-1c
@@ -76,6 +83,7 @@ Secondary Region: eu-west-1
 ```
 
 ### Kubernetes Cluster Redundancy
+
 ```yaml
 Control Plane: 3 master nodes across AZs
 Worker Nodes: Minimum 3 nodes per AZ
@@ -86,6 +94,7 @@ Pod Disruption Budget: Minimum 2 replicas always available
 ## Monitoring and Alerting
 
 ### Health Checks
+
 ```yaml
 Application Health:
   - HTTP endpoint: /api/health
@@ -101,6 +110,7 @@ Infrastructure Health:
 ```
 
 ### Alert Thresholds
+
 ```yaml
 Critical Alerts:
   - Application down > 2 minutes
@@ -119,6 +129,7 @@ Warning Alerts:
 ## Failure Scenarios and Response
 
 ### Scenario 1: Single Pod Failure
+
 ```yaml
 Impact: Minimal (automatic recovery)
 Detection: Kubernetes liveness probes
@@ -133,6 +144,7 @@ Actions:
 ```
 
 ### Scenario 2: Node Failure
+
 ```yaml
 Impact: Temporary service degradation
 Detection: Node monitoring alerts
@@ -148,6 +160,7 @@ Actions:
 ```
 
 ### Scenario 3: Availability Zone Failure
+
 ```yaml
 Impact: Service degradation, possible brief outage
 Detection: Multi-zone monitoring
@@ -163,6 +176,7 @@ Actions:
 ```
 
 ### Scenario 4: Database Failure
+
 ```yaml
 Impact: Complete service outage
 Detection: Database health checks
@@ -179,6 +193,7 @@ Actions:
 ```
 
 ### Scenario 5: Complete Region Failure
+
 ```yaml
 Impact: Complete service outage
 Detection: Regional monitoring
@@ -195,6 +210,7 @@ Actions:
 ```
 
 ### Scenario 6: Data Corruption
+
 ```yaml
 Impact: Data integrity issues
 Detection: Data validation checks, user reports
@@ -214,6 +230,7 @@ Actions:
 ## Recovery Procedures
 
 ### Emergency Response Team
+
 ```yaml
 Incident Commander: DevOps Lead
 Database Expert: Senior Backend Developer
@@ -223,6 +240,7 @@ Customer Support: Support Team Lead
 ```
 
 ### Communication Plan
+
 ```yaml
 Internal Communication:
   - Slack #incidents channel
@@ -239,6 +257,7 @@ External Communication:
 ### Recovery Runbooks
 
 #### Database Recovery
+
 ```bash
 # 1. Assess damage
 kubectl exec -it postgresql-production-0 -- psql -U postgres -c "SELECT version();"
@@ -257,6 +276,7 @@ curl -f https://lpg-distributor.com/api/health
 ```
 
 #### Application Recovery
+
 ```bash
 # 1. Check current status
 kubectl get pods -n lpg-distributor-production
@@ -273,6 +293,7 @@ curl -f https://lpg-distributor.com/api/health
 ```
 
 #### Full System Recovery
+
 ```bash
 # 1. Restore database
 ./scripts/restore-database.sh
@@ -293,6 +314,7 @@ aws route53 change-resource-record-sets --hosted-zone-id Z123456789 --change-bat
 ## Testing and Validation
 
 ### Regular Testing Schedule
+
 ```yaml
 Daily:
   - Backup verification
@@ -316,6 +338,7 @@ Quarterly:
 ```
 
 ### Success Criteria
+
 ```yaml
 Backup Testing:
   - Successful restore to staging environment
@@ -338,18 +361,21 @@ DR Simulation:
 ## Post-Incident Procedures
 
 ### Immediate Actions (0-24 hours)
+
 1. Confirm system stability
 2. Document incident timeline
 3. Notify stakeholders of resolution
 4. Begin preliminary root cause analysis
 
 ### Short-term Actions (1-7 days)
+
 1. Complete detailed post-incident review
 2. Identify improvement opportunities
 3. Update runbooks and documentation
 4. Implement immediate fixes
 
 ### Long-term Actions (1-4 weeks)
+
 1. Implement systemic improvements
 2. Update monitoring and alerting
 3. Conduct team training if needed
@@ -358,6 +384,7 @@ DR Simulation:
 ## Contact Information
 
 ### Emergency Contacts
+
 ```yaml
 Primary On-Call: +1-555-DEVOPS-1
 Secondary On-Call: +1-555-DEVOPS-2
@@ -367,6 +394,7 @@ Hosting Provider: Priority Support Line
 ```
 
 ### Escalation Matrix
+
 ```yaml
 Level 1: Development Team (0-30 minutes)
 Level 2: Technical Lead (30-60 minutes)
@@ -377,12 +405,14 @@ Level 4: CTO (2+ hours or critical business impact)
 ## Compliance and Auditing
 
 ### Record Keeping
+
 - All incidents documented in incident management system
 - Recovery testing results stored in secure repository
 - Compliance reports generated quarterly
 - Audit trails maintained for all DR activities
 
 ### Regulatory Requirements
+
 - Data residency compliance
 - Privacy regulation adherence (GDPR, CCPA)
 - Financial data protection standards
@@ -391,12 +421,14 @@ Level 4: CTO (2+ hours or critical business impact)
 ## Continuous Improvement
 
 ### Regular Reviews
+
 - Monthly DR plan review meetings
 - Quarterly effectiveness assessments
 - Annual comprehensive plan updates
 - Post-incident plan improvements
 
 ### Metrics and KPIs
+
 - RTO/RPO achievement rates
 - Backup success rates
 - Test failure rates

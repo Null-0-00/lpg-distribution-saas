@@ -1,7 +1,18 @@
-"use client";
+'use client';
 
 import { useState, useEffect } from 'react';
-import { FileText, Download, Calendar, TrendingUp, BarChart3, PieChart, Mail, RefreshCw, CheckCircle, AlertCircle } from 'lucide-react';
+import {
+  FileText,
+  Download,
+  Calendar,
+  TrendingUp,
+  BarChart3,
+  PieChart,
+  Mail,
+  RefreshCw,
+  CheckCircle,
+  AlertCircle,
+} from 'lucide-react';
 
 // Financial Reports Engine with Real-time Data Integration
 interface IncomeStatementData {
@@ -92,17 +103,17 @@ export default function ReportsPage() {
   const [loading, setLoading] = useState(false);
   const [lastUpdated, setLastUpdated] = useState(new Date());
   const [exportLoading, setExportLoading] = useState('');
-  
+
   // Real-time financial data state
   const [incomeStatement, setIncomeStatement] = useState<IncomeStatementData>({
     revenue: {
       packageSales: 340000,
       refillSales: 285000,
-      total: 625000
+      total: 625000,
     },
     costOfGoodsSold: {
       cylinderPurchases: 375000,
-      total: 375000
+      total: 375000,
     },
     operatingExpenses: {
       salaries: 45000,
@@ -111,10 +122,10 @@ export default function ReportsPage() {
       rent: 15000,
       utilities: 3500,
       other: 6500,
-      total: 90000
+      total: 90000,
     },
     grossProfit: 250000,
-    netIncome: 160000
+    netIncome: 160000,
   });
 
   const [balanceSheet, setBalanceSheet] = useState<BalanceSheetData>({
@@ -123,34 +134,34 @@ export default function ReportsPage() {
         cash: 150000,
         accountsReceivable: 85000,
         inventory: 420000,
-        total: 655000
+        total: 655000,
       },
       fixedAssets: {
         vehicles: 800000,
         equipment: 250000,
         buildings: 1200000,
-        total: 2250000
+        total: 2250000,
       },
-      totalAssets: 2905000
+      totalAssets: 2905000,
     },
     liabilities: {
       currentLiabilities: {
         accountsPayable: 125000,
         shortTermLoans: 75000,
-        total: 200000
+        total: 200000,
       },
       longTermLiabilities: {
         longTermLoans: 900000,
-        total: 900000
+        total: 900000,
       },
-      totalLiabilities: 1100000
+      totalLiabilities: 1100000,
     },
     equity: {
       ownerEquity: 1500000,
       retainedEarnings: 305000,
-      total: 1805000
+      total: 1805000,
     },
-    isBalanced: true
+    isBalanced: true,
   });
 
   const [cashFlow, setCashFlow] = useState<CashFlowData>({
@@ -160,27 +171,27 @@ export default function ReportsPage() {
       accountsReceivableChange: -15000,
       inventoryChange: -35000,
       accountsPayableChange: 12000,
-      total: 167000
+      total: 167000,
     },
     investingActivities: {
       vehiclePurchases: -150000,
       equipmentPurchases: -25000,
-      total: -175000
+      total: -175000,
     },
     financingActivities: {
       ownerDrawings: -60000,
       loanRepayments: -35000,
-      total: -95000
+      total: -95000,
     },
     netCashFlow: -103000,
     beginningCash: 253000,
-    endingCash: 150000
+    endingCash: 150000,
   });
 
   // Load real-time financial data
   useEffect(() => {
     loadFinancialData();
-    
+
     // Auto-refresh every 5 minutes
     const interval = setInterval(loadFinancialData, 300000);
     return () => clearInterval(interval);
@@ -191,8 +202,8 @@ export default function ReportsPage() {
     try {
       // Simulate API calls to load real financial data
       // In production, these would be actual API endpoints
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
       // Update last refreshed time
       setLastUpdated(new Date());
     } catch (error) {
@@ -203,12 +214,15 @@ export default function ReportsPage() {
   };
 
   // Export functionality
-  const handleExportReport = async (reportType: string, format: 'pdf' | 'excel') => {
+  const handleExportReport = async (
+    reportType: string,
+    format: 'pdf' | 'excel'
+  ) => {
     setExportLoading(`${reportType}-${format}`);
     try {
       // Simulate export API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+
       // In production, this would trigger actual PDF/Excel generation
       const filename = `${reportType}_${selectedPeriod}_${new Date().toISOString().split('T')[0]}.${format === 'pdf' ? 'pdf' : 'xlsx'}`;
       alert(`${format.toUpperCase()} export completed: ${filename}`);
@@ -223,14 +237,14 @@ export default function ReportsPage() {
   // Email automation
   const handleEmailReport = async (reportType: string) => {
     try {
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      await new Promise((resolve) => setTimeout(resolve, 1500));
       alert(`${reportType} has been emailed to configured recipients.`);
     } catch (error) {
       console.error('Email error:', error);
       alert('Email failed. Please check email configuration.');
     }
   };
-  
+
   const [reportTypes] = useState([
     {
       id: 'income_statement',
@@ -238,7 +252,7 @@ export default function ReportsPage() {
       description: 'Revenue, expenses, and profit analysis',
       icon: TrendingUp,
       lastGenerated: '2024-01-15',
-      color: 'blue'
+      color: 'blue',
     },
     {
       id: 'balance_sheet',
@@ -246,7 +260,7 @@ export default function ReportsPage() {
       description: 'Assets, liabilities, and equity overview',
       icon: BarChart3,
       lastGenerated: '2024-01-15',
-      color: 'green'
+      color: 'green',
     },
     {
       id: 'cash_flow',
@@ -254,7 +268,7 @@ export default function ReportsPage() {
       description: 'Cash inflows and outflows tracking',
       icon: PieChart,
       lastGenerated: '2024-01-15',
-      color: 'purple'
+      color: 'purple',
     },
     {
       id: 'sales_report',
@@ -262,7 +276,7 @@ export default function ReportsPage() {
       description: 'Detailed sales performance analysis',
       icon: TrendingUp,
       lastGenerated: '2024-01-15',
-      color: 'orange'
+      color: 'orange',
     },
     {
       id: 'inventory_report',
@@ -270,7 +284,7 @@ export default function ReportsPage() {
       description: 'Stock levels and movement analysis',
       icon: BarChart3,
       lastGenerated: '2024-01-15',
-      color: 'teal'
+      color: 'teal',
     },
     {
       id: 'driver_performance',
@@ -278,59 +292,66 @@ export default function ReportsPage() {
       description: 'Individual driver sales and efficiency',
       icon: PieChart,
       lastGenerated: '2024-01-15',
-      color: 'red'
-    }
+      color: 'red',
+    },
   ]);
 
   // Calculate real-time quick stats from actual data
   const quickStats = {
     totalRevenue: incomeStatement.revenue.total,
-    totalExpenses: incomeStatement.costOfGoodsSold.total + incomeStatement.operatingExpenses.total,
+    totalExpenses:
+      incomeStatement.costOfGoodsSold.total +
+      incomeStatement.operatingExpenses.total,
     netProfit: incomeStatement.netIncome,
-    profitMargin: ((incomeStatement.netIncome / incomeStatement.revenue.total) * 100)
+    profitMargin:
+      (incomeStatement.netIncome / incomeStatement.revenue.total) * 100,
   };
 
   const getIconColor = (color: string) => {
     const colors: { [key: string]: string } = {
-      'blue': 'text-blue-600',
-      'green': 'text-green-600',
-      'purple': 'text-purple-600',
-      'orange': 'text-orange-600',
-      'teal': 'text-teal-600',
-      'red': 'text-red-600',
+      blue: 'text-blue-600',
+      green: 'text-green-600',
+      purple: 'text-purple-600',
+      orange: 'text-orange-600',
+      teal: 'text-teal-600',
+      red: 'text-red-600',
     };
     return colors[color] || 'text-gray-600';
   };
 
   const getBgColor = (color: string) => {
     const colors: { [key: string]: string } = {
-      'blue': 'bg-blue-100',
-      'green': 'bg-green-100',
-      'purple': 'bg-purple-100',
-      'orange': 'bg-orange-100',
-      'teal': 'bg-teal-100',
-      'red': 'bg-red-100',
+      blue: 'bg-blue-100',
+      green: 'bg-green-100',
+      purple: 'bg-purple-100',
+      orange: 'bg-orange-100',
+      teal: 'bg-teal-100',
+      red: 'bg-red-100',
     };
     return colors[color] || 'bg-gray-100';
   };
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="space-y-6 p-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Financial Reports</h1>
-          <p className="text-muted-foreground">Generate and view comprehensive business reports</p>
+          <h1 className="text-foreground text-2xl font-bold">
+            Financial Reports
+          </h1>
+          <p className="text-muted-foreground">
+            Generate and view comprehensive business reports
+          </p>
         </div>
         <div className="flex items-center space-x-4">
-          <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+          <div className="text-muted-foreground flex items-center space-x-2 text-sm">
             <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
             <span>Last updated: {lastUpdated.toLocaleTimeString()}</span>
           </div>
-          <select 
+          <select
             value={selectedPeriod}
             onChange={(e) => setSelectedPeriod(e.target.value)}
-            className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm bg-white dark:bg-gray-700 text-foreground"
+            className="text-foreground rounded-md border border-gray-300 bg-white px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700"
           >
             <option value="today">Today</option>
             <option value="this_week">This Week</option>
@@ -339,118 +360,135 @@ export default function ReportsPage() {
             <option value="this_quarter">This Quarter</option>
             <option value="this_year">This Year</option>
           </select>
-          <button 
+          <button
             onClick={loadFinancialData}
             disabled={loading}
-            className="flex items-center px-3 py-2 bg-gray-600 text-white rounded-lg hover:bg-muted/50 disabled:opacity-50 dark:bg-gray-700 dark:hover:bg-muted/50"
+            className="hover:bg-muted/50 dark:hover:bg-muted/50 flex items-center rounded-lg bg-gray-600 px-3 py-2 text-white disabled:opacity-50 dark:bg-gray-700"
           >
-            <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+            <RefreshCw
+              className={`mr-2 h-4 w-4 ${loading ? 'animate-spin' : ''}`}
+            />
             Refresh
           </button>
-          <button 
-            className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          <button
+            className="flex items-center rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
             onClick={() => alert('Custom Report Builder coming soon!')}
           >
-            <FileText className="h-4 w-4 mr-2" />
+            <FileText className="mr-2 h-4 w-4" />
             Custom Report
           </button>
         </div>
       </div>
 
       {/* Quick Financial Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-card rounded-lg shadow p-6">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
+        <div className="bg-card rounded-lg p-6 shadow">
           <div className="flex items-center">
             <TrendingUp className="h-8 w-8 text-green-500" />
             <div className="ml-4">
-              <p className="text-sm text-muted-foreground">Total Revenue</p>
-              <p className="text-2xl font-bold text-foreground">৳{quickStats.totalRevenue.toLocaleString()}</p>
+              <p className="text-muted-foreground text-sm">Total Revenue</p>
+              <p className="text-foreground text-2xl font-bold">
+                ৳{quickStats.totalRevenue.toLocaleString()}
+              </p>
             </div>
           </div>
         </div>
-        <div className="bg-card rounded-lg shadow p-6">
+        <div className="bg-card rounded-lg p-6 shadow">
           <div className="flex items-center">
             <TrendingUp className="h-8 w-8 text-red-500" />
             <div className="ml-4">
-              <p className="text-sm text-muted-foreground">Total Expenses</p>
-              <p className="text-2xl font-bold text-foreground">৳{quickStats.totalExpenses.toLocaleString()}</p>
+              <p className="text-muted-foreground text-sm">Total Expenses</p>
+              <p className="text-foreground text-2xl font-bold">
+                ৳{quickStats.totalExpenses.toLocaleString()}
+              </p>
             </div>
           </div>
         </div>
-        <div className="bg-card rounded-lg shadow p-6">
+        <div className="bg-card rounded-lg p-6 shadow">
           <div className="flex items-center">
             <TrendingUp className="h-8 w-8 text-blue-500" />
             <div className="ml-4">
-              <p className="text-sm text-muted-foreground">Net Profit</p>
-              <p className="text-2xl font-bold text-foreground">৳{quickStats.netProfit.toLocaleString()}</p>
+              <p className="text-muted-foreground text-sm">Net Profit</p>
+              <p className="text-foreground text-2xl font-bold">
+                ৳{quickStats.netProfit.toLocaleString()}
+              </p>
             </div>
           </div>
         </div>
-        <div className="bg-card rounded-lg shadow p-6">
+        <div className="bg-card rounded-lg p-6 shadow">
           <div className="flex items-center">
             <PieChart className="h-8 w-8 text-purple-500" />
             <div className="ml-4">
-              <p className="text-sm text-muted-foreground">Profit Margin</p>
-              <p className="text-2xl font-bold text-foreground">{quickStats.profitMargin}%</p>
+              <p className="text-muted-foreground text-sm">Profit Margin</p>
+              <p className="text-foreground text-2xl font-bold">
+                {quickStats.profitMargin}%
+              </p>
             </div>
           </div>
         </div>
       </div>
 
       {/* Report Types Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
         {reportTypes.map((report) => {
           const Icon = report.icon;
           return (
-            <div key={report.id} className="bg-card rounded-lg shadow hover:shadow-lg transition-shadow">
+            <div
+              key={report.id}
+              className="bg-card rounded-lg shadow transition-shadow hover:shadow-lg"
+            >
               <div className="p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <div className={`p-3 rounded-lg ${getBgColor(report.color)}`}>
+                <div className="mb-4 flex items-center justify-between">
+                  <div className={`rounded-lg p-3 ${getBgColor(report.color)}`}>
                     <Icon className={`h-6 w-6 ${getIconColor(report.color)}`} />
                   </div>
-                  <span className="text-xs text-muted-foreground">
+                  <span className="text-muted-foreground text-xs">
                     Last: {report.lastGenerated}
                   </span>
                 </div>
-                <h3 className="text-lg font-semibold text-foreground mb-2">{report.title}</h3>
-                <p className="text-sm text-muted-foreground mb-4">{report.description}</p>
+                <h3 className="text-foreground mb-2 text-lg font-semibold">
+                  {report.title}
+                </h3>
+                <p className="text-muted-foreground mb-4 text-sm">
+                  {report.description}
+                </p>
                 <div className="grid grid-cols-2 gap-2">
-                  <button 
-                    className="flex items-center justify-center px-2 py-2 bg-muted text-muted-foreground rounded-md hover:bg-muted text-xs"
+                  <button
+                    className="bg-muted text-muted-foreground hover:bg-muted flex items-center justify-center rounded-md px-2 py-2 text-xs"
                     onClick={() => alert(`View ${report.title} details below`)}
                   >
-                    <FileText className="h-3 w-3 mr-1" />
+                    <FileText className="mr-1 h-3 w-3" />
                     View
                   </button>
-                  <button 
-                    className="flex items-center justify-center px-2 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 text-xs"
+                  <button
+                    className="flex items-center justify-center rounded-md bg-red-600 px-2 py-2 text-xs text-white hover:bg-red-700"
                     onClick={() => handleExportReport(report.id, 'pdf')}
                     disabled={exportLoading === `${report.id}-pdf`}
                   >
                     {exportLoading === `${report.id}-pdf` ? (
                       <RefreshCw className="h-3 w-3 animate-spin" />
                     ) : (
-                      <Download className="h-3 w-3 mr-1" />
+                      <Download className="mr-1 h-3 w-3" />
                     )}
                     PDF
                   </button>
-                  <button 
-                    className="flex items-center justify-center px-2 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 text-xs"
+                  <button
+                    className="flex items-center justify-center rounded-md bg-green-600 px-2 py-2 text-xs text-white hover:bg-green-700"
                     onClick={() => handleExportReport(report.id, 'excel')}
                     disabled={exportLoading === `${report.id}-excel`}
                   >
                     {exportLoading === `${report.id}-excel` ? (
                       <RefreshCw className="h-3 w-3 animate-spin" />
                     ) : (
-                      <Download className="h-3 w-3 mr-1" />
+                      <Download className="mr-1 h-3 w-3" />
                     )}
                     Excel
                   </button>
-                  <button 
-                    className="flex items-center justify-center px-2 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-xs"
+                  <button
+                    className="flex items-center justify-center rounded-md bg-blue-600 px-2 py-2 text-xs text-white hover:bg-blue-700"
                     onClick={() => handleEmailReport(report.title)}
                   >
-                    <Mail className="h-3 w-3 mr-1" />
+                    <Mail className="mr-1 h-3 w-3" />
                     Email
                   </button>
                 </div>
@@ -462,45 +500,67 @@ export default function ReportsPage() {
 
       {/* Recent Reports */}
       <div className="bg-card rounded-lg shadow">
-        <div className="px-6 py-4 border-b border-border">
-          <h2 className="text-lg font-semibold text-foreground">Recent Reports</h2>
+        <div className="border-border border-b px-6 py-4">
+          <h2 className="text-foreground text-lg font-semibold">
+            Recent Reports
+          </h2>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="bg-muted">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">Report Type</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">Period</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">Generated Date</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">Generated By</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">Status</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">Actions</th>
+                <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase">
+                  Report Type
+                </th>
+                <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase">
+                  Period
+                </th>
+                <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase">
+                  Generated Date
+                </th>
+                <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase">
+                  Generated By
+                </th>
+                <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase">
+                  Status
+                </th>
+                <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase">
+                  Actions
+                </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
               <tr className="hover:bg-muted/50">
-                <td className="px-6 py-4 whitespace-nowrap">
+                <td className="whitespace-nowrap px-6 py-4">
                   <div className="flex items-center">
-                    <TrendingUp className="h-5 w-5 text-green-600 mr-3" />
-                    <span className="text-sm font-medium text-foreground">Income Statement</span>
+                    <TrendingUp className="mr-3 h-5 w-5 text-green-600" />
+                    <span className="text-foreground text-sm font-medium">
+                      Income Statement
+                    </span>
                   </div>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">January 2024</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">2024-01-15</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">Finance Officer</td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-200">
+                <td className="text-foreground whitespace-nowrap px-6 py-4 text-sm">
+                  January 2024
+                </td>
+                <td className="text-foreground whitespace-nowrap px-6 py-4 text-sm">
+                  2024-01-15
+                </td>
+                <td className="text-foreground whitespace-nowrap px-6 py-4 text-sm">
+                  Finance Officer
+                </td>
+                <td className="whitespace-nowrap px-6 py-4">
+                  <span className="inline-flex rounded-full bg-green-100 px-2 py-1 text-xs font-semibold text-green-800 dark:bg-green-900/50 dark:text-green-200">
                     Completed
                   </span>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                  <button 
-                    className="text-blue-600 hover:text-blue-700 mr-3"
+                <td className="whitespace-nowrap px-6 py-4 text-sm font-medium">
+                  <button
+                    className="mr-3 text-blue-600 hover:text-blue-700"
                     onClick={() => alert('View Report coming soon!')}
                   >
                     View
                   </button>
-                  <button 
+                  <button
                     className="text-green-600 hover:text-green-700"
                     onClick={() => alert('Download Report coming soon!')}
                   >
@@ -509,28 +569,36 @@ export default function ReportsPage() {
                 </td>
               </tr>
               <tr className="hover:bg-muted/50">
-                <td className="px-6 py-4 whitespace-nowrap">
+                <td className="whitespace-nowrap px-6 py-4">
                   <div className="flex items-center">
-                    <BarChart3 className="h-5 w-5 text-blue-600 mr-3" />
-                    <span className="text-sm font-medium text-foreground">Sales Report</span>
+                    <BarChart3 className="mr-3 h-5 w-5 text-blue-600" />
+                    <span className="text-foreground text-sm font-medium">
+                      Sales Report
+                    </span>
                   </div>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">January 2024</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">2024-01-15</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">Sales Manager</td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-200">
+                <td className="text-foreground whitespace-nowrap px-6 py-4 text-sm">
+                  January 2024
+                </td>
+                <td className="text-foreground whitespace-nowrap px-6 py-4 text-sm">
+                  2024-01-15
+                </td>
+                <td className="text-foreground whitespace-nowrap px-6 py-4 text-sm">
+                  Sales Manager
+                </td>
+                <td className="whitespace-nowrap px-6 py-4">
+                  <span className="inline-flex rounded-full bg-green-100 px-2 py-1 text-xs font-semibold text-green-800 dark:bg-green-900/50 dark:text-green-200">
                     Completed
                   </span>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                  <button 
-                    className="text-blue-600 hover:text-blue-700 mr-3"
+                <td className="whitespace-nowrap px-6 py-4 text-sm font-medium">
+                  <button
+                    className="mr-3 text-blue-600 hover:text-blue-700"
                     onClick={() => alert('View Report coming soon!')}
                   >
                     View
                   </button>
-                  <button 
+                  <button
                     className="text-green-600 hover:text-green-700"
                     onClick={() => alert('Download Report coming soon!')}
                   >
@@ -539,21 +607,29 @@ export default function ReportsPage() {
                 </td>
               </tr>
               <tr className="hover:bg-muted/50">
-                <td className="px-6 py-4 whitespace-nowrap">
+                <td className="whitespace-nowrap px-6 py-4">
                   <div className="flex items-center">
-                    <PieChart className="h-5 w-5 text-purple-600 mr-3" />
-                    <span className="text-sm font-medium text-foreground">Inventory Report</span>
+                    <PieChart className="mr-3 h-5 w-5 text-purple-600" />
+                    <span className="text-foreground text-sm font-medium">
+                      Inventory Report
+                    </span>
                   </div>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">Weekly</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">2024-01-14</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">Inventory Manager</td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-200">
+                <td className="text-foreground whitespace-nowrap px-6 py-4 text-sm">
+                  Weekly
+                </td>
+                <td className="text-foreground whitespace-nowrap px-6 py-4 text-sm">
+                  2024-01-14
+                </td>
+                <td className="text-foreground whitespace-nowrap px-6 py-4 text-sm">
+                  Inventory Manager
+                </td>
+                <td className="whitespace-nowrap px-6 py-4">
+                  <span className="inline-flex rounded-full bg-yellow-100 px-2 py-1 text-xs font-semibold text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-200">
                     Processing
                   </span>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                <td className="whitespace-nowrap px-6 py-4 text-sm font-medium">
                   <span className="text-muted-foreground">Generating...</span>
                 </td>
               </tr>
@@ -563,151 +639,260 @@ export default function ReportsPage() {
       </div>
 
       {/* Report Insights */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="bg-card rounded-lg shadow p-6">
-          <h3 className="text-lg font-semibold mb-4 text-foreground">Key Performance Indicators</h3>
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+        <div className="bg-card rounded-lg p-6 shadow">
+          <h3 className="text-foreground mb-4 text-lg font-semibold">
+            Key Performance Indicators
+          </h3>
           <div className="space-y-3">
-            <div className="flex items-center justify-between py-2 border-b border-border">
-              <span className="text-sm text-muted-foreground">Monthly Revenue Growth</span>
+            <div className="border-border flex items-center justify-between border-b py-2">
+              <span className="text-muted-foreground text-sm">
+                Monthly Revenue Growth
+              </span>
               <span className="text-sm font-bold text-green-600">+12.5%</span>
             </div>
-            <div className="flex items-center justify-between py-2 border-b border-border">
-              <span className="text-sm text-muted-foreground">Customer Acquisition</span>
+            <div className="border-border flex items-center justify-between border-b py-2">
+              <span className="text-muted-foreground text-sm">
+                Customer Acquisition
+              </span>
               <span className="text-sm font-bold text-blue-600">15 new</span>
             </div>
-            <div className="flex items-center justify-between py-2 border-b border-border">
-              <span className="text-sm text-muted-foreground">Inventory Turnover</span>
+            <div className="border-border flex items-center justify-between border-b py-2">
+              <span className="text-muted-foreground text-sm">
+                Inventory Turnover
+              </span>
               <span className="text-sm font-bold text-purple-600">2.3x</span>
             </div>
             <div className="flex items-center justify-between py-2">
-              <span className="text-sm text-muted-foreground">Driver Efficiency</span>
+              <span className="text-muted-foreground text-sm">
+                Driver Efficiency
+              </span>
               <span className="text-sm font-bold text-orange-600">92%</span>
             </div>
           </div>
         </div>
 
-        <div className="bg-card rounded-lg shadow p-6">
-          <h3 className="text-lg font-semibold mb-4 text-foreground">Report Schedule</h3>
+        <div className="bg-card rounded-lg p-6 shadow">
+          <h3 className="text-foreground mb-4 text-lg font-semibold">
+            Report Schedule
+          </h3>
           <div className="space-y-3">
-            <div className="flex items-center justify-between py-2 border-b border-border">
+            <div className="border-border flex items-center justify-between border-b py-2">
               <div>
-                <span className="text-sm font-medium text-foreground">Daily Sales Summary</span>
-                <p className="text-xs text-muted-foreground">Auto-generated at 11:59 PM</p>
+                <span className="text-foreground text-sm font-medium">
+                  Daily Sales Summary
+                </span>
+                <p className="text-muted-foreground text-xs">
+                  Auto-generated at 11:59 PM
+                </p>
               </div>
-              <span className="text-xs bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-200 px-2 py-1 rounded-full">Active</span>
+              <span className="rounded-full bg-green-100 px-2 py-1 text-xs text-green-800 dark:bg-green-900/50 dark:text-green-200">
+                Active
+              </span>
             </div>
-            <div className="flex items-center justify-between py-2 border-b border-border">
+            <div className="border-border flex items-center justify-between border-b py-2">
               <div>
-                <span className="text-sm font-medium text-foreground">Weekly Inventory Report</span>
-                <p className="text-xs text-muted-foreground">Every Sunday at 9:00 AM</p>
+                <span className="text-foreground text-sm font-medium">
+                  Weekly Inventory Report
+                </span>
+                <p className="text-muted-foreground text-xs">
+                  Every Sunday at 9:00 AM
+                </p>
               </div>
-              <span className="text-xs bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-200 px-2 py-1 rounded-full">Active</span>
+              <span className="rounded-full bg-green-100 px-2 py-1 text-xs text-green-800 dark:bg-green-900/50 dark:text-green-200">
+                Active
+              </span>
             </div>
             <div className="flex items-center justify-between py-2">
               <div>
-                <span className="text-sm font-medium text-foreground">Monthly Financial Report</span>
-                <p className="text-xs text-muted-foreground">1st of each month</p>
+                <span className="text-foreground text-sm font-medium">
+                  Monthly Financial Report
+                </span>
+                <p className="text-muted-foreground text-xs">
+                  1st of each month
+                </p>
               </div>
-              <span className="text-xs bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-200 px-2 py-1 rounded-full">Active</span>
+              <span className="rounded-full bg-green-100 px-2 py-1 text-xs text-green-800 dark:bg-green-900/50 dark:text-green-200">
+                Active
+              </span>
             </div>
           </div>
         </div>
       </div>
 
       {/* Detailed Financial Reports */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         {/* Real-time Income Statement */}
         <div className="bg-card rounded-lg shadow">
-          <div className="px-6 py-4 border-b border-border flex items-center justify-between">
+          <div className="border-border flex items-center justify-between border-b px-6 py-4">
             <div>
-              <h3 className="text-lg font-semibold text-foreground">Income Statement (Real-time)</h3>
-              <p className="text-xs text-muted-foreground">Revenue by type/driver with live calculations</p>
+              <h3 className="text-foreground text-lg font-semibold">
+                Income Statement (Real-time)
+              </h3>
+              <p className="text-muted-foreground text-xs">
+                Revenue by type/driver with live calculations
+              </p>
             </div>
             <div className="flex space-x-2">
-              <button 
-                className="text-sm bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
+              <button
+                className="rounded bg-red-600 px-3 py-1 text-sm text-white hover:bg-red-700"
                 onClick={() => handleExportReport('income_statement', 'pdf')}
                 disabled={exportLoading === 'income_statement-pdf'}
               >
-                {exportLoading === 'income_statement-pdf' ? <RefreshCw className="h-3 w-3 animate-spin" /> : 'PDF'}
+                {exportLoading === 'income_statement-pdf' ? (
+                  <RefreshCw className="h-3 w-3 animate-spin" />
+                ) : (
+                  'PDF'
+                )}
               </button>
-              <button 
-                className="text-sm bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700"
+              <button
+                className="rounded bg-green-600 px-3 py-1 text-sm text-white hover:bg-green-700"
                 onClick={() => handleExportReport('income_statement', 'excel')}
                 disabled={exportLoading === 'income_statement-excel'}
               >
-                {exportLoading === 'income_statement-excel' ? <RefreshCw className="h-3 w-3 animate-spin" /> : 'Excel'}
+                {exportLoading === 'income_statement-excel' ? (
+                  <RefreshCw className="h-3 w-3 animate-spin" />
+                ) : (
+                  'Excel'
+                )}
               </button>
             </div>
           </div>
           <div className="p-6">
             <div className="space-y-3">
-              <div className="flex justify-between items-center py-2 border-b border-border">
-                <span className="text-sm font-medium text-foreground">REVENUE</span>
-                <span className="text-sm font-bold text-green-600">৳{incomeStatement.revenue.total.toLocaleString()}</span>
+              <div className="border-border flex items-center justify-between border-b py-2">
+                <span className="text-foreground text-sm font-medium">
+                  REVENUE
+                </span>
+                <span className="text-sm font-bold text-green-600">
+                  ৳{incomeStatement.revenue.total.toLocaleString()}
+                </span>
               </div>
-              <div className="flex justify-between items-center py-2 border-b border-border ml-4">
-                <span className="text-sm text-muted-foreground">- Package Sales</span>
-                <span className="text-sm text-foreground">৳{incomeStatement.revenue.packageSales.toLocaleString()}</span>
+              <div className="border-border ml-4 flex items-center justify-between border-b py-2">
+                <span className="text-muted-foreground text-sm">
+                  - Package Sales
+                </span>
+                <span className="text-foreground text-sm">
+                  ৳{incomeStatement.revenue.packageSales.toLocaleString()}
+                </span>
               </div>
-              <div className="flex justify-between items-center py-2 border-b border-border ml-4">
-                <span className="text-sm text-muted-foreground">- Refill Sales</span>
-                <span className="text-sm text-foreground">৳{incomeStatement.revenue.refillSales.toLocaleString()}</span>
+              <div className="border-border ml-4 flex items-center justify-between border-b py-2">
+                <span className="text-muted-foreground text-sm">
+                  - Refill Sales
+                </span>
+                <span className="text-foreground text-sm">
+                  ৳{incomeStatement.revenue.refillSales.toLocaleString()}
+                </span>
               </div>
-              
-              <div className="flex justify-between items-center py-2 border-b border-border">
-                <span className="text-sm font-medium text-foreground">COST OF GOODS SOLD</span>
-                <span className="text-sm font-bold text-red-600">৳{incomeStatement.costOfGoodsSold.total.toLocaleString()}</span>
+
+              <div className="border-border flex items-center justify-between border-b py-2">
+                <span className="text-foreground text-sm font-medium">
+                  COST OF GOODS SOLD
+                </span>
+                <span className="text-sm font-bold text-red-600">
+                  ৳{incomeStatement.costOfGoodsSold.total.toLocaleString()}
+                </span>
               </div>
-              <div className="flex justify-between items-center py-2 border-b border-border ml-4">
-                <span className="text-sm text-muted-foreground">- Cylinder Purchases</span>
-                <span className="text-sm text-foreground">৳{incomeStatement.costOfGoodsSold.cylinderPurchases.toLocaleString()}</span>
+              <div className="border-border ml-4 flex items-center justify-between border-b py-2">
+                <span className="text-muted-foreground text-sm">
+                  - Cylinder Purchases
+                </span>
+                <span className="text-foreground text-sm">
+                  ৳
+                  {incomeStatement.costOfGoodsSold.cylinderPurchases.toLocaleString()}
+                </span>
               </div>
-              
-              <div className="flex justify-between items-center py-2 border-b bg-blue-50 dark:bg-blue-900/20">
-                <span className="text-sm font-medium text-blue-900 dark:text-blue-200">GROSS PROFIT</span>
-                <span className="text-sm font-bold text-blue-600">৳{incomeStatement.grossProfit.toLocaleString()}</span>
+
+              <div className="flex items-center justify-between border-b bg-blue-50 py-2 dark:bg-blue-900/20">
+                <span className="text-sm font-medium text-blue-900 dark:text-blue-200">
+                  GROSS PROFIT
+                </span>
+                <span className="text-sm font-bold text-blue-600">
+                  ৳{incomeStatement.grossProfit.toLocaleString()}
+                </span>
               </div>
-              
-              <div className="flex justify-between items-center py-2 border-b border-border">
-                <span className="text-sm font-medium text-foreground">OPERATING EXPENSES</span>
-                <span className="text-sm font-bold text-red-600">৳{incomeStatement.operatingExpenses.total.toLocaleString()}</span>
+
+              <div className="border-border flex items-center justify-between border-b py-2">
+                <span className="text-foreground text-sm font-medium">
+                  OPERATING EXPENSES
+                </span>
+                <span className="text-sm font-bold text-red-600">
+                  ৳{incomeStatement.operatingExpenses.total.toLocaleString()}
+                </span>
               </div>
-              <div className="flex justify-between items-center py-1 ml-4">
-                <span className="text-xs text-muted-foreground">- Salaries</span>
-                <span className="text-xs text-foreground">৳{incomeStatement.operatingExpenses.salaries.toLocaleString()}</span>
+              <div className="ml-4 flex items-center justify-between py-1">
+                <span className="text-muted-foreground text-xs">
+                  - Salaries
+                </span>
+                <span className="text-foreground text-xs">
+                  ৳{incomeStatement.operatingExpenses.salaries.toLocaleString()}
+                </span>
               </div>
-              <div className="flex justify-between items-center py-1 ml-4">
-                <span className="text-xs text-muted-foreground">- Fuel & Transportation</span>
-                <span className="text-xs text-foreground">৳{incomeStatement.operatingExpenses.fuel.toLocaleString()}</span>
+              <div className="ml-4 flex items-center justify-between py-1">
+                <span className="text-muted-foreground text-xs">
+                  - Fuel & Transportation
+                </span>
+                <span className="text-foreground text-xs">
+                  ৳{incomeStatement.operatingExpenses.fuel.toLocaleString()}
+                </span>
               </div>
-              <div className="flex justify-between items-center py-1 ml-4">
-                <span className="text-xs text-muted-foreground">- Maintenance</span>
-                <span className="text-xs text-foreground">৳{incomeStatement.operatingExpenses.maintenance.toLocaleString()}</span>
+              <div className="ml-4 flex items-center justify-between py-1">
+                <span className="text-muted-foreground text-xs">
+                  - Maintenance
+                </span>
+                <span className="text-foreground text-xs">
+                  ৳
+                  {incomeStatement.operatingExpenses.maintenance.toLocaleString()}
+                </span>
               </div>
-              <div className="flex justify-between items-center py-1 ml-4">
-                <span className="text-xs text-muted-foreground">- Rent</span>
-                <span className="text-xs text-foreground">৳{incomeStatement.operatingExpenses.rent.toLocaleString()}</span>
+              <div className="ml-4 flex items-center justify-between py-1">
+                <span className="text-muted-foreground text-xs">- Rent</span>
+                <span className="text-foreground text-xs">
+                  ৳{incomeStatement.operatingExpenses.rent.toLocaleString()}
+                </span>
               </div>
-              <div className="flex justify-between items-center py-1 ml-4">
-                <span className="text-xs text-muted-foreground">- Utilities</span>
-                <span className="text-xs text-foreground">৳{incomeStatement.operatingExpenses.utilities.toLocaleString()}</span>
+              <div className="ml-4 flex items-center justify-between py-1">
+                <span className="text-muted-foreground text-xs">
+                  - Utilities
+                </span>
+                <span className="text-foreground text-xs">
+                  ৳
+                  {incomeStatement.operatingExpenses.utilities.toLocaleString()}
+                </span>
               </div>
-              <div className="flex justify-between items-center py-1 ml-4 border-b border-border">
-                <span className="text-xs text-muted-foreground">- Other Expenses</span>
-                <span className="text-xs text-foreground">৳{incomeStatement.operatingExpenses.other.toLocaleString()}</span>
+              <div className="border-border ml-4 flex items-center justify-between border-b py-1">
+                <span className="text-muted-foreground text-xs">
+                  - Other Expenses
+                </span>
+                <span className="text-foreground text-xs">
+                  ৳{incomeStatement.operatingExpenses.other.toLocaleString()}
+                </span>
               </div>
-              
-              <div className="flex justify-between items-center py-2 bg-green-50 dark:bg-green-900/20">
-                <span className="text-sm font-bold text-green-900 dark:text-green-200">NET INCOME</span>
-                <span className="text-sm font-bold text-green-600">৳{incomeStatement.netIncome.toLocaleString()}</span>
+
+              <div className="flex items-center justify-between bg-green-50 py-2 dark:bg-green-900/20">
+                <span className="text-sm font-bold text-green-900 dark:text-green-200">
+                  NET INCOME
+                </span>
+                <span className="text-sm font-bold text-green-600">
+                  ৳{incomeStatement.netIncome.toLocaleString()}
+                </span>
               </div>
-              
-              <div className="mt-3 p-2 bg-muted rounded">
-                <div className="text-xs text-muted-foreground">
-                  Profit Margin: <span className="font-medium">{quickStats.profitMargin.toFixed(1)}%</span> | 
-                  Gross Margin: <span className="font-medium">{((incomeStatement.grossProfit / incomeStatement.revenue.total) * 100).toFixed(1)}%</span>
+
+              <div className="bg-muted mt-3 rounded p-2">
+                <div className="text-muted-foreground text-xs">
+                  Profit Margin:{' '}
+                  <span className="font-medium">
+                    {quickStats.profitMargin.toFixed(1)}%
+                  </span>{' '}
+                  | Gross Margin:{' '}
+                  <span className="font-medium">
+                    {(
+                      (incomeStatement.grossProfit /
+                        incomeStatement.revenue.total) *
+                      100
+                    ).toFixed(1)}
+                    %
+                  </span>
                 </div>
               </div>
             </div>
@@ -716,134 +901,243 @@ export default function ReportsPage() {
 
         {/* Real-time Balance Sheet with Auto-validation */}
         <div className="bg-card rounded-lg shadow">
-          <div className="px-6 py-4 border-b border-border flex items-center justify-between">
+          <div className="border-border flex items-center justify-between border-b px-6 py-4">
             <div>
-              <h3 className="text-lg font-semibold text-foreground">Balance Sheet (Auto-validated)</h3>
-              <div className="flex items-center mt-1">
+              <h3 className="text-foreground text-lg font-semibold">
+                Balance Sheet (Auto-validated)
+              </h3>
+              <div className="mt-1 flex items-center">
                 {balanceSheet.isBalanced ? (
-                  <CheckCircle className="h-4 w-4 text-green-500 mr-1" />
+                  <CheckCircle className="mr-1 h-4 w-4 text-green-500" />
                 ) : (
-                  <AlertCircle className="h-4 w-4 text-red-500 mr-1" />
+                  <AlertCircle className="mr-1 h-4 w-4 text-red-500" />
                 )}
-                <span className={`text-xs ${balanceSheet.isBalanced ? 'text-green-600' : 'text-red-600'}`}>
+                <span
+                  className={`text-xs ${balanceSheet.isBalanced ? 'text-green-600' : 'text-red-600'}`}
+                >
                   {balanceSheet.isBalanced ? 'Balanced' : 'Out of Balance'}
                 </span>
               </div>
             </div>
             <div className="flex space-x-2">
-              <button 
-                className="text-sm bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
+              <button
+                className="rounded bg-red-600 px-3 py-1 text-sm text-white hover:bg-red-700"
                 onClick={() => handleExportReport('balance_sheet', 'pdf')}
                 disabled={exportLoading === 'balance_sheet-pdf'}
               >
-                {exportLoading === 'balance_sheet-pdf' ? <RefreshCw className="h-3 w-3 animate-spin" /> : 'PDF'}
+                {exportLoading === 'balance_sheet-pdf' ? (
+                  <RefreshCw className="h-3 w-3 animate-spin" />
+                ) : (
+                  'PDF'
+                )}
               </button>
-              <button 
-                className="text-sm bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700"
+              <button
+                className="rounded bg-green-600 px-3 py-1 text-sm text-white hover:bg-green-700"
                 onClick={() => handleExportReport('balance_sheet', 'excel')}
                 disabled={exportLoading === 'balance_sheet-excel'}
               >
-                {exportLoading === 'balance_sheet-excel' ? <RefreshCw className="h-3 w-3 animate-spin" /> : 'Excel'}
+                {exportLoading === 'balance_sheet-excel' ? (
+                  <RefreshCw className="h-3 w-3 animate-spin" />
+                ) : (
+                  'Excel'
+                )}
               </button>
             </div>
           </div>
           <div className="p-6">
             <div className="space-y-4">
               <div>
-                <h4 className="font-medium text-foreground mb-2">ASSETS</h4>
-                <div className="space-y-2 ml-4">
+                <h4 className="text-foreground mb-2 font-medium">ASSETS</h4>
+                <div className="ml-4 space-y-2">
                   <div className="flex justify-between">
-                    <span className="text-sm text-muted-foreground">Current Assets</span>
-                    <span className="text-sm font-medium text-foreground">৳{balanceSheet.assets.currentAssets.total.toLocaleString()}</span>
+                    <span className="text-muted-foreground text-sm">
+                      Current Assets
+                    </span>
+                    <span className="text-foreground text-sm font-medium">
+                      ৳
+                      {balanceSheet.assets.currentAssets.total.toLocaleString()}
+                    </span>
                   </div>
-                  <div className="flex justify-between ml-4">
-                    <span className="text-xs text-muted-foreground">- Cash & Bank</span>
-                    <span className="text-xs text-foreground">৳{balanceSheet.assets.currentAssets.cash.toLocaleString()}</span>
+                  <div className="ml-4 flex justify-between">
+                    <span className="text-muted-foreground text-xs">
+                      - Cash & Bank
+                    </span>
+                    <span className="text-foreground text-xs">
+                      ৳{balanceSheet.assets.currentAssets.cash.toLocaleString()}
+                    </span>
                   </div>
-                  <div className="flex justify-between ml-4">
-                    <span className="text-xs text-muted-foreground">- Accounts Receivable</span>
-                    <span className="text-xs text-foreground">৳{balanceSheet.assets.currentAssets.accountsReceivable.toLocaleString()}</span>
+                  <div className="ml-4 flex justify-between">
+                    <span className="text-muted-foreground text-xs">
+                      - Accounts Receivable
+                    </span>
+                    <span className="text-foreground text-xs">
+                      ৳
+                      {balanceSheet.assets.currentAssets.accountsReceivable.toLocaleString()}
+                    </span>
                   </div>
-                  <div className="flex justify-between ml-4">
-                    <span className="text-xs text-muted-foreground">- Inventory (Auto-linked)</span>
-                    <span className="text-xs text-foreground">৳{balanceSheet.assets.currentAssets.inventory.toLocaleString()}</span>
+                  <div className="ml-4 flex justify-between">
+                    <span className="text-muted-foreground text-xs">
+                      - Inventory (Auto-linked)
+                    </span>
+                    <span className="text-foreground text-xs">
+                      ৳
+                      {balanceSheet.assets.currentAssets.inventory.toLocaleString()}
+                    </span>
                   </div>
-                  
+
                   <div className="flex justify-between">
-                    <span className="text-sm text-muted-foreground">Fixed Assets</span>
-                    <span className="text-sm font-medium text-foreground">৳{balanceSheet.assets.fixedAssets.total.toLocaleString()}</span>
+                    <span className="text-muted-foreground text-sm">
+                      Fixed Assets
+                    </span>
+                    <span className="text-foreground text-sm font-medium">
+                      ৳{balanceSheet.assets.fixedAssets.total.toLocaleString()}
+                    </span>
                   </div>
-                  <div className="flex justify-between ml-4">
-                    <span className="text-xs text-muted-foreground">- Vehicles</span>
-                    <span className="text-xs text-foreground">৳{balanceSheet.assets.fixedAssets.vehicles.toLocaleString()}</span>
+                  <div className="ml-4 flex justify-between">
+                    <span className="text-muted-foreground text-xs">
+                      - Vehicles
+                    </span>
+                    <span className="text-foreground text-xs">
+                      ৳
+                      {balanceSheet.assets.fixedAssets.vehicles.toLocaleString()}
+                    </span>
                   </div>
-                  <div className="flex justify-between ml-4">
-                    <span className="text-xs text-muted-foreground">- Equipment</span>
-                    <span className="text-xs text-foreground">৳{balanceSheet.assets.fixedAssets.equipment.toLocaleString()}</span>
+                  <div className="ml-4 flex justify-between">
+                    <span className="text-muted-foreground text-xs">
+                      - Equipment
+                    </span>
+                    <span className="text-foreground text-xs">
+                      ৳
+                      {balanceSheet.assets.fixedAssets.equipment.toLocaleString()}
+                    </span>
                   </div>
-                  <div className="flex justify-between ml-4">
-                    <span className="text-xs text-muted-foreground">- Buildings</span>
-                    <span className="text-xs text-foreground">৳{balanceSheet.assets.fixedAssets.buildings.toLocaleString()}</span>
+                  <div className="ml-4 flex justify-between">
+                    <span className="text-muted-foreground text-xs">
+                      - Buildings
+                    </span>
+                    <span className="text-foreground text-xs">
+                      ৳
+                      {balanceSheet.assets.fixedAssets.buildings.toLocaleString()}
+                    </span>
                   </div>
-                  
-                  <div className="flex justify-between border-t border-border pt-2">
-                    <span className="text-sm font-bold text-foreground">Total Assets</span>
-                    <span className="text-sm font-bold text-foreground">৳{balanceSheet.assets.totalAssets.toLocaleString()}</span>
+
+                  <div className="border-border flex justify-between border-t pt-2">
+                    <span className="text-foreground text-sm font-bold">
+                      Total Assets
+                    </span>
+                    <span className="text-foreground text-sm font-bold">
+                      ৳{balanceSheet.assets.totalAssets.toLocaleString()}
+                    </span>
                   </div>
                 </div>
               </div>
-              
+
               <div>
-                <h4 className="font-medium text-foreground mb-2">LIABILITIES & EQUITY</h4>
-                <div className="space-y-2 ml-4">
+                <h4 className="text-foreground mb-2 font-medium">
+                  LIABILITIES & EQUITY
+                </h4>
+                <div className="ml-4 space-y-2">
                   <div className="flex justify-between">
-                    <span className="text-sm text-muted-foreground">Current Liabilities</span>
-                    <span className="text-sm font-medium text-foreground">৳{balanceSheet.liabilities.currentLiabilities.total.toLocaleString()}</span>
+                    <span className="text-muted-foreground text-sm">
+                      Current Liabilities
+                    </span>
+                    <span className="text-foreground text-sm font-medium">
+                      ৳
+                      {balanceSheet.liabilities.currentLiabilities.total.toLocaleString()}
+                    </span>
                   </div>
-                  <div className="flex justify-between ml-4">
-                    <span className="text-xs text-muted-foreground">- Accounts Payable</span>
-                    <span className="text-xs text-foreground">৳{balanceSheet.liabilities.currentLiabilities.accountsPayable.toLocaleString()}</span>
+                  <div className="ml-4 flex justify-between">
+                    <span className="text-muted-foreground text-xs">
+                      - Accounts Payable
+                    </span>
+                    <span className="text-foreground text-xs">
+                      ৳
+                      {balanceSheet.liabilities.currentLiabilities.accountsPayable.toLocaleString()}
+                    </span>
                   </div>
-                  <div className="flex justify-between ml-4">
-                    <span className="text-xs text-muted-foreground">- Short-term Loans</span>
-                    <span className="text-xs text-foreground">৳{balanceSheet.liabilities.currentLiabilities.shortTermLoans.toLocaleString()}</span>
+                  <div className="ml-4 flex justify-between">
+                    <span className="text-muted-foreground text-xs">
+                      - Short-term Loans
+                    </span>
+                    <span className="text-foreground text-xs">
+                      ৳
+                      {balanceSheet.liabilities.currentLiabilities.shortTermLoans.toLocaleString()}
+                    </span>
                   </div>
-                  
+
                   <div className="flex justify-between">
-                    <span className="text-sm text-muted-foreground">Long-term Liabilities</span>
-                    <span className="text-sm font-medium text-foreground">৳{balanceSheet.liabilities.longTermLiabilities.total.toLocaleString()}</span>
+                    <span className="text-muted-foreground text-sm">
+                      Long-term Liabilities
+                    </span>
+                    <span className="text-foreground text-sm font-medium">
+                      ৳
+                      {balanceSheet.liabilities.longTermLiabilities.total.toLocaleString()}
+                    </span>
                   </div>
-                  <div className="flex justify-between ml-4">
-                    <span className="text-xs text-muted-foreground">- Long-term Loans</span>
-                    <span className="text-xs text-foreground">৳{balanceSheet.liabilities.longTermLiabilities.longTermLoans.toLocaleString()}</span>
+                  <div className="ml-4 flex justify-between">
+                    <span className="text-muted-foreground text-xs">
+                      - Long-term Loans
+                    </span>
+                    <span className="text-foreground text-xs">
+                      ৳
+                      {balanceSheet.liabilities.longTermLiabilities.longTermLoans.toLocaleString()}
+                    </span>
                   </div>
-                  
+
                   <div className="flex justify-between">
-                    <span className="text-sm text-muted-foreground">Owner's Equity</span>
-                    <span className="text-sm font-medium text-foreground">৳{balanceSheet.equity.total.toLocaleString()}</span>
+                    <span className="text-muted-foreground text-sm">
+                      Owner's Equity
+                    </span>
+                    <span className="text-foreground text-sm font-medium">
+                      ৳{balanceSheet.equity.total.toLocaleString()}
+                    </span>
                   </div>
-                  <div className="flex justify-between ml-4">
-                    <span className="text-xs text-muted-foreground">- Owner Equity</span>
-                    <span className="text-xs text-foreground">৳{balanceSheet.equity.ownerEquity.toLocaleString()}</span>
+                  <div className="ml-4 flex justify-between">
+                    <span className="text-muted-foreground text-xs">
+                      - Owner Equity
+                    </span>
+                    <span className="text-foreground text-xs">
+                      ৳{balanceSheet.equity.ownerEquity.toLocaleString()}
+                    </span>
                   </div>
-                  <div className="flex justify-between ml-4">
-                    <span className="text-xs text-muted-foreground">- Retained Earnings</span>
-                    <span className="text-xs text-foreground">৳{balanceSheet.equity.retainedEarnings.toLocaleString()}</span>
+                  <div className="ml-4 flex justify-between">
+                    <span className="text-muted-foreground text-xs">
+                      - Retained Earnings
+                    </span>
+                    <span className="text-foreground text-xs">
+                      ৳{balanceSheet.equity.retainedEarnings.toLocaleString()}
+                    </span>
                   </div>
-                  
-                  <div className="flex justify-between border-t border-border pt-2">
-                    <span className="text-sm font-bold text-foreground">Total Liab. & Equity</span>
-                    <span className="text-sm font-bold text-foreground">৳{(balanceSheet.liabilities.totalLiabilities + balanceSheet.equity.total).toLocaleString()}</span>
+
+                  <div className="border-border flex justify-between border-t pt-2">
+                    <span className="text-foreground text-sm font-bold">
+                      Total Liab. & Equity
+                    </span>
+                    <span className="text-foreground text-sm font-bold">
+                      ৳
+                      {(
+                        balanceSheet.liabilities.totalLiabilities +
+                        balanceSheet.equity.total
+                      ).toLocaleString()}
+                    </span>
                   </div>
                 </div>
               </div>
-              
+
               {/* Balance Validation */}
-              <div className={`mt-3 p-2 rounded ${balanceSheet.isBalanced ? 'bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800' : 'bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800'}`}>
+              <div
+                className={`mt-3 rounded p-2 ${balanceSheet.isBalanced ? 'border border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-900/20' : 'border border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-900/20'}`}
+              >
                 <div className="text-xs">
-                  <span className={balanceSheet.isBalanced ? 'text-green-800 dark:text-green-200' : 'text-red-800 dark:text-red-200'}>
-                    Balance Check: Assets = Liabilities + Equity 
-                    ({balanceSheet.isBalanced ? 'PASSED' : 'FAILED'})
+                  <span
+                    className={
+                      balanceSheet.isBalanced
+                        ? 'text-green-800 dark:text-green-200'
+                        : 'text-red-800 dark:text-red-200'
+                    }
+                  >
+                    Balance Check: Assets = Liabilities + Equity (
+                    {balanceSheet.isBalanced ? 'PASSED' : 'FAILED'})
                   </span>
                 </div>
               </div>
@@ -854,14 +1148,18 @@ export default function ReportsPage() {
 
       {/* Real-time Cash Flow Statement */}
       <div className="bg-card rounded-lg shadow">
-        <div className="px-6 py-4 border-b border-border flex items-center justify-between">
+        <div className="border-border flex items-center justify-between border-b px-6 py-4">
           <div>
-            <h3 className="text-lg font-semibold text-foreground">Cash Flow Statement (Real-time)</h3>
-            <p className="text-xs text-muted-foreground">Operating, Investing & Financing Activities</p>
+            <h3 className="text-foreground text-lg font-semibold">
+              Cash Flow Statement (Real-time)
+            </h3>
+            <p className="text-muted-foreground text-xs">
+              Operating, Investing & Financing Activities
+            </p>
           </div>
           <div className="flex space-x-2">
-            <button 
-              className="text-sm bg-purple-600 text-white px-3 py-1 rounded hover:bg-purple-700"
+            <button
+              className="rounded bg-purple-600 px-3 py-1 text-sm text-white hover:bg-purple-700"
               onClick={() => handleExportReport('cash_flow', 'pdf')}
               disabled={exportLoading === 'cash_flow-pdf'}
             >
@@ -869,13 +1167,13 @@ export default function ReportsPage() {
                 <RefreshCw className="h-3 w-3 animate-spin" />
               ) : (
                 <>
-                  <Download className="h-3 w-3 mr-1 inline" />
+                  <Download className="mr-1 inline h-3 w-3" />
                   PDF
                 </>
               )}
             </button>
-            <button 
-              className="text-sm bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700"
+            <button
+              className="rounded bg-green-600 px-3 py-1 text-sm text-white hover:bg-green-700"
               onClick={() => handleExportReport('cash_flow', 'excel')}
               disabled={exportLoading === 'cash_flow-excel'}
             >
@@ -883,57 +1181,104 @@ export default function ReportsPage() {
                 <RefreshCw className="h-3 w-3 animate-spin" />
               ) : (
                 <>
-                  <Download className="h-3 w-3 mr-1 inline" />
+                  <Download className="mr-1 inline h-3 w-3" />
                   Excel
                 </>
               )}
             </button>
-            <button 
-              className="text-sm bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
+            <button
+              className="rounded bg-blue-600 px-3 py-1 text-sm text-white hover:bg-blue-700"
               onClick={() => handleEmailReport('Cash Flow Statement')}
             >
-              <Mail className="h-3 w-3 mr-1 inline" />
+              <Mail className="mr-1 inline h-3 w-3" />
               Email
             </button>
           </div>
         </div>
         <div className="p-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
             {/* Operating Activities */}
             <div>
-              <h4 className="font-medium text-foreground mb-3">Operating Activities</h4>
+              <h4 className="text-foreground mb-3 font-medium">
+                Operating Activities
+              </h4>
               <div className="space-y-2">
                 <div className="flex justify-between">
-                  <span className="text-sm text-muted-foreground">Net Income</span>
-                  <span className="text-sm text-green-600">৳{cashFlow.operatingActivities.netIncome.toLocaleString()}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-sm text-muted-foreground">Depreciation</span>
-                  <span className="text-sm text-green-600">৳{cashFlow.operatingActivities.depreciation.toLocaleString()}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-sm text-muted-foreground">Change in Receivables</span>
-                  <span className={`text-sm ${cashFlow.operatingActivities.accountsReceivableChange >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                    {cashFlow.operatingActivities.accountsReceivableChange >= 0 ? '' : '-'}৳{Math.abs(cashFlow.operatingActivities.accountsReceivableChange).toLocaleString()}
+                  <span className="text-muted-foreground text-sm">
+                    Net Income
+                  </span>
+                  <span className="text-sm text-green-600">
+                    ৳{cashFlow.operatingActivities.netIncome.toLocaleString()}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-sm text-muted-foreground">Change in Inventory</span>
-                  <span className={`text-sm ${cashFlow.operatingActivities.inventoryChange >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                    {cashFlow.operatingActivities.inventoryChange >= 0 ? '' : '-'}৳{Math.abs(cashFlow.operatingActivities.inventoryChange).toLocaleString()}
+                  <span className="text-muted-foreground text-sm">
+                    Depreciation
+                  </span>
+                  <span className="text-sm text-green-600">
+                    ৳
+                    {cashFlow.operatingActivities.depreciation.toLocaleString()}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-sm text-muted-foreground">Change in Payables</span>
-                  <span className={`text-sm ${cashFlow.operatingActivities.accountsPayableChange >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                    {cashFlow.operatingActivities.accountsPayableChange >= 0 ? '' : '-'}৳{Math.abs(cashFlow.operatingActivities.accountsPayableChange).toLocaleString()}
+                  <span className="text-muted-foreground text-sm">
+                    Change in Receivables
+                  </span>
+                  <span
+                    className={`text-sm ${cashFlow.operatingActivities.accountsReceivableChange >= 0 ? 'text-green-600' : 'text-red-600'}`}
+                  >
+                    {cashFlow.operatingActivities.accountsReceivableChange >= 0
+                      ? ''
+                      : '-'}
+                    ৳
+                    {Math.abs(
+                      cashFlow.operatingActivities.accountsReceivableChange
+                    ).toLocaleString()}
                   </span>
                 </div>
-                <div className="flex justify-between border-t border-border pt-2">
-                  <span className="text-sm font-medium text-foreground">Operating Cash Flow</span>
-                  <span className={`text-sm font-bold ${cashFlow.operatingActivities.total >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                    {cashFlow.operatingActivities.total >= 0 ? '' : '-'}৳{Math.abs(cashFlow.operatingActivities.total).toLocaleString()}
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground text-sm">
+                    Change in Inventory
+                  </span>
+                  <span
+                    className={`text-sm ${cashFlow.operatingActivities.inventoryChange >= 0 ? 'text-green-600' : 'text-red-600'}`}
+                  >
+                    {cashFlow.operatingActivities.inventoryChange >= 0
+                      ? ''
+                      : '-'}
+                    ৳
+                    {Math.abs(
+                      cashFlow.operatingActivities.inventoryChange
+                    ).toLocaleString()}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground text-sm">
+                    Change in Payables
+                  </span>
+                  <span
+                    className={`text-sm ${cashFlow.operatingActivities.accountsPayableChange >= 0 ? 'text-green-600' : 'text-red-600'}`}
+                  >
+                    {cashFlow.operatingActivities.accountsPayableChange >= 0
+                      ? ''
+                      : '-'}
+                    ৳
+                    {Math.abs(
+                      cashFlow.operatingActivities.accountsPayableChange
+                    ).toLocaleString()}
+                  </span>
+                </div>
+                <div className="border-border flex justify-between border-t pt-2">
+                  <span className="text-foreground text-sm font-medium">
+                    Operating Cash Flow
+                  </span>
+                  <span
+                    className={`text-sm font-bold ${cashFlow.operatingActivities.total >= 0 ? 'text-green-600' : 'text-red-600'}`}
+                  >
+                    {cashFlow.operatingActivities.total >= 0 ? '' : '-'}৳
+                    {Math.abs(
+                      cashFlow.operatingActivities.total
+                    ).toLocaleString()}
                   </span>
                 </div>
               </div>
@@ -941,24 +1286,53 @@ export default function ReportsPage() {
 
             {/* Investing Activities */}
             <div>
-              <h4 className="font-medium text-foreground mb-3">Investing Activities</h4>
+              <h4 className="text-foreground mb-3 font-medium">
+                Investing Activities
+              </h4>
               <div className="space-y-2">
                 <div className="flex justify-between">
-                  <span className="text-sm text-muted-foreground">Vehicle Purchases</span>
-                  <span className={`text-sm ${cashFlow.investingActivities.vehiclePurchases >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                    {cashFlow.investingActivities.vehiclePurchases >= 0 ? '' : '-'}৳{Math.abs(cashFlow.investingActivities.vehiclePurchases).toLocaleString()}
+                  <span className="text-muted-foreground text-sm">
+                    Vehicle Purchases
+                  </span>
+                  <span
+                    className={`text-sm ${cashFlow.investingActivities.vehiclePurchases >= 0 ? 'text-green-600' : 'text-red-600'}`}
+                  >
+                    {cashFlow.investingActivities.vehiclePurchases >= 0
+                      ? ''
+                      : '-'}
+                    ৳
+                    {Math.abs(
+                      cashFlow.investingActivities.vehiclePurchases
+                    ).toLocaleString()}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-sm text-muted-foreground">Equipment Purchases</span>
-                  <span className={`text-sm ${cashFlow.investingActivities.equipmentPurchases >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                    {cashFlow.investingActivities.equipmentPurchases >= 0 ? '' : '-'}৳{Math.abs(cashFlow.investingActivities.equipmentPurchases).toLocaleString()}
+                  <span className="text-muted-foreground text-sm">
+                    Equipment Purchases
+                  </span>
+                  <span
+                    className={`text-sm ${cashFlow.investingActivities.equipmentPurchases >= 0 ? 'text-green-600' : 'text-red-600'}`}
+                  >
+                    {cashFlow.investingActivities.equipmentPurchases >= 0
+                      ? ''
+                      : '-'}
+                    ৳
+                    {Math.abs(
+                      cashFlow.investingActivities.equipmentPurchases
+                    ).toLocaleString()}
                   </span>
                 </div>
-                <div className="flex justify-between border-t border-border pt-2">
-                  <span className="text-sm font-medium text-foreground">Investing Cash Flow</span>
-                  <span className={`text-sm font-bold ${cashFlow.investingActivities.total >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                    {cashFlow.investingActivities.total >= 0 ? '' : '-'}৳{Math.abs(cashFlow.investingActivities.total).toLocaleString()}
+                <div className="border-border flex justify-between border-t pt-2">
+                  <span className="text-foreground text-sm font-medium">
+                    Investing Cash Flow
+                  </span>
+                  <span
+                    className={`text-sm font-bold ${cashFlow.investingActivities.total >= 0 ? 'text-green-600' : 'text-red-600'}`}
+                  >
+                    {cashFlow.investingActivities.total >= 0 ? '' : '-'}৳
+                    {Math.abs(
+                      cashFlow.investingActivities.total
+                    ).toLocaleString()}
                   </span>
                 </div>
               </div>
@@ -966,57 +1340,103 @@ export default function ReportsPage() {
 
             {/* Financing Activities */}
             <div>
-              <h4 className="font-medium text-foreground mb-3">Financing Activities</h4>
+              <h4 className="text-foreground mb-3 font-medium">
+                Financing Activities
+              </h4>
               <div className="space-y-2">
                 <div className="flex justify-between">
-                  <span className="text-sm text-muted-foreground">Owner Drawings</span>
-                  <span className={`text-sm ${cashFlow.financingActivities.ownerDrawings >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                    {cashFlow.financingActivities.ownerDrawings >= 0 ? '' : '-'}৳{Math.abs(cashFlow.financingActivities.ownerDrawings).toLocaleString()}
+                  <span className="text-muted-foreground text-sm">
+                    Owner Drawings
+                  </span>
+                  <span
+                    className={`text-sm ${cashFlow.financingActivities.ownerDrawings >= 0 ? 'text-green-600' : 'text-red-600'}`}
+                  >
+                    {cashFlow.financingActivities.ownerDrawings >= 0 ? '' : '-'}
+                    ৳
+                    {Math.abs(
+                      cashFlow.financingActivities.ownerDrawings
+                    ).toLocaleString()}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-sm text-muted-foreground">Loan Repayments</span>
-                  <span className={`text-sm ${cashFlow.financingActivities.loanRepayments >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                    {cashFlow.financingActivities.loanRepayments >= 0 ? '' : '-'}৳{Math.abs(cashFlow.financingActivities.loanRepayments).toLocaleString()}
+                  <span className="text-muted-foreground text-sm">
+                    Loan Repayments
+                  </span>
+                  <span
+                    className={`text-sm ${cashFlow.financingActivities.loanRepayments >= 0 ? 'text-green-600' : 'text-red-600'}`}
+                  >
+                    {cashFlow.financingActivities.loanRepayments >= 0
+                      ? ''
+                      : '-'}
+                    ৳
+                    {Math.abs(
+                      cashFlow.financingActivities.loanRepayments
+                    ).toLocaleString()}
                   </span>
                 </div>
-                <div className="flex justify-between border-t border-border pt-2">
-                  <span className="text-sm font-medium text-foreground">Financing Cash Flow</span>
-                  <span className={`text-sm font-bold ${cashFlow.financingActivities.total >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                    {cashFlow.financingActivities.total >= 0 ? '' : '-'}৳{Math.abs(cashFlow.financingActivities.total).toLocaleString()}
+                <div className="border-border flex justify-between border-t pt-2">
+                  <span className="text-foreground text-sm font-medium">
+                    Financing Cash Flow
+                  </span>
+                  <span
+                    className={`text-sm font-bold ${cashFlow.financingActivities.total >= 0 ? 'text-green-600' : 'text-red-600'}`}
+                  >
+                    {cashFlow.financingActivities.total >= 0 ? '' : '-'}৳
+                    {Math.abs(
+                      cashFlow.financingActivities.total
+                    ).toLocaleString()}
                   </span>
                 </div>
               </div>
             </div>
           </div>
-          
-          <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-            <div className="flex justify-between items-center">
-              <span className="font-medium text-blue-900 dark:text-blue-200">Net Change in Cash</span>
-              <span className={`text-lg font-bold ${cashFlow.netCashFlow >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                {cashFlow.netCashFlow >= 0 ? '' : '-'}৳{Math.abs(cashFlow.netCashFlow).toLocaleString()}
+
+          <div className="mt-6 rounded-lg bg-blue-50 p-4 dark:bg-blue-900/20">
+            <div className="flex items-center justify-between">
+              <span className="font-medium text-blue-900 dark:text-blue-200">
+                Net Change in Cash
+              </span>
+              <span
+                className={`text-lg font-bold ${cashFlow.netCashFlow >= 0 ? 'text-green-600' : 'text-red-600'}`}
+              >
+                {cashFlow.netCashFlow >= 0 ? '' : '-'}৳
+                {Math.abs(cashFlow.netCashFlow).toLocaleString()}
               </span>
             </div>
-            <div className="flex justify-between items-center mt-2">
-              <span className="text-sm text-blue-700 dark:text-blue-300">Cash at Beginning of Period</span>
-              <span className="text-sm font-medium text-blue-700 dark:text-blue-300">৳{cashFlow.beginningCash.toLocaleString()}</span>
+            <div className="mt-2 flex items-center justify-between">
+              <span className="text-sm text-blue-700 dark:text-blue-300">
+                Cash at Beginning of Period
+              </span>
+              <span className="text-sm font-medium text-blue-700 dark:text-blue-300">
+                ৳{cashFlow.beginningCash.toLocaleString()}
+              </span>
             </div>
-            <div className="flex justify-between items-center mt-1 border-t border-blue-200 dark:border-blue-700 pt-2">
-              <span className="font-medium text-blue-900 dark:text-blue-200">Cash at End of Period</span>
-              <span className="text-lg font-bold text-blue-600">৳{cashFlow.endingCash.toLocaleString()}</span>
+            <div className="mt-1 flex items-center justify-between border-t border-blue-200 pt-2 dark:border-blue-700">
+              <span className="font-medium text-blue-900 dark:text-blue-200">
+                Cash at End of Period
+              </span>
+              <span className="text-lg font-bold text-blue-600">
+                ৳{cashFlow.endingCash.toLocaleString()}
+              </span>
             </div>
-            
+
             {/* Cash Flow Health Indicator */}
-            <div className="mt-3 pt-2 border-t border-blue-200 dark:border-blue-700">
+            <div className="mt-3 border-t border-blue-200 pt-2 dark:border-blue-700">
               <div className="flex items-center">
                 {cashFlow.operatingActivities.total > 0 ? (
-                  <CheckCircle className="h-4 w-4 text-green-500 mr-2" />
+                  <CheckCircle className="mr-2 h-4 w-4 text-green-500" />
                 ) : (
-                  <AlertCircle className="h-4 w-4 text-red-500 mr-2" />
+                  <AlertCircle className="mr-2 h-4 w-4 text-red-500" />
                 )}
-                <span className="text-xs text-muted-foreground">
-                  Operating cash flow is {cashFlow.operatingActivities.total > 0 ? 'positive' : 'negative'} - 
-                  {cashFlow.operatingActivities.total > 0 ? ' healthy business operations' : ' requires attention'}
+                <span className="text-muted-foreground text-xs">
+                  Operating cash flow is{' '}
+                  {cashFlow.operatingActivities.total > 0
+                    ? 'positive'
+                    : 'negative'}{' '}
+                  -
+                  {cashFlow.operatingActivities.total > 0
+                    ? ' healthy business operations'
+                    : ' requires attention'}
                 </span>
               </div>
             </div>
@@ -1025,66 +1445,93 @@ export default function ReportsPage() {
       </div>
 
       {/* Financial Ratios & Analysis */}
-      <div className="bg-card rounded-lg shadow p-6">
-        <h3 className="text-lg font-semibold mb-4 text-foreground">Financial Ratios & Key Metrics</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          
+      <div className="bg-card rounded-lg p-6 shadow">
+        <h3 className="text-foreground mb-4 text-lg font-semibold">
+          Financial Ratios & Key Metrics
+        </h3>
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
           {/* Profitability Ratios */}
           <div>
-            <h4 className="font-medium text-foreground mb-3">Profitability</h4>
+            <h4 className="text-foreground mb-3 font-medium">Profitability</h4>
             <div className="space-y-3">
-              <div className="text-center p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
-                <div className="text-2xl font-bold text-green-600">{quickStats.profitMargin}%</div>
-                <div className="text-xs text-green-700 dark:text-green-300">Net Profit Margin</div>
+              <div className="rounded-lg bg-green-50 p-3 text-center dark:bg-green-900/20">
+                <div className="text-2xl font-bold text-green-600">
+                  {quickStats.profitMargin}%
+                </div>
+                <div className="text-xs text-green-700 dark:text-green-300">
+                  Net Profit Margin
+                </div>
               </div>
-              <div className="text-center p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+              <div className="rounded-lg bg-blue-50 p-3 text-center dark:bg-blue-900/20">
                 <div className="text-2xl font-bold text-blue-600">40%</div>
-                <div className="text-xs text-blue-700 dark:text-blue-300">Gross Profit Margin</div>
+                <div className="text-xs text-blue-700 dark:text-blue-300">
+                  Gross Profit Margin
+                </div>
               </div>
             </div>
           </div>
 
           {/* Liquidity Ratios */}
           <div>
-            <h4 className="font-medium text-foreground mb-3">Liquidity</h4>
+            <h4 className="text-foreground mb-3 font-medium">Liquidity</h4>
             <div className="space-y-3">
-              <div className="text-center p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
+              <div className="rounded-lg bg-purple-50 p-3 text-center dark:bg-purple-900/20">
                 <div className="text-2xl font-bold text-purple-600">2.43</div>
-                <div className="text-xs text-purple-700 dark:text-purple-300">Current Ratio</div>
+                <div className="text-xs text-purple-700 dark:text-purple-300">
+                  Current Ratio
+                </div>
               </div>
-              <div className="text-center p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
+              <div className="rounded-lg bg-orange-50 p-3 text-center dark:bg-orange-900/20">
                 <div className="text-2xl font-bold text-orange-600">1.14</div>
-                <div className="text-xs text-orange-700 dark:text-orange-300">Quick Ratio</div>
+                <div className="text-xs text-orange-700 dark:text-orange-300">
+                  Quick Ratio
+                </div>
               </div>
             </div>
           </div>
 
           {/* Efficiency Ratios */}
           <div>
-            <h4 className="font-medium text-foreground mb-3">Efficiency</h4>
+            <h4 className="text-foreground mb-3 font-medium">Efficiency</h4>
             <div className="space-y-3">
-              <div className="text-center p-3 bg-teal-50 dark:bg-teal-900/20 rounded-lg">
-                <div className="text-2xl font-bold text-teal-600 dark:text-teal-400">24</div>
-                <div className="text-xs text-teal-700 dark:text-teal-300">Days in Receivables</div>
+              <div className="rounded-lg bg-teal-50 p-3 text-center dark:bg-teal-900/20">
+                <div className="text-2xl font-bold text-teal-600 dark:text-teal-400">
+                  24
+                </div>
+                <div className="text-xs text-teal-700 dark:text-teal-300">
+                  Days in Receivables
+                </div>
               </div>
-              <div className="text-center p-3 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg">
-                <div className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">2.8x</div>
-                <div className="text-xs text-indigo-700 dark:text-indigo-300">Inventory Turnover</div>
+              <div className="rounded-lg bg-indigo-50 p-3 text-center dark:bg-indigo-900/20">
+                <div className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">
+                  2.8x
+                </div>
+                <div className="text-xs text-indigo-700 dark:text-indigo-300">
+                  Inventory Turnover
+                </div>
               </div>
             </div>
           </div>
 
           {/* Leverage Ratios */}
           <div>
-            <h4 className="font-medium text-foreground mb-3">Leverage</h4>
+            <h4 className="text-foreground mb-3 font-medium">Leverage</h4>
             <div className="space-y-3">
-              <div className="text-center p-3 bg-red-50 dark:bg-red-900/20 rounded-lg">
-                <div className="text-2xl font-bold text-red-600 dark:text-red-400">0.40</div>
-                <div className="text-xs text-red-700 dark:text-red-300">Debt-to-Equity</div>
+              <div className="rounded-lg bg-red-50 p-3 text-center dark:bg-red-900/20">
+                <div className="text-2xl font-bold text-red-600 dark:text-red-400">
+                  0.40
+                </div>
+                <div className="text-xs text-red-700 dark:text-red-300">
+                  Debt-to-Equity
+                </div>
               </div>
-              <div className="text-center p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
-                <div className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">59.7%</div>
-                <div className="text-xs text-yellow-700 dark:text-yellow-300">Equity Ratio</div>
+              <div className="rounded-lg bg-yellow-50 p-3 text-center dark:bg-yellow-900/20">
+                <div className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">
+                  59.7%
+                </div>
+                <div className="text-xs text-yellow-700 dark:text-yellow-300">
+                  Equity Ratio
+                </div>
               </div>
             </div>
           </div>
@@ -1092,42 +1539,68 @@ export default function ReportsPage() {
       </div>
 
       {/* Email Report Automation */}
-      <div className="bg-card rounded-lg shadow p-6">
-        <h3 className="text-lg font-semibold mb-4 text-foreground">Automated Report Delivery</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="bg-card rounded-lg p-6 shadow">
+        <h3 className="text-foreground mb-4 text-lg font-semibold">
+          Automated Report Delivery
+        </h3>
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           <div>
-            <h4 className="font-medium text-foreground mb-3">Email Settings</h4>
+            <h4 className="text-foreground mb-3 font-medium">Email Settings</h4>
             <div className="space-y-3">
-              <div className="flex items-center justify-between p-3 border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700">
+              <div className="flex items-center justify-between rounded-lg border border-gray-200 bg-white p-3 dark:border-gray-600 dark:bg-gray-700">
                 <div>
-                  <span className="text-sm font-medium text-foreground">Daily Sales Summary</span>
-                  <p className="text-xs text-muted-foreground">Sent at 11:59 PM daily</p>
+                  <span className="text-foreground text-sm font-medium">
+                    Daily Sales Summary
+                  </span>
+                  <p className="text-muted-foreground text-xs">
+                    Sent at 11:59 PM daily
+                  </p>
                 </div>
-                <label className="relative inline-flex items-center cursor-pointer">
-                  <input type="checkbox" className="sr-only peer" defaultChecked />
-                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                <label className="relative inline-flex cursor-pointer items-center">
+                  <input
+                    type="checkbox"
+                    className="peer sr-only"
+                    defaultChecked
+                  />
+                  <div className="peer h-6 w-11 rounded-full bg-gray-200 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-blue-600 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none"></div>
                 </label>
               </div>
-              <div className="flex items-center justify-between p-3 border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700">
+              <div className="flex items-center justify-between rounded-lg border border-gray-200 bg-white p-3 dark:border-gray-600 dark:bg-gray-700">
                 <div>
-                  <span className="text-sm font-medium text-foreground">Monthly Financial Report</span>
-                  <p className="text-xs text-muted-foreground">Sent on 1st of each month</p>
+                  <span className="text-foreground text-sm font-medium">
+                    Monthly Financial Report
+                  </span>
+                  <p className="text-muted-foreground text-xs">
+                    Sent on 1st of each month
+                  </p>
                 </div>
-                <label className="relative inline-flex items-center cursor-pointer">
-                  <input type="checkbox" className="sr-only peer" defaultChecked />
-                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                <label className="relative inline-flex cursor-pointer items-center">
+                  <input
+                    type="checkbox"
+                    className="peer sr-only"
+                    defaultChecked
+                  />
+                  <div className="peer h-6 w-11 rounded-full bg-gray-200 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-blue-600 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none"></div>
                 </label>
               </div>
             </div>
           </div>
           <div>
-            <h4 className="font-medium text-foreground mb-3">Recipients</h4>
+            <h4 className="text-foreground mb-3 font-medium">Recipients</h4>
             <div className="space-y-2">
               <div className="flex items-center space-x-2">
-                <input type="email" placeholder="Add email address" className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm bg-white dark:bg-gray-700 text-foreground" />
-                <button className="px-3 py-2 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700">Add</button>
+                <input
+                  type="email"
+                  placeholder="Add email address"
+                  className="text-foreground flex-1 rounded-md border border-gray-300 bg-white px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700"
+                />
+                <button className="rounded-md bg-blue-600 px-3 py-2 text-sm text-white hover:bg-blue-700">
+                  Add
+                </button>
               </div>
-              <div className="text-xs text-muted-foreground">Current recipients: admin@company.com, finance@company.com</div>
+              <div className="text-muted-foreground text-xs">
+                Current recipients: admin@company.com, finance@company.com
+              </div>
             </div>
           </div>
         </div>

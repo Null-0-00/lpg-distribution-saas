@@ -5,16 +5,46 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { formatCurrency } from '@/lib/utils/formatters';
-import { Plus, Search, Edit, Trash2, Eye, Filter, Package, TrendingUp, TrendingDown, BarChart3 } from 'lucide-react';
+import {
+  Plus,
+  Search,
+  Edit,
+  Trash2,
+  Eye,
+  Filter,
+  Package,
+  TrendingUp,
+  TrendingDown,
+  BarChart3,
+} from 'lucide-react';
 
 interface Company {
   id: string;
@@ -98,7 +128,7 @@ export default function AdminProductsPage() {
     lowStockThreshold: '10',
     specifications: '',
     performanceMetrics: '',
-    analytics: ''
+    analytics: '',
   });
   const [submitting, setSubmitting] = useState(false);
 
@@ -119,7 +149,7 @@ export default function AdminProductsPage() {
         limit: '20',
         ...(searchTerm && { search: searchTerm }),
         ...(filterActive !== 'all' && { isActive: filterActive }),
-        ...(filterCompany !== 'all' && { companyId: filterCompany })
+        ...(filterCompany !== 'all' && { companyId: filterCompany }),
       });
 
       const response = await fetch(`/api/admin/products?${params}`);
@@ -133,14 +163,14 @@ export default function AdminProductsPage() {
         toast({
           title: 'Error',
           description: result.error || 'Failed to fetch products',
-          variant: 'destructive'
+          variant: 'destructive',
         });
       }
     } catch (error) {
       toast({
         title: 'Error',
         description: 'Failed to fetch products',
-        variant: 'destructive'
+        variant: 'destructive',
       });
     } finally {
       setLoading(false);
@@ -160,7 +190,7 @@ export default function AdminProductsPage() {
       lowStockThreshold: '10',
       specifications: '',
       performanceMetrics: '',
-      analytics: ''
+      analytics: '',
     });
   };
 
@@ -181,9 +211,15 @@ export default function AdminProductsPage() {
       costPrice: product.costPrice?.toString() || '',
       marketPrice: product.marketPrice?.toString() || '',
       lowStockThreshold: product.lowStockThreshold.toString(),
-      specifications: product.specifications ? JSON.stringify(product.specifications, null, 2) : '',
-      performanceMetrics: product.performanceMetrics ? JSON.stringify(product.performanceMetrics, null, 2) : '',
-      analytics: product.analytics ? JSON.stringify(product.analytics, null, 2) : ''
+      specifications: product.specifications
+        ? JSON.stringify(product.specifications, null, 2)
+        : '',
+      performanceMetrics: product.performanceMetrics
+        ? JSON.stringify(product.performanceMetrics, null, 2)
+        : '',
+      analytics: product.analytics
+        ? JSON.stringify(product.analytics, null, 2)
+        : '',
     });
     setSelectedProduct(product);
     setIsEditDialogOpen(true);
@@ -198,27 +234,37 @@ export default function AdminProductsPage() {
         companyId: formData.companyId,
         name: formData.name,
         size: formData.size,
-        fullCylinderWeight: formData.fullCylinderWeight ? parseFloat(formData.fullCylinderWeight) : null,
-        emptyCylinderWeight: formData.emptyCylinderWeight ? parseFloat(formData.emptyCylinderWeight) : null,
+        fullCylinderWeight: formData.fullCylinderWeight
+          ? parseFloat(formData.fullCylinderWeight)
+          : null,
+        emptyCylinderWeight: formData.emptyCylinderWeight
+          ? parseFloat(formData.emptyCylinderWeight)
+          : null,
         currentPrice: parseFloat(formData.currentPrice),
         costPrice: formData.costPrice ? parseFloat(formData.costPrice) : null,
-        marketPrice: formData.marketPrice ? parseFloat(formData.marketPrice) : null,
+        marketPrice: formData.marketPrice
+          ? parseFloat(formData.marketPrice)
+          : null,
         lowStockThreshold: parseInt(formData.lowStockThreshold),
-        specifications: formData.specifications ? JSON.parse(formData.specifications) : null,
-        performanceMetrics: formData.performanceMetrics ? JSON.parse(formData.performanceMetrics) : null,
-        analytics: formData.analytics ? JSON.parse(formData.analytics) : null
+        specifications: formData.specifications
+          ? JSON.parse(formData.specifications)
+          : null,
+        performanceMetrics: formData.performanceMetrics
+          ? JSON.parse(formData.performanceMetrics)
+          : null,
+        analytics: formData.analytics ? JSON.parse(formData.analytics) : null,
       };
 
-      const url = selectedProduct 
+      const url = selectedProduct
         ? `/api/admin/products/${selectedProduct.id}`
         : '/api/admin/products';
-      
+
       const method = selectedProduct ? 'PUT' : 'POST';
 
       const response = await fetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
       });
 
       const result = await response.json();
@@ -226,7 +272,7 @@ export default function AdminProductsPage() {
       if (result.success) {
         toast({
           title: 'Success',
-          description: result.message
+          description: result.message,
         });
         setIsCreateDialogOpen(false);
         setIsEditDialogOpen(false);
@@ -235,14 +281,14 @@ export default function AdminProductsPage() {
         toast({
           title: 'Error',
           description: result.error || 'Failed to save product',
-          variant: 'destructive'
+          variant: 'destructive',
         });
       }
     } catch (error) {
       toast({
         title: 'Error',
         description: 'Failed to save product',
-        variant: 'destructive'
+        variant: 'destructive',
       });
     } finally {
       setSubmitting(false);
@@ -254,7 +300,7 @@ export default function AdminProductsPage() {
       const response = await fetch(`/api/admin/products/${product.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ isActive: !product.isActive })
+        body: JSON.stringify({ isActive: !product.isActive }),
       });
 
       const result = await response.json();
@@ -262,25 +308,24 @@ export default function AdminProductsPage() {
       if (result.success) {
         toast({
           title: 'Success',
-          description: `Product ${product.isActive ? 'deactivated' : 'activated'} successfully`
+          description: `Product ${product.isActive ? 'deactivated' : 'activated'} successfully`,
         });
         fetchProducts();
       } else {
         toast({
           title: 'Error',
           description: result.error || 'Failed to update product status',
-          variant: 'destructive'
+          variant: 'destructive',
         });
       }
     } catch (error) {
       toast({
         title: 'Error',
         description: 'Failed to update product status',
-        variant: 'destructive'
+        variant: 'destructive',
       });
     }
   };
-
 
   if (status === 'loading' || !session) {
     return <div>Loading...</div>;
@@ -292,10 +337,12 @@ export default function AdminProductsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
+      <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">Product Management</h1>
-          <p className="text-muted-foreground">Manage product variants and pricing</p>
+          <p className="text-muted-foreground">
+            Manage product variants and pricing
+          </p>
         </div>
         <Button onClick={handleCreate}>
           <Plus className="mr-2 h-4 w-4" />
@@ -312,9 +359,9 @@ export default function AdminProductsPage() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
             <div className="relative">
-              <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Search className="text-muted-foreground absolute left-2 top-2.5 h-4 w-4" />
               <Input
                 placeholder="Search products..."
                 value={searchTerm}
@@ -353,30 +400,35 @@ export default function AdminProductsPage() {
       </Card>
 
       {/* Products Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
         {loading ? (
           Array.from({ length: 6 }).map((_, i) => (
             <Card key={i}>
               <CardContent className="p-6">
-                <Skeleton className="h-4 w-3/4 mb-2" />
-                <Skeleton className="h-4 w-1/2 mb-4" />
+                <Skeleton className="mb-2 h-4 w-3/4" />
+                <Skeleton className="mb-4 h-4 w-1/2" />
                 <Skeleton className="h-20 w-full" />
               </CardContent>
             </Card>
           ))
         ) : products.length === 0 ? (
-          <div className="col-span-full text-center py-12">
-            <Package className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
+          <div className="col-span-full py-12 text-center">
+            <Package className="text-muted-foreground mx-auto mb-4 h-12 w-12" />
             <h3 className="text-lg font-medium">No products found</h3>
-            <p className="text-muted-foreground">Get started by adding your first product.</p>
+            <p className="text-muted-foreground">
+              Get started by adding your first product.
+            </p>
           </div>
         ) : (
           products.map((product) => (
-            <Card key={product.id} className="hover:shadow-md transition-shadow">
+            <Card
+              key={product.id}
+              className="transition-shadow hover:shadow-md"
+            >
               <CardHeader className="pb-3">
                 <div className="flex items-start justify-between">
                   <div>
-                    <CardTitle className="text-lg flex items-center gap-2">
+                    <CardTitle className="flex items-center gap-2 text-lg">
                       <Package className="h-5 w-5" />
                       {product.name}
                     </CardTitle>
@@ -391,36 +443,56 @@ export default function AdminProductsPage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-muted-foreground">Current Price</span>
-                    <span className="font-semibold">{formatCurrency(product.currentPrice)}</span>
+                  <div className="flex items-center justify-between">
+                    <span className="text-muted-foreground text-sm">
+                      Current Price
+                    </span>
+                    <span className="font-semibold">
+                      {formatCurrency(product.currentPrice)}
+                    </span>
                   </div>
                   {product.costPrice && (
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-muted-foreground">Cost Price</span>
-                      <span className="text-sm">{formatCurrency(product.costPrice)}</span>
+                    <div className="flex items-center justify-between">
+                      <span className="text-muted-foreground text-sm">
+                        Cost Price
+                      </span>
+                      <span className="text-sm">
+                        {formatCurrency(product.costPrice)}
+                      </span>
                     </div>
                   )}
                   {product.marketPrice && (
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-muted-foreground">Market Price</span>
-                      <span className="text-sm">{formatCurrency(product.marketPrice)}</span>
+                    <div className="flex items-center justify-between">
+                      <span className="text-muted-foreground text-sm">
+                        Market Price
+                      </span>
+                      <span className="text-sm">
+                        {formatCurrency(product.marketPrice)}
+                      </span>
                     </div>
                   )}
                 </div>
 
-                <div className="grid grid-cols-3 gap-2 text-center border-t pt-4">
+                <div className="grid grid-cols-3 gap-2 border-t pt-4 text-center">
                   <div>
                     <div className="font-semibold">{product._count.sales}</div>
-                    <div className="text-xs text-muted-foreground">Sales</div>
+                    <div className="text-muted-foreground text-xs">Sales</div>
                   </div>
                   <div>
-                    <div className="font-semibold">{product._count.purchases}</div>
-                    <div className="text-xs text-muted-foreground">Purchases</div>
+                    <div className="font-semibold">
+                      {product._count.purchases}
+                    </div>
+                    <div className="text-muted-foreground text-xs">
+                      Purchases
+                    </div>
                   </div>
                   <div>
-                    <div className="font-semibold">{product.distributorAssignments.length}</div>
-                    <div className="text-xs text-muted-foreground">Distributors</div>
+                    <div className="font-semibold">
+                      {product.distributorAssignments.length}
+                    </div>
+                    <div className="text-muted-foreground text-xs">
+                      Distributors
+                    </div>
                   </div>
                 </div>
 
@@ -428,13 +500,16 @@ export default function AdminProductsPage() {
                   <div className="space-y-1">
                     <div className="text-sm font-medium">Pricing Tiers</div>
                     {product.productPricingTiers.slice(0, 2).map((tier) => (
-                      <div key={tier.id} className="flex justify-between text-sm">
+                      <div
+                        key={tier.id}
+                        className="flex justify-between text-sm"
+                      >
                         <span>{tier.tierName}</span>
                         <span>{formatCurrency(tier.price)}</span>
                       </div>
                     ))}
                     {product.productPricingTiers.length > 2 && (
-                      <div className="text-xs text-muted-foreground">
+                      <div className="text-muted-foreground text-xs">
                         +{product.productPricingTiers.length - 2} more tiers
                       </div>
                     )}
@@ -442,15 +517,23 @@ export default function AdminProductsPage() {
                 )}
 
                 <div className="flex gap-2 pt-2">
-                  <Button variant="outline" size="sm" onClick={() => handleEdit(product)}>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleEdit(product)}
+                  >
                     <Edit className="h-4 w-4" />
                   </Button>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
+                  <Button
+                    variant="outline"
+                    size="sm"
                     onClick={() => handleToggleActive(product)}
                   >
-                    {product.isActive ? <Trash2 className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    {product.isActive ? (
+                      <Trash2 className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
                   </Button>
                 </div>
               </CardContent>
@@ -464,17 +547,17 @@ export default function AdminProductsPage() {
         <div className="flex justify-center gap-2">
           <Button
             variant="outline"
-            onClick={() => setPage(p => Math.max(1, p - 1))}
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
             disabled={page === 1}
           >
             Previous
           </Button>
-          <span className="py-2 px-4">
+          <span className="px-4 py-2">
             Page {page} of {totalPages}
           </span>
           <Button
             variant="outline"
-            onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
             disabled={page === totalPages}
           >
             Next
@@ -483,19 +566,22 @@ export default function AdminProductsPage() {
       )}
 
       {/* Create/Edit Dialog */}
-      <Dialog open={isCreateDialogOpen || isEditDialogOpen} onOpenChange={(open) => {
-        if (!open) {
-          setIsCreateDialogOpen(false);
-          setIsEditDialogOpen(false);
-        }
-      }}>
-        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+      <Dialog
+        open={isCreateDialogOpen || isEditDialogOpen}
+        onOpenChange={(open) => {
+          if (!open) {
+            setIsCreateDialogOpen(false);
+            setIsEditDialogOpen(false);
+          }
+        }}
+      >
+        <DialogContent className="max-h-[90vh] max-w-3xl overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
               {selectedProduct ? 'Edit Product' : 'Create Product'}
             </DialogTitle>
             <DialogDescription>
-              {selectedProduct 
+              {selectedProduct
                 ? 'Update product information and settings.'
                 : 'Add a new product variant to the system.'}
             </DialogDescription>
@@ -504,9 +590,11 @@ export default function AdminProductsPage() {
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="companyId">Company *</Label>
-                <Select 
-                  value={formData.companyId} 
-                  onValueChange={(value) => setFormData({ ...formData, companyId: value })}
+                <Select
+                  value={formData.companyId}
+                  onValueChange={(value) =>
+                    setFormData({ ...formData, companyId: value })
+                  }
                   required
                 >
                   <SelectTrigger>
@@ -526,19 +614,23 @@ export default function AdminProductsPage() {
                 <Input
                   id="name"
                   value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, name: e.target.value })
+                  }
                   required
                 />
               </div>
             </div>
-            
+
             <div className="grid grid-cols-3 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="size">Size *</Label>
                 <Input
                   id="size"
                   value={formData.size}
-                  onChange={(e) => setFormData({ ...formData, size: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, size: e.target.value })
+                  }
                   placeholder="e.g., 12L, 35L"
                   required
                 />
@@ -550,7 +642,12 @@ export default function AdminProductsPage() {
                   type="number"
                   step="0.1"
                   value={formData.fullCylinderWeight}
-                  onChange={(e) => setFormData({ ...formData, fullCylinderWeight: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      fullCylinderWeight: e.target.value,
+                    })
+                  }
                 />
               </div>
               <div className="space-y-2">
@@ -560,7 +657,12 @@ export default function AdminProductsPage() {
                   type="number"
                   step="0.1"
                   value={formData.emptyCylinderWeight}
-                  onChange={(e) => setFormData({ ...formData, emptyCylinderWeight: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      emptyCylinderWeight: e.target.value,
+                    })
+                  }
                 />
               </div>
             </div>
@@ -573,7 +675,9 @@ export default function AdminProductsPage() {
                   type="number"
                   step="0.01"
                   value={formData.currentPrice}
-                  onChange={(e) => setFormData({ ...formData, currentPrice: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, currentPrice: e.target.value })
+                  }
                   required
                 />
               </div>
@@ -584,7 +688,9 @@ export default function AdminProductsPage() {
                   type="number"
                   step="0.01"
                   value={formData.costPrice}
-                  onChange={(e) => setFormData({ ...formData, costPrice: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, costPrice: e.target.value })
+                  }
                 />
               </div>
               <div className="space-y-2">
@@ -594,7 +700,9 @@ export default function AdminProductsPage() {
                   type="number"
                   step="0.01"
                   value={formData.marketPrice}
-                  onChange={(e) => setFormData({ ...formData, marketPrice: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, marketPrice: e.target.value })
+                  }
                 />
               </div>
               <div className="space-y-2">
@@ -603,7 +711,12 @@ export default function AdminProductsPage() {
                   id="lowStockThreshold"
                   type="number"
                   value={formData.lowStockThreshold}
-                  onChange={(e) => setFormData({ ...formData, lowStockThreshold: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      lowStockThreshold: e.target.value,
+                    })
+                  }
                 />
               </div>
             </div>
@@ -613,18 +726,27 @@ export default function AdminProductsPage() {
               <Textarea
                 id="specifications"
                 value={formData.specifications}
-                onChange={(e) => setFormData({ ...formData, specifications: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, specifications: e.target.value })
+                }
                 placeholder='{"material": "Steel", "valveType": "Auto", "safety": "BCGA approved"}'
                 rows={3}
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="performanceMetrics">Performance Metrics (JSON)</Label>
+              <Label htmlFor="performanceMetrics">
+                Performance Metrics (JSON)
+              </Label>
               <Textarea
                 id="performanceMetrics"
                 value={formData.performanceMetrics}
-                onChange={(e) => setFormData({ ...formData, performanceMetrics: e.target.value })}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    performanceMetrics: e.target.value,
+                  })
+                }
                 placeholder='{"salesVelocity": 150, "marketShare": 15, "profitMargin": 25}'
                 rows={3}
               />
@@ -635,7 +757,9 @@ export default function AdminProductsPage() {
               <Textarea
                 id="analytics"
                 value={formData.analytics}
-                onChange={(e) => setFormData({ ...formData, analytics: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, analytics: e.target.value })
+                }
                 placeholder='{"monthlyTrends": [], "seasonalPatterns": {}}'
                 rows={3}
               />
@@ -653,7 +777,11 @@ export default function AdminProductsPage() {
                 Cancel
               </Button>
               <Button type="submit" disabled={submitting}>
-                {submitting ? 'Saving...' : (selectedProduct ? 'Update' : 'Create')}
+                {submitting
+                  ? 'Saving...'
+                  : selectedProduct
+                    ? 'Update'
+                    : 'Create'}
               </Button>
             </DialogFooter>
           </form>

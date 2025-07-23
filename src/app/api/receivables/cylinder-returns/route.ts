@@ -6,7 +6,7 @@ import { z } from 'zod';
 const cylinderReturnSchema = z.object({
   customerReceivableId: z.string(),
   quantity: z.number().min(1),
-  notes: z.string().optional()
+  notes: z.string().optional(),
 });
 
 export async function POST(request: NextRequest) {
@@ -22,32 +22,38 @@ export async function POST(request: NextRequest) {
 
     // Verify customer receivable exists, belongs to tenant, and is for a retail driver
     const customerReceivable = await prisma.customerReceivable.findFirst({
-      where: { 
-        id: data.customerReceivableId, 
+      where: {
+        id: data.customerReceivableId,
         tenantId,
         receivableType: 'CYLINDER',
         driver: {
           status: 'ACTIVE',
-          driverType: 'RETAIL'
-        }
+          driverType: 'RETAIL',
+        },
       },
       include: {
         driver: {
           select: {
             id: true,
             name: true,
-            driverType: true
-          }
-        }
-      }
+            driverType: true,
+          },
+        },
+      },
     });
 
     if (!customerReceivable) {
-      return NextResponse.json({ error: 'Customer receivable not found' }, { status: 404 });
+      return NextResponse.json(
+        { error: 'Customer receivable not found' },
+        { status: 404 }
+      );
     }
 
     if (data.quantity > customerReceivable.quantity) {
-      return NextResponse.json({ error: 'Return quantity exceeds outstanding cylinders' }, { status: 400 });
+      return NextResponse.json(
+        { error: 'Return quantity exceeds outstanding cylinders' },
+        { status: 400 }
+      );
     }
 
     // Use a transaction to update the receivable and add to daily deposits
@@ -62,8 +68,8 @@ export async function POST(request: NextRequest) {
         where: { id: data.customerReceivableId },
         data: {
           quantity: newQuantity,
-          status: newStatus as any
-        }
+          status: newStatus as any,
+        },
       });
 
       // Add cylinder return to daily deposits - find today's sales record for this driver
@@ -73,9 +79,13 @@ export async function POST(request: NextRequest) {
           driverId: customerReceivable.driverId,
           saleDate: {
             gte: new Date(todayStr + 'T00:00:00.000Z'),
-            lt: new Date(new Date(today.getTime() + 24 * 60 * 60 * 1000).toISOString().split('T')[0] + 'T00:00:00.000Z')
-          }
-        }
+            lt: new Date(
+              new Date(today.getTime() + 24 * 60 * 60 * 1000)
+                .toISOString()
+                .split('T')[0] + 'T00:00:00.000Z'
+            ),
+          },
+        },
       });
 
       if (todaySales) {
@@ -83,8 +93,8 @@ export async function POST(request: NextRequest) {
         await tx.sale.update({
           where: { id: todaySales.id },
           data: {
-            cylindersDeposited: { increment: data.quantity }
-          }
+            cylindersDeposited: { increment: data.quantity },
+          },
         });
       } else {
         // Create a new deposit-only sale record
@@ -104,8 +114,8 @@ export async function POST(request: NextRequest) {
             cashDeposited: 0,
             cylindersDeposited: data.quantity,
             customerName: customerReceivable.customerName,
-            notes: `Receivable cylinder return: ${data.quantity} cylinders${data.notes ? ` - ${data.notes}` : ''}`
-          }
+            notes: `Receivable cylinder return: ${data.quantity} cylinders${data.notes ? ` - ${data.notes}` : ''}`,
+          },
         });
       }
 
@@ -113,8 +123,8 @@ export async function POST(request: NextRequest) {
       await tx.customerReceivable.update({
         where: { id: data.customerReceivableId },
         data: {
-          notes: `${customerReceivable.notes || ''}\nReturn: ${data.quantity} cylinders returned on ${new Date().toLocaleDateString()}${data.notes ? ` - ${data.notes}` : ''}`
-        }
+          notes: `${customerReceivable.notes || ''}\nReturn: ${data.quantity} cylinders returned on ${new Date().toLocaleDateString()}${data.notes ? ` - ${data.notes}` : ''}`,
+        },
       });
 
       // Create audit log
@@ -125,21 +135,27 @@ export async function POST(request: NextRequest) {
           action: 'UPDATE',
           entityType: 'CustomerReceivable',
           entityId: customerReceivable.id,
-          oldValues: { quantity: customerReceivable.quantity, status: customerReceivable.status },
+          oldValues: {
+            quantity: customerReceivable.quantity,
+            status: customerReceivable.status,
+          },
           newValues: { quantity: newQuantity, status: newStatus },
           metadata: {
             returnQuantity: data.quantity,
             customerName: customerReceivable.customerName,
             driverName: customerReceivable.driver.name,
-            notes: data.notes
-          }
-        }
+            notes: data.notes,
+          },
+        },
       });
     });
 
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Error recording cylinder return:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
   }
 }

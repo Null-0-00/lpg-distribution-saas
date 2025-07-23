@@ -11,8 +11,8 @@ export interface User {
 }
 
 export enum UserRole {
-  ADMIN = "ADMIN",
-  MANAGER = "MANAGER",
+  ADMIN = 'ADMIN',
+  MANAGER = 'MANAGER',
 }
 
 export interface Tenant {
@@ -27,17 +27,17 @@ export interface Tenant {
 }
 
 export enum SubscriptionStatus {
-  ACTIVE = "ACTIVE",
-  TRIAL = "TRIAL",
-  EXPIRED = "EXPIRED",
-  CANCELED = "CANCELED",
+  ACTIVE = 'ACTIVE',
+  TRIAL = 'TRIAL',
+  EXPIRED = 'EXPIRED',
+  CANCELED = 'CANCELED',
 }
 
 export enum SubscriptionPlan {
-  FREEMIUM = "FREEMIUM",
-  PROFESSIONAL = "PROFESSIONAL",
-  ENTERPRISE = "ENTERPRISE",
-  CUSTOM = "CUSTOM",
+  FREEMIUM = 'FREEMIUM',
+  PROFESSIONAL = 'PROFESSIONAL',
+  ENTERPRISE = 'ENTERPRISE',
+  CUSTOM = 'CUSTOM',
 }
 
 export interface AuthSession {

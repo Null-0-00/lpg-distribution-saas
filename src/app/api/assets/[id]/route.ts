@@ -13,7 +13,10 @@ const updateAssetSchema = z.object({
   subCategory: z.string().optional(),
   value: z.number().min(0, 'Asset value must be non-negative').optional(),
   description: z.string().optional(),
-  purchaseDate: z.string().transform(val => val ? new Date(val) : undefined).optional(),
+  purchaseDate: z
+    .string()
+    .transform((val) => (val ? new Date(val) : undefined))
+    .optional(),
   depreciationRate: z.number().min(0).max(100).optional(),
   isActive: z.boolean().optional(),
 });
@@ -34,8 +37,8 @@ export async function GET(
     const asset = await prisma.asset.findFirst({
       where: {
         id: assetId,
-        tenantId
-      }
+        tenantId,
+      },
     });
 
     if (!asset) {
@@ -45,8 +48,11 @@ export async function GET(
     // Calculate current value with depreciation
     let currentValue = asset.value;
     if (asset.depreciationRate && asset.purchaseDate) {
-      const yearsOwned = (new Date().getTime() - asset.purchaseDate.getTime()) / (1000 * 60 * 60 * 24 * 365);
-      const depreciationAmount = asset.value * (asset.depreciationRate / 100) * yearsOwned;
+      const yearsOwned =
+        (new Date().getTime() - asset.purchaseDate.getTime()) /
+        (1000 * 60 * 60 * 24 * 365);
+      const depreciationAmount =
+        asset.value * (asset.depreciationRate / 100) * yearsOwned;
       currentValue = Math.max(0, asset.value - depreciationAmount);
     }
 
@@ -63,13 +69,15 @@ export async function GET(
         depreciationRate: asset.depreciationRate,
         isActive: asset.isActive,
         createdAt: asset.createdAt,
-        updatedAt: asset.updatedAt
-      }
+        updatedAt: asset.updatedAt,
+      },
     });
-
   } catch (error) {
     console.error('Asset fetch error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
   }
 }
 
@@ -80,7 +88,10 @@ export async function PUT(
   try {
     const session = await auth();
     if (!session?.user?.tenantId || session.user.role !== UserRole.ADMIN) {
-      return NextResponse.json({ error: 'Unauthorized - Admin access required' }, { status: 401 });
+      return NextResponse.json(
+        { error: 'Unauthorized - Admin access required' },
+        { status: 401 }
+      );
     }
 
     const { id: assetId } = await context.params;
@@ -92,8 +103,8 @@ export async function PUT(
     const existingAsset = await prisma.asset.findFirst({
       where: {
         id: assetId,
-        tenantId
-      }
+        tenantId,
+      },
     });
 
     if (!existingAsset) {
@@ -106,20 +117,35 @@ export async function PUT(
       data: {
         ...(validatedData.name && { name: validatedData.name }),
         ...(validatedData.category && { category: validatedData.category }),
-        ...(validatedData.subCategory !== undefined && { subCategory: validatedData.subCategory }),
-        ...(validatedData.value !== undefined && { value: validatedData.value }),
-        ...(validatedData.description !== undefined && { description: validatedData.description }),
-        ...(validatedData.purchaseDate !== undefined && { purchaseDate: validatedData.purchaseDate }),
-        ...(validatedData.depreciationRate !== undefined && { depreciationRate: validatedData.depreciationRate }),
-        ...(validatedData.isActive !== undefined && { isActive: validatedData.isActive }),
-      }
+        ...(validatedData.subCategory !== undefined && {
+          subCategory: validatedData.subCategory,
+        }),
+        ...(validatedData.value !== undefined && {
+          value: validatedData.value,
+        }),
+        ...(validatedData.description !== undefined && {
+          description: validatedData.description,
+        }),
+        ...(validatedData.purchaseDate !== undefined && {
+          purchaseDate: validatedData.purchaseDate,
+        }),
+        ...(validatedData.depreciationRate !== undefined && {
+          depreciationRate: validatedData.depreciationRate,
+        }),
+        ...(validatedData.isActive !== undefined && {
+          isActive: validatedData.isActive,
+        }),
+      },
     });
 
     // Calculate current value
     let currentValue = updatedAsset.value;
     if (updatedAsset.depreciationRate && updatedAsset.purchaseDate) {
-      const yearsOwned = (new Date().getTime() - updatedAsset.purchaseDate.getTime()) / (1000 * 60 * 60 * 24 * 365);
-      const depreciationAmount = updatedAsset.value * (updatedAsset.depreciationRate / 100) * yearsOwned;
+      const yearsOwned =
+        (new Date().getTime() - updatedAsset.purchaseDate.getTime()) /
+        (1000 * 60 * 60 * 24 * 365);
+      const depreciationAmount =
+        updatedAsset.value * (updatedAsset.depreciationRate / 100) * yearsOwned;
       currentValue = Math.max(0, updatedAsset.value - depreciationAmount);
     }
 
@@ -136,13 +162,15 @@ export async function PUT(
         purchaseDate: updatedAsset.purchaseDate,
         depreciationRate: updatedAsset.depreciationRate,
         isActive: updatedAsset.isActive,
-        updatedAt: updatedAsset.updatedAt
-      }
+        updatedAt: updatedAsset.updatedAt,
+      },
     });
-
   } catch (error) {
     console.error('Asset update error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
   }
 }
 
@@ -153,7 +181,10 @@ export async function DELETE(
   try {
     const session = await auth();
     if (!session?.user?.tenantId || session.user.role !== UserRole.ADMIN) {
-      return NextResponse.json({ error: 'Unauthorized - Admin access required' }, { status: 401 });
+      return NextResponse.json(
+        { error: 'Unauthorized - Admin access required' },
+        { status: 401 }
+      );
     }
 
     const { id: assetId } = await context.params;
@@ -163,8 +194,8 @@ export async function DELETE(
     const existingAsset = await prisma.asset.findFirst({
       where: {
         id: assetId,
-        tenantId
-      }
+        tenantId,
+      },
     });
 
     if (!existingAsset) {
@@ -174,16 +205,18 @@ export async function DELETE(
     // Soft delete by setting isActive to false
     await prisma.asset.update({
       where: { id: assetId },
-      data: { isActive: false }
+      data: { isActive: false },
     });
 
     return NextResponse.json({
       success: true,
-      message: 'Asset deleted successfully'
+      message: 'Asset deleted successfully',
     });
-
   } catch (error) {
     console.error('Asset deletion error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
   }
 }

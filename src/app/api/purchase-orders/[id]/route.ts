@@ -16,22 +16,22 @@ export async function GET(
     const purchaseOrder = await prisma.purchaseOrder.findFirst({
       where: {
         id: id,
-        tenantId: session.user.tenantId
+        tenantId: session.user.tenantId,
       },
       include: {
         company: true,
         items: {
           include: {
-            product: true
-          }
+            product: true,
+          },
         },
         createdByUser: {
-          select: { id: true, name: true, email: true }
+          select: { id: true, name: true, email: true },
         },
         approvedByUser: {
-          select: { id: true, name: true, email: true }
-        }
-      }
+          select: { id: true, name: true, email: true },
+        },
+      },
     });
 
     if (!purchaseOrder) {
@@ -69,7 +69,7 @@ export async function PUT(
       actualDeliveryDate,
       notes,
       priority,
-      items
+      items,
     } = data;
 
     const tenantId = session.user.tenantId;
@@ -79,11 +79,11 @@ export async function PUT(
     const existingPO = await prisma.purchaseOrder.findFirst({
       where: {
         id: id,
-        tenantId
+        tenantId,
       },
       include: {
-        items: true
-      }
+        items: true,
+      },
     });
 
     if (!existingPO) {
@@ -95,25 +95,29 @@ export async function PUT(
 
     // Prepare update data
     const updateData: any = {};
-    
+
     if (status !== undefined) {
       updateData.status = status;
-      
+
       // If approving, set approval info
       if (status === 'APPROVED' && existingPO.status === 'PENDING') {
         updateData.approvedBy = userId;
         updateData.approvedAt = new Date();
       }
     }
-    
+
     if (expectedDeliveryDate !== undefined) {
-      updateData.expectedDeliveryDate = expectedDeliveryDate ? new Date(expectedDeliveryDate) : null;
+      updateData.expectedDeliveryDate = expectedDeliveryDate
+        ? new Date(expectedDeliveryDate)
+        : null;
     }
-    
+
     if (actualDeliveryDate !== undefined) {
-      updateData.actualDeliveryDate = actualDeliveryDate ? new Date(actualDeliveryDate) : null;
+      updateData.actualDeliveryDate = actualDeliveryDate
+        ? new Date(actualDeliveryDate)
+        : null;
     }
-    
+
     if (notes !== undefined) updateData.notes = notes;
     if (priority !== undefined) updateData.priority = priority;
 
@@ -129,14 +133,20 @@ export async function PUT(
         }
         if (item.quantity <= 0 || item.unitPrice < 0) {
           return NextResponse.json(
-            { error: 'Quantity must be greater than 0 and unit price must be non-negative' },
+            {
+              error:
+                'Quantity must be greater than 0 and unit price must be non-negative',
+            },
             { status: 400 }
           );
         }
       }
 
       // Calculate new total amount
-      const newTotalAmount = items.reduce((sum, item) => sum + (item.quantity * item.unitPrice), 0);
+      const newTotalAmount = items.reduce(
+        (sum, item) => sum + item.quantity * item.unitPrice,
+        0
+      );
       updateData.totalAmount = newTotalAmount;
 
       // Update purchase order and replace items
@@ -146,35 +156,35 @@ export async function PUT(
           ...updateData,
           items: {
             deleteMany: {},
-            create: items.map(item => ({
+            create: items.map((item) => ({
               productId: item.productId,
               quantity: item.quantity,
               unitPrice: item.unitPrice,
               totalPrice: item.quantity * item.unitPrice,
               receivedQuantity: item.receivedQuantity || 0,
-              notes: item.notes
-            }))
-          }
+              notes: item.notes,
+            })),
+          },
         },
         include: {
           company: true,
           items: {
             include: {
-              product: true
-            }
+              product: true,
+            },
           },
           createdByUser: {
-            select: { id: true, name: true, email: true }
+            select: { id: true, name: true, email: true },
           },
           approvedByUser: {
-            select: { id: true, name: true, email: true }
-          }
-        }
+            select: { id: true, name: true, email: true },
+          },
+        },
       });
 
       return NextResponse.json({
         purchaseOrder: updatedPO,
-        message: 'Purchase order updated successfully'
+        message: 'Purchase order updated successfully',
       });
     } else {
       // Update without changing items
@@ -185,21 +195,21 @@ export async function PUT(
           company: true,
           items: {
             include: {
-              product: true
-            }
+              product: true,
+            },
           },
           createdByUser: {
-            select: { id: true, name: true, email: true }
+            select: { id: true, name: true, email: true },
           },
           approvedByUser: {
-            select: { id: true, name: true, email: true }
-          }
-        }
+            select: { id: true, name: true, email: true },
+          },
+        },
       });
 
       return NextResponse.json({
         purchaseOrder: updatedPO,
-        message: 'Purchase order updated successfully'
+        message: 'Purchase order updated successfully',
       });
     }
   } catch (error) {
@@ -228,8 +238,8 @@ export async function DELETE(
     const purchaseOrder = await prisma.purchaseOrder.findFirst({
       where: {
         id: id,
-        tenantId
-      }
+        tenantId,
+      },
     });
 
     if (!purchaseOrder) {
@@ -242,18 +252,21 @@ export async function DELETE(
     // Check if purchase order can be deleted (only PENDING or CANCELED orders)
     if (!['PENDING', 'CANCELED'].includes(purchaseOrder.status)) {
       return NextResponse.json(
-        { error: 'Cannot delete purchase order that has been approved or received' },
+        {
+          error:
+            'Cannot delete purchase order that has been approved or received',
+        },
         { status: 400 }
       );
     }
 
     // Delete the purchase order (items will be deleted automatically due to cascade)
     await prisma.purchaseOrder.delete({
-      where: { id: id }
+      where: { id: id },
     });
 
     return NextResponse.json({
-      message: 'Purchase order deleted successfully'
+      message: 'Purchase order deleted successfully',
     });
   } catch (error) {
     console.error('Delete purchase order error:', error);

@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
     const products = await prisma.product.findMany({
       where: {
         tenantId,
-        ...(showAll ? {} : { isActive: true })
+        ...(showAll ? {} : { isActive: true }),
       },
       select: {
         id: true,
@@ -39,52 +39,56 @@ export async function GET(request: NextRequest) {
         company: {
           select: {
             id: true,
-            name: true
-          }
+            name: true,
+          },
         },
         cylinderSize: {
           select: {
             id: true,
             size: true,
-            description: true
-          }
-        }
+            description: true,
+          },
+        },
       },
-      orderBy: [
-        { company: { name: 'asc' } },
-        { name: 'asc' }
-      ]
+      orderBy: [{ company: { name: 'asc' } }, { name: 'asc' }],
     });
 
     // Add inventory levels if requested
     let productsWithInventory = products;
     if (includeInventory) {
       const inventoryCalculator = new InventoryCalculator(prisma);
-      
+
       const productsWithLevels = await Promise.all(
         products.map(async (product) => {
           const levels = await inventoryCalculator.getCurrentInventoryLevels(
-            tenantId, 
+            tenantId,
             product.id
           );
-          
+
           return {
             ...product,
             inventory: {
               fullCylinders: levels.fullCylinders,
               emptyCylinders: levels.emptyCylinders,
               totalCylinders: levels.totalCylinders,
-              isLowStock: levels.fullCylinders <= product.lowStockThreshold
-            }
-          } as typeof product & { inventory: { fullCylinders: number; emptyCylinders: number; totalCylinders: number; isLowStock: boolean } };
+              isLowStock: levels.fullCylinders <= product.lowStockThreshold,
+            },
+          } as typeof product & {
+            inventory: {
+              fullCylinders: number;
+              emptyCylinders: number;
+              totalCylinders: number;
+              isLowStock: boolean;
+            };
+          };
         })
       );
-      
+
       productsWithInventory = productsWithLevels;
     }
 
     return NextResponse.json({
-      products: productsWithInventory.map(product => ({
+      products: productsWithInventory.map((product) => ({
         id: product.id,
         name: product.name,
         size: product.size,
@@ -97,13 +101,26 @@ export async function GET(request: NextRequest) {
         company: product.company,
         createdAt: product.createdAt,
         updatedAt: product.updatedAt,
-        ...(includeInventory && { inventory: (product as typeof product & { inventory?: { fullCylinders: number; emptyCylinders: number; totalCylinders: number; isLowStock: boolean } }).inventory })
-      }))
+        ...(includeInventory && {
+          inventory: (
+            product as typeof product & {
+              inventory?: {
+                fullCylinders: number;
+                emptyCylinders: number;
+                totalCylinders: number;
+                isLowStock: boolean;
+              };
+            }
+          ).inventory,
+        }),
+      })),
     });
-
   } catch (error) {
     console.error('Products fetch error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
   }
 }
 
@@ -123,7 +140,7 @@ export async function POST(request: NextRequest) {
       currentPrice,
       lowStockThreshold,
       isActive = true,
-      companyId
+      companyId,
     } = data;
 
     if (!name || !companyId) {
@@ -143,14 +160,11 @@ export async function POST(request: NextRequest) {
 
     // Verify company belongs to tenant
     const company = await prisma.company.findFirst({
-      where: { id: companyId, tenantId }
+      where: { id: companyId, tenantId },
     });
 
     if (!company) {
-      return NextResponse.json(
-        { error: 'Company not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Company not found' }, { status: 404 });
     }
 
     // Verify cylinder size belongs to tenant if provided
@@ -158,7 +172,7 @@ export async function POST(request: NextRequest) {
     let actualSize = size;
     if (cylinderSizeId) {
       cylinderSize = await prisma.cylinderSize.findFirst({
-        where: { id: cylinderSizeId, tenantId }
+        where: { id: cylinderSizeId, tenantId },
       });
 
       if (!cylinderSize) {
@@ -167,7 +181,7 @@ export async function POST(request: NextRequest) {
           { status: 404 }
         );
       }
-      
+
       // Use cylinder size for the size field
       actualSize = cylinderSize.size;
     }
@@ -176,15 +190,20 @@ export async function POST(request: NextRequest) {
     const existingProduct = await prisma.product.findFirst({
       where: {
         name: { equals: name, mode: 'insensitive' },
-        ...(cylinderSizeId ? { cylinderSizeId } : { size: { equals: actualSize, mode: 'insensitive' } }),
+        ...(cylinderSizeId
+          ? { cylinderSizeId }
+          : { size: { equals: actualSize, mode: 'insensitive' } }),
         companyId,
-        tenantId
-      }
+        tenantId,
+      },
     });
 
     if (existingProduct) {
       return NextResponse.json(
-        { error: 'Product with this name and cylinder size already exists for this company' },
+        {
+          error:
+            'Product with this name and cylinder size already exists for this company',
+        },
         { status: 409 }
       );
     }
@@ -204,25 +223,27 @@ export async function POST(request: NextRequest) {
         company: {
           select: {
             id: true,
-            name: true
-          }
+            name: true,
+          },
         },
         cylinderSize: {
           select: {
             id: true,
             size: true,
-            description: true
-          }
-        }
-      }
+            description: true,
+          },
+        },
+      },
     });
 
-    return NextResponse.json({
-      success: true,
-      product,
-      message: 'Product created successfully'
-    }, { status: 201 });
-
+    return NextResponse.json(
+      {
+        success: true,
+        product,
+        message: 'Product created successfully',
+      },
+      { status: 201 }
+    );
   } catch (error) {
     console.error('Create product error:', error);
     return NextResponse.json(

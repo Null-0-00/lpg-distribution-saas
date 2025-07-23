@@ -25,22 +25,22 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({
   editingCategory,
   title,
   submitLabel,
-  isSubmitting
+  isSubmitting,
 }) => {
   const [formData, setFormData] = useState<CategoryFormData>({
     name: '',
     description: '',
     parentId: '',
     budget: null,
-    isParent: false
+    isParent: false,
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     if (initialData) {
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
-        ...initialData
+        ...initialData,
       }));
     } else if (editingCategory) {
       setFormData({
@@ -48,7 +48,7 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({
         description: editingCategory.description || '',
         parentId: editingCategory.parentId || '',
         budget: editingCategory.budget,
-        isParent: false
+        isParent: false,
       });
     }
   }, [initialData, editingCategory]);
@@ -61,7 +61,7 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({
     } catch (error) {
       if (error instanceof z.ZodError) {
         const newErrors: Record<string, string> = {};
-        error.errors.forEach(err => {
+        error.errors.forEach((err) => {
           if (err.path.length > 0) {
             newErrors[err.path[0]] = err.message;
           }
@@ -74,7 +74,7 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
@@ -93,32 +93,35 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({
       description: '',
       parentId: '',
       budget: null,
-      isParent: false
+      isParent: false,
     });
     setErrors({});
     onClose();
   };
 
-  const handleInputChange = (field: keyof CategoryFormData, value: string | number | boolean | null) => {
-    setFormData(prev => ({
+  const handleInputChange = (
+    field: keyof CategoryFormData,
+    value: string | number | boolean | null
+  ) => {
+    setFormData((prev) => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
-    
+
     // Clear error when user starts typing
     if (errors[field]) {
-      setErrors(prev => ({
+      setErrors((prev) => ({
         ...prev,
-        [field]: ''
+        [field]: '',
       }));
     }
 
     // Clear parentId when isParent is true
     if (field === 'isParent' && value === true) {
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
         parentId: '',
-        budget: null
+        budget: null,
       }));
     }
   };
@@ -126,9 +129,9 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-black bg-opacity-50 flex items-center justify-center p-4">
-      <div className="bg-card rounded-lg shadow-xl w-full max-w-md max-h-[90vh] overflow-y-auto">
-        <div className="flex items-center justify-between p-6 border-b border-border">
+    <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black bg-opacity-50 p-4">
+      <div className="bg-card max-h-[90vh] w-full max-w-md overflow-y-auto rounded-lg shadow-xl">
+        <div className="border-border flex items-center justify-between border-b p-6">
           <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
             {title}
           </h2>
@@ -140,11 +143,11 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4 p-6">
           {/* Category Type */}
           {!editingCategory && (
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
                 Category Type
               </label>
               <div className="space-y-2">
@@ -178,64 +181,76 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({
 
           {/* Name */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
               Name *
             </label>
             <input
               type="text"
               value={formData.name}
               onChange={(e) => handleInputChange('name', e.target.value)}
-              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white ${
-                errors.name ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+              className={`w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white ${
+                errors.name
+                  ? 'border-red-500'
+                  : 'border-gray-300 dark:border-gray-600'
               }`}
               placeholder="Enter category name"
             />
             {errors.name && (
-              <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.name}</p>
+              <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+                {errors.name}
+              </p>
             )}
           </div>
 
           {/* Description */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
               Description
             </label>
             <textarea
               value={formData.description || ''}
               onChange={(e) => handleInputChange('description', e.target.value)}
               rows={3}
-              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white ${
-                errors.description ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+              className={`w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white ${
+                errors.description
+                  ? 'border-red-500'
+                  : 'border-gray-300 dark:border-gray-600'
               }`}
               placeholder="Enter category description"
             />
             {errors.description && (
-              <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.description}</p>
+              <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+                {errors.description}
+              </p>
             )}
           </div>
 
           {/* Parent Category (only for sub-categories) */}
           {!formData.isParent && (
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
                 Parent Category
               </label>
               <select
                 value={formData.parentId || ''}
                 onChange={(e) => handleInputChange('parentId', e.target.value)}
-                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white ${
-                  errors.parentId ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+                className={`w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white ${
+                  errors.parentId
+                    ? 'border-red-500'
+                    : 'border-gray-300 dark:border-gray-600'
                 }`}
               >
                 <option value="">No parent category</option>
-                {parentCategories.map(parent => (
+                {parentCategories.map((parent) => (
                   <option key={parent.id} value={parent.id}>
                     {parent.name}
                   </option>
                 ))}
               </select>
               {errors.parentId && (
-                <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.parentId}</p>
+                <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+                  {errors.parentId}
+                </p>
               )}
             </div>
           )}
@@ -243,7 +258,7 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({
           {/* Budget (only for sub-categories) */}
           {!formData.isParent && (
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
                 Monthly Budget
               </label>
               <input
@@ -251,14 +266,23 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({
                 step="0.01"
                 min="0"
                 value={formData.budget || ''}
-                onChange={(e) => handleInputChange('budget', parseFloat(e.target.value) || null)}
-                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white ${
-                  errors.budget ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+                onChange={(e) =>
+                  handleInputChange(
+                    'budget',
+                    parseFloat(e.target.value) || null
+                  )
+                }
+                className={`w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white ${
+                  errors.budget
+                    ? 'border-red-500'
+                    : 'border-gray-300 dark:border-gray-600'
                 }`}
                 placeholder="0.00"
               />
               {errors.budget && (
-                <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.budget}</p>
+                <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+                  {errors.budget}
+                </p>
               )}
               <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                 Leave empty for no budget limit
@@ -267,22 +291,22 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({
           )}
 
           {/* Form Actions */}
-          <div className="flex justify-end space-x-3 pt-4 border-t border-gray-200 dark:border-gray-700">
+          <div className="flex justify-end space-x-3 border-t border-gray-200 pt-4 dark:border-gray-700">
             <button
               type="button"
               onClick={handleClose}
-              className="px-4 py-2 text-muted-foreground border border-border rounded-md hover:bg-muted/50 transition-colors"
+              className="text-muted-foreground border-border hover:bg-muted/50 rounded-md border px-4 py-2 transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center transition-colors"
+              className="flex items-center rounded-md bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
             >
               {isSubmitting ? (
                 <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                  <div className="mr-2 h-4 w-4 animate-spin rounded-full border-b-2 border-white"></div>
                   Submitting...
                 </>
               ) : (

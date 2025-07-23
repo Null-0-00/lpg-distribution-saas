@@ -12,27 +12,30 @@ export async function GET(request: NextRequest) {
     const parentCategories = await prisma.expenseParentCategory.findMany({
       where: {
         tenantId: session.user.tenantId,
-        isActive: true
+        isActive: true,
       },
       include: {
         categories: {
           where: {
-            isActive: true
+            isActive: true,
           },
           orderBy: {
-            name: 'asc'
-          }
-        }
+            name: 'asc',
+          },
+        },
       },
       orderBy: {
-        name: 'asc'
-      }
+        name: 'asc',
+      },
     });
 
     return NextResponse.json({ parentCategories });
   } catch (error) {
     console.error('Error fetching parent categories:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
   }
 }
 
@@ -54,23 +57,26 @@ export async function POST(request: NextRequest) {
       data: {
         tenantId: session.user.tenantId,
         name,
-        description
+        description,
       },
       include: {
         categories: {
           where: {
-            isActive: true
+            isActive: true,
           },
           orderBy: {
-            name: 'asc'
-          }
-        }
-      }
+            name: 'asc',
+          },
+        },
+      },
     });
 
     return NextResponse.json(parentCategory, { status: 201 });
   } catch (error) {
     console.error('Error creating parent category:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
   }
 }

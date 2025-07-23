@@ -16,7 +16,8 @@
       "mcp__serena__activate_project",
       "Bash(npm install:*)",
       "Bash(npm run build:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(npm run format:*)"
     ],
     "deny": []
   }

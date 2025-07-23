@@ -19,16 +19,16 @@ export const MemoizedExpenseStatCards = memo<MemoizedExpenseStatCardsProps>(
       return {
         total: {
           count: summary.total.count,
-          amount: summary.total.amount
+          amount: summary.total.amount,
         },
         pending: {
           count: summary.pending.count,
-          amount: summary.pending.amount
+          amount: summary.pending.amount,
         },
         approved: {
           count: summary.approved.count,
-          amount: summary.approved.amount
-        }
+          amount: summary.approved.amount,
+        },
       };
     }, [
       summary.total.count,
@@ -36,15 +36,10 @@ export const MemoizedExpenseStatCards = memo<MemoizedExpenseStatCardsProps>(
       summary.pending.count,
       summary.pending.amount,
       summary.approved.count,
-      summary.approved.amount
+      summary.approved.amount,
     ]);
 
-    return (
-      <ExpenseStatCards
-        summary={memoizedSummary}
-        loading={loading}
-      />
-    );
+    return <ExpenseStatCards summary={memoizedSummary} loading={loading} />;
   }
 );
 

@@ -38,7 +38,10 @@ export interface SyncResult {
 export class OfflineSyncManager {
   private static instance: OfflineSyncManager;
   private syncing = false;
-  private conflictResolvers: Map<string, (conflict: SyncConflict) => ConflictResolution> = new Map();
+  private conflictResolvers: Map<
+    string,
+    (conflict: SyncConflict) => ConflictResolution
+  > = new Map();
 
   private constructor() {
     this.setupDefaultResolvers();
@@ -69,16 +72,16 @@ export class OfflineSyncManager {
       conflicts: [],
       synced: 0,
       failed: 0,
-      errors: []
+      errors: [],
     };
 
     try {
       const pendingData = await offlineStorage.getPendingData();
-      
+
       for (const item of pendingData) {
         try {
           const syncResult = await this.syncWithConflictResolution(item);
-          
+
           if (syncResult.success) {
             await offlineStorage.markSynced(item.id);
             result.synced++;
@@ -86,9 +89,9 @@ export class OfflineSyncManager {
             result.failed++;
             result.errors.push({
               id: item.id,
-              error: syncResult.error || 'Unknown error'
+              error: syncResult.error || 'Unknown error',
             });
-            
+
             if (syncResult.conflicts) {
               result.conflicts.push(...syncResult.conflicts);
             }
@@ -97,7 +100,7 @@ export class OfflineSyncManager {
           result.failed++;
           result.errors.push({
             id: item.id,
-            error: error instanceof Error ? error.message : 'Unknown error'
+            error: error instanceof Error ? error.message : 'Unknown error',
           });
         }
       }
@@ -120,27 +123,35 @@ export class OfflineSyncManager {
     try {
       // First, try to check if the resource exists on server
       const serverData = await this.fetchServerData(item);
-      
+
       if (serverData && this.hasConflict(item.data, serverData)) {
         // Handle conflict
         const conflicts = this.detectConflicts(item, serverData);
-        const resolution = await this.resolveConflicts(item, serverData, conflicts);
-        
+        const resolution = await this.resolveConflicts(
+          item,
+          serverData,
+          conflicts
+        );
+
         if (resolution.strategy === 'manual') {
           return {
             success: false,
             conflicts,
-            error: 'Manual conflict resolution required'
+            error: 'Manual conflict resolution required',
           };
         }
 
         // Apply resolution and sync
-        const resolvedData = this.applyResolution(item.data, serverData, resolution);
+        const resolvedData = this.applyResolution(
+          item.data,
+          serverData,
+          resolution
+        );
         const success = await this.syncResolvedData(item, resolvedData);
-        
+
         return {
           success,
-          conflicts: success ? [] : conflicts
+          conflicts: success ? [] : conflicts,
         };
       } else {
         // No conflict, proceed with normal sync
@@ -150,7 +161,7 @@ export class OfflineSyncManager {
     } catch (error) {
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? error.message : 'Unknown error',
       };
     }
   }
@@ -160,7 +171,7 @@ export class OfflineSyncManager {
    */
   private async fetchServerData(item: OfflineData): Promise<any> {
     let endpoint = '';
-    
+
     switch (item.type) {
       case 'sale':
         // For sales, we might check by driver and timestamp
@@ -196,11 +207,13 @@ export class OfflineSyncManager {
 
     // Check specific fields that commonly conflict
     const conflictFields = ['quantity', 'unitPrice', 'discount', 'status'];
-    
+
     for (const field of conflictFields) {
-      if (clientData[field] !== undefined && 
-          serverData[field] !== undefined && 
-          clientData[field] !== serverData[field]) {
+      if (
+        clientData[field] !== undefined &&
+        serverData[field] !== undefined &&
+        clientData[field] !== serverData[field]
+      ) {
         return true;
       }
     }
@@ -217,10 +230,12 @@ export class OfflineSyncManager {
 
     // Compare all relevant fields
     const fieldsToCheck = Object.keys(clientData);
-    
+
     for (const field of fieldsToCheck) {
-      if (serverData[field] !== undefined && 
-          clientData[field] !== serverData[field]) {
+      if (
+        serverData[field] !== undefined &&
+        clientData[field] !== serverData[field]
+      ) {
         conflicts.push({
           id: item.id,
           type: item.type,
@@ -229,7 +244,7 @@ export class OfflineSyncManager {
           field,
           clientValue: clientData[field],
           serverValue: serverData[field],
-          timestamp: item.timestamp
+          timestamp: item.timestamp,
         });
       }
     }
@@ -246,7 +261,7 @@ export class OfflineSyncManager {
     conflicts: SyncConflict[]
   ): Promise<ConflictResolution> {
     const resolver = this.conflictResolvers.get(item.type);
-    
+
     if (resolver) {
       // Use custom resolver for this data type
       const mainConflict = conflicts[0]; // Use first conflict for resolver
@@ -269,12 +284,12 @@ export class OfflineSyncManager {
     if (item.type === 'sale') {
       const serverTime = new Date(serverData.createdAt || 0).getTime();
       const clientTime = item.timestamp;
-      
+
       return {
         strategy: clientTime > serverTime ? 'client-wins' : 'server-wins',
         clientData: item.data,
         serverData,
-        timestamp: Date.now()
+        timestamp: Date.now(),
       };
     }
 
@@ -284,7 +299,7 @@ export class OfflineSyncManager {
         strategy: 'server-wins',
         clientData: item.data,
         serverData,
-        timestamp: Date.now()
+        timestamp: Date.now(),
       };
     }
 
@@ -293,7 +308,7 @@ export class OfflineSyncManager {
       strategy: 'client-wins',
       clientData: item.data,
       serverData,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
   }
 
@@ -308,13 +323,13 @@ export class OfflineSyncManager {
     switch (resolution.strategy) {
       case 'client-wins':
         return clientData;
-      
+
       case 'server-wins':
         return serverData;
-      
+
       case 'merge':
         return resolution.mergedData || { ...serverData, ...clientData };
-      
+
       default:
         return clientData;
     }
@@ -323,7 +338,10 @@ export class OfflineSyncManager {
   /**
    * Sync resolved data to server
    */
-  private async syncResolvedData(item: OfflineData, resolvedData: any): Promise<boolean> {
+  private async syncResolvedData(
+    item: OfflineData,
+    resolvedData: any
+  ): Promise<boolean> {
     try {
       let endpoint = '';
       let method = 'POST';
@@ -345,9 +363,9 @@ export class OfflineSyncManager {
         headers: {
           'Content-Type': 'application/json',
           'X-Conflict-Resolved': 'true',
-          'X-Original-Timestamp': item.timestamp.toString()
+          'X-Original-Timestamp': item.timestamp.toString(),
         },
-        body: JSON.stringify(resolvedData)
+        body: JSON.stringify(resolvedData),
       });
 
       return response.ok;
@@ -385,9 +403,10 @@ export class OfflineSyncManager {
         headers: {
           'Content-Type': 'application/json',
           'X-Offline-Sync': 'true',
-          'X-Offline-ID': item.id
+          'X-Offline-ID': item.id,
         },
-        body: item.type === 'action' ? item.data.body : JSON.stringify(item.data)
+        body:
+          item.type === 'action' ? item.data.body : JSON.stringify(item.data),
       });
 
       return response.ok;
@@ -402,45 +421,59 @@ export class OfflineSyncManager {
    */
   private setupDefaultResolvers(): void {
     // Sales conflict resolver
-    this.conflictResolvers.set('sale', (conflict: SyncConflict): ConflictResolution => {
-      // For sales, prioritize the latest data based on timestamp
-      const clientTime = conflict.clientData.timestamp || 0;
-      const serverTime = new Date(conflict.serverData.updatedAt || 0).getTime();
-      
-      return {
-        strategy: clientTime > serverTime ? 'client-wins' : 'server-wins',
-        clientData: conflict.clientData,
-        serverData: conflict.serverData,
-        timestamp: Date.now()
-      };
-    });
+    this.conflictResolvers.set(
+      'sale',
+      (conflict: SyncConflict): ConflictResolution => {
+        // For sales, prioritize the latest data based on timestamp
+        const clientTime = conflict.clientData.timestamp || 0;
+        const serverTime = new Date(
+          conflict.serverData.updatedAt || 0
+        ).getTime();
 
-    // Inventory conflict resolver
-    this.conflictResolvers.set('inventory', (conflict: SyncConflict): ConflictResolution => {
-      // For inventory, merge quantities (take the lower value for safety)
-      if (conflict.field === 'quantity' || conflict.field === 'fullCylinders') {
-        const mergedData = {
-          ...conflict.serverData,
-          [conflict.field]: Math.min(conflict.clientValue, conflict.serverValue)
-        };
-        
         return {
-          strategy: 'merge',
+          strategy: clientTime > serverTime ? 'client-wins' : 'server-wins',
           clientData: conflict.clientData,
           serverData: conflict.serverData,
-          mergedData,
-          timestamp: Date.now()
+          timestamp: Date.now(),
         };
       }
-      
-      // For other inventory fields, prefer server data
-      return {
-        strategy: 'server-wins',
-        clientData: conflict.clientData,
-        serverData: conflict.serverData,
-        timestamp: Date.now()
-      };
-    });
+    );
+
+    // Inventory conflict resolver
+    this.conflictResolvers.set(
+      'inventory',
+      (conflict: SyncConflict): ConflictResolution => {
+        // For inventory, merge quantities (take the lower value for safety)
+        if (
+          conflict.field === 'quantity' ||
+          conflict.field === 'fullCylinders'
+        ) {
+          const mergedData = {
+            ...conflict.serverData,
+            [conflict.field]: Math.min(
+              conflict.clientValue,
+              conflict.serverValue
+            ),
+          };
+
+          return {
+            strategy: 'merge',
+            clientData: conflict.clientData,
+            serverData: conflict.serverData,
+            mergedData,
+            timestamp: Date.now(),
+          };
+        }
+
+        // For other inventory fields, prefer server data
+        return {
+          strategy: 'server-wins',
+          clientData: conflict.clientData,
+          serverData: conflict.serverData,
+          timestamp: Date.now(),
+        };
+      }
+    );
   }
 
   /**
@@ -482,8 +515,8 @@ export class OfflineSyncManager {
   ): Promise<boolean> {
     try {
       const pendingData = await offlineStorage.getPendingData();
-      const item = pendingData.find(d => d.id === conflictId);
-      
+      const item = pendingData.find((d) => d.id === conflictId);
+
       if (!item) {
         throw new Error('Conflict item not found');
       }
@@ -495,7 +528,7 @@ export class OfflineSyncManager {
       );
 
       const success = await this.syncResolvedData(item, resolvedData);
-      
+
       if (success) {
         await offlineStorage.markSynced(item.id);
       }
@@ -528,13 +561,13 @@ export class OfflineSyncManager {
       conflicts: [],
       synced: 0,
       failed: 0,
-      errors: []
+      errors: [],
     };
 
     for (const item of pendingData) {
       try {
         const success = await this.performDirectSync(item);
-        
+
         if (success) {
           await offlineStorage.markSynced(item.id);
           result.synced++;
@@ -542,14 +575,14 @@ export class OfflineSyncManager {
           result.failed++;
           result.errors.push({
             id: item.id,
-            error: 'Force sync failed'
+            error: 'Force sync failed',
           });
         }
       } catch (error) {
         result.failed++;
         result.errors.push({
           id: item.id,
-          error: error instanceof Error ? error.message : 'Unknown error'
+          error: error instanceof Error ? error.message : 'Unknown error',
         });
       }
     }

@@ -8,7 +8,13 @@ import { SaleType, PaymentType } from '@prisma/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2, AlertTriangle } from 'lucide-react';
@@ -19,15 +25,20 @@ const saleFormSchema = z.object({
   productId: z.string().min(1, 'Product is required'),
   customerName: z.string().optional(),
   saleType: z.nativeEnum(SaleType),
-  quantity: z.number().min(1, 'Quantity must be at least 1').max(1000, 'Quantity too large'),
+  quantity: z
+    .number()
+    .min(1, 'Quantity must be at least 1')
+    .max(1000, 'Quantity too large'),
   unitPrice: z.number().min(0, 'Price cannot be negative'),
   discount: z.number().min(0, 'Discount cannot be negative'),
   paymentType: z.nativeEnum(PaymentType),
   cashDeposited: z.number().min(0, 'Cash deposited cannot be negative'),
-  cylindersDeposited: z.number().int().min(0, 'Cylinders deposited cannot be negative'),
+  cylindersDeposited: z
+    .number()
+    .int()
+    .min(0, 'Cylinders deposited cannot be negative'),
   notes: z.string().optional(),
 });
-
 
 interface Driver {
   id: string;
@@ -58,7 +69,11 @@ interface SaleFormProps {
   loading?: boolean;
 }
 
-export function SaleForm({ onSubmit, onCancel, loading = false }: SaleFormProps) {
+export function SaleForm({
+  onSubmit,
+  onCancel,
+  loading = false,
+}: SaleFormProps) {
   const { formatCurrency } = useSettings();
   const [drivers, setDrivers] = useState<Driver[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
@@ -71,7 +86,7 @@ export function SaleForm({ onSubmit, onCancel, loading = false }: SaleFormProps)
     watch,
     setValue,
     reset,
-    formState: { errors }
+    formState: { errors },
   } = useForm<z.infer<typeof saleFormSchema>>({
     resolver: zodResolver(saleFormSchema),
     defaultValues: {
@@ -79,12 +94,13 @@ export function SaleForm({ onSubmit, onCancel, loading = false }: SaleFormProps)
       cashDeposited: 0,
       cylindersDeposited: 0,
       paymentType: PaymentType.CASH,
-      saleType: SaleType.PACKAGE
-    }
+      saleType: SaleType.PACKAGE,
+    },
   });
 
   const watchedValues = watch();
-  const totalValue = (watchedValues.quantity || 0) * (watchedValues.unitPrice || 0);
+  const totalValue =
+    (watchedValues.quantity || 0) * (watchedValues.unitPrice || 0);
   const netValue = totalValue - (watchedValues.discount || 0);
 
   // Load drivers and products
@@ -94,7 +110,7 @@ export function SaleForm({ onSubmit, onCancel, loading = false }: SaleFormProps)
         setLoadingData(true);
         const [driversRes, productsRes] = await Promise.all([
           fetch('/api/drivers?active=true&driverType=RETAIL'),
-          fetch('/api/products?inventory=true')
+          fetch('/api/products?inventory=true'),
         ]);
 
         if (driversRes.ok && productsRes.ok) {
@@ -116,7 +132,7 @@ export function SaleForm({ onSubmit, onCancel, loading = false }: SaleFormProps)
   // Update unit price when product changes
   useEffect(() => {
     if (watchedValues.productId) {
-      const product = products.find(p => p.id === watchedValues.productId);
+      const product = products.find((p) => p.id === watchedValues.productId);
       if (product) {
         setSelectedProduct(product);
         setValue('unitPrice', product.currentPrice);
@@ -156,8 +172,8 @@ export function SaleForm({ onSubmit, onCancel, loading = false }: SaleFormProps)
       {/* Driver Selection */}
       <div className="space-y-2">
         <Label htmlFor="driverId">Driver *</Label>
-        <Select 
-          value={watchedValues.driverId || ''} 
+        <Select
+          value={watchedValues.driverId || ''}
           onValueChange={(value) => setValue('driverId', value)}
         >
           <SelectTrigger>
@@ -169,7 +185,9 @@ export function SaleForm({ onSubmit, onCancel, loading = false }: SaleFormProps)
                 <div className="flex flex-col">
                   <span className="font-medium">{driver.name}</span>
                   {driver.route && (
-                    <span className="text-sm text-gray-500">{driver.route}</span>
+                    <span className="text-sm text-gray-500">
+                      {driver.route}
+                    </span>
                   )}
                 </div>
               </SelectItem>
@@ -184,8 +202,8 @@ export function SaleForm({ onSubmit, onCancel, loading = false }: SaleFormProps)
       {/* Product Selection */}
       <div className="space-y-2">
         <Label htmlFor="productId">Product *</Label>
-        <Select 
-          value={watchedValues.productId || ''} 
+        <Select
+          value={watchedValues.productId || ''}
           onValueChange={(value) => setValue('productId', value)}
         >
           <SelectTrigger>
@@ -197,7 +215,9 @@ export function SaleForm({ onSubmit, onCancel, loading = false }: SaleFormProps)
                 <div className="flex flex-col">
                   <span className="font-medium">{product.fullName}</span>
                   {product.inventory && (
-                    <span className={`text-sm ${product.inventory.isLowStock ? 'text-red-500' : 'text-green-600'}`}>
+                    <span
+                      className={`text-sm ${product.inventory.isLowStock ? 'text-red-500' : 'text-green-600'}`}
+                    >
                       {product.inventory.fullCylinders} available
                       {product.inventory.isLowStock && ' (Low Stock!)'}
                     </span>
@@ -233,17 +253,18 @@ export function SaleForm({ onSubmit, onCancel, loading = false }: SaleFormProps)
         <Alert className="border-orange-200 bg-orange-50">
           <AlertTriangle className="h-4 w-4 text-orange-600" />
           <AlertDescription className="text-orange-800">
-            Warning: This product is running low on stock ({selectedProduct.inventory.fullCylinders} cylinders remaining).
+            Warning: This product is running low on stock (
+            {selectedProduct.inventory.fullCylinders} cylinders remaining).
           </AlertDescription>
         </Alert>
       )}
 
       {/* Sale Type and Quantity */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <div className="space-y-2">
           <Label htmlFor="saleType">Sale Type *</Label>
-          <Select 
-            value={watchedValues.saleType || ''} 
+          <Select
+            value={watchedValues.saleType || ''}
             onValueChange={(value) => setValue('saleType', value as SaleType)}
           >
             <SelectTrigger>
@@ -275,7 +296,7 @@ export function SaleForm({ onSubmit, onCancel, loading = false }: SaleFormProps)
       </div>
 
       {/* Pricing */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
         <div className="space-y-2">
           <Label htmlFor="unitPrice">Unit Price *</Label>
           <Input
@@ -292,7 +313,7 @@ export function SaleForm({ onSubmit, onCancel, loading = false }: SaleFormProps)
 
         <div className="space-y-2">
           <Label>Total Value</Label>
-          <div className="p-2 bg-gray-50 border rounded-md font-semibold">
+          <div className="rounded-md border bg-gray-50 p-2 font-semibold">
             {formatCurrency(totalValue)}
           </div>
         </div>
@@ -313,7 +334,7 @@ export function SaleForm({ onSubmit, onCancel, loading = false }: SaleFormProps)
 
         <div className="space-y-2">
           <Label>Net Value</Label>
-          <div className="p-2 bg-gray-50 border rounded-md font-semibold">
+          <div className="rounded-md border bg-gray-50 p-2 font-semibold">
             {formatCurrency(netValue)}
           </div>
         </div>
@@ -323,9 +344,11 @@ export function SaleForm({ onSubmit, onCancel, loading = false }: SaleFormProps)
       <div className="space-y-4">
         <div className="space-y-2">
           <Label htmlFor="paymentType">Payment Type *</Label>
-          <Select 
-            value={watchedValues.paymentType || ''} 
-            onValueChange={(value) => setValue('paymentType', value as PaymentType)}
+          <Select
+            value={watchedValues.paymentType || ''}
+            onValueChange={(value) =>
+              setValue('paymentType', value as PaymentType)
+            }
           >
             <SelectTrigger>
               <SelectValue />
@@ -333,7 +356,9 @@ export function SaleForm({ onSubmit, onCancel, loading = false }: SaleFormProps)
             <SelectContent>
               <SelectItem value={PaymentType.CASH}>Cash</SelectItem>
               <SelectItem value={PaymentType.CREDIT}>Credit</SelectItem>
-              <SelectItem value={PaymentType.CYLINDER_CREDIT}>Cylinder Credit</SelectItem>
+              <SelectItem value={PaymentType.CYLINDER_CREDIT}>
+                Cylinder Credit
+              </SelectItem>
             </SelectContent>
           </Select>
           {errors.paymentType && (
@@ -341,7 +366,7 @@ export function SaleForm({ onSubmit, onCancel, loading = false }: SaleFormProps)
           )}
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <div className="space-y-2">
             <Label htmlFor="cashDeposited">Cash Deposited</Label>
             <Input
@@ -352,7 +377,9 @@ export function SaleForm({ onSubmit, onCancel, loading = false }: SaleFormProps)
               {...register('cashDeposited', { valueAsNumber: true })}
             />
             {errors.cashDeposited && (
-              <p className="text-sm text-red-600">{errors.cashDeposited.message}</p>
+              <p className="text-sm text-red-600">
+                {errors.cashDeposited.message}
+              </p>
             )}
           </div>
 
@@ -367,7 +394,9 @@ export function SaleForm({ onSubmit, onCancel, loading = false }: SaleFormProps)
                 {...register('cylindersDeposited', { valueAsNumber: true })}
               />
               {errors.cylindersDeposited && (
-                <p className="text-sm text-red-600">{errors.cylindersDeposited.message}</p>
+                <p className="text-sm text-red-600">
+                  {errors.cylindersDeposited.message}
+                </p>
               )}
             </div>
           )}
@@ -389,25 +418,36 @@ export function SaleForm({ onSubmit, onCancel, loading = false }: SaleFormProps)
         <Alert className="border-yellow-200 bg-yellow-50">
           <AlertTriangle className="h-4 w-4 text-yellow-600" />
           <AlertDescription className="text-yellow-800">
-            This sale will create a cash receivable of {formatCurrency(netValue - (watchedValues.cashDeposited || 0))}
-            {watchedValues.customerName ? ` for customer: ${watchedValues.customerName}` : ' (Customer name recommended for tracking)'}.
+            This sale will create a cash receivable of{' '}
+            {formatCurrency(netValue - (watchedValues.cashDeposited || 0))}
+            {watchedValues.customerName
+              ? ` for customer: ${watchedValues.customerName}`
+              : ' (Customer name recommended for tracking)'}
+            .
           </AlertDescription>
         </Alert>
       )}
 
-      {watchedValues.saleType === SaleType.REFILL && 
-       (watchedValues.quantity || 0) > (watchedValues.cylindersDeposited || 0) && (
-        <Alert className="border-blue-200 bg-blue-50">
-          <AlertTriangle className="h-4 w-4 text-blue-600" />
-          <AlertDescription className="text-blue-800">
-            This sale will create a cylinder receivable of {(watchedValues.quantity || 0) - (watchedValues.cylindersDeposited || 0)} cylinders
-            {watchedValues.customerName ? ` for customer: ${watchedValues.customerName}` : ' (Customer name recommended for tracking)'}.
-          </AlertDescription>
-        </Alert>
-      )}
+      {watchedValues.saleType === SaleType.REFILL &&
+        (watchedValues.quantity || 0) >
+          (watchedValues.cylindersDeposited || 0) && (
+          <Alert className="border-blue-200 bg-blue-50">
+            <AlertTriangle className="h-4 w-4 text-blue-600" />
+            <AlertDescription className="text-blue-800">
+              This sale will create a cylinder receivable of{' '}
+              {(watchedValues.quantity || 0) -
+                (watchedValues.cylindersDeposited || 0)}{' '}
+              cylinders
+              {watchedValues.customerName
+                ? ` for customer: ${watchedValues.customerName}`
+                : ' (Customer name recommended for tracking)'}
+              .
+            </AlertDescription>
+          </Alert>
+        )}
 
       {/* Form Actions */}
-      <div className="flex justify-end space-x-4 pt-4 border-t">
+      <div className="flex justify-end space-x-4 border-t pt-4">
         <Button type="button" variant="outline" onClick={onCancel}>
           Cancel
         </Button>

@@ -8,7 +8,7 @@ interface ExpenseHeaderProps {
 
 export const ExpenseHeader: React.FC<ExpenseHeaderProps> = ({
   onAddExpense,
-  onManageCategories
+  onManageCategories,
 }) => {
   return (
     <div className="flex items-center justify-between">
@@ -21,18 +21,18 @@ export const ExpenseHeader: React.FC<ExpenseHeaderProps> = ({
         </p>
       </div>
       <div className="flex space-x-2">
-        <button 
-          className="flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+        <button
+          className="flex items-center rounded-lg bg-green-600 px-4 py-2 text-white transition-colors hover:bg-green-700"
           onClick={onManageCategories}
         >
-          <Settings className="h-4 w-4 mr-2" />
+          <Settings className="mr-2 h-4 w-4" />
           Manage Categories
         </button>
-        <button 
-          className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+        <button
+          className="flex items-center rounded-lg bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
           onClick={onAddExpense}
         >
-          <Plus className="h-4 w-4 mr-2" />
+          <Plus className="mr-2 h-4 w-4" />
           Add Expense
         </button>
       </div>

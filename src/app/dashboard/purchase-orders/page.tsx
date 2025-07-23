@@ -1,7 +1,17 @@
-"use client";
+'use client';
 
 import { useState, useEffect } from 'react';
-import { Package, Fuel, Truck, Calendar, User, AlertCircle, CheckCircle, Clock, Plus } from 'lucide-react';
+import {
+  Package,
+  Fuel,
+  Truck,
+  Calendar,
+  User,
+  AlertCircle,
+  CheckCircle,
+  Clock,
+  Plus,
+} from 'lucide-react';
 import PurchaseOrderForm from '@/components/forms/PurchaseOrderForm';
 
 interface PurchaseOrder {
@@ -10,7 +20,13 @@ interface PurchaseOrder {
   orderDate: string;
   expectedDeliveryDate: string;
   actualDeliveryDate?: string;
-  status: 'PENDING' | 'APPROVED' | 'ORDERED' | 'PARTIALLY_RECEIVED' | 'RECEIVED' | 'CANCELED';
+  status:
+    | 'PENDING'
+    | 'APPROVED'
+    | 'ORDERED'
+    | 'PARTIALLY_RECEIVED'
+    | 'RECEIVED'
+    | 'CANCELED';
   priority: 'LOW' | 'NORMAL' | 'HIGH' | 'URGENT';
   totalAmount: number;
   notes?: string;
@@ -44,8 +60,12 @@ export default function PurchaseOrdersPage() {
   const [purchaseOrders, setPurchaseOrders] = useState<PurchaseOrder[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
-  const [selectedOrder, setSelectedOrder] = useState<PurchaseOrder | null>(null);
-  const [filter, setFilter] = useState<'all' | 'pending' | 'outstanding' | 'received'>('all');
+  const [selectedOrder, setSelectedOrder] = useState<PurchaseOrder | null>(
+    null
+  );
+  const [filter, setFilter] = useState<
+    'all' | 'pending' | 'outstanding' | 'received'
+  >('all');
 
   useEffect(() => {
     fetchPurchaseOrders();
@@ -126,7 +146,7 @@ export default function PurchaseOrdersPage() {
     }
   };
 
-  const filteredOrders = purchaseOrders.filter(order => {
+  const filteredOrders = purchaseOrders.filter((order) => {
     switch (filter) {
       case 'pending':
         return ['PENDING', 'APPROVED', 'ORDERED'].includes(order.status);
@@ -139,76 +159,94 @@ export default function PurchaseOrdersPage() {
     }
   });
 
-  const outstandingOrders = purchaseOrders.filter(order => 
-    order.status !== 'RECEIVED' && order.status !== 'CANCELED'
+  const outstandingOrders = purchaseOrders.filter(
+    (order) => order.status !== 'RECEIVED' && order.status !== 'CANCELED'
   );
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+      <div className="flex h-64 items-center justify-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-blue-600"></div>
       </div>
     );
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Purchase Orders</h1>
+        <h1 className="mb-2 text-3xl font-bold text-gray-900 dark:text-white">
+          Purchase Orders
+        </h1>
         <p className="text-gray-600 dark:text-gray-400">
           Manage all purchase orders and track outstanding shipments
         </p>
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+      <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-4">
+        <div className="rounded-lg bg-white p-6 shadow dark:bg-gray-800">
           <div className="flex items-center">
             <div className="flex-shrink-0">
               <Package className="h-8 w-8 text-blue-600" />
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Orders</p>
-              <p className="text-2xl font-semibold text-gray-900 dark:text-white">{purchaseOrders.length}</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-          <div className="flex items-center">
-            <div className="flex-shrink-0">
-              <Clock className="h-8 w-8 text-yellow-600" />
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Pending</p>
+              <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                Total Orders
+              </p>
               <p className="text-2xl font-semibold text-gray-900 dark:text-white">
-                {purchaseOrders.filter(o => ['PENDING', 'APPROVED', 'ORDERED'].includes(o.status)).length}
+                {purchaseOrders.length}
               </p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        <div className="rounded-lg bg-white p-6 shadow dark:bg-gray-800">
+          <div className="flex items-center">
+            <div className="flex-shrink-0">
+              <Clock className="h-8 w-8 text-yellow-600" />
+            </div>
+            <div className="ml-4">
+              <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                Pending
+              </p>
+              <p className="text-2xl font-semibold text-gray-900 dark:text-white">
+                {
+                  purchaseOrders.filter((o) =>
+                    ['PENDING', 'APPROVED', 'ORDERED'].includes(o.status)
+                  ).length
+                }
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="rounded-lg bg-white p-6 shadow dark:bg-gray-800">
           <div className="flex items-center">
             <div className="flex-shrink-0">
               <AlertCircle className="h-8 w-8 text-red-600" />
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Outstanding</p>
-              <p className="text-2xl font-semibold text-gray-900 dark:text-white">{outstandingOrders.length}</p>
+              <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                Outstanding
+              </p>
+              <p className="text-2xl font-semibold text-gray-900 dark:text-white">
+                {outstandingOrders.length}
+              </p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        <div className="rounded-lg bg-white p-6 shadow dark:bg-gray-800">
           <div className="flex items-center">
             <div className="flex-shrink-0">
               <CheckCircle className="h-8 w-8 text-green-600" />
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Received</p>
+              <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                Received
+              </p>
               <p className="text-2xl font-semibold text-gray-900 dark:text-white">
-                {purchaseOrders.filter(o => o.status === 'RECEIVED').length}
+                {purchaseOrders.filter((o) => o.status === 'RECEIVED').length}
               </p>
             </div>
           </div>
@@ -223,15 +261,15 @@ export default function PurchaseOrdersPage() {
               { key: 'all', label: 'All Orders' },
               { key: 'pending', label: 'Pending' },
               { key: 'outstanding', label: 'Outstanding' },
-              { key: 'received', label: 'Received' }
+              { key: 'received', label: 'Received' },
             ].map(({ key, label }) => (
               <button
                 key={key}
                 onClick={() => setFilter(key as any)}
-                className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                className={`border-b-2 px-1 py-2 text-sm font-medium ${
                   filter === key
                     ? 'border-blue-500 text-blue-600 dark:text-blue-400'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
+                    : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
                 }`}
               >
                 {label}
@@ -242,7 +280,7 @@ export default function PurchaseOrdersPage() {
       </div>
 
       {/* Action Buttons */}
-      <div className="mb-6 flex justify-between items-center">
+      <div className="mb-6 flex items-center justify-between">
         <div>
           <p className="text-sm text-gray-600 dark:text-gray-400">
             Showing {filteredOrders.length} of {purchaseOrders.length} orders
@@ -250,19 +288,22 @@ export default function PurchaseOrdersPage() {
         </div>
         <button
           onClick={() => setShowForm(true)}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
+          className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700"
         >
           Create New Order
         </button>
       </div>
 
       {/* Purchase Orders Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 xl:grid-cols-3">
         {filteredOrders.map((order) => (
-          <div key={order.id} className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
+          <div
+            key={order.id}
+            className="overflow-hidden rounded-lg bg-white shadow-lg dark:bg-gray-800"
+          >
             {/* Order Header */}
-            <div className="bg-gray-50 dark:bg-gray-700 px-4 py-3 border-b border-gray-200 dark:border-gray-600">
-              <div className="flex justify-between items-start">
+            <div className="border-b border-gray-200 bg-gray-50 px-4 py-3 dark:border-gray-600 dark:bg-gray-700">
+              <div className="flex items-start justify-between">
                 <div>
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                     PO #{order.poNumber}
@@ -272,11 +313,15 @@ export default function PurchaseOrdersPage() {
                   </p>
                 </div>
                 <div className="flex space-x-2">
-                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(order.status)}`}>
+                  <span
+                    className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${getStatusColor(order.status)}`}
+                  >
                     {getStatusIcon(order.status)}
                     <span className="ml-1">{order.status}</span>
                   </span>
-                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getPriorityColor(order.priority)}`}>
+                  <span
+                    className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${getPriorityColor(order.priority)}`}
+                  >
                     {order.priority}
                   </span>
                 </div>
@@ -287,14 +332,20 @@ export default function PurchaseOrdersPage() {
             <div className="p-4">
               <div className="space-y-3">
                 <div className="flex items-center text-sm">
-                  <User className="h-4 w-4 text-gray-400 mr-2" />
-                  <span className="text-gray-600 dark:text-gray-400">Driver:</span>
-                  <span className="ml-1 font-medium text-gray-900 dark:text-white">{order.driver.name}</span>
+                  <User className="mr-2 h-4 w-4 text-gray-400" />
+                  <span className="text-gray-600 dark:text-gray-400">
+                    Driver:
+                  </span>
+                  <span className="ml-1 font-medium text-gray-900 dark:text-white">
+                    {order.driver.name}
+                  </span>
                 </div>
 
                 <div className="flex items-center text-sm">
-                  <Calendar className="h-4 w-4 text-gray-400 mr-2" />
-                  <span className="text-gray-600 dark:text-gray-400">Order Date:</span>
+                  <Calendar className="mr-2 h-4 w-4 text-gray-400" />
+                  <span className="text-gray-600 dark:text-gray-400">
+                    Order Date:
+                  </span>
                   <span className="ml-1 font-medium text-gray-900 dark:text-white">
                     {new Date(order.orderDate).toLocaleDateString()}
                   </span>
@@ -302,18 +353,24 @@ export default function PurchaseOrdersPage() {
 
                 {order.expectedDeliveryDate && (
                   <div className="flex items-center text-sm">
-                    <Truck className="h-4 w-4 text-gray-400 mr-2" />
-                    <span className="text-gray-600 dark:text-gray-400">Expected:</span>
+                    <Truck className="mr-2 h-4 w-4 text-gray-400" />
+                    <span className="text-gray-600 dark:text-gray-400">
+                      Expected:
+                    </span>
                     <span className="ml-1 font-medium text-gray-900 dark:text-white">
-                      {new Date(order.expectedDeliveryDate).toLocaleDateString()}
+                      {new Date(
+                        order.expectedDeliveryDate
+                      ).toLocaleDateString()}
                     </span>
                   </div>
                 )}
 
                 <div className="flex items-center text-sm">
-                  <Package className="h-4 w-4 text-gray-400 mr-2" />
-                  <span className="text-gray-600 dark:text-gray-400">Total Amount:</span>
-                  <span className="ml-1 font-bold text-lg text-blue-600 dark:text-blue-400">
+                  <Package className="mr-2 h-4 w-4 text-gray-400" />
+                  <span className="text-gray-600 dark:text-gray-400">
+                    Total Amount:
+                  </span>
+                  <span className="ml-1 text-lg font-bold text-blue-600 dark:text-blue-400">
                     ৳{order.totalAmount.toLocaleString()}
                   </span>
                 </div>
@@ -321,15 +378,20 @@ export default function PurchaseOrdersPage() {
 
               {/* Items List */}
               <div className="mt-4">
-                <h4 className="text-sm font-medium text-gray-900 dark:text-white mb-2">Items</h4>
+                <h4 className="mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                  Items
+                </h4>
                 <div className="space-y-2">
                   {order.items.map((item) => (
-                    <div key={item.id} className="flex justify-between items-center p-2 bg-gray-50 dark:bg-gray-700 rounded">
+                    <div
+                      key={item.id}
+                      className="flex items-center justify-between rounded bg-gray-50 p-2 dark:bg-gray-700"
+                    >
                       <div>
                         <span className="text-sm font-medium text-gray-900 dark:text-white">
                           {item.product.name} ({item.product.size})
                         </span>
-                        <span className="text-xs text-gray-500 dark:text-gray-400 ml-2">
+                        <span className="ml-2 text-xs text-gray-500 dark:text-gray-400">
                           {item.purchaseType}
                         </span>
                       </div>
@@ -356,8 +418,8 @@ export default function PurchaseOrdersPage() {
             </div>
 
             {/* Order Actions */}
-            <div className="px-4 py-3 bg-gray-50 dark:bg-gray-700 border-t border-gray-200 dark:border-gray-600">
-              <div className="flex justify-between items-center">
+            <div className="border-t border-gray-200 bg-gray-50 px-4 py-3 dark:border-gray-600 dark:bg-gray-700">
+              <div className="flex items-center justify-between">
                 <button
                   onClick={() => setSelectedOrder(order)}
                   className="text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
@@ -365,7 +427,8 @@ export default function PurchaseOrdersPage() {
                   View Details
                 </button>
                 <div className="text-xs text-gray-500 dark:text-gray-400">
-                  {order.items.reduce((sum, item) => sum + item.quantity, 0)} items
+                  {order.items.reduce((sum, item) => sum + item.quantity, 0)}{' '}
+                  items
                 </div>
               </div>
             </div>
@@ -375,18 +438,20 @@ export default function PurchaseOrdersPage() {
 
       {/* Empty State */}
       {filteredOrders.length === 0 && (
-        <div className="text-center py-12">
+        <div className="py-12 text-center">
           <Package className="mx-auto h-12 w-12 text-gray-400" />
-          <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">No purchase orders</h3>
+          <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">
+            No purchase orders
+          </h3>
           <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-            {filter === 'all' 
+            {filter === 'all'
               ? 'Get started by creating a new purchase order.'
               : `No orders found for ${filter} filter.`}
           </p>
           <div className="mt-6">
             <button
               onClick={() => setShowForm(true)}
-              className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+              className="inline-flex items-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700"
             >
               <Plus className="-ml-1 mr-2 h-5 w-5" />
               Create Purchase Order
@@ -397,10 +462,10 @@ export default function PurchaseOrdersPage() {
 
       {/* Create Order Modal */}
       {showForm && (
-        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center p-4 z-50">
-          <div className="bg-white dark:bg-gray-800 rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-              <div className="flex justify-between items-center">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-500 bg-opacity-75 p-4">
+          <div className="max-h-[90vh] w-full max-w-4xl overflow-y-auto rounded-lg bg-white dark:bg-gray-800">
+            <div className="border-b border-gray-200 px-6 py-4 dark:border-gray-700">
+              <div className="flex items-center justify-between">
                 <h2 className="text-lg font-medium text-gray-900 dark:text-white">
                   Create New Purchase Order
                 </h2>
@@ -409,8 +474,18 @@ export default function PurchaseOrdersPage() {
                   className="text-gray-400 hover:text-gray-500"
                 >
                   <span className="sr-only">Close</span>
-                  <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  <svg
+                    className="h-6 w-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
                   </svg>
                 </button>
               </div>

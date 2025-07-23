@@ -22,21 +22,30 @@ export class QueryOptimizer {
       offset?: number;
     }
   ) {
-    const { startDate, endDate, driverId, productId, saleType, limit = 50, offset = 0 } = filters;
+    const {
+      startDate,
+      endDate,
+      driverId,
+      productId,
+      saleType,
+      limit = 50,
+      offset = 0,
+    } = filters;
 
     // Use optimized query with covering indexes
     return this.prisma.sale.findMany({
       where: {
         tenantId,
-        ...(startDate && endDate && {
-          saleDate: {
-            gte: startDate,
-            lte: endDate
-          }
-        }),
+        ...(startDate &&
+          endDate && {
+            saleDate: {
+              gte: startDate,
+              lte: endDate,
+            },
+          }),
         ...(driverId && { driverId }),
         ...(productId && { productId }),
-        ...(saleType && { saleType: saleType as any })
+        ...(saleType && { saleType: saleType as any }),
       },
       select: {
         id: true,
@@ -49,8 +58,8 @@ export class QueryOptimizer {
         driver: {
           select: {
             id: true,
-            name: true
-          }
+            name: true,
+          },
         },
         product: {
           select: {
@@ -59,17 +68,17 @@ export class QueryOptimizer {
             size: true,
             company: {
               select: {
-                name: true
-              }
-            }
-          }
-        }
+                name: true,
+              },
+            },
+          },
+        },
       },
       orderBy: {
-        saleDate: 'desc'
+        saleDate: 'desc',
       },
       take: limit,
-      skip: offset
+      skip: offset,
     });
   }
 
@@ -87,9 +96,9 @@ export class QueryOptimizer {
       ...(dateRange && {
         date: {
           gte: dateRange.start,
-          lte: dateRange.end
-        }
-      })
+          lte: dateRange.end,
+        },
+      }),
     };
 
     // Parallel execution for better performance
@@ -102,12 +111,12 @@ export class QueryOptimizer {
           fullCylinders: true,
           emptyCylinders: true,
           totalCylinders: true,
-          date: true
+          date: true,
         },
         orderBy: {
-          date: 'desc'
+          date: 'desc',
         },
-        take: productId ? 1 : 100
+        take: productId ? 1 : 100,
       }),
 
       // Trend analysis
@@ -117,13 +126,13 @@ export class QueryOptimizer {
         _avg: {
           fullCylinders: true,
           emptyCylinders: true,
-          totalSales: true
+          totalSales: true,
         },
         _sum: {
           packageSales: true,
           refillSales: true,
-          totalSales: true
-        }
+          totalSales: true,
+        },
       }),
 
       // Recent movements
@@ -132,8 +141,8 @@ export class QueryOptimizer {
           tenantId,
           ...(productId && { productId }),
           date: {
-            gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) // Last 7 days
-          }
+            gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), // Last 7 days
+          },
         },
         select: {
           type: true,
@@ -143,121 +152,125 @@ export class QueryOptimizer {
           product: {
             select: {
               name: true,
-              size: true
-            }
-          }
+              size: true,
+            },
+          },
         },
         orderBy: {
-          date: 'desc'
+          date: 'desc',
         },
-        take: 50
-      })
+        take: 50,
+      }),
     ]);
 
     return {
       currentLevels,
       trends,
-      movements
+      movements,
     };
   }
 
   /**
    * Optimized dashboard metrics with caching hints
    */
-  async getDashboardMetricsOptimized(tenantId: string, dateRange: { start: Date; end: Date }) {
+  async getDashboardMetricsOptimized(
+    tenantId: string,
+    dateRange: { start: Date; end: Date }
+  ) {
     // Use parallel execution for independent queries
-    const [salesMetrics, inventoryMetrics, financialMetrics, driverMetrics] = await Promise.all([
-      // Sales metrics
-      this.prisma.sale.groupBy({
-        by: ['saleType'],
-        where: {
-          tenantId,
-          saleDate: {
-            gte: dateRange.start,
-            lte: dateRange.end
-          }
-        },
-        _sum: {
-          quantity: true,
-          totalValue: true,
-          netValue: true
-        },
-        _count: {
-          id: true
-        }
-      }),
-
-      // Inventory metrics
-      this.prisma.inventoryRecord.findMany({
-        where: {
-          tenantId,
-          date: {
-            gte: dateRange.start,
-            lte: dateRange.end
-          }
-        },
-        select: {
-          date: true,
-          fullCylinders: true,
-          emptyCylinders: true,
-          totalSales: true
-        },
-        orderBy: {
-          date: 'desc'
-        },
-        take: 30 // Last 30 days
-      }),
-
-      // Financial metrics
-      this.prisma.expense.groupBy({
-        by: ['categoryId'],
-        where: {
-          tenantId,
-          expenseDate: {
-            gte: dateRange.start,
-            lte: dateRange.end
+    const [salesMetrics, inventoryMetrics, financialMetrics, driverMetrics] =
+      await Promise.all([
+        // Sales metrics
+        this.prisma.sale.groupBy({
+          by: ['saleType'],
+          where: {
+            tenantId,
+            saleDate: {
+              gte: dateRange.start,
+              lte: dateRange.end,
+            },
           },
-          isApproved: true
-        },
-        _sum: {
-          amount: true
-        },
-        _count: {
-          id: true
-        }
-      }),
-
-      // Driver performance
-      this.prisma.sale.groupBy({
-        by: ['driverId'],
-        where: {
-          tenantId,
-          saleDate: {
-            gte: dateRange.start,
-            lte: dateRange.end
-          }
-        },
-        _sum: {
-          totalValue: true,
-          quantity: true
-        },
-        _count: {
-          id: true
-        },
-        orderBy: {
           _sum: {
-            totalValue: 'desc'
-          }
-        },
-        take: 10
-      })
-    ]);
+            quantity: true,
+            totalValue: true,
+            netValue: true,
+          },
+          _count: {
+            id: true,
+          },
+        }),
+
+        // Inventory metrics
+        this.prisma.inventoryRecord.findMany({
+          where: {
+            tenantId,
+            date: {
+              gte: dateRange.start,
+              lte: dateRange.end,
+            },
+          },
+          select: {
+            date: true,
+            fullCylinders: true,
+            emptyCylinders: true,
+            totalSales: true,
+          },
+          orderBy: {
+            date: 'desc',
+          },
+          take: 30, // Last 30 days
+        }),
+
+        // Financial metrics
+        this.prisma.expense.groupBy({
+          by: ['categoryId'],
+          where: {
+            tenantId,
+            expenseDate: {
+              gte: dateRange.start,
+              lte: dateRange.end,
+            },
+            isApproved: true,
+          },
+          _sum: {
+            amount: true,
+          },
+          _count: {
+            id: true,
+          },
+        }),
+
+        // Driver performance
+        this.prisma.sale.groupBy({
+          by: ['driverId'],
+          where: {
+            tenantId,
+            saleDate: {
+              gte: dateRange.start,
+              lte: dateRange.end,
+            },
+          },
+          _sum: {
+            totalValue: true,
+            quantity: true,
+          },
+          _count: {
+            id: true,
+          },
+          orderBy: {
+            _sum: {
+              totalValue: 'desc',
+            },
+          },
+          take: 10,
+        }),
+      ]);
 
     return {
       salesMetrics,
       inventoryMetrics,
       financialMetrics,
-      driverMetrics
+      driverMetrics,
     };
   }
 
@@ -332,21 +345,21 @@ export class QueryOptimizer {
    */
   async createSalesInBatch(salesData: any[], batchSize = 100) {
     const results = [];
-    
+
     for (let i = 0; i < salesData.length; i += batchSize) {
       const batch = salesData.slice(i, i + batchSize);
-      
+
       const batchResult = await this.prisma.$transaction(
-        batch.map(sale => 
+        batch.map((sale) =>
           this.prisma.sale.create({
-            data: sale
+            data: sale,
           })
         )
       );
-      
+
       results.push(...batchResult);
     }
-    
+
     return results;
   }
 
@@ -362,7 +375,7 @@ export class QueryOptimizer {
       FROM pg_stat_activity 
       WHERE datname = current_database()
     `;
-    
+
     return result;
   }
 
@@ -382,7 +395,7 @@ export class QueryOptimizer {
       ORDER BY mean_time DESC 
       LIMIT 10
     `;
-    
+
     return result;
   }
 }

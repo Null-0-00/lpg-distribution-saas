@@ -1,19 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { PrismaClient } from '@prisma/client';
- 
 
 const prisma = new PrismaClient();
 
 export async function GET(request: NextRequest) {
   try {
     const session = await auth();
-    
+
     if (!session?.user?.tenantId) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const tenantId = session.user.tenantId;
@@ -26,15 +22,15 @@ export async function GET(request: NextRequest) {
         where: {
           tenantId,
           saleDate: {
-            gte: lastHour
-          }
+            gte: lastHour,
+          },
         },
         include: {
           driver: { select: { name: true } },
-          product: { select: { name: true, size: true } }
+          product: { select: { name: true, size: true } },
         },
         orderBy: { saleDate: 'desc' },
-        take: 10
+        take: 10,
       }),
 
       // Recent expenses (last 24 hours)
@@ -42,18 +38,18 @@ export async function GET(request: NextRequest) {
         where: {
           tenantId,
           createdAt: {
-            gte: new Date(Date.now() - 24 * 60 * 60 * 1000)
-          }
+            gte: new Date(Date.now() - 24 * 60 * 60 * 1000),
+          },
         },
         include: {
-          user: { select: { name: true } }
+          user: { select: { name: true } },
         },
         orderBy: { createdAt: 'desc' },
-        take: 5
+        take: 5,
       }),
 
       // Low stock items - for now just return empty array since we need to handle this differently
-      Promise.resolve([])
+      Promise.resolve([]),
     ]);
 
     // Generate live feed items
@@ -62,7 +58,7 @@ export async function GET(request: NextRequest) {
     // Add sales activities
     recentSales.forEach((sale: any) => {
       const timeAgo = Date.now() - sale.saleDate.getTime();
-      
+
       feedItems.push({
         id: `sale-${sale.id}`,
         type: 'sale',
@@ -71,7 +67,7 @@ export async function GET(request: NextRequest) {
         timestamp: sale.saleDate.toISOString(),
         priority: sale.quantity >= 5 ? 'high' : 'medium',
         driverName: sale.driver.name,
-        location: sale.saleLocation || 'Field'
+        location: sale.saleLocation || 'Field',
       });
     });
 
@@ -86,7 +82,7 @@ export async function GET(request: NextRequest) {
           value: sale.cashDeposited,
           timestamp: sale.saleDate.toISOString(),
           priority: sale.cashDeposited >= 2000 ? 'medium' : 'low',
-          driverName: sale.driver.name
+          driverName: sale.driver.name,
         });
       });
 
@@ -98,7 +94,12 @@ export async function GET(request: NextRequest) {
         message: `New expense: ${expense.description} - ৳${expense.amount.toLocaleString()}`,
         value: expense.amount,
         timestamp: expense.createdAt.toISOString(),
-        priority: expense.amount >= 5000 ? 'high' : expense.status === 'PENDING' ? 'medium' : 'low'
+        priority:
+          expense.amount >= 5000
+            ? 'high'
+            : expense.status === 'PENDING'
+              ? 'medium'
+              : 'low',
       });
     });
 
@@ -109,21 +110,21 @@ export async function GET(request: NextRequest) {
         type: 'stock',
         message: `Low stock alert: ${item.product?.name || 'Product'} - ${item.fullCylinders || 0} remaining`,
         timestamp: new Date().toISOString(),
-        priority: (item.fullCylinders || 0) < 5 ? 'high' : 'medium'
+        priority: (item.fullCylinders || 0) < 5 ? 'high' : 'medium',
       });
     });
 
     // Add some system alerts based on business logic
     const todayStart = new Date();
     todayStart.setHours(0, 0, 0, 0);
-    
+
     const todaySalesCount = await prisma.dailySales.count({
       where: {
         tenantId,
         saleDate: {
-          gte: todayStart
-        }
-      }
+          gte: todayStart,
+        },
+      },
     });
 
     // Performance milestone alert
@@ -133,7 +134,7 @@ export async function GET(request: NextRequest) {
         type: 'alert',
         message: `Daily sales milestone reached: ${todaySalesCount} sales completed today!`,
         timestamp: new Date().toISOString(),
-        priority: 'low'
+        priority: 'low',
       });
     }
 
@@ -143,18 +144,22 @@ export async function GET(request: NextRequest) {
       where: {
         tenantId,
         saleDate: {
-          gte: todayStart
-        }
+          gte: todayStart,
+        },
       },
       _count: { id: true },
       orderBy: { _count: { id: 'desc' } },
-      take: 1
+      take: 1,
     });
 
-    if (topDriverToday.length > 0 && topDriverToday[0]?._count?.id && topDriverToday[0]._count.id >= 15) {
+    if (
+      topDriverToday.length > 0 &&
+      topDriverToday[0]?._count?.id &&
+      topDriverToday[0]._count.id >= 15
+    ) {
       const driver = await prisma.driver.findUnique({
         where: { id: topDriverToday[0]?.driverId },
-        select: { name: true }
+        select: { name: true },
       });
 
       if (driver) {
@@ -164,25 +169,27 @@ export async function GET(request: NextRequest) {
           message: `${driver.name} achieved daily target with ${topDriverToday[0]?._count.id || 0} sales!`,
           timestamp: new Date().toISOString(),
           priority: 'low',
-          driverName: driver.name
+          driverName: driver.name,
         });
       }
     }
 
     // Sort by timestamp (newest first) and limit to 20 items
     const sortedFeed = feedItems
-      .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+      .sort(
+        (a, b) =>
+          new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+      )
       .slice(0, 20);
 
     return NextResponse.json({
       feed: sortedFeed,
       lastUpdated: new Date().toISOString(),
-      totalItems: sortedFeed.length
+      totalItems: sortedFeed.length,
     });
-
   } catch (error) {
     console.error('Error fetching live feed:', error);
-    
+
     return NextResponse.json(
       { error: 'Failed to fetch live feed' },
       { status: 500 }

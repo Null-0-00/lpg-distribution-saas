@@ -7,6 +7,7 @@ The LPG Distributor SaaS platform is built using a modern, production-ready tech
 ## Core Architecture
 
 ### Application Architecture
+
 - **Architecture Pattern**: Multi-tenant SaaS with row-level security
 - **Deployment Model**: Cloud-native with containerization support
 - **API Architecture**: RESTful APIs with Next.js App Router
@@ -16,9 +17,10 @@ The LPG Distributor SaaS platform is built using a modern, production-ready tech
 ## Frontend Stack
 
 ### Core Framework
+
 - **Next.js 15.3.5**
   - **Purpose**: Full-stack React framework with App Router
-  - **Key Features**: 
+  - **Key Features**:
     - Server-side rendering (SSR)
     - Static site generation (SSG)
     - API routes for backend functionality
@@ -27,6 +29,7 @@ The LPG Distributor SaaS platform is built using a modern, production-ready tech
   - **Why Chosen**: Industry-leading React framework with excellent developer experience and production optimization
 
 ### UI and Styling
+
 - **React 18.2.0**
   - **Purpose**: Core UI library for component-based architecture
   - **Key Features**: Concurrent features, Suspense, automatic batching
@@ -44,7 +47,7 @@ The LPG Distributor SaaS platform is built using a modern, production-ready tech
 
 - **shadcn/ui Components**
   - **Purpose**: High-quality, accessible React components
-  - **Components Used**: 
+  - **Components Used**:
     - Forms: Input, Select, Textarea, Button
     - Layout: Card, Dialog, Sheet, Tabs
     - Data Display: Table, Badge, Alert
@@ -52,6 +55,7 @@ The LPG Distributor SaaS platform is built using a modern, production-ready tech
   - **Integration**: Customized with Tailwind CSS for brand consistency
 
 ### State Management and Data Fetching
+
 - **TanStack Query (React Query) 5.83.0**
   - **Purpose**: Server state management and data synchronization
   - **Features**: Caching, background updates, optimistic updates
@@ -68,6 +72,7 @@ The LPG Distributor SaaS platform is built using a modern, production-ready tech
   - **Features**: Built-in validation, error handling, form reset
 
 ### Charts and Data Visualization
+
 - **Recharts 3.1.0**
   - **Purpose**: React-based charting library for business analytics
   - **Charts Used**: Line charts, bar charts, pie charts, area charts
@@ -76,6 +81,7 @@ The LPG Distributor SaaS platform is built using a modern, production-ready tech
 ## Backend Stack
 
 ### Runtime and Framework
+
 - **Node.js 18+**
   - **Purpose**: JavaScript runtime for server-side execution
   - **Features**: ESM support, improved performance, security updates
@@ -87,9 +93,10 @@ The LPG Distributor SaaS platform is built using a modern, production-ready tech
   - **Features**: Middleware support, request/response handling, edge runtime support
 
 ### Database and ORM
+
 - **PostgreSQL 15+**
   - **Purpose**: Primary database for all application data
-  - **Features**: 
+  - **Features**:
     - ACID compliance for financial data integrity
     - Advanced indexing for performance
     - Row-level security for multi-tenant isolation
@@ -106,6 +113,7 @@ The LPG Distributor SaaS platform is built using a modern, production-ready tech
   - **Schema**: 20+ models with comprehensive relationships and constraints
 
 ### Authentication and Security
+
 - **NextAuth.js 5.0.0-beta.29**
   - **Purpose**: Authentication and session management
   - **Providers**: Credentials provider with bcrypt password hashing
@@ -121,9 +129,10 @@ The LPG Distributor SaaS platform is built using a modern, production-ready tech
   - **Features**: Secure token generation, signature verification
 
 ### Validation and Data Processing
+
 - **Zod 4.0.5**
   - **Purpose**: Runtime type validation and schema definition
-  - **Use Cases**: 
+  - **Use Cases**:
     - API request/response validation
     - Form validation schemas
     - Business rule validation
@@ -136,6 +145,7 @@ The LPG Distributor SaaS platform is built using a modern, production-ready tech
 ## Development and Build Tools
 
 ### Code Quality and Type Checking
+
 - **ESLint 9.31.0**
   - **Purpose**: Code linting and quality enforcement
   - **Configuration**: Next.js recommended rules + TypeScript rules
@@ -152,6 +162,7 @@ The LPG Distributor SaaS platform is built using a modern, production-ready tech
   - **Integration**: Next.js built-in TypeScript support
 
 ### Testing Framework
+
 - **Jest 29.7.0**
   - **Purpose**: Unit testing framework
   - **Configuration**: jsdom test environment for React components
@@ -167,6 +178,7 @@ The LPG Distributor SaaS platform is built using a modern, production-ready tech
   - **Features**: Semantic matchers for better test readability
 
 ### Build and Optimization
+
 - **Webpack 5.89.0**
   - **Purpose**: Module bundling and optimization (via Next.js)
   - **Features**: Tree shaking, code splitting, asset optimization
@@ -184,6 +196,7 @@ The LPG Distributor SaaS platform is built using a modern, production-ready tech
 ## Production and Deployment
 
 ### Performance Optimization
+
 - **@next/bundle-analyzer**
   - **Purpose**: Bundle size analysis and optimization
   - **Usage**: Analyze and optimize JavaScript bundle sizes
@@ -193,11 +206,13 @@ The LPG Distributor SaaS platform is built using a modern, production-ready tech
   - **Features**: Gzip and Brotli compression support
 
 ### Monitoring and Analytics
+
 - **Performance Monitoring**
   - Built-in Next.js analytics and performance metrics
   - Web Vitals tracking for user experience monitoring
 
 ### Containerization
+
 - **Docker**
   - **Purpose**: Application containerization for consistent deployments
   - **Configuration**: Multi-stage builds for optimized production images
@@ -206,18 +221,21 @@ The LPG Distributor SaaS platform is built using a modern, production-ready tech
 ## Security Stack
 
 ### Data Protection
+
 - **Input Sanitization**
   - **isomorphic-dompurify 2.6.0**: XSS prevention for user inputs
   - **Zod validation**: Schema-based input validation
   - **SQL Injection Prevention**: Prisma ORM parameterized queries
 
 ### Authentication Security
+
 - **JWT Security**
   - Secure secret management with environment variables
   - Token expiration and refresh mechanisms
   - Role-based access control (RBAC)
 
 ### Transport Security
+
 - **HTTPS Enforcement**
   - Security headers middleware
   - Content Security Policy (CSP)
@@ -226,12 +244,14 @@ The LPG Distributor SaaS platform is built using a modern, production-ready tech
 ## Development Environment
 
 ### Package Management
+
 - **npm 8.0.0+**
   - **Purpose**: Dependency management and script execution
   - **Configuration**: Lock file for reproducible builds
   - **Scripts**: Development, build, test, and deployment scripts
 
 ### Git Hooks and Automation
+
 - **Husky 8.0.0**
   - **Purpose**: Git hooks for code quality enforcement
   - **Hooks**: Pre-commit linting, pre-push type checking
@@ -243,7 +263,8 @@ The LPG Distributor SaaS platform is built using a modern, production-ready tech
 ## Browser Support and Compatibility
 
 ### Target Browsers
-- **Production**: 
+
+- **Production**:
   - Chrome 91+
   - Firefox 90+
   - Safari 14+
@@ -251,6 +272,7 @@ The LPG Distributor SaaS platform is built using a modern, production-ready tech
 - **Development**: Latest Chrome and Firefox versions
 
 ### Progressive Web App (PWA)
+
 - **Service Workers**: Offline functionality and caching
 - **Web App Manifest**: Home screen installation
 - **Push Notifications**: Real-time updates for critical events
@@ -258,6 +280,7 @@ The LPG Distributor SaaS platform is built using a modern, production-ready tech
 ## Environment Configuration
 
 ### Environment Variables
+
 ```env
 # Database Configuration
 DATABASE_URL=postgresql://user:password@localhost:5432/lpg_saas
@@ -278,6 +301,7 @@ SMTP_PORT=587
 ```
 
 ### Configuration Management
+
 - **Environment-specific configs**: Development, staging, production
 - **Secret management**: Environment variables for sensitive data
 - **Feature flags**: Environment-based feature toggles
@@ -285,17 +309,20 @@ SMTP_PORT=587
 ## Performance Characteristics
 
 ### Frontend Performance
+
 - **First Contentful Paint (FCP)**: < 1.5 seconds
 - **Largest Contentful Paint (LCP)**: < 2.5 seconds
 - **Cumulative Layout Shift (CLS)**: < 0.1
 - **First Input Delay (FID)**: < 100ms
 
 ### Backend Performance
+
 - **API Response Time**: < 500ms for 95% of requests
 - **Database Query Time**: < 100ms for standard operations
 - **Concurrent Users**: 1000+ per tenant with proper scaling
 
 ### Optimization Strategies
+
 - **Code Splitting**: Automatic route-based code splitting
 - **Image Optimization**: Next.js built-in image optimization
 - **Caching**: API response caching with appropriate cache headers
@@ -304,11 +331,13 @@ SMTP_PORT=587
 ## Scalability Architecture
 
 ### Horizontal Scaling
+
 - **Load Balancing**: Application layer load balancing
 - **Database Scaling**: Read replicas for query scaling
 - **CDN Integration**: Static asset delivery optimization
 
 ### Caching Strategy
+
 - **Browser Caching**: Static assets with long-term caching
 - **API Caching**: Response caching for frequently accessed data
 - **Database Caching**: Query result caching with Redis (optional)
@@ -316,12 +345,14 @@ SMTP_PORT=587
 ## Deployment Options
 
 ### Cloud Platforms
+
 - **Vercel** (Recommended): Native Next.js optimization
 - **AWS**: EC2, ECS, or Lambda deployment options
 - **Google Cloud Platform**: Cloud Run or App Engine
 - **Microsoft Azure**: App Service or Container Instances
 
 ### Self-Hosted Options
+
 - **Docker Containers**: Consistent deployment across environments
 - **Kubernetes**: Container orchestration for large-scale deployments
 - **Traditional VPS**: Direct deployment on virtual private servers
@@ -329,11 +360,13 @@ SMTP_PORT=587
 ## Migration and Upgrade Strategy
 
 ### Database Migrations
+
 - **Prisma Migrate**: Schema evolution with automatic migration generation
 - **Backup Strategy**: Automated backups before migrations
 - **Rollback Plan**: Migration reversal procedures
 
 ### Dependency Updates
+
 - **Regular Updates**: Monthly security and feature updates
 - **Testing Strategy**: Automated testing before production deployment
 - **Breaking Changes**: Careful evaluation and migration planning

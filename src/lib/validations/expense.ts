@@ -2,19 +2,30 @@ import { z } from 'zod';
 
 export const expenseSchema = z.object({
   amount: z.number().positive('Amount must be greater than 0'),
-    description: z.string().max(255, 'Description is too long').optional(),
+  description: z.string().max(255, 'Description is too long').optional(),
   categoryId: z.string().min(1, 'Category is required'),
   expenseDate: z.string().min(1, 'Expense date is required'),
   receiptUrl: z.string().url('Invalid URL format').optional().or(z.literal('')),
-  notes: z.string().max(500, 'Notes are too long').optional().or(z.literal(''))
+  notes: z.string().max(500, 'Notes are too long').optional().or(z.literal('')),
 });
 
 export const categorySchema = z.object({
-  name: z.string().min(1, 'Category name is required').max(100, 'Category name is too long'),
-  description: z.string().max(255, 'Description is too long').optional().or(z.literal('')),
+  name: z
+    .string()
+    .min(1, 'Category name is required')
+    .max(100, 'Category name is too long'),
+  description: z
+    .string()
+    .max(255, 'Description is too long')
+    .optional()
+    .or(z.literal('')),
   parentId: z.string().optional().or(z.literal('')),
-  budget: z.number().positive('Budget must be greater than 0').optional().or(z.literal(null)),
-  isParent: z.boolean().optional()
+  budget: z
+    .number()
+    .positive('Budget must be greater than 0')
+    .optional()
+    .or(z.literal(null)),
+  isParent: z.boolean().optional(),
 });
 
 export const expenseFiltersSchema = z.object({
@@ -22,12 +33,12 @@ export const expenseFiltersSchema = z.object({
   categoryId: z.string().optional(),
   dateFrom: z.string().optional(),
   dateTo: z.string().optional(),
-  search: z.string().optional()
+  search: z.string().optional(),
 });
 
 export const paginationSchema = z.object({
   page: z.number().positive().default(1),
-  limit: z.number().positive().max(100).default(20)
+  limit: z.number().positive().max(100).default(20),
 });
 
 export type ExpenseFormData = z.infer<typeof expenseSchema>;

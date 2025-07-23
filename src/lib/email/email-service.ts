@@ -1,9 +1,9 @@
-import { 
-  DailySales, 
-  MonthlyInventory, 
-  Driver, 
-  Product, 
-  Company 
+import {
+  DailySales,
+  MonthlyInventory,
+  Driver,
+  Product,
+  Company,
 } from '@prisma/client';
 
 export interface MonthlyReportData {
@@ -71,7 +71,7 @@ export class EmailService {
         to: recipients,
         subject,
         html: htmlContent,
-        attachments: await this.generateReportAttachments(reportData)
+        attachments: await this.generateReportAttachments(reportData),
       };
 
       return await this.sendEmail(emailData);
@@ -82,8 +82,15 @@ export class EmailService {
   }
 
   private generateMonthlyReportHTML(data: MonthlyReportData): string {
-    const { company, period, salesSummary, topDrivers, inventoryStatus, financialMetrics } = data;
-    
+    const {
+      company,
+      period,
+      salesSummary,
+      topDrivers,
+      inventoryStatus,
+      financialMetrics,
+    } = data;
+
     return `
 <!DOCTYPE html>
 <html>
@@ -162,7 +169,9 @@ export class EmailService {
           </tr>
         </thead>
         <tbody>
-          ${topDrivers.map((driver, index) => `
+          ${topDrivers
+            .map(
+              (driver, index) => `
             <tr>
               <td>${index + 1}</td>
               <td>${driver.driver.name}</td>
@@ -170,7 +179,9 @@ export class EmailService {
               <td>৳${driver.totalRevenue.toLocaleString()}</td>
               <td>৳${(driver.totalRevenue / driver.totalSales).toFixed(0)}</td>
             </tr>
-          `).join('')}
+          `
+            )
+            .join('')}
         </tbody>
       </table>
     </div>
@@ -178,23 +189,31 @@ export class EmailService {
     <!-- Inventory Status -->
     <div class="section">
       <h2>📦 Inventory Status</h2>
-      ${inventoryStatus.lowStockAlerts > 0 ? `
+      ${
+        inventoryStatus.lowStockAlerts > 0
+          ? `
         <div class="alert warning">
           <strong>⚠️ Low Stock Alert:</strong> ${inventoryStatus.lowStockAlerts} products are below minimum threshold.
         </div>
-      ` : `
+      `
+          : `
         <div class="alert success">
           <strong>✅ Inventory Status:</strong> All products are adequately stocked.
         </div>
-      `}
+      `
+      }
       
       <h3>Current Stock Levels:</h3>
-      ${inventoryStatus.currentStock.map(item => `
+      ${inventoryStatus.currentStock
+        .map(
+          (item) => `
         <div class="inventory-item">
           <span><strong>${item.product.name} (${item.product.size}L)</strong></span>
           <span>Full: ${item.fullCylinders} | Empty: ${item.emptyCylinders}</span>
         </div>
-      `).join('')}
+      `
+        )
+        .join('')}
     </div>
 
     <!-- Financial Summary -->
@@ -226,7 +245,9 @@ export class EmailService {
     <div class="section">
       <h2>💡 Key Insights & Recommendations</h2>
       <ul>
-        ${this.generateInsights(data).map(insight => `<li>${insight}</li>`).join('')}
+        ${this.generateInsights(data)
+          .map((insight) => `<li>${insight}</li>`)
+          .join('')}
       </ul>
     </div>
 
@@ -244,61 +265,75 @@ export class EmailService {
 
   private generateInsights(data: MonthlyReportData): string[] {
     const insights: string[] = [];
-    const { salesSummary, topDrivers, inventoryStatus, financialMetrics } = data;
+    const { salesSummary, topDrivers, inventoryStatus, financialMetrics } =
+      data;
 
     // Sales insights
     if (salesSummary.avgDailySales > 20) {
-      insights.push('🎯 Excellent daily sales performance - maintaining strong market presence');
+      insights.push(
+        '🎯 Excellent daily sales performance - maintaining strong market presence'
+      );
     } else if (salesSummary.avgDailySales < 10) {
-      insights.push('⚠️ Consider reviewing sales strategies to improve daily performance');
+      insights.push(
+        '⚠️ Consider reviewing sales strategies to improve daily performance'
+      );
     }
 
     // Driver performance insights
     if (topDrivers.length > 0) {
       const topDriver = topDrivers[0];
-      insights.push(`🏆 ${topDriver.driver.name} leads with ${topDriver.totalSales} sales - consider recognizing top performers`);
+      insights.push(
+        `🏆 ${topDriver.driver.name} leads with ${topDriver.totalSales} sales - consider recognizing top performers`
+      );
     }
 
     // Inventory insights
     if (inventoryStatus.lowStockAlerts > 0) {
-      insights.push(`📦 ${inventoryStatus.lowStockAlerts} products need restocking - plan inventory replenishment`);
+      insights.push(
+        `📦 ${inventoryStatus.lowStockAlerts} products need restocking - plan inventory replenishment`
+      );
     }
 
     // Financial insights
-    const profitMargin = (financialMetrics.netProfit / salesSummary.totalRevenue) * 100;
+    const profitMargin =
+      (financialMetrics.netProfit / salesSummary.totalRevenue) * 100;
     if (profitMargin > 15) {
-      insights.push('💰 Strong profit margins indicate healthy business operations');
+      insights.push(
+        '💰 Strong profit margins indicate healthy business operations'
+      );
     } else if (profitMargin < 5) {
       insights.push('💡 Consider optimizing costs to improve profit margins');
     }
 
     // Receivables insights
-    const receivablesRatio = (financialMetrics.receivablesBalance / salesSummary.totalRevenue) * 100;
+    const receivablesRatio =
+      (financialMetrics.receivablesBalance / salesSummary.totalRevenue) * 100;
     if (receivablesRatio > 20) {
-      insights.push('🔄 High receivables balance - focus on collection strategies');
+      insights.push(
+        '🔄 High receivables balance - focus on collection strategies'
+      );
     }
 
     return insights;
   }
 
-  private async generateReportAttachments(data: MonthlyReportData): Promise<any[]> {
+  private async generateReportAttachments(
+    data: MonthlyReportData
+  ): Promise<any[]> {
     // Generate CSV export of sales data
     const csvData = this.generateSalesCSV(data);
-    
+
     return [
       {
         filename: `sales-report-${data.period.month}-${data.period.year}.csv`,
         content: csvData,
-        contentType: 'text/csv'
-      }
+        contentType: 'text/csv',
+      },
     ];
   }
 
   private generateSalesCSV(data: MonthlyReportData): string {
-    const headers = [
-      'Metric',
-      'Value'
-    ];
+    const headers = ['Metric', 'Value'];
 
     const rows = [
       ['Total Sales', data.salesSummary.totalSales.toString()],
@@ -308,12 +343,15 @@ export class EmailService {
       ['Average Daily Sales', data.salesSummary.avgDailySales.toFixed(1)],
       ['Gross Profit', data.financialMetrics.grossProfit.toString()],
       ['Net Profit', data.financialMetrics.netProfit.toString()],
-      ['Receivables Balance', data.financialMetrics.receivablesBalance.toString()],
-      ['Total Expenses', data.financialMetrics.expensesTotal.toString()]
+      [
+        'Receivables Balance',
+        data.financialMetrics.receivablesBalance.toString(),
+      ],
+      ['Total Expenses', data.financialMetrics.expensesTotal.toString()],
     ];
 
     return [headers, ...rows]
-      .map(row => row.map(cell => `"${cell}"`).join(','))
+      .map((row) => row.map((cell) => `"${cell}"`).join(','))
       .join('\n');
   }
 
@@ -323,11 +361,11 @@ export class EmailService {
     // - SendGrid API
     // - AWS SES
     // - Resend API
-    
+
     console.log('Email would be sent with configuration:', {
       to: emailData.to,
       subject: emailData.subject,
-      hasAttachments: emailData.attachments?.length > 0
+      hasAttachments: emailData.attachments?.length > 0,
     });
 
     // Simulate email sending
@@ -340,8 +378,18 @@ export class EmailService {
 
   private getMonthName(month: number): string {
     const months = [
-      'January', 'February', 'March', 'April', 'May', 'June',
-      'July', 'August', 'September', 'October', 'November', 'December'
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December',
     ];
     return months[month - 1];
   }
@@ -355,6 +403,6 @@ export async function getEmailConfig(): Promise<EmailConfig> {
     smtpUser: process.env.SMTP_USER || '',
     smtpPassword: process.env.SMTP_PASSWORD || '',
     fromEmail: process.env.FROM_EMAIL || 'noreply@lpgdistributor.com',
-    fromName: process.env.FROM_NAME || 'LPG Distributor System'
+    fromName: process.env.FROM_NAME || 'LPG Distributor System',
   };
 }

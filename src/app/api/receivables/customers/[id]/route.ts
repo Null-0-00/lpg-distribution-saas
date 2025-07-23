@@ -9,7 +9,7 @@ const updateCustomerReceivableSchema = z.object({
   amount: z.number().min(0).optional(),
   quantity: z.number().min(0).optional(),
   dueDate: z.string().optional(),
-  notes: z.string().optional()
+  notes: z.string().optional(),
 });
 
 export async function PUT(
@@ -24,7 +24,10 @@ export async function PUT(
 
     // Check if user has admin role
     if (session.user.role !== 'ADMIN') {
-      return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
+      return NextResponse.json(
+        { error: 'Insufficient permissions' },
+        { status: 403 }
+      );
     }
 
     const { id } = await params;
@@ -34,26 +37,29 @@ export async function PUT(
 
     // Verify customer receivable exists, belongs to tenant, and is for a retail driver
     const existingReceivable = await prisma.customerReceivable.findFirst({
-      where: { 
-        id, 
+      where: {
+        id,
         tenantId,
         driver: {
           status: 'ACTIVE',
-          driverType: 'RETAIL'
-        }
+          driverType: 'RETAIL',
+        },
       },
       include: {
         driver: {
           select: {
             id: true,
-            driverType: true
-          }
-        }
-      }
+            driverType: true,
+          },
+        },
+      },
     });
 
     if (!existingReceivable) {
-      return NextResponse.json({ error: 'Customer receivable not found or not for retail driver' }, { status: 404 });
+      return NextResponse.json(
+        { error: 'Customer receivable not found or not for retail driver' },
+        { status: 404 }
+      );
     }
 
     // Determine status if due date is being updated
@@ -61,8 +67,10 @@ export async function PUT(
     if (data.dueDate) {
       const dueDate = new Date(data.dueDate);
       const today = new Date();
-      const daysDiff = Math.floor((dueDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-      
+      const daysDiff = Math.floor(
+        (dueDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
+      );
+
       if (daysDiff < 0) {
         status = 'OVERDUE';
       } else if (daysDiff <= 3) {
@@ -77,11 +85,21 @@ export async function PUT(
         where: { id },
         data: {
           ...data,
-          amount: data.receivableType === 'CASH' ? data.amount : (data.receivableType === 'CYLINDER' ? 0 : data.amount),
-          quantity: data.receivableType === 'CYLINDER' ? data.quantity : (data.receivableType === 'CASH' ? 0 : data.quantity),
+          amount:
+            data.receivableType === 'CASH'
+              ? data.amount
+              : data.receivableType === 'CYLINDER'
+                ? 0
+                : data.amount,
+          quantity:
+            data.receivableType === 'CYLINDER'
+              ? data.quantity
+              : data.receivableType === 'CASH'
+                ? 0
+                : data.quantity,
           dueDate: data.dueDate ? new Date(data.dueDate) : undefined,
-          status: status as any
-        }
+          status: status as any,
+        },
       });
 
       // Create audit log
@@ -98,7 +116,7 @@ export async function PUT(
             amount: existingReceivable.amount,
             quantity: existingReceivable.quantity,
             dueDate: existingReceivable.dueDate,
-            status: existingReceivable.status
+            status: existingReceivable.status,
           },
           newValues: {
             customerName: receivable.customerName,
@@ -106,19 +124,19 @@ export async function PUT(
             amount: receivable.amount,
             quantity: receivable.quantity,
             dueDate: receivable.dueDate,
-            status: receivable.status
+            status: receivable.status,
           },
           metadata: {
-            notes: receivable.notes
-          }
-        }
+            notes: receivable.notes,
+          },
+        },
       });
 
       return receivable;
     });
 
-    return NextResponse.json({ 
-      success: true, 
+    return NextResponse.json({
+      success: true,
       customerReceivable: {
         id: updatedReceivable.id,
         customerName: updatedReceivable.customerName,
@@ -127,12 +145,15 @@ export async function PUT(
         quantity: updatedReceivable.quantity,
         dueDate: updatedReceivable.dueDate?.toISOString().split('T')[0] || '',
         status: updatedReceivable.status,
-        notes: updatedReceivable.notes
-      }
+        notes: updatedReceivable.notes,
+      },
     });
   } catch (error) {
     console.error('Error updating customer receivable:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
   }
 }
 
@@ -149,7 +170,10 @@ export async function DELETE(
 
     // Check if user has admin role
     if (session.user.role !== 'ADMIN') {
-      return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
+      return NextResponse.json(
+        { error: 'Insufficient permissions' },
+        { status: 403 }
+      );
     }
 
     const { id } = await params;
@@ -157,31 +181,34 @@ export async function DELETE(
 
     // Verify customer receivable exists, belongs to tenant, and is for a retail driver
     const existingReceivable = await prisma.customerReceivable.findFirst({
-      where: { 
-        id, 
+      where: {
+        id,
         tenantId,
         driver: {
           status: 'ACTIVE',
-          driverType: 'RETAIL'
-        }
+          driverType: 'RETAIL',
+        },
       },
       include: {
         driver: {
           select: {
             id: true,
-            driverType: true
-          }
-        }
-      }
+            driverType: true,
+          },
+        },
+      },
     });
 
     if (!existingReceivable) {
-      return NextResponse.json({ error: 'Customer receivable not found or not for retail driver' }, { status: 404 });
+      return NextResponse.json(
+        { error: 'Customer receivable not found or not for retail driver' },
+        { status: 404 }
+      );
     }
 
     await prisma.$transaction(async (tx) => {
       await tx.customerReceivable.delete({
-        where: { id }
+        where: { id },
       });
 
       // Create audit log
@@ -198,18 +225,21 @@ export async function DELETE(
             amount: existingReceivable.amount,
             quantity: existingReceivable.quantity,
             dueDate: existingReceivable.dueDate,
-            status: existingReceivable.status
+            status: existingReceivable.status,
           },
           metadata: {
-            notes: existingReceivable.notes
-          }
-        }
+            notes: existingReceivable.notes,
+          },
+        },
       });
     });
 
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Error deleting customer receivable:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
   }
 }

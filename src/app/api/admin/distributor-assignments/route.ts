@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { requireAdminAuth, createAdminResponse, createAdminErrorResponse } from '@/lib/admin-auth';
+import {
+  requireAdminAuth,
+  createAdminResponse,
+  createAdminErrorResponse,
+} from '@/lib/admin-auth';
 import { prisma } from '@/lib/prisma';
 import { AuditLogger } from '@/lib/audit-logger';
 
@@ -7,7 +11,7 @@ export async function GET(request: NextRequest) {
   try {
     const session = await requireAdminAuth(request);
     const { searchParams } = new URL(request.url);
-    
+
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '20');
     const tenantId = searchParams.get('tenantId');
@@ -18,63 +22,62 @@ export async function GET(request: NextRequest) {
     const offset = (page - 1) * limit;
 
     const whereClause: any = {};
-    
+
     if (tenantId) whereClause.tenantId = tenantId;
     if (companyId) whereClause.companyId = companyId;
     if (productId) whereClause.productId = productId;
-    if (territory) whereClause.territory = { contains: territory, mode: 'insensitive' };
+    if (territory)
+      whereClause.territory = { contains: territory, mode: 'insensitive' };
     if (isActive !== null && isActive !== undefined) {
       whereClause.isActive = isActive === 'true';
     }
 
-    const [assignments, totalCount, distributors, companies, territories] = await Promise.all([
-      prisma.distributorAssignment.findMany({
-        where: whereClause,
-        include: {
-          tenant: {
-            select: { id: true, name: true, subdomain: true }
+    const [assignments, totalCount, distributors, companies, territories] =
+      await Promise.all([
+        prisma.distributorAssignment.findMany({
+          where: whereClause,
+          include: {
+            tenant: {
+              select: { id: true, name: true, subdomain: true },
+            },
+            company: {
+              select: { id: true, name: true, code: true },
+            },
+            product: {
+              select: { id: true, name: true, size: true },
+            },
+            assignedByUser: {
+              select: { id: true, name: true, email: true },
+            },
           },
-          company: {
-            select: { id: true, name: true, code: true }
-          },
-          product: {
-            select: { id: true, name: true, size: true }
-          },
-          assignedByUser: {
-            select: { id: true, name: true, email: true }
-          }
-        },
-        orderBy: [
-          { tenant: { name: 'asc' } },
-          { createdAt: 'desc' }
-        ],
-        take: limit,
-        skip: offset
-      }),
-      
-      prisma.distributorAssignment.count({ where: whereClause }),
-      
-      prisma.tenant.findMany({
-        where: { isActive: true },
-        select: { id: true, name: true, subdomain: true },
-        orderBy: { name: 'asc' }
-      }),
+          orderBy: [{ tenant: { name: 'asc' } }, { createdAt: 'desc' }],
+          take: limit,
+          skip: offset,
+        }),
 
-      prisma.company.findMany({
-        where: { isActive: true },
-        select: { id: true, name: true, code: true },
-        orderBy: { name: 'asc' }
-      }),
+        prisma.distributorAssignment.count({ where: whereClause }),
 
-      prisma.distributorAssignment.findMany({
-        select: { territory: true },
-        where: { 
-          territory: { not: null },
-          isActive: true
-        },
-        distinct: ['territory']
-      })
-    ]);
+        prisma.tenant.findMany({
+          where: { isActive: true },
+          select: { id: true, name: true, subdomain: true },
+          orderBy: { name: 'asc' },
+        }),
+
+        prisma.company.findMany({
+          where: { isActive: true },
+          select: { id: true, name: true, code: true },
+          orderBy: { name: 'asc' },
+        }),
+
+        prisma.distributorAssignment.findMany({
+          select: { territory: true },
+          where: {
+            territory: { not: null },
+            isActive: true,
+          },
+          distinct: ['territory'],
+        }),
+      ]);
 
     await AuditLogger.logDistributorAssignmentAction(
       session.user.id,
@@ -85,25 +88,32 @@ export async function GET(request: NextRequest) {
       request
     );
 
-    return NextResponse.json(createAdminResponse({
-      assignments,
-      pagination: {
-        page,
-        limit,
-        total: totalCount,
-        totalPages: Math.ceil(totalCount / limit),
-        hasNext: offset + limit < totalCount,
-        hasPrev: page > 1
-      },
-      distributors,
-      companies,
-      territories: territories.map(t => t.territory).filter(Boolean)
-    }));
+    return NextResponse.json(
+      createAdminResponse({
+        assignments,
+        pagination: {
+          page,
+          limit,
+          total: totalCount,
+          totalPages: Math.ceil(totalCount / limit),
+          hasNext: offset + limit < totalCount,
+          hasPrev: page > 1,
+        },
+        distributors,
+        companies,
+        territories: territories.map((t) => t.territory).filter(Boolean),
+      })
+    );
   } catch (error) {
     console.error('Get distributor assignments error:', error);
     return NextResponse.json(
-      createAdminErrorResponse(error instanceof Error ? error.message : 'Failed to fetch assignments'),
-      { status: error instanceof Error && error.message.includes('Admin') ? 403 : 500 }
+      createAdminErrorResponse(
+        error instanceof Error ? error.message : 'Failed to fetch assignments'
+      ),
+      {
+        status:
+          error instanceof Error && error.message.includes('Admin') ? 403 : 500,
+      }
     );
   }
 }
@@ -112,7 +122,7 @@ export async function POST(request: NextRequest) {
   try {
     const session = await requireAdminAuth(request);
     const data = await request.json();
-    
+
     const {
       tenantId,
       companyId,
@@ -121,7 +131,7 @@ export async function POST(request: NextRequest) {
       effectiveDate,
       expiryDate,
       notes,
-      isActive = true
+      isActive = true,
     } = data;
 
     if (!tenantId) {
@@ -133,7 +143,7 @@ export async function POST(request: NextRequest) {
 
     // Verify distributor exists
     const distributor = await prisma.tenant.findUnique({
-      where: { id: tenantId }
+      where: { id: tenantId },
     });
 
     if (!distributor) {
@@ -146,7 +156,7 @@ export async function POST(request: NextRequest) {
     // Verify company exists if provided
     if (companyId) {
       const company = await prisma.company.findUnique({
-        where: { id: companyId }
+        where: { id: companyId },
       });
 
       if (!company) {
@@ -160,7 +170,7 @@ export async function POST(request: NextRequest) {
     // Verify product exists if provided
     if (productId) {
       const product = await prisma.product.findUnique({
-        where: { id: productId }
+        where: { id: productId },
       });
 
       if (!product) {
@@ -173,14 +183,18 @@ export async function POST(request: NextRequest) {
       // If product is specified, company must also be specified and match
       if (!companyId) {
         return NextResponse.json(
-          createAdminErrorResponse('Company must be specified when assigning specific products'),
+          createAdminErrorResponse(
+            'Company must be specified when assigning specific products'
+          ),
           { status: 400 }
         );
       }
 
       if (product.companyId !== companyId) {
         return NextResponse.json(
-          createAdminErrorResponse('Product does not belong to the specified company'),
+          createAdminErrorResponse(
+            'Product does not belong to the specified company'
+          ),
           { status: 400 }
         );
       }
@@ -193,16 +207,15 @@ export async function POST(request: NextRequest) {
         companyId: companyId || null,
         productId: productId || null,
         isActive: true,
-        OR: [
-          { expiryDate: null },
-          { expiryDate: { gte: new Date() } }
-        ]
-      }
+        OR: [{ expiryDate: null }, { expiryDate: { gte: new Date() } }],
+      },
     });
 
     if (conflictingAssignment) {
       return NextResponse.json(
-        createAdminErrorResponse('A similar active assignment already exists for this distributor'),
+        createAdminErrorResponse(
+          'A similar active assignment already exists for this distributor'
+        ),
         { status: 409 }
       );
     }
@@ -217,22 +230,22 @@ export async function POST(request: NextRequest) {
         effectiveDate: effectiveDate ? new Date(effectiveDate) : new Date(),
         expiryDate: expiryDate ? new Date(expiryDate) : null,
         notes,
-        isActive
+        isActive,
       },
       include: {
         tenant: {
-          select: { id: true, name: true, subdomain: true }
+          select: { id: true, name: true, subdomain: true },
         },
         company: {
-          select: { id: true, name: true, code: true }
+          select: { id: true, name: true, code: true },
         },
         product: {
-          select: { id: true, name: true, size: true }
+          select: { id: true, name: true, size: true },
         },
         assignedByUser: {
-          select: { id: true, name: true, email: true }
-        }
-      }
+          select: { id: true, name: true, email: true },
+        },
+      },
     });
 
     await AuditLogger.logDistributorAssignmentAction(
@@ -245,14 +258,22 @@ export async function POST(request: NextRequest) {
     );
 
     return NextResponse.json(
-      createAdminResponse(assignment, 'Distributor assignment created successfully'),
+      createAdminResponse(
+        assignment,
+        'Distributor assignment created successfully'
+      ),
       { status: 201 }
     );
   } catch (error) {
     console.error('Create distributor assignment error:', error);
     return NextResponse.json(
-      createAdminErrorResponse(error instanceof Error ? error.message : 'Failed to create assignment'),
-      { status: error instanceof Error && error.message.includes('Admin') ? 403 : 500 }
+      createAdminErrorResponse(
+        error instanceof Error ? error.message : 'Failed to create assignment'
+      ),
+      {
+        status:
+          error instanceof Error && error.message.includes('Admin') ? 403 : 500,
+      }
     );
   }
 }

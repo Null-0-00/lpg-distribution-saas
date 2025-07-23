@@ -480,7 +480,8 @@ async function getReceivablesAtDate(tenantId: string, date: Date) {
     ? {
         cash: receivable.totalCashReceivables,
         cylinder: receivable.totalCylinderReceivables,
-        total: receivable.totalCashReceivables + receivable.totalCylinderReceivables,
+        total:
+          receivable.totalCashReceivables + receivable.totalCylinderReceivables,
       }
     : { cash: 0, cylinder: 0, total: 0 };
 }

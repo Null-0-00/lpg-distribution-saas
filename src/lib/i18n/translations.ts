@@ -218,6 +218,7 @@ export interface Translations {
   noEmptyCylindersInInventory: string;
   note: string;
   totalCylinderReceivables: string;
+  totalCylindersReceivables: string;
   dailyInventoryTracking: string;
   automatedCalculationsExactFormulas: string;
   packagePurchase: string;
@@ -276,7 +277,7 @@ export interface Translations {
 
   // Sales and inventory forms
   customerName: string;
-  
+
   // Settings and admin
   adminPanel: string;
   systemAdministration: string;
@@ -365,7 +366,7 @@ export interface Translations {
   creating: string;
   updatePurchaseOrder: string;
   createPurchaseOrder: string;
-  
+
   // Empty cylinder transactions
   transactionType: string;
   buyEmptyCylinders: string;
@@ -604,7 +605,8 @@ const englishTranslations: Translations = {
   totalCylinderReceivables: 'Total Cylinder Receivables',
   totalCylindersReceivables: 'Total Cylinders Receivables',
   dailyInventoryTracking: 'Daily Inventory Tracking',
-  automatedCalculationsExactFormulas: 'Automated calculations using exact business formulas',
+  automatedCalculationsExactFormulas:
+    'Automated calculations using exact business formulas',
   packagePurchase: 'Package Purchase',
   refillPurchase: 'Refill Purchase',
   emptyCylindersBuySell: 'Empty Cylinders Buy/Sell',
@@ -620,8 +622,10 @@ const englishTranslations: Translations = {
   packageRefillSales: 'Package & Refill Sales',
   sumAllDriversSalesForDate: 'Sum of all drivers sales for the date',
   packageRefillPurchase: 'Package & Refill Purchase',
-  sumCompletedShipmentsFromShipmentsPage: 'Sum of completed shipments from shipments page',
-  sumCompletedEmptyCylinderShipments: 'Sum of completed empty cylinder shipments',
+  sumCompletedShipmentsFromShipmentsPage:
+    'Sum of completed shipments from shipments page',
+  sumCompletedEmptyCylinderShipments:
+    'Sum of completed empty cylinder shipments',
   allCalculationsUpdatedRealTime: 'All calculations are updated in real-time',
   currentStockHealth: 'Current Stock Health',
   productsInGoodStock: 'products in good stock',
@@ -650,7 +654,8 @@ const englishTranslations: Translations = {
   totalCashReceivables: 'Total Cash Receivables',
   changeInReceivablesCashCylinders: 'Change in Receivables (Cash & Cylinders)',
   dailyDepositsExpenses: 'Daily Deposits & Expenses',
-  detailedBreakdownDepositsExpenses: 'Detailed breakdown of deposits and expenses',
+  detailedBreakdownDepositsExpenses:
+    'Detailed breakdown of deposits and expenses',
   deposits: 'Deposits',
   particulars: 'Particulars',
   noDepositsFound: 'No deposits found for this date',
@@ -991,7 +996,8 @@ const bengaliTranslations: Translations = {
   totalCylinderReceivables: 'মোট সিলিন্ডার প্রাপ্য',
   totalCylindersReceivables: 'মোট সিলিন্ডার প্রাপ্য',
   dailyInventoryTracking: 'দৈনিক ইনভেন্টরি ট্র্যাকিং',
-  automatedCalculationsExactFormulas: 'সঠিক ব্যবসায়িক সূত্র ব্যবহার করে স্বয়ংক্রিয় গণনা',
+  automatedCalculationsExactFormulas:
+    'সঠিক ব্যবসায়িক সূত্র ব্যবহার করে স্বয়ংক্রিয় গণনা',
   packagePurchase: 'প্যাকেজ ক্রয়',
   refillPurchase: 'রিফিল ক্রয়',
   emptyCylindersBuySell: 'খালি সিলিন্ডার কেনাবেচা',
@@ -1007,7 +1013,8 @@ const bengaliTranslations: Translations = {
   packageRefillSales: 'প্যাকেজ ও রিফিল বিক্রয়',
   sumAllDriversSalesForDate: 'তারিখের জন্য সব চালকের বিক্রয়ের যোগফল',
   packageRefillPurchase: 'প্যাকেজ ও রিফিল ক্রয়',
-  sumCompletedShipmentsFromShipmentsPage: 'চালান পাতা থেকে সম্পূর্ণ চালানের যোগফল',
+  sumCompletedShipmentsFromShipmentsPage:
+    'চালান পাতা থেকে সম্পূর্ণ চালানের যোগফল',
   sumCompletedEmptyCylinderShipments: 'সম্পূর্ণ খালি সিলিন্ডার চালানের যোগফল',
   allCalculationsUpdatedRealTime: 'সব গণনা রিয়েল-টাইমে আপডেট হয়',
   currentStockHealth: 'বর্তমান স্টকের অবস্থা',

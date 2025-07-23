@@ -372,7 +372,9 @@ async function calculateReceivables(tenantId: string, asOfDate: Date) {
   return {
     cash: receivablesRecord.totalCashReceivables,
     cylinder: receivablesRecord.totalCylinderReceivables,
-    total: receivablesRecord.totalCashReceivables + receivablesRecord.totalCylinderReceivables,
+    total:
+      receivablesRecord.totalCashReceivables +
+      receivablesRecord.totalCylinderReceivables,
   };
 }
 

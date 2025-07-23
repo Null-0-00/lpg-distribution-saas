@@ -326,7 +326,8 @@ const englishTranslations: Translations = {
   viewComprehensiveReports: 'View comprehensive financial reports',
   reportsAnalytics: 'Reports & Analytics',
   loadingText: 'Loading dashboard data...',
-  manageLpgDistributionBusiness: 'Manage your LPG distribution business efficiently',
+  manageLpgDistributionBusiness:
+    'Manage your LPG distribution business efficiently',
   retry: 'Retry',
   revenue: 'Revenue',
   tasks: 'Tasks',
@@ -470,7 +471,8 @@ const bengaliTranslations: Translations = {
   driverUpdatedSuccessfully: 'চালক সফলভাবে আপডেট হয়েছে',
   failedToUpdateDriver: 'চালক আপডেট করতে ব্যর্থ',
   totalSalesThisMonth: 'এই মাসের মোট বিক্রয়',
-  noActiveDriversFoundForThisPeriod: 'এই সময়ের জন্য কোন সক্রিয় চালক পাওয়া যায়নি',
+  noActiveDriversFoundForThisPeriod:
+    'এই সময়ের জন্য কোন সক্রিয় চালক পাওয়া যায়নি',
   packageSalesQty: 'প্যাকেজ বিক্রয় পরিমাণ',
   refillSalesQty: 'রিফিল বিক্রয় পরিমাণ',
   totalSalesQty: 'মোট বিক্রয় পরিমাণ',
@@ -503,7 +505,8 @@ const bengaliTranslations: Translations = {
   viewComprehensiveReports: 'বিস্তৃত আর্থিক রিপোর্ট দেখুন',
   reportsAnalytics: 'রিপোর্ট ও বিশ্লেষণ',
   loadingText: 'ড্যাশবোর্ড ডেটা লোড হচ্ছে...',
-  manageLpgDistributionBusiness: 'আপনার এলপিজি বিতরণ ব্যবসা দক্ষতার সাথে পরিচালনা করুন',
+  manageLpgDistributionBusiness:
+    'আপনার এলপিজি বিতরণ ব্যবসা দক্ষতার সাথে পরিচালনা করুন',
   retry: 'আবার চেষ্টা করুন',
   revenue: 'আয়',
   tasks: 'কাজ',
@@ -536,7 +539,10 @@ const translationMap: Record<string, Translations> = {
   'bn-BD': bengaliTranslations,
 };
 
-export function getTranslation(language: string, key: keyof Translations): string {
+export function getTranslation(
+  language: string,
+  key: keyof Translations
+): string {
   const translations = translationMap[language] || englishTranslations;
   return translations[key] || englishTranslations[key] || key;
 }

@@ -135,10 +135,10 @@ export default function DashboardLayout({
             })}
           </nav>
           {/* Mobile logout button */}
-          <div className="border-t border-border p-4">
+          <div className="border-border border-t p-4">
             <button
               onClick={handleLogout}
-              className="flex w-full items-center rounded-lg px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20 transition-colors"
+              className="flex w-full items-center rounded-lg px-3 py-2 text-sm font-medium text-red-600 transition-colors hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20"
             >
               <LogOut className="mr-3 h-5 w-5" />
               {t('logout')}
@@ -176,10 +176,10 @@ export default function DashboardLayout({
             })}
           </nav>
           {/* Desktop logout button */}
-          <div className="border-t border-border p-4">
+          <div className="border-border border-t p-4">
             <button
               onClick={handleLogout}
-              className="flex w-full items-center rounded-lg px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20 transition-colors"
+              className="flex w-full items-center rounded-lg px-3 py-2 text-sm font-medium text-red-600 transition-colors hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20"
             >
               <LogOut className="mr-3 h-5 w-5" />
               {t('logout')}
@@ -214,7 +214,7 @@ export default function DashboardLayout({
                 <ThemeToggle />
                 <button
                   onClick={handleLogout}
-                  className="flex items-center rounded-md p-2 text-sm font-medium text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20 transition-colors"
+                  className="flex items-center rounded-md p-2 text-sm font-medium text-red-600 transition-colors hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20"
                   title="Logout"
                 >
                   <LogOut className="h-4 w-4" />

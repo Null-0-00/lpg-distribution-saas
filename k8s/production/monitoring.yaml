@@ -1,0 +1,315 @@
+apiVersion: v1
+kind: ServiceMonitor
+metadata:
+  name: lpg-distributor-monitor
+  namespace: lpg-distributor-production
+  labels:
+    app: lpg-distributor
+    environment: production
+spec:
+  selector:
+    matchLabels:
+      app: lpg-distributor
+      environment: production
+  endpoints:
+  - port: http
+    path: /api/metrics
+    interval: 30s
+    scrapeTimeout: 10s
+
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: lpg-distributor-alerts
+  namespace: lpg-distributor-production
+  labels:
+    app: lpg-distributor
+    environment: production
+    prometheus: kube-prometheus
+    role: alert-rules
+spec:
+  groups:
+  - name: lpg-distributor.rules
+    rules:
+    - alert: LPGDistributorDown
+      expr: up{job="lpg-distributor-production"} == 0
+      for: 5m
+      labels:
+        severity: critical
+        service: lpg-distributor
+      annotations:
+        summary: "LPG Distributor application is down"
+        description: "LPG Distributor application has been down for more than 5 minutes."
+        runbook_url: "https://docs.lpg-distributor.com/runbooks/app-down"
+
+    - alert: LPGDistributorHighErrorRate
+      expr: |
+        (
+          rate(http_requests_total{job="lpg-distributor-production",code=~"5.."}[5m]) /
+          rate(http_requests_total{job="lpg-distributor-production"}[5m])
+        ) * 100 > 5
+      for: 5m
+      labels:
+        severity: warning
+        service: lpg-distributor
+      annotations:
+        summary: "High error rate detected"
+        description: "Error rate is {{ $value }}% over the last 5 minutes."
+
+    - alert: LPGDistributorHighLatency
+      expr: |
+        histogram_quantile(0.95, 
+          rate(http_request_duration_seconds_bucket{job="lpg-distributor-production"}[5m])
+        ) > 1
+      for: 10m
+      labels:
+        severity: warning
+        service: lpg-distributor
+      annotations:
+        summary: "High response latency detected"
+        description: "95th percentile latency is {{ $value }}s over the last 10 minutes."
+
+    - alert: LPGDistributorHighMemoryUsage
+      expr: |
+        (
+          container_memory_working_set_bytes{pod=~"lpg-distributor-production-.*"} /
+          container_spec_memory_limit_bytes{pod=~"lpg-distributor-production-.*"}
+        ) * 100 > 80
+      for: 15m
+      labels:
+        severity: warning
+        service: lpg-distributor
+      annotations:
+        summary: "High memory usage detected"
+        description: "Memory usage is {{ $value }}% of the limit."
+
+    - alert: LPGDistributorHighCPUUsage
+      expr: |
+        (
+          rate(container_cpu_usage_seconds_total{pod=~"lpg-distributor-production-.*"}[5m]) /
+          container_spec_cpu_quota{pod=~"lpg-distributor-production-.*"} * 
+          container_spec_cpu_period{pod=~"lpg-distributor-production-.*"}
+        ) * 100 > 80
+      for: 15m
+      labels:
+        severity: warning
+        service: lpg-distributor
+      annotations:
+        summary: "High CPU usage detected"
+        description: "CPU usage is {{ $value }}% of the limit."
+
+    - alert: DatabaseConnectionsHigh
+      expr: |
+        pg_stat_database_numbackends{datname="lpg_distributor_prod"} > 150
+      for: 10m
+      labels:
+        severity: warning
+        service: postgresql
+      annotations:
+        summary: "High number of database connections"
+        description: "Database has {{ $value }} active connections."
+
+    - alert: DatabaseSlowQueries
+      expr: |
+        rate(pg_stat_database_tup_fetched{datname="lpg_distributor_prod"}[5m]) /
+        rate(pg_stat_database_tup_returned{datname="lpg_distributor_prod"}[5m]) < 0.8
+      for: 10m
+      labels:
+        severity: warning
+        service: postgresql
+      annotations:
+        summary: "Database queries are slow"
+        description: "Query efficiency is {{ $value }}."
+
+    - alert: RedisMemoryHigh
+      expr: |
+        (redis_memory_used_bytes / redis_memory_max_bytes) * 100 > 80
+      for: 10m
+      labels:
+        severity: warning
+        service: redis
+      annotations:
+        summary: "Redis memory usage is high"
+        description: "Redis memory usage is {{ $value }}%."
+
+    - alert: CertificateExpiringSoon
+      expr: |
+        (cert_manager_certificate_expiration_timestamp_seconds - time()) / 86400 < 30
+      for: 1h
+      labels:
+        severity: warning
+        service: cert-manager
+      annotations:
+        summary: "SSL certificate expiring soon"
+        description: "Certificate {{ $labels.name }} expires in {{ $value }} days."
+
+    - alert: PodCrashLooping
+      expr: |
+        rate(kube_pod_container_status_restarts_total{namespace="lpg-distributor-production"}[5m]) > 0.1
+      for: 5m
+      labels:
+        severity: critical
+        service: kubernetes
+      annotations:
+        summary: "Pod is crash looping"
+        description: "Pod {{ $labels.pod }} in namespace {{ $labels.namespace }} is crash looping."
+
+    - alert: DiskSpaceHigh
+      expr: |
+        (
+          node_filesystem_size_bytes{mountpoint="/"} - 
+          node_filesystem_free_bytes{mountpoint="/"}
+        ) / node_filesystem_size_bytes{mountpoint="/"} * 100 > 85
+      for: 10m
+      labels:
+        severity: critical
+        service: system
+      annotations:
+        summary: "Disk space usage is high"
+        description: "Disk usage is {{ $value }}% on {{ $labels.instance }}."
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboard-lpg-distributor
+  namespace: lpg-distributor-production
+  labels:
+    grafana_dashboard: "1"
+data:
+  lpg-distributor.json: |
+    {
+      "dashboard": {
+        "id": null,
+        "title": "LPG Distributor SaaS",
+        "tags": ["lpg-distributor", "production"],
+        "timezone": "browser",
+        "panels": [
+          {
+            "id": 1,
+            "title": "Request Rate",
+            "type": "graph",
+            "targets": [
+              {
+                "expr": "rate(http_requests_total{job=\"lpg-distributor-production\"}[5m])",
+                "legendFormat": "{{method}} {{route}}"
+              }
+            ],
+            "yAxes": [
+              {
+                "label": "Requests/sec"
+              }
+            ]
+          },
+          {
+            "id": 2,
+            "title": "Response Time",
+            "type": "graph",
+            "targets": [
+              {
+                "expr": "histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{job=\"lpg-distributor-production\"}[5m]))",
+                "legendFormat": "95th percentile"
+              },
+              {
+                "expr": "histogram_quantile(0.50, rate(http_request_duration_seconds_bucket{job=\"lpg-distributor-production\"}[5m]))",
+                "legendFormat": "50th percentile"
+              }
+            ],
+            "yAxes": [
+              {
+                "label": "Seconds"
+              }
+            ]
+          },
+          {
+            "id": 3,
+            "title": "Error Rate",
+            "type": "graph",
+            "targets": [
+              {
+                "expr": "rate(http_requests_total{job=\"lpg-distributor-production\",code=~\"5..\"}[5m]) / rate(http_requests_total{job=\"lpg-distributor-production\"}[5m]) * 100",
+                "legendFormat": "5xx Error Rate"
+              }
+            ],
+            "yAxes": [
+              {
+                "label": "Percentage",
+                "max": 100
+              }
+            ]
+          },
+          {
+            "id": 4,
+            "title": "Memory Usage",
+            "type": "graph",
+            "targets": [
+              {
+                "expr": "container_memory_working_set_bytes{pod=~\"lpg-distributor-production-.*\"} / container_spec_memory_limit_bytes{pod=~\"lpg-distributor-production-.*\"} * 100",
+                "legendFormat": "{{pod}}"
+              }
+            ],
+            "yAxes": [
+              {
+                "label": "Percentage",
+                "max": 100
+              }
+            ]
+          },
+          {
+            "id": 5,
+            "title": "CPU Usage",
+            "type": "graph",
+            "targets": [
+              {
+                "expr": "rate(container_cpu_usage_seconds_total{pod=~\"lpg-distributor-production-.*\"}[5m]) * 100",
+                "legendFormat": "{{pod}}"
+              }
+            ],
+            "yAxes": [
+              {
+                "label": "Percentage"
+              }
+            ]
+          },
+          {
+            "id": 6,
+            "title": "Database Connections",
+            "type": "graph",
+            "targets": [
+              {
+                "expr": "pg_stat_database_numbackends{datname=\"lpg_distributor_prod\"}",
+                "legendFormat": "Active Connections"
+              }
+            ]
+          },
+          {
+            "id": 7,
+            "title": "Redis Memory",
+            "type": "graph",
+            "targets": [
+              {
+                "expr": "redis_memory_used_bytes / redis_memory_max_bytes * 100",
+                "legendFormat": "Memory Usage %"
+              }
+            ]
+          },
+          {
+            "id": 8,
+            "title": "Business Metrics",
+            "type": "singlestat",
+            "targets": [
+              {
+                "expr": "sales_total",
+                "legendFormat": "Total Sales Today"
+              }
+            ]
+          }
+        ],
+        "time": {
+          "from": "now-1h",
+          "to": "now"
+        },
+        "refresh": "30s"
+      }
+    }

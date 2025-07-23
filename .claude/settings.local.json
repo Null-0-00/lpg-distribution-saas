@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run test:*)",
+      "Bash(npm run lint)",
+      "Bash(npm run type-check:*)",
+      "Bash(find:*)",
+      "Bash(ls:*)",
+      "Bash(mkdir:*)",
+      "WebFetch(domain:github.com)",
+      "Bash(npx prisma:*)",
+      "Bash(npx tsc:*)",
+      "Bash(grep:*)",
+      "mcp__serena__initial_instructions",
+      "mcp__serena__check_onboarding_performed",
+      "mcp__serena__activate_project"
+    ],
+    "deny": []
+  }
+}

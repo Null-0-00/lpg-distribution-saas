@@ -1,0 +1,1027 @@
+// LPG Distributor SaaS Database Schema
+// Multi-tenant architecture with complete data isolation
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================================
+// CORE ENTITIES
+// ============================================================================
+
+model Tenant {
+  id                  String            @id @default(cuid())
+  name                String
+  subdomain           String            @unique
+  subscriptionStatus  SubscriptionStatus
+  subscriptionPlan    SubscriptionPlan
+  isActive            Boolean           @default(true)
+  settings            Json?             // JSON for tenant-specific settings
+  currency            String            @default("USD")
+  timezone            String            @default("UTC")
+  language            String            @default("en")
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
+
+  // Relationships
+  users               User[]
+  cylinderSizes       CylinderSize[]
+  companies           Company[]
+  products            Product[]
+  drivers             Driver[]
+  sales               Sale[]
+  dailySales          DailySales[]
+  purchases           Purchase[]
+  shipments           Shipment[]
+  inventoryRecords    InventoryRecord[]
+  inventoryMovements  InventoryMovement[]
+  receivableRecords   ReceivableRecord[]
+  customerReceivables CustomerReceivable[]
+  assets              Asset[]
+  liabilities         Liability[]
+  expenseParentCategories ExpenseParentCategory[]
+  expenseCategories   ExpenseCategory[]
+  expenses            Expense[]
+  deposits            Deposit[]
+  purchaseOrders      PurchaseOrder[]
+  auditLogs           AuditLog[]
+  securityAuditLogs   SecurityAuditLog[]
+  distributorAssignments DistributorAssignment[]
+  distributorPricingAssignments DistributorPricingAssignment[]
+  commissionStructures CommissionStructure[]
+  fixedCostStructures FixedCostStructure[]
+
+  @@map("tenants")
+}
+
+model User {
+  id          String    @id @default(cuid())
+  tenantId    String
+  email       String
+  name        String
+  password    String?   // For credentials provider
+  role        UserRole  @default(MANAGER)
+  avatar      String?
+  isActive    Boolean   @default(true)
+  lastLoginAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relationships
+  tenant      Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  sales       Sale[]    // Sales created by this user
+  expenses    Expense[] // Expenses created by this user
+  deposits    Deposit[] // Deposits created by this user
+  createdPurchaseOrders PurchaseOrder[] @relation("PurchaseOrderCreatedBy")
+  approvedPurchaseOrders PurchaseOrder[] @relation("PurchaseOrderApprovedBy")
+  auditLogs   AuditLog[]
+  securityAuditLogs SecurityAuditLog[]
+  distributorAssignments DistributorAssignment[]
+  distributorPricingAssignments DistributorPricingAssignment[]
+  permissions Permission[]
+
+  @@unique([tenantId, email])
+  @@index([tenantId])
+  @@index([email])
+  @@map("users")
+}
+
+model Permission {
+  id          String @id @default(cuid())
+  name        String @unique
+  description String?
+  users       User[]
+
+  @@map("permissions")
+}
+
+// ============================================================================
+// PRODUCT & COMPANY ENTITIES
+// ============================================================================
+
+model CylinderSize {
+  id          String    @id @default(cuid())
+  tenantId    String
+  size        String    // e.g., "12L", "35L", "5kg", "20L"
+  description String?   // Optional description
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relationships
+  tenant      Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  products    Product[]
+
+  @@unique([tenantId, size])
+  @@index([tenantId])
+  @@map("cylinder_sizes")
+}
+
+model Company {
+  id          String    @id @default(cuid())
+  tenantId    String
+  name        String    // Aygaz, Jamuna, etc.
+  code        String?   // Company code
+  address     String?
+  phone       String?
+  email       String?
+  contactInfo Json?     // Extended contact information
+  businessTerms Json?   // Payment terms, credit limits, etc.
+  supplierInfo Json?    // Supplier relationship details
+  territory   String?   // Operating territory
+  analytics Json? // Company performance analytics: market share, growth rates
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relationships
+  tenant      Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  products    Product[]
+  purchases   Purchase[]
+  shipments   Shipment[]
+  purchaseOrders PurchaseOrder[]
+  distributorAssignments DistributorAssignment[]
+  companyPricingTiers CompanyPricingTier[]
+
+  @@unique([tenantId, name])
+  @@index([tenantId])
+  @@map("companies")
+}
+
+model Product {
+  id              String    @id @default(cuid())
+  tenantId        String
+  companyId       String
+  cylinderSizeId  String?   // Reference to CylinderSize (optional for migration)
+  name            String    // Product name (e.g., "LPG Cylinder", "Cooking Gas")
+  size            String    // Denormalized size for backward compatibility
+  fullCylinderWeight   Float? // Weight of full cylinder
+  emptyCylinderWeight  Float? // Weight of empty cylinder
+  currentPrice    Float     @default(0)
+  costPrice       Float?    // Purchase cost price
+  marketPrice     Float?    // Market reference price
+  lowStockThreshold Int     @default(10)
+  specifications  Json?     // Product specifications and features
+  performanceMetrics Json?  // Analytics: sales velocity, market share, profit margins
+  analytics Json? // Performance analytics: monthly trends, seasonal patterns
+  isActive        Boolean   @default(true)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  // Relationships
+  tenant          Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  company         Company      @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  cylinderSize    CylinderSize? @relation(fields: [cylinderSizeId], references: [id], onDelete: Cascade)
+  sales           Sale[]
+  dailySales      DailySales[]
+  purchases       Purchase[]
+  shipments       Shipment[]
+  inventoryMovements InventoryMovement[]
+  purchaseOrderItems PurchaseOrderItem[]
+  productPricingTiers ProductPricingTier[]
+  distributorAssignments DistributorAssignment[]
+  commissionStructures CommissionStructure[]
+  fixedCostStructures FixedCostStructure[]
+
+  @@unique([tenantId, companyId, name])
+  @@index([tenantId])
+  @@index([companyId])
+  @@map("products")
+}
+
+// ============================================================================
+// DRIVER MANAGEMENT
+// ============================================================================
+
+model Driver {
+  id          String      @id @default(cuid())
+  tenantId    String
+  name        String
+  phone       String?
+  email       String?
+  address     String?
+  licenseNumber String?
+  status      DriverStatus @default(ACTIVE)
+  driverType  DriverType  @default(RETAIL)
+  route       String?     // Assigned route/area
+  joiningDate DateTime?
+  leavingDate DateTime?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  // Relationships
+  tenant      Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  sales       Sale[]
+  dailySales  DailySales[]
+  receivableRecords ReceivableRecord[]
+  customerReceivables CustomerReceivable[]
+  inventoryMovements InventoryMovement[]
+  purchaseOrders PurchaseOrder[]
+
+  @@unique([tenantId, phone])
+  @@index([tenantId])
+  @@index([status])
+  @@index([driverType])
+  @@map("drivers")
+}
+
+// ============================================================================
+// SALES MANAGEMENT
+// ============================================================================
+
+model Sale {
+  id                  String      @id @default(cuid())
+  tenantId            String
+  driverId            String
+  productId           String
+  userId              String      // User who created the sale
+  customerName        String?     // Customer name for receivables tracking
+  saleType            SaleType
+  quantity            Int
+  unitPrice           Float
+  totalValue          Float       // quantity * unitPrice
+  discount            Float       @default(0)
+  netValue            Float       // totalValue - discount
+  paymentType         PaymentType
+  cashDeposited       Float       @default(0)
+  cylindersDeposited  Int         @default(0)
+  isOnCredit          Boolean     @default(false)
+  isCylinderCredit    Boolean     @default(false)
+  notes               String?
+  saleDate            DateTime    @default(now())
+  createdAt           DateTime    @default(now())
+  updatedAt           DateTime    @updatedAt
+
+  // Relationships
+  tenant              Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  driver              Driver      @relation(fields: [driverId], references: [id], onDelete: Cascade)
+  product             Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
+  user                User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([saleDate])
+  @@index([tenantId, saleDate])
+  @@index([tenantId, driverId])
+  @@index([saleType])
+  @@index([paymentType])
+  @@index([driverId])
+  @@index([productId])
+  @@map("sales")
+}
+
+model DailySales {
+  id                  String      @id @default(cuid())
+  tenantId            String
+  driverId            String
+  productId           String
+  saleDate            DateTime    @db.Date
+  packageSales        Int         @default(0)
+  refillSales         Int         @default(0)
+  totalSales          Int         @default(0)
+  packageRevenue      Float       @default(0)
+  refillRevenue       Float       @default(0)
+  totalRevenue        Float       @default(0)
+  cashDeposits        Float       @default(0)
+  cylinderDeposits    Int         @default(0)
+  discounts           Float       @default(0)
+  netRevenue          Float       @default(0)
+  createdAt           DateTime    @default(now())
+  updatedAt           DateTime    @updatedAt
+
+  // Relationships
+  tenant              Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  driver              Driver      @relation(fields: [driverId], references: [id], onDelete: Cascade)
+  product             Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, driverId, productId, saleDate])
+  @@index([tenantId])
+  @@index([saleDate])
+  @@index([driverId])
+  @@index([productId])
+  @@map("daily_sales")
+}
+
+// ============================================================================
+// PURCHASE & SHIPMENT MANAGEMENT
+// ============================================================================
+
+model Purchase {
+  id              String        @id @default(cuid())
+  tenantId        String
+  companyId       String
+  productId       String
+  purchaseType    PurchaseType
+  quantity        Int
+  unitCost        Float
+  totalCost       Float
+  purchaseDate    DateTime      @default(now())
+  invoiceNumber   String?
+  notes           String?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  // Relationships
+  tenant          Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  company         Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  product         Product       @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([purchaseDate])
+  @@index([companyId])
+  @@map("purchases")
+}
+
+model Shipment {
+  id              String        @id @default(cuid())
+  tenantId        String
+  companyId       String?       // Nullable for empty cylinder transactions
+  productId       String
+  shipmentType    ShipmentType
+  quantity        Int
+  unitCost        Float?
+  totalCost       Float?
+  shipmentDate    DateTime      @default(now())
+  invoiceNumber   String?
+  vehicleNumber   String?
+  notes           String?
+  status          ShipmentStatus @default(PENDING)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  // Relationships
+  tenant          Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  company         Company?      @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  product         Product       @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([shipmentDate])
+  @@index([companyId])
+  @@map("shipments")
+}
+
+// ============================================================================
+// INVENTORY MANAGEMENT
+// ============================================================================
+
+model InventoryRecord {
+  id                      String    @id @default(cuid())
+  tenantId                String
+  productId               String?   // Null for aggregated records
+  date                    DateTime  @db.Date
+  
+  // Sales data (calculated from Sales table)
+  packageSales            Int       @default(0)
+  refillSales             Int       @default(0)
+  totalSales              Int       @default(0)
+  
+  // Purchase data (calculated from Purchases/Shipments)
+  packagePurchase         Int       @default(0)
+  refillPurchase          Int       @default(0)
+  emptyCylindersBuySell   Int       @default(0)
+  
+  // Calculated inventory levels
+  fullCylinders           Int       @default(0)
+  emptyCylinders          Int       @default(0)
+  totalCylinders          Int       @default(0)
+  
+  // Metadata
+  calculatedAt            DateTime  @default(now())
+  createdAt               DateTime  @default(now())
+  updatedAt               DateTime  @updatedAt
+
+  // Relationships
+  tenant                  Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, date, productId])
+  @@index([tenantId])
+  @@index([date])
+  @@map("inventory_records")
+}
+
+model InventoryMovement {
+  id          String        @id @default(cuid())
+  tenantId    String
+  productId   String
+  driverId    String?       // Null for non-driver movements
+  date        DateTime      @default(now())
+  type        MovementType
+  quantity    Int
+  description String
+  reference   String?       // Sale ID, Purchase ID, etc.
+  createdAt   DateTime      @default(now())
+
+  // Relationships
+  tenant      Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  product     Product       @relation(fields: [productId], references: [id], onDelete: Cascade)
+  driver      Driver?       @relation(fields: [driverId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId])
+  @@index([date])
+  @@index([productId])
+  @@map("inventory_movements")
+}
+
+// ============================================================================
+// RECEIVABLES MANAGEMENT
+// ============================================================================
+
+model ReceivableRecord {
+  id                      String    @id @default(cuid())
+  tenantId                String
+  driverId                String
+  date                    DateTime  @db.Date
+  
+  // Daily changes in receivables
+  cashReceivablesChange   Float     @default(0)
+  cylinderReceivablesChange Int     @default(0)
+  
+  // Running totals
+  totalCashReceivables    Float     @default(0)
+  totalCylinderReceivables Int      @default(0)
+  
+  // Calculation metadata
+  calculatedAt            DateTime  @default(now())
+  createdAt               DateTime  @default(now())
+  updatedAt               DateTime  @updatedAt
+
+  // Relationships
+  tenant                  Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  driver                  Driver    @relation(fields: [driverId], references: [id], onDelete: Cascade)
+  customerReceivables     CustomerReceivable[]
+
+  @@unique([tenantId, driverId, date])
+  @@index([tenantId])
+  @@index([date])
+  @@index([driverId])
+  @@map("receivable_records")
+}
+
+// Customer-wise receivables breakdown under each driver
+model CustomerReceivable {
+  id                      String    @id @default(cuid())
+  tenantId                String
+  driverId                String
+  receivableRecordId      String?   // Link to daily receivable record
+  customerName            String
+  receivableType          ReceivableType
+  amount                  Float     @default(0)
+  quantity                Int       @default(0)  // For cylinder receivables
+  size                    String?   // Cylinder size for cylinder receivables
+  dueDate                 DateTime?
+  status                  ReceivableStatus @default(CURRENT)
+  notes                   String?
+  createdAt               DateTime  @default(now())
+  updatedAt               DateTime  @updatedAt
+
+  // Relationships
+  tenant                  Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  driver                  Driver    @relation(fields: [driverId], references: [id], onDelete: Cascade)
+  receivableRecord        ReceivableRecord? @relation(fields: [receivableRecordId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId])
+  @@index([driverId])
+  @@index([customerName])
+  @@index([status])
+  @@map("customer_receivables")
+}
+
+
+// ============================================================================
+// FINANCIAL MANAGEMENT
+// ============================================================================
+
+model Asset {
+  id              String      @id @default(cuid())
+  tenantId        String
+  name            String
+  category        AssetCategory
+  subCategory     String?
+  value           Float
+  description     String?
+  purchaseDate    DateTime?
+  depreciationRate Float?     // Percentage per year
+  isActive        Boolean     @default(true)
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  // Relationships
+  tenant          Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([category])
+  @@map("assets")
+}
+
+model Liability {
+  id              String      @id @default(cuid())
+  tenantId        String
+  name            String
+  category        LiabilityCategory
+  amount          Float
+  description     String?
+  dueDate         DateTime?
+  isActive        Boolean     @default(true)
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  // Relationships
+  tenant          Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([category])
+  @@map("liabilities")
+}
+
+model ExpenseParentCategory {
+  id          String            @id @default(cuid())
+  tenantId    String
+  name        String
+  description String?
+  isActive    Boolean           @default(true)
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  // Relationships
+  tenant      Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  categories  ExpenseCategory[]
+
+  @@unique([tenantId, name])
+  @@index([tenantId])
+  @@map("expense_parent_categories")
+}
+
+model ExpenseCategory {
+  id          String                @id @default(cuid())
+  tenantId    String
+  parentId    String?               // Reference to parent category
+  name        String
+  description String?
+  budget      Float?                // Monthly budget
+  isActive    Boolean               @default(true)
+  createdAt   DateTime              @default(now())
+  updatedAt   DateTime              @updatedAt
+
+  // Relationships
+  tenant      Tenant                @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  parent      ExpenseParentCategory? @relation(fields: [parentId], references: [id], onDelete: SetNull)
+  expenses    Expense[]
+
+  @@unique([tenantId, name])
+  @@index([tenantId])
+  @@index([parentId])
+  @@map("expense_categories")
+}
+
+model Expense {
+  id              String          @id @default(cuid())
+  tenantId        String
+  categoryId      String
+  userId          String          // User who created the expense
+  amount          Float
+  description     String
+  particulars     String?         // Expense particulars
+  expenseDate     DateTime        @default(now())
+  receiptUrl      String?         // File upload URL
+  isApproved      Boolean         @default(false)
+  approvedBy      String?
+  approvedAt      DateTime?
+  notes           String?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  // Relationships
+  tenant          Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  category        ExpenseCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  user            User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([expenseDate])
+  @@index([categoryId])
+  @@map("expenses")
+}
+
+model Deposit {
+  id              String          @id @default(cuid())
+  tenantId        String
+  userId          String          // User who created the deposit
+  amount          Float
+  description     String
+  particulars     String          // Deposit particulars
+  depositDate     DateTime        @default(now())
+  receiptUrl      String?         // File upload URL
+  isApproved      Boolean         @default(false)
+  approvedBy      String?
+  approvedAt      DateTime?
+  notes           String?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  // Relationships
+  tenant          Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  user            User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([depositDate])
+  @@map("deposits")
+}
+
+// ============================================================================
+// PURCHASE ORDER MANAGEMENT
+// ============================================================================
+
+model PurchaseOrder {
+  id                    String                @id @default(cuid())
+  tenantId              String
+  companyId             String
+  driverId              String
+  poNumber              String                @unique
+  orderDate             DateTime              @default(now())
+  expectedDeliveryDate  DateTime?
+  actualDeliveryDate    DateTime?
+  status                PurchaseOrderStatus   @default(PENDING)
+  priority              PurchaseOrderPriority @default(NORMAL)
+  totalAmount           Float
+  notes                 String?
+  createdBy             String
+  approvedBy            String?
+  approvedAt            DateTime?
+  createdAt             DateTime              @default(now())
+  updatedAt             DateTime              @updatedAt
+
+  // Relationships
+  tenant                Tenant                @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  company               Company               @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  driver                Driver                @relation(fields: [driverId], references: [id], onDelete: Cascade)
+  createdByUser         User                  @relation("PurchaseOrderCreatedBy", fields: [createdBy], references: [id])
+  approvedByUser        User?                 @relation("PurchaseOrderApprovedBy", fields: [approvedBy], references: [id])
+  items                 PurchaseOrderItem[]
+
+  @@index([tenantId])
+  @@index([orderDate])
+  @@index([companyId])
+  @@index([driverId])
+  @@index([status])
+  @@map("purchase_orders")
+}
+
+model PurchaseOrderItem {
+  id              String        @id @default(cuid())
+  purchaseOrderId String
+  productId       String
+  quantity        Int
+  unitPrice       Float
+  totalPrice      Float
+  receivedQuantity Int          @default(0)
+  notes           String?
+
+  // Relationships
+  purchaseOrder   PurchaseOrder @relation(fields: [purchaseOrderId], references: [id], onDelete: Cascade)
+  product         Product       @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([purchaseOrderId])
+  @@index([productId])
+  @@map("purchase_order_items")
+}
+
+// ============================================================================
+// ADMIN MANAGEMENT & AUDIT LOGGING
+// ============================================================================
+
+model AuditLog {
+  id              String      @id @default(cuid())
+  tenantId        String?     // Null for system-wide logs
+  userId          String
+  action          AuditAction
+  entityType      String      // "Company", "Product", "DistributorAssignment", etc.
+  entityId        String?     // ID of the affected entity
+  oldValues       Json?       // Previous values before change
+  newValues       Json?       // New values after change
+  metadata        Json?       // Additional context and details
+  ipAddress       String?
+  userAgent       String?
+  createdAt       DateTime    @default(now())
+
+  // Relationships
+  tenant          Tenant?     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  user            User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([userId])
+  @@index([action])
+  @@index([entityType])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
+
+model SecurityAuditLog {
+  id              String      @id @default(cuid())
+  tenantId        String
+  userId          String
+  action          String
+  resource        String
+  timestamp       DateTime    @default(now())
+  ipAddress       String?
+  userAgent       String?
+  success         Boolean     @default(true)
+  details         Json?
+  createdAt       DateTime    @default(now())
+
+  // Relationships
+  tenant          Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  user            User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([userId])
+  @@index([action])
+  @@index([timestamp])
+  @@map("security_audit_logs")
+}
+
+model DistributorAssignment {
+  id              String      @id @default(cuid())
+  tenantId        String      // The distributor tenant
+  companyId       String?     // Assigned company (null = all companies)
+  productId       String?     // Assigned product (null = all products in company)
+  territory       String?     // Geographic territory
+  assignedBy      String      // Admin user who made the assignment
+  isActive        Boolean     @default(true)
+  effectiveDate   DateTime    @default(now())
+  expiryDate      DateTime?
+  notes           String?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  // Relationships
+  tenant          Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  company         Company?    @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  product         Product?    @relation(fields: [productId], references: [id], onDelete: Cascade)
+  assignedByUser  User        @relation(fields: [assignedBy], references: [id])
+
+  @@index([tenantId])
+  @@index([companyId])
+  @@index([productId])
+  @@index([territory])
+  @@map("distributor_assignments")
+}
+
+model CompanyPricingTier {
+  id              String      @id @default(cuid())
+  companyId       String
+  tierName        String      // "Standard", "Premium", "Wholesale", etc.
+  description     String?
+  discountPercent Float       @default(0)
+  minimumOrder    Int?        // Minimum order quantity
+  paymentTerms    String?     // "NET30", "COD", etc.
+  creditLimit     Float?      // Maximum credit allowed
+  isActive        Boolean     @default(true)
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  // Relationships
+  company         Company     @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  distributorTiers DistributorPricingAssignment[]
+
+  @@unique([companyId, tierName])
+  @@index([companyId])
+  @@map("company_pricing_tiers")
+}
+
+model ProductPricingTier {
+  id              String      @id @default(cuid())
+  productId       String
+  tierName        String      // "Standard", "Premium", "Wholesale", etc.
+  price           Float
+  costPrice       Float?
+  marginPercent   Float?
+  isActive        Boolean     @default(true)
+  effectiveDate   DateTime    @default(now())
+  expiryDate      DateTime?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  // Relationships
+  product         Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
+  distributorTiers DistributorPricingAssignment[]
+
+  @@unique([productId, tierName])
+  @@index([productId])
+  @@map("product_pricing_tiers")
+}
+
+model DistributorPricingAssignment {
+  id              String                  @id @default(cuid())
+  tenantId        String                  // The distributor tenant
+  companyTierId   String?                 // Company pricing tier
+  productTierId   String?                 // Product pricing tier
+  customPrice     Float?                  // Custom override price
+  isActive        Boolean                 @default(true)
+  assignedBy      String                  // Admin user who made assignment
+  createdAt       DateTime                @default(now())
+  updatedAt       DateTime                @updatedAt
+
+  // Relationships
+  tenant          Tenant                  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  companyTier     CompanyPricingTier?     @relation(fields: [companyTierId], references: [id], onDelete: Cascade)
+  productTier     ProductPricingTier?     @relation(fields: [productTierId], references: [id], onDelete: Cascade)
+  assignedByUser  User                    @relation(fields: [assignedBy], references: [id])
+
+  @@index([tenantId])
+  @@index([companyTierId])
+  @@index([productTierId])
+  @@map("distributor_pricing_assignments")
+}
+
+// ============================================================================
+// ANALYTICS & COMMISSION MANAGEMENT
+// ============================================================================
+
+model CommissionStructure {
+  id          String    @id @default(cuid())
+  tenantId    String
+  productId   String
+  month       Int       // 1-12
+  year        Int
+  commission  Float     // Commission amount per unit
+  description String?
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relationships
+  tenant      Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  product     Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, productId, month, year])
+  @@index([tenantId])
+  @@index([productId])
+  @@index([year, month])
+  @@map("commission_structures")
+}
+
+model FixedCostStructure {
+  id              String    @id @default(cuid())
+  tenantId        String
+  productId       String?   // Null for global fixed costs
+  month           Int       // 1-12
+  year            Int
+  costPerUnit     Float
+  costType        FixedCostType
+  description     String?
+  isActive        Boolean   @default(true)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  // Relationships
+  tenant          Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  product         Product?  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, productId, month, year, costType])
+  @@index([tenantId])
+  @@index([productId])
+  @@index([year, month])
+  @@map("fixed_cost_structures")
+}
+
+// ============================================================================
+// ENUMS
+// ============================================================================
+
+enum SubscriptionStatus {
+  ACTIVE
+  TRIAL
+  EXPIRED
+  CANCELED
+}
+
+enum SubscriptionPlan {
+  FREEMIUM
+  PROFESSIONAL
+  ENTERPRISE
+  CUSTOM
+}
+
+enum UserRole {
+  ADMIN
+  MANAGER
+}
+
+enum DriverStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum DriverType {
+  RETAIL
+  SHIPMENT
+}
+
+enum SaleType {
+  PACKAGE
+  REFILL
+}
+
+enum PaymentType {
+  CASH
+  BANK_TRANSFER
+  MFS
+  CREDIT
+  CYLINDER_CREDIT
+}
+
+
+enum PurchaseType {
+  PACKAGE
+  REFILL
+  EMPTY_CYLINDER
+}
+
+enum ShipmentType {
+  INCOMING_FULL
+  INCOMING_EMPTY
+  OUTGOING_FULL
+  OUTGOING_EMPTY
+  EMPTY_CYLINDER_DELIVERY
+  EMPTY_CYLINDER_PICKUP
+}
+
+enum ShipmentStatus {
+  PENDING
+  IN_TRANSIT
+  DELIVERED
+  COMPLETED
+}
+
+enum MovementType {
+  SALE_PACKAGE
+  SALE_REFILL
+  PURCHASE_PACKAGE
+  PURCHASE_REFILL
+  EMPTY_CYLINDER_BUY
+  EMPTY_CYLINDER_SELL
+  ADJUSTMENT_POSITIVE
+  ADJUSTMENT_NEGATIVE
+  TRANSFER_IN
+  TRANSFER_OUT
+}
+
+enum AssetCategory {
+  FIXED_ASSET
+  CURRENT_ASSET
+}
+
+enum LiabilityCategory {
+  CURRENT_LIABILITY
+  LONG_TERM_LIABILITY
+}
+
+enum PurchaseOrderStatus {
+  PENDING
+  APPROVED
+  ORDERED
+  PARTIALLY_RECEIVED
+  RECEIVED
+  CANCELED
+}
+
+enum PurchaseOrderPriority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
+}
+
+enum AuditAction {
+  CREATE
+  UPDATE
+  DELETE
+  VIEW
+  ASSIGN
+  UNASSIGN
+  APPROVE
+  REJECT
+  ACTIVATE
+  DEACTIVATE
+  USER_SIGN_IN
+}
+
+enum ReceivableType {
+  CASH
+  CYLINDER
+}
+
+enum ReceivableStatus {
+  CURRENT
+  DUE_SOON
+  OVERDUE
+  PAID
+}
+
+enum FixedCostType {
+  MANUAL
+  CALCULATED
+}

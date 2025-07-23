@@ -1,0 +1,235 @@
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-prod
+spec:
+  acme:
+    server: https://acme-v02.api.letsencrypt.org/directory
+    email: admin@lpg-distributor.com
+    privateKeySecretRef:
+      name: letsencrypt-prod
+    solvers:
+    - http01:
+        ingress:
+          class: nginx
+    - dns01:
+        cloudflare:
+          email: admin@lpg-distributor.com
+          apiKeySecretRef:
+            name: cloudflare-api-key
+            key: api-key
+
+---
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-staging
+spec:
+  acme:
+    server: https://acme-staging-v02.api.letsencrypt.org/directory
+    email: admin@lpg-distributor.com
+    privateKeySecretRef:
+      name: letsencrypt-staging
+    solvers:
+    - http01:
+        ingress:
+          class: nginx
+
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: lpg-distributor-tls
+  namespace: lpg-distributor-production
+spec:
+  secretName: lpg-distributor-tls
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  dnsNames:
+  - lpg-distributor.com
+  - www.lpg-distributor.com
+  - api.lpg-distributor.com
+
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: kibana-tls
+  namespace: lpg-distributor-production
+spec:
+  secretName: kibana-tls
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  dnsNames:
+  - logs.lpg-distributor.com
+
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: grafana-tls
+  namespace: lpg-distributor-production
+spec:
+  secretName: grafana-tls
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  dnsNames:
+  - monitoring.lpg-distributor.com
+
+---
+# Certificate renewal cronjob
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: certificate-renewal-check
+  namespace: lpg-distributor-production
+spec:
+  schedule: "0 2 * * 0"  # Weekly on Sunday at 2 AM
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: cert-checker
+            image: quay.io/jetstack/cert-manager-controller:v1.13.0
+            command:
+            - /bin/sh
+            - -c
+            - |
+              echo "Checking certificate renewals..."
+              
+              # Get all certificates in the namespace
+              certificates=$(kubectl get certificates -n lpg-distributor-production -o jsonpath='{.items[*].metadata.name}')
+              
+              for cert in $certificates; do
+                echo "Checking certificate: $cert"
+                
+                # Get certificate expiry
+                expiry=$(kubectl get certificate $cert -n lpg-distributor-production -o jsonpath='{.status.notAfter}')
+                
+                if [ -n "$expiry" ]; then
+                  # Calculate days until expiry
+                  expiry_epoch=$(date -d "$expiry" +%s)
+                  current_epoch=$(date +%s)
+                  days_until_expiry=$(( (expiry_epoch - current_epoch) / 86400 ))
+                  
+                  echo "Certificate $cert expires in $days_until_expiry days"
+                  
+                  # Alert if expiring within 30 days
+                  if [ $days_until_expiry -lt 30 ]; then
+                    echo "WARNING: Certificate $cert expires in $days_until_expiry days"
+                    # Send alert to monitoring system
+                    curl -X POST "$WEBHOOK_URL" \
+                      -H "Content-Type: application/json" \
+                      -d "{\"text\":\"Certificate $cert expires in $days_until_expiry days\"}"
+                  fi
+                fi
+              done
+              
+              echo "Certificate check completed"
+            env:
+            - name: WEBHOOK_URL
+              valueFrom:
+                secretKeyRef:
+                  name: monitoring-secrets
+                  key: webhook-url
+          restartPolicy: OnFailure
+          serviceAccountName: cert-manager
+
+---
+# RBAC for certificate checker
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: cert-manager
+  namespace: lpg-distributor-production
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: cert-manager-reader
+rules:
+- apiGroups: ["cert-manager.io"]
+  resources: ["certificates"]
+  verbs: ["get", "list", "watch"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: cert-manager-reader
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cert-manager-reader
+subjects:
+- kind: ServiceAccount
+  name: cert-manager
+  namespace: lpg-distributor-production
+
+---
+# Certificate monitoring service monitor
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: cert-manager-metrics
+  namespace: lpg-distributor-production
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: cert-manager
+  endpoints:
+  - port: http
+    path: /metrics
+    interval: 30s
+
+---
+# Certificate expiry alert rules
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: certificate-expiry-alerts
+  namespace: lpg-distributor-production
+spec:
+  groups:
+  - name: certificate.rules
+    rules:
+    - alert: CertificateExpiringSoon
+      expr: |
+        (cert_manager_certificate_expiration_timestamp_seconds - time()) / 86400 < 30
+      for: 1h
+      labels:
+        severity: warning
+        service: cert-manager
+      annotations:
+        summary: "SSL certificate expiring soon"
+        description: "Certificate {{ $labels.name }} in namespace {{ $labels.namespace }} expires in {{ $value }} days."
+        runbook_url: "https://docs.lpg-distributor.com/runbooks/certificate-expiry"
+    
+    - alert: CertificateExpired
+      expr: |
+        cert_manager_certificate_expiration_timestamp_seconds - time() < 0
+      for: 0m
+      labels:
+        severity: critical
+        service: cert-manager
+      annotations:
+        summary: "SSL certificate has expired"
+        description: "Certificate {{ $labels.name }} in namespace {{ $labels.namespace }} has expired."
+        runbook_url: "https://docs.lpg-distributor.com/runbooks/certificate-expired"
+    
+    - alert: CertificateRenewalFailed
+      expr: |
+        cert_manager_certificate_ready_status{condition="False"} == 1
+      for: 15m
+      labels:
+        severity: critical
+        service: cert-manager
+      annotations:
+        summary: "Certificate renewal failed"
+        description: "Certificate {{ $labels.name }} in namespace {{ $labels.namespace }} failed to renew."
+        runbook_url: "https://docs.lpg-distributor.com/runbooks/certificate-renewal-failed"

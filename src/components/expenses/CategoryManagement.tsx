@@ -1,0 +1,259 @@
+import React, { useState } from 'react';
+import { X, Plus, Edit2, Trash2, Folder, Tag } from 'lucide-react';
+import { ExpenseCategory, ExpenseParentCategory } from '@/hooks/useCategories';
+import { CategoryForm } from './forms/CategoryForm';
+import { CategoryFormData } from '@/lib/validations/expense';
+
+interface CategoryManagementProps {
+  isOpen: boolean;
+  onClose: () => void;
+  categories: ExpenseCategory[];
+  parentCategories: ExpenseParentCategory[];
+  onCreateCategory: (data: CategoryFormData) => Promise<void>;
+  onUpdateCategory: (categoryId: string, data: Partial<CategoryFormData>) => Promise<void>;
+  onDeleteCategory: (categoryId: string, categoryName: string) => Promise<void>;
+  loading: boolean;
+  isSubmitting: boolean;
+}
+
+export const CategoryManagement: React.FC<CategoryManagementProps> = ({
+  isOpen,
+  onClose,
+  categories,
+  parentCategories,
+  onCreateCategory,
+  onUpdateCategory,
+  onDeleteCategory,
+  loading,
+  isSubmitting
+}) => {
+  const [showCategoryForm, setShowCategoryForm] = useState(false);
+  const [editingCategory, setEditingCategory] = useState<ExpenseCategory | null>(null);
+
+  const handleCreateCategory = async (data: CategoryFormData) => {
+    await onCreateCategory(data);
+    setShowCategoryForm(false);
+  };
+
+  const handleUpdateCategory = async (data: CategoryFormData) => {
+    if (editingCategory) {
+      await onUpdateCategory(editingCategory.id, data);
+      setEditingCategory(null);
+    }
+  };
+
+  const handleEditCategory = (category: ExpenseCategory) => {
+    setEditingCategory(category);
+  };
+
+  const handleDeleteCategory = async (category: ExpenseCategory) => {
+    await onDeleteCategory(category.id, category.name);
+  };
+
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    }).format(amount);
+  };
+
+  const getParentName = (parentId: string | null) => {
+    if (!parentId) return 'No Parent';
+    const parent = parentCategories.find(p => p.id === parentId);
+    return parent ? parent.name : 'Unknown Parent';
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <>
+      <div className="fixed inset-0 z-50 overflow-y-auto bg-black bg-opacity-50 flex items-center justify-center p-4">
+        <div className="bg-card rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+          <div className="flex items-center justify-between p-6 border-b border-border">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+              Category Management
+            </h2>
+            <button
+              onClick={onClose}
+              className="text-muted-foreground hover:text-foreground"
+            >
+              <X className="h-6 w-6" />
+            </button>
+          </div>
+
+          <div className="p-6">
+            {/* Add Category Button */}
+            <div className="mb-6">
+              <button
+                onClick={() => setShowCategoryForm(true)}
+                className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Add New Category
+              </button>
+            </div>
+
+            {loading ? (
+              <div className="flex items-center justify-center py-8">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                <span className="ml-2 text-gray-600 dark:text-gray-400">Loading categories...</span>
+              </div>
+            ) : (
+              <>
+                {/* Parent Categories Section */}
+                <div className="mb-8">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                    <Folder className="h-5 w-5 mr-2" />
+                    Parent Categories ({parentCategories.length})
+                  </h3>
+                  
+                  {parentCategories.length === 0 ? (
+                    <div className="text-gray-500 dark:text-gray-400 text-center py-4">
+                      No parent categories found. Create your first parent category to organize your expenses.
+                    </div>
+                  ) : (
+                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                      {parentCategories.map(parent => (
+                        <div key={parent.id} className="bg-muted rounded-lg p-4 border border-border">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center">
+                              <Folder className="h-5 w-5 text-blue-600 mr-2" />
+                              <h4 className="font-medium text-gray-900 dark:text-white">{parent.name}</h4>
+                            </div>
+                          </div>
+                          {parent.description && (
+                            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{parent.description}</p>
+                          )}
+                          <div className="text-sm text-gray-500 dark:text-gray-400 mt-2">
+                            {parent.categories?.length || 0} sub-categories
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Sub-Categories Section */}
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                    <Tag className="h-5 w-5 mr-2" />
+                    Sub-Categories ({categories.length})
+                  </h3>
+                  
+                  {categories.length === 0 ? (
+                    <div className="text-gray-500 dark:text-gray-400 text-center py-4">
+                      No sub-categories found. Create your first sub-category to start tracking expenses.
+                    </div>
+                  ) : (
+                    <div className="overflow-x-auto">
+                      <table className="w-full border-collapse border border-gray-200 dark:border-gray-600">
+                        <thead>
+                          <tr className="bg-gray-50 dark:bg-gray-700">
+                            <th className="border border-gray-200 dark:border-gray-600 px-4 py-2 text-left text-sm font-medium text-gray-900 dark:text-white">
+                              Name
+                            </th>
+                            <th className="border border-gray-200 dark:border-gray-600 px-4 py-2 text-left text-sm font-medium text-gray-900 dark:text-white">
+                              Parent
+                            </th>
+                            <th className="border border-gray-200 dark:border-gray-600 px-4 py-2 text-left text-sm font-medium text-gray-900 dark:text-white">
+                              Budget
+                            </th>
+                            <th className="border border-gray-200 dark:border-gray-600 px-4 py-2 text-left text-sm font-medium text-gray-900 dark:text-white">
+                              Spent This Month
+                            </th>
+                            <th className="border border-gray-200 dark:border-gray-600 px-4 py-2 text-left text-sm font-medium text-gray-900 dark:text-white">
+                              Status
+                            </th>
+                            <th className="border border-gray-200 dark:border-gray-600 px-4 py-2 text-left text-sm font-medium text-gray-900 dark:text-white">
+                              Actions
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {categories.map(category => (
+                            <tr key={category.id} className="hover:bg-muted/50">
+                              <td className="border border-gray-200 dark:border-gray-600 px-4 py-2">
+                                <div>
+                                  <div className="font-medium text-gray-900 dark:text-white">
+                                    {category.name}
+                                  </div>
+                                  {category.description && (
+                                    <div className="text-sm text-gray-600 dark:text-gray-400">
+                                      {category.description}
+                                    </div>
+                                  )}
+                                </div>
+                              </td>
+                              <td className="border border-gray-200 dark:border-gray-600 px-4 py-2 text-sm text-gray-600 dark:text-gray-400">
+                                {getParentName(category.parentId)}
+                              </td>
+                              <td className="border border-gray-200 dark:border-gray-600 px-4 py-2 text-sm text-gray-600 dark:text-gray-400">
+                                {category.budget ? formatCurrency(category.budget) : 'No Budget'}
+                              </td>
+                              <td className="border border-gray-200 dark:border-gray-600 px-4 py-2 text-sm text-gray-600 dark:text-gray-400">
+                                {formatCurrency(category.currentMonthSpending)}
+                              </td>
+                              <td className="border border-gray-200 dark:border-gray-600 px-4 py-2">
+                                <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                                  category.isActive 
+                                    ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' 
+                                    : 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200'
+                                }`}>
+                                  {category.isActive ? 'Active' : 'Inactive'}
+                                </span>
+                                {category.isOverBudget && (
+                                  <span className="ml-1 inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">
+                                    Over Budget
+                                  </span>
+                                )}
+                              </td>
+                              <td className="border border-gray-200 dark:border-gray-600 px-4 py-2">
+                                <div className="flex space-x-2">
+                                  <button
+                                    onClick={() => handleEditCategory(category)}
+                                    className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200"
+                                    title="Edit category"
+                                  >
+                                    <Edit2 className="h-4 w-4" />
+                                  </button>
+                                  <button
+                                    onClick={() => handleDeleteCategory(category)}
+                                    className="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-200"
+                                    title="Delete category"
+                                  >
+                                    <Trash2 className="h-4 w-4" />
+                                  </button>
+                                </div>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Category Form Modal */}
+      <CategoryForm
+        isOpen={showCategoryForm || !!editingCategory}
+        onClose={() => {
+          setShowCategoryForm(false);
+          setEditingCategory(null);
+        }}
+        onSubmit={editingCategory ? handleUpdateCategory : handleCreateCategory}
+        parentCategories={parentCategories}
+        editingCategory={editingCategory}
+        title={editingCategory ? 'Edit Category' : 'Add New Category'}
+        submitLabel={editingCategory ? 'Update Category' : 'Create Category'}
+        isSubmitting={isSubmitting}
+      />
+    </>
+  );
+};

@@ -28,7 +28,8 @@
       "Bash(touch:*)",
       "Bash(npm run dev:*)",
       "Bash(curl:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(npx husky:*)"
     ],
     "deny": []
   }

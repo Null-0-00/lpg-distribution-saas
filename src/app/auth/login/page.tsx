@@ -2,9 +2,10 @@
 
 import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { signIn } from 'next-auth/react';
+import { signIn, useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
+import { AuthRedirect } from '@/components/auth/AuthRedirect';
 
 function LoginForm() {
   const [email, setEmail] = useState('');
@@ -15,6 +16,7 @@ function LoginForm() {
   const [message, setMessage] = useState('');
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { data: session, status } = useSession();
 
   useEffect(() => {
     const successMessage = searchParams.get('message');
@@ -22,6 +24,11 @@ function LoginForm() {
       setMessage(successMessage);
     }
   }, [searchParams]);
+
+  // Show redirect component if authenticated
+  if (status === 'authenticated') {
+    return <AuthRedirect />;
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,6 +51,7 @@ function LoginForm() {
     try {
       const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
 
+      // Try with redirect: false first to handle errors properly
       const result = await signIn('credentials', {
         email,
         password,
@@ -52,13 +60,19 @@ function LoginForm() {
 
       if (result?.error) {
         setError('Invalid email or password');
+        setLoading(false);
       } else if (result?.ok) {
-        router.push(callbackUrl);
+        // Manual redirect after successful authentication
+        console.log('Login successful, redirecting to:', callbackUrl);
+
+        // Small delay to ensure session is established
+        setTimeout(() => {
+          window.location.href = callbackUrl;
+        }, 100);
       }
     } catch (error) {
       console.error('Login error:', error);
       setError('An error occurred during login');
-    } finally {
       setLoading(false);
     }
   };

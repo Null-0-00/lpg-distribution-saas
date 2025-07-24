@@ -3,7 +3,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
-import { prisma } from '@/lib/database/client';
+import { prisma } from '@/lib/prisma';
 import { UserRole, DriverStatus } from '@prisma/client';
 import { z } from 'zod';
 

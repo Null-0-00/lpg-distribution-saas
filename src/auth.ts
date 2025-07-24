@@ -125,6 +125,28 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       }
       return session;
     },
+
+    async redirect({ url, baseUrl }) {
+      console.log('NextAuth redirect callback:', { url, baseUrl });
+
+      // If url is relative, make it absolute
+      if (url.startsWith('/')) {
+        const redirectUrl = new URL(url, baseUrl).toString();
+        console.log('Redirecting to:', redirectUrl);
+        return redirectUrl;
+      }
+
+      // If url is on the same origin, allow it
+      if (url.startsWith(baseUrl)) {
+        console.log('Same origin redirect:', url);
+        return url;
+      }
+
+      // Default to dashboard
+      const defaultUrl = new URL('/dashboard', baseUrl).toString();
+      console.log('Default redirect to:', defaultUrl);
+      return defaultUrl;
+    },
   },
 
   pages: {

@@ -24,16 +24,12 @@ function LoginForm() {
     }
   }, [searchParams]);
 
-  // Handle authenticated users
+  // Handle authenticated users - but don't redirect automatically to avoid loops
   useEffect(() => {
     if (status === 'authenticated' && session) {
-      const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
-      console.log('User already authenticated, redirecting to:', callbackUrl);
-
-      // Force a hard redirect to avoid any client-side routing issues
-      window.location.href = callbackUrl;
+      console.log('User is already authenticated:', session.user?.email);
     }
-  }, [status, session, searchParams]);
+  }, [status, session]);
 
   // Show loading while checking authentication
   if (status === 'loading') {
@@ -49,27 +45,33 @@ function LoginForm() {
     );
   }
 
-  // Show redirect message if authenticated (fallback)
+  // Show options if already authenticated
   if (status === 'authenticated') {
+    const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
     return (
       <div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-gray-900">
-        <div className="text-center">
-          <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-b-2 border-green-500"></div>
-          <p className="text-gray-600 dark:text-gray-400">
-            Redirecting to dashboard...
-          </p>
-          <div className="mt-4 space-x-4">
+        <div className="w-full max-w-md space-y-8">
+          <div className="text-center">
+            <h2 className="mt-6 text-3xl font-extrabold text-gray-900 dark:text-white">
+              Already Signed In
+            </h2>
+            <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+              You are already signed in as {session?.user?.email}
+            </p>
+          </div>
+
+          <div className="space-y-4">
             <button
-              onClick={() => (window.location.href = '/dashboard')}
-              className="text-blue-600 underline hover:text-blue-500"
+              onClick={() => (window.location.href = callbackUrl)}
+              className="flex w-full justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
             >
               Go to Dashboard
             </button>
             <button
               onClick={() => signOut({ callbackUrl: '/auth/login' })}
-              className="text-red-600 underline hover:text-red-500"
+              className="flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600"
             >
-              Sign Out & Login Again
+              Sign Out & Login as Different User
             </button>
           </div>
         </div>

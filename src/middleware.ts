@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { auth } from '@/auth';
+import { getToken } from 'next-auth/jwt';
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -18,11 +18,14 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Use the same auth configuration as the rest of the app
-  const session = await auth();
+  // Get the token from the request
+  const token = await getToken({
+    req: request,
+    secret: process.env.NEXTAUTH_SECRET,
+  });
 
-  // If no session, redirect to login
-  if (!session && pathname.startsWith('/dashboard')) {
+  // If no token, redirect to login
+  if (!token && pathname.startsWith('/dashboard')) {
     const loginUrl = new URL('/auth/login', request.url);
     loginUrl.searchParams.set('callbackUrl', pathname);
     return NextResponse.redirect(loginUrl);
@@ -33,7 +36,7 @@ export async function middleware(request: NextRequest) {
     pathname.startsWith('/dashboard/admin') ||
     pathname.startsWith('/api/admin')
   ) {
-    if (!session || session.user?.role !== 'ADMIN') {
+    if (!token || token.role !== 'ADMIN') {
       return NextResponse.redirect(new URL('/dashboard', request.url));
     }
   }

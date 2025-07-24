@@ -117,6 +117,7 @@ jobs:
       - name: Setup test database
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/lpg_test
+          DIRECT_URL: postgresql://postgres:postgres@localhost:5432/lpg_test
         run: |
           npx prisma migrate deploy
           npx prisma db seed
@@ -124,6 +125,7 @@ jobs:
       - name: Run unit tests
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/lpg_test
+          DIRECT_URL: postgresql://postgres:postgres@localhost:5432/lpg_test
           REDIS_URL: redis://localhost:6379
           NEXTAUTH_SECRET: test-secret
           NEXTAUTH_URL: http://localhost:3000
@@ -132,6 +134,7 @@ jobs:
       - name: Run integration tests
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/lpg_test
+          DIRECT_URL: postgresql://postgres:postgres@localhost:5432/lpg_test
           REDIS_URL: redis://localhost:6379
           NEXTAUTH_SECRET: test-secret
           NEXTAUTH_URL: http://localhost:3000
@@ -182,6 +185,7 @@ jobs:
       - name: Setup E2E database
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/lpg_e2e
+          DIRECT_URL: postgresql://postgres:postgres@localhost:5432/lpg_e2e
         run: |
           npx prisma migrate deploy
           npx prisma db seed
@@ -194,6 +198,7 @@ jobs:
       - name: Start application
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/lpg_e2e
+          DIRECT_URL: postgresql://postgres:postgres@localhost:5432/lpg_e2e
           NEXTAUTH_SECRET: test-secret
           NEXTAUTH_URL: http://localhost:3000
         run: |

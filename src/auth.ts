@@ -33,6 +33,8 @@ const getAuthSecret = () => {
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
 
+  trustHost: true,
+
   providers: [
     CredentialsProvider({
       name: 'credentials',

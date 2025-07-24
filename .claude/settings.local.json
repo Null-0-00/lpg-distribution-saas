@@ -29,7 +29,9 @@
       "Bash(npm run dev:*)",
       "Bash(curl:*)",
       "Bash(git commit:*)",
-      "Bash(npx husky:*)"
+      "Bash(npx husky:*)",
+      "Bash(npm run prettier:*)",
+      "Bash(npm run:*)"
     ],
     "deny": []
   }

@@ -23,7 +23,8 @@
       "mcp__gemini-cli__ask-gemini",
       "mcp__gemini-cli__brainstorm",
       "Bash(cd \"C:\\Users\\J\\Documents\\Projects\\lpg2\\lpg-distributor-saas\")",
-      "Bash(npx prettier:*)"
+      "Bash(npx prettier:*)",
+      "Bash(rm:*)"
     ],
     "deny": []
   }

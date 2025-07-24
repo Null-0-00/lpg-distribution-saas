@@ -64,6 +64,7 @@ const nextConfig = {
   // Environment variables
   env: {
     BUILD_TIME: new Date().toISOString(),
+    VERCEL_ENV: process.env.VERCEL_ENV || 'development',
   },
 };
 

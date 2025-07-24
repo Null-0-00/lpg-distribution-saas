@@ -5,8 +5,29 @@ import bcryptjs from 'bcryptjs';
 import { prisma } from '@/lib/prisma';
 import { UserRole } from '@prisma/client';
 
+// Handle missing NEXTAUTH_SECRET during build time
+const getAuthSecret = () => {
+  if (process.env.NEXTAUTH_SECRET) {
+    return process.env.NEXTAUTH_SECRET;
+  }
+  
+  // During build time, use a temporary secret
+  if (process.env.NODE_ENV === 'development' || process.env.VERCEL_ENV === 'preview') {
+    return 'dev-secret-key-at-least-32-characters-long';
+  }
+  
+  // In production build without secret, throw descriptive error
+  if (process.env.NODE_ENV === 'production') {
+    console.warn('NEXTAUTH_SECRET not found. Make sure to set it in your deployment environment.');
+    return 'build-time-secret-must-be-replaced-in-production';
+  }
+  
+  return 'fallback-secret-key-at-least-32-characters-long';
+};
+
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
+  secret: getAuthSecret(),
 
   providers: [
     CredentialsProvider({

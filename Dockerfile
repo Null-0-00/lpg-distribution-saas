@@ -39,14 +39,14 @@ RUN adduser -S nextjs -u 1001
 # Set working directory
 WORKDIR /app
 
-# Copy package files and install production dependencies
-COPY --from=builder --chown=nextjs:nodejs /app/package*.json ./
-RUN npm ci --omit=dev && npm cache clean --force
-
 # Copy necessary files from builder stage
+COPY --from=builder --chown=nextjs:nodejs /app/package*.json ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next ./.next
 COPY --from=builder --chown=nextjs:nodejs /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
+
+# Install production dependencies and generate Prisma client
+RUN npm ci --omit=dev && npx prisma generate && npm cache clean --force
 
 # Copy startup scripts
 COPY --chown=nextjs:nodejs scripts/docker-entrypoint.sh ./

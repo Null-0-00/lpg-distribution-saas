@@ -7,7 +7,10 @@ const globalForPrisma = globalThis as unknown as {
 // Create Prisma client with proper configuration for build time
 const createPrismaClient = () => {
   return new PrismaClient({
-    log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
+    log:
+      process.env.NODE_ENV === 'development'
+        ? ['query', 'error', 'warn']
+        : ['error'],
   });
 };
 

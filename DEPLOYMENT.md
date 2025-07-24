@@ -7,6 +7,7 @@
 Before deploying to Vercel, you need to set these environment variables in your Vercel project settings:
 
 #### Essential Variables (Required)
+
 ```
 NEXTAUTH_SECRET=your-secret-key-here-at-least-32-characters-long
 NEXTAUTH_URL=https://your-app.vercel.app
@@ -14,6 +15,7 @@ DATABASE_URL=postgresql://username:password@host:5432/database
 ```
 
 #### Optional Variables
+
 ```
 REDIS_URL=redis://localhost:6379
 NODE_ENV=production
@@ -38,6 +40,7 @@ SENTRY_DSN=your-sentry-dsn
 ### Generating NEXTAUTH_SECRET
 
 You can generate a secure secret using:
+
 ```bash
 openssl rand -base64 32
 ```
@@ -64,21 +67,25 @@ openssl rand -base64 32
 ### Common Issues
 
 #### Build Fails with "NEXTAUTH_SECRET environment variable is required"
+
 - Make sure `NEXTAUTH_SECRET` is set in your Vercel environment variables
 - The secret must be at least 32 characters long
 
 #### Database Connection Issues
+
 - Verify your `DATABASE_URL` is correct
 - Make sure your database allows connections from Vercel's IP addresses
 - Test the connection locally first
 
 #### 404 Errors on API Routes
+
 - Ensure your environment variables are set for the correct environment (Production/Preview)
 - Check that `NEXTAUTH_URL` matches your actual domain
 
 ### Build Command
 
 The default build command should work:
+
 ```bash
 npm run build
 ```

@@ -10,24 +10,28 @@ const getAuthSecret = () => {
   if (process.env.NEXTAUTH_SECRET) {
     return process.env.NEXTAUTH_SECRET;
   }
-  
+
   // During build time, use a temporary secret
-  if (process.env.NODE_ENV === 'development' || process.env.VERCEL_ENV === 'preview') {
+  if (
+    process.env.NODE_ENV === 'development' ||
+    process.env.VERCEL_ENV === 'preview'
+  ) {
     return 'dev-secret-key-at-least-32-characters-long';
   }
-  
+
   // In production build without secret, throw descriptive error
   if (process.env.NODE_ENV === 'production') {
-    console.warn('NEXTAUTH_SECRET not found. Make sure to set it in your deployment environment.');
+    console.warn(
+      'NEXTAUTH_SECRET not found. Make sure to set it in your deployment environment.'
+    );
     return 'build-time-secret-must-be-replaced-in-production';
   }
-  
+
   return 'fallback-secret-key-at-least-32-characters-long';
 };
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
-  secret: getAuthSecret(),
 
   providers: [
     CredentialsProvider({
@@ -116,7 +120,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         session.user.id = token.sub!;
         session.user.role = token.role as UserRole;
         session.user.tenantId = token.tenantId as string;
-        session.user.tenantId = token.tenantId as string;
       }
       return session;
     },
@@ -179,16 +182,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     },
   },
 
-  secret:
-    process.env.NEXTAUTH_SECRET ||
-    (() => {
-      if (process.env.NODE_ENV === 'production') {
-        throw new Error(
-          'NEXTAUTH_SECRET environment variable is required in production'
-        );
-      }
-      return 'development-secret-key-change-in-production';
-    })(),
-
+  secret: getAuthSecret(),
   debug: process.env.NODE_ENV === 'development',
 });

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect, useRef, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { signIn, useSession } from 'next-auth/react';
 import Link from 'next/link';
@@ -16,34 +16,54 @@ function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { data: session, status } = useSession();
+  const isMountedRef = useRef(true);
+
+  // Cleanup function to prevent state updates after unmount
+  useEffect(() => {
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
 
   useEffect(() => {
     const successMessage = searchParams.get('message');
-    if (successMessage) {
+    if (successMessage && isMountedRef.current) {
       setMessage(successMessage);
     }
   }, [searchParams]);
 
-  // Handle authenticated users with direct redirect
+  // Handle authenticated users with consolidated redirect logic
   useEffect(() => {
-    if (status === 'authenticated' && session) {
+    if (status === 'authenticated' && session && isMountedRef.current) {
       const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
       console.log('User already authenticated, redirecting to:', callbackUrl);
 
-      // Add timeout to prevent infinite loading states
+      // Primary redirect attempt
       const redirectTimeout = setTimeout(() => {
-        try {
-          // Use router.replace to avoid adding to history
-          router.replace(callbackUrl);
-        } catch (error) {
-          console.error('Redirect error:', error);
-          // Fallback to window.location if router fails
-          window.location.href = callbackUrl;
+        if (isMountedRef.current) {
+          try {
+            router.replace(callbackUrl);
+          } catch (error) {
+            console.error('Router redirect error:', error);
+            // Fallback to window.location if router fails
+            window.location.href = callbackUrl;
+          }
         }
       }, 100);
 
-      // Cleanup timeout on unmount
-      return () => clearTimeout(redirectTimeout);
+      // Safety timeout - force redirect if primary doesn't work
+      const safetyTimeout = setTimeout(() => {
+        if (isMountedRef.current) {
+          console.warn('Redirect timeout - forcing navigation to dashboard');
+          window.location.href = callbackUrl;
+        }
+      }, 5000);
+
+      // Cleanup both timeouts
+      return () => {
+        clearTimeout(redirectTimeout);
+        clearTimeout(safetyTimeout);
+      };
     }
   }, [status, session, searchParams, router]);
 
@@ -60,20 +80,6 @@ function LoginForm() {
       </div>
     );
   }
-
-  // Add redirect timeout safety mechanism
-  useEffect(() => {
-    if (status === 'authenticated') {
-      // Safety timeout - if redirect doesn't happen in 5 seconds, force it
-      const safetyTimeout = setTimeout(() => {
-        console.warn('Redirect timeout - forcing navigation to dashboard');
-        const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
-        window.location.href = callbackUrl;
-      }, 5000);
-
-      return () => clearTimeout(safetyTimeout);
-    }
-  }, [status, searchParams]);
 
   // Show redirecting message if authenticated (should be brief)
   if (status === 'authenticated') {
@@ -100,19 +106,26 @@ function LoginForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!isMountedRef.current) return;
+
     setLoading(true);
     setError('');
 
     // Basic validation
     if (!email || !password) {
-      setError('Please enter email and password');
-      setLoading(false);
+      if (isMountedRef.current) {
+        setError('Please enter email and password');
+        setLoading(false);
+      }
       return;
     }
 
     if (!email.includes('@')) {
-      setError('Please enter a valid email address');
-      setLoading(false);
+      if (isMountedRef.current) {
+        setError('Please enter a valid email address');
+        setLoading(false);
+      }
       return;
     }
 
@@ -131,8 +144,10 @@ function LoginForm() {
       // The function should redirect or throw an error
     } catch (error) {
       console.error('Login error:', error);
-      setError('Invalid email or password');
-      setLoading(false);
+      if (isMountedRef.current) {
+        setError('Invalid email or password');
+        setLoading(false);
+      }
     }
   };
 

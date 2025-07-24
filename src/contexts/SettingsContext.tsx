@@ -221,7 +221,18 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
   };
 
   useEffect(() => {
-    fetchSettings();
+    // Only fetch settings if we're not on the auth pages
+    const isAuthPage =
+      typeof window !== 'undefined' &&
+      (window.location.pathname.startsWith('/auth/') ||
+        window.location.pathname === '/');
+
+    if (!isAuthPage) {
+      fetchSettings();
+    } else {
+      // Use defaults for auth pages and set loading to false
+      setLoading(false);
+    }
   }, []);
 
   const value: SettingsContextType = {

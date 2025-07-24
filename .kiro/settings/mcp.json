@@ -17,7 +17,7 @@
       "args": ["-y", "@upstash/context7-mcp"],
       "env": {},
       "disabled": false,
-      "autoApprove": []
+      "autoApprove": ["get-library-docs", "resolve-library-id"]
     },
     "brave-search": {
       "command": "npx",

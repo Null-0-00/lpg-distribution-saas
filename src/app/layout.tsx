@@ -67,24 +67,25 @@ export default function RootLayout({
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="msapplication-TileColor" content="#0ea5e9" />
         <meta name="msapplication-tap-highlight" content="no" />
-        <link rel="apple-touch-icon" href="/images/icons/icon-192x192.png" />
-        <link
+        {/* TODO: Add proper favicon icons */}
+        {/* <link rel="apple-touch-icon" href="/images/icons/icon-192x192.png" /> */}
+        {/* <link
           rel="icon"
           type="image/png"
           sizes="32x32"
           href="/images/icons/icon-32x32.png"
-        />
-        <link
+        /> */}
+        {/* <link
           rel="icon"
           type="image/png"
           sizes="16x16"
           href="/images/icons/icon-16x16.png"
-        />
-        <link
+        /> */}
+        {/* <link
           rel="mask-icon"
           href="/images/icons/safari-pinned-tab.svg"
           color="#0ea5e9"
-        />
+        /> */}
       </head>
       <body
         className={`font-sans antialiased`}

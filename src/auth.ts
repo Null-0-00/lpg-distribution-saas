@@ -129,22 +129,33 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     async redirect({ url, baseUrl }) {
       console.log('NextAuth redirect callback:', { url, baseUrl });
 
-      // If url is relative, make it absolute
+      // Handle relative URLs
       if (url.startsWith('/')) {
         const redirectUrl = new URL(url, baseUrl).toString();
-        console.log('Redirecting to:', redirectUrl);
+        console.log('Redirecting to relative URL:', redirectUrl);
         return redirectUrl;
       }
 
-      // If url is on the same origin, allow it
+      // Handle same origin URLs
       if (url.startsWith(baseUrl)) {
         console.log('Same origin redirect:', url);
         return url;
       }
 
-      // Default to dashboard
+      // Handle callback URLs with query parameters
+      try {
+        const urlObj = new URL(url, baseUrl);
+        if (urlObj.origin === new URL(baseUrl).origin) {
+          console.log('Same origin with query params:', urlObj.toString());
+          return urlObj.toString();
+        }
+      } catch (error) {
+        console.warn('Invalid URL in redirect callback:', url);
+      }
+
+      // Default fallback to dashboard
       const defaultUrl = new URL('/dashboard', baseUrl).toString();
-      console.log('Default redirect to:', defaultUrl);
+      console.log('Default redirect to dashboard:', defaultUrl);
       return defaultUrl;
     },
   },

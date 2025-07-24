@@ -2,7 +2,7 @@
 
 import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { signIn, signOut, useSession } from 'next-auth/react';
+import { signIn, useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
 
@@ -30,8 +30,20 @@ function LoginForm() {
       const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
       console.log('User already authenticated, redirecting to:', callbackUrl);
 
-      // Use router.replace to avoid adding to history
-      router.replace(callbackUrl);
+      // Add timeout to prevent infinite loading states
+      const redirectTimeout = setTimeout(() => {
+        try {
+          // Use router.replace to avoid adding to history
+          router.replace(callbackUrl);
+        } catch (error) {
+          console.error('Redirect error:', error);
+          // Fallback to window.location if router fails
+          window.location.href = callbackUrl;
+        }
+      }, 100);
+
+      // Cleanup timeout on unmount
+      return () => clearTimeout(redirectTimeout);
     }
   }, [status, session, searchParams, router]);
 
@@ -49,6 +61,20 @@ function LoginForm() {
     );
   }
 
+  // Add redirect timeout safety mechanism
+  useEffect(() => {
+    if (status === 'authenticated') {
+      // Safety timeout - if redirect doesn't happen in 5 seconds, force it
+      const safetyTimeout = setTimeout(() => {
+        console.warn('Redirect timeout - forcing navigation to dashboard');
+        const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
+        window.location.href = callbackUrl;
+      }, 5000);
+
+      return () => clearTimeout(safetyTimeout);
+    }
+  }, [status, searchParams]);
+
   // Show redirecting message if authenticated (should be brief)
   if (status === 'authenticated') {
     return (
@@ -57,6 +83,15 @@ function LoginForm() {
           <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-b-2 border-green-500"></div>
           <p className="text-gray-600 dark:text-gray-400">
             Redirecting to dashboard...
+          </p>
+          <p className="mt-2 text-xs text-gray-500 dark:text-gray-500">
+            If you're not redirected automatically,{' '}
+            <a
+              href={searchParams.get('callbackUrl') || '/dashboard'}
+              className="text-blue-500 hover:underline"
+            >
+              click here
+            </a>
           </p>
         </div>
       </div>
@@ -84,28 +119,19 @@ function LoginForm() {
     try {
       const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
 
-      // Try with redirect: false first to handle errors properly
-      const result = await signIn('credentials', {
+      // Let NextAuth handle the redirect automatically
+      await signIn('credentials', {
         email,
         password,
-        redirect: false,
+        callbackUrl,
+        redirect: true,
       });
 
-      if (result?.error) {
-        setError('Invalid email or password');
-        setLoading(false);
-      } else if (result?.ok) {
-        // Manual redirect after successful authentication
-        console.log('Login successful, redirecting to:', callbackUrl);
-
-        // Small delay to ensure session is established
-        setTimeout(() => {
-          window.location.href = callbackUrl;
-        }, 100);
-      }
+      // This code should not execute if redirect: true works properly
+      // The function should redirect or throw an error
     } catch (error) {
       console.error('Login error:', error);
-      setError('An error occurred during login');
+      setError('Invalid email or password');
       setLoading(false);
     }
   };

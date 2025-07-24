@@ -1,0 +1,53 @@
+{
+  "mcpServers": {
+    "@21st-dev/magic": {
+      "command": "cmd",
+      "args": [
+        "/c",
+        "npx",
+        "-y",
+        "@21st-dev/magic@latest",
+        "API_KEY=\"ca6ce7fe5691ec8ef54840d54e1c371d0487fa83601fa4f786fe4c7df475fb79\""
+      ],
+      "disabled": false,
+      "autoApprove": []
+    },
+    "Context7": {
+      "command": "npx",
+      "args": ["-y", "@upstash/context7-mcp"],
+      "env": {},
+      "disabled": false,
+      "autoApprove": []
+    },
+    "brave-search": {
+      "command": "npx",
+      "args": ["-y", "brave-search-mcp"],
+      "env": {
+        "BRAVE_API_KEY": "BSA_AJWPjZ_Hvf_oV5JBAzI_ER9QGl7"
+      },
+      "disabled": false,
+      "autoApprove": ["brave_web_search"]
+    },
+    "sequential-thinking": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"],
+      "disabled": false,
+      "autoApprove": ["sequentialthinking"]
+    },
+    "Bright Data": {
+      "command": "npx",
+      "args": ["@brightdata/mcp"],
+      "env": {
+        "API_TOKEN": "<6c182239e347ed80c4ea39ffba21bbba526e1d99e020621be9cd01b9fe6767ac>"
+      },
+      "disabled": false,
+      "autoApprove": []
+    },
+    "basic-memory": {
+      "command": "C:\\Users\\J\\.local\\bin\\uvx.exe",
+      "args": ["basic-memory", "mcp"],
+      "disabled": false,
+      "autoApprove": ["write_note"]
+    }
+  }
+}

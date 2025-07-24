@@ -5,39 +5,54 @@ import { getToken } from 'next-auth/jwt';
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Skip middleware for static files and internal Next.js routes
-  if (
-    pathname.startsWith('/_next/') ||
-    pathname.startsWith('/api/_next/') ||
-    pathname.includes('.') ||
-    pathname === '/favicon.ico' ||
-    pathname.startsWith('/api/auth/') ||
-    pathname.startsWith('/auth/') ||
-    pathname === '/' ||
-    pathname.startsWith('/manifest.json') ||
-    pathname.startsWith('/sw.js')
-  ) {
+  // Skip middleware for static files, auth routes, and public paths
+  const publicPaths = [
+    '/_next/',
+    '/api/_next/',
+    '/api/auth/',
+    '/auth/',
+    '/',
+    '/favicon.ico',
+    '/manifest.json',
+    '/sw.js',
+    '/images/',
+    '/icons/',
+  ];
+
+  const isPublicPath = publicPaths.some(path => pathname.startsWith(path)) || 
+                      pathname.includes('.') ||
+                      pathname === '/';
+
+  if (isPublicPath) {
     return NextResponse.next();
   }
 
   console.log('🛡️ Middleware: Checking auth for:', pathname);
 
   try {
+    // Only check token for dashboard routes
+    if (!pathname.startsWith('/dashboard')) {
+      return NextResponse.next();
+    }
+
     // Get the token from the request with proper secret
     const token = await getToken({
       req: request,
-      secret: process.env.NEXTAUTH_SECRET || 'dev-secret-key-at-least-32-characters-long-for-development',
+      secret:
+        process.env.NEXTAUTH_SECRET ||
+        'dev-secret-key-at-least-32-characters-long-for-development',
     });
 
-    console.log('🎫 Token status:', { 
-      hasToken: !!token, 
+    console.log('🎫 Middleware token check:', {
+      path: pathname,
+      hasToken: !!token,
       userId: token?.sub,
-      role: token?.role 
+      role: token?.role,
     });
 
-    // If no token, redirect to login for protected routes
-    if (!token && pathname.startsWith('/dashboard')) {
-      console.log('❌ No token, redirecting to login');
+    // If no token, redirect to login for dashboard routes
+    if (!token) {
+      console.log('❌ No token for protected route, redirecting to login');
       const loginUrl = new URL('/auth/login', request.url);
       loginUrl.searchParams.set('callbackUrl', pathname);
       return NextResponse.redirect(loginUrl);
@@ -63,7 +78,10 @@ export async function middleware(request: NextRequest) {
     response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
     response.headers.set('X-XSS-Protection', '1; mode=block');
     response.headers.set('X-DNS-Prefetch-Control', 'off');
-    response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+    response.headers.set(
+      'Permissions-Policy',
+      'camera=(), microphone=(), geolocation=()'
+    );
 
     // Add cache control for authenticated routes
     if (token && pathname.startsWith('/dashboard')) {
@@ -72,17 +90,16 @@ export async function middleware(request: NextRequest) {
 
     console.log('✅ Middleware: Access granted for:', pathname);
     return response;
-
   } catch (error) {
     console.error('🚨 Middleware error:', error);
-    
+
     // On error, redirect to login for safety
     if (pathname.startsWith('/dashboard')) {
       const loginUrl = new URL('/auth/login', request.url);
       loginUrl.searchParams.set('callbackUrl', pathname);
       return NextResponse.redirect(loginUrl);
     }
-    
+
     return NextResponse.next();
   }
 }

@@ -3,6 +3,7 @@
 ## 🚀 Quick Deployment Steps
 
 ### 1. Vercel Setup
+
 1. Connect your GitHub repository to Vercel
 2. Configure the following environment variables in Vercel dashboard:
 
@@ -27,12 +28,14 @@ NODE_ENV="production"
 ```
 
 ### 3. Generate NEXTAUTH_SECRET
+
 ```bash
 # Use this command to generate a secure secret:
 openssl rand -base64 32
 ```
 
 ### 4. Database Setup
+
 ```bash
 # Run these commands after deployment:
 npx prisma generate
@@ -41,25 +44,30 @@ npx prisma db seed
 ```
 
 ### 5. Test Deployment
+
 - Visit: `https://your-app-name.vercel.app`
 - Test login with: `admin@demo.com` / `admin123`
 
 ## 🔧 Troubleshooting
 
 ### Authentication Issues
+
 1. **Check Environment Variables**: Ensure all variables are set in Vercel
 2. **Verify NEXTAUTH_URL**: Must match your Vercel domain exactly
 3. **Database Connection**: Verify Supabase connection strings
 4. **Enable Debug Mode**: Add `NEXTAUTH_DEBUG="true"` temporarily
 
 ### Common Fixes
+
 - Clear browser cache and cookies
 - Check Vercel function logs
 - Verify Supabase database is accessible
 - Ensure all migrations are applied
 
 ### Debug Mode
+
 Add this to Vercel environment variables for debugging:
+
 ```bash
 NEXTAUTH_DEBUG="true"
 ```
@@ -67,11 +75,13 @@ NEXTAUTH_DEBUG="true"
 Remove after fixing issues to avoid exposing sensitive information.
 
 ## 📊 Monitoring
+
 - Monitor Vercel function execution times
 - Check Supabase connection pool usage
 - Review authentication logs in Vercel dashboard
 
 ## 🔒 Security Checklist
+
 - ✅ NEXTAUTH_SECRET is 32+ characters
 - ✅ Database connection uses connection pooling
 - ✅ Supabase RLS (Row Level Security) is enabled
@@ -79,6 +89,7 @@ Remove after fixing issues to avoid exposing sensitive information.
 - ✅ HTTPS is enforced (automatic with Vercel)
 
 ## 🎯 Performance Optimizations
+
 - Connection pooling configured (pgbouncer=true)
 - JWT session strategy for faster authentication
 - Middleware optimized for Vercel edge functions

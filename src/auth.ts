@@ -11,16 +11,19 @@ const getAuthSecret = () => {
   if (process.env.NODE_ENV === 'production' && !process.env.NEXTAUTH_SECRET) {
     throw new Error('NEXTAUTH_SECRET is required in production');
   }
-  
-  return process.env.NEXTAUTH_SECRET || 'dev-secret-key-at-least-32-characters-long-for-development';
+
+  return (
+    process.env.NEXTAUTH_SECRET ||
+    'dev-secret-key-at-least-32-characters-long-for-development'
+  );
 };
 
 // Get NextAuth URL - handle Vercel deployment automatically
 const getAuthUrl = () => {
   // In production, use NEXTAUTH_URL or auto-detect Vercel URL
   if (process.env.NODE_ENV === 'production') {
-    return process.env.NEXTAUTH_URL || process.env.VERCEL_URL 
-      ? `https://${process.env.VERCEL_URL}` 
+    return process.env.NEXTAUTH_URL || process.env.VERCEL_URL
+      ? `https://${process.env.VERCEL_URL}`
       : 'https://lpg-distribution-saas.vercel.app';
   }
   // Development
@@ -28,11 +31,12 @@ const getAuthUrl = () => {
 };
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  adapter: PrismaAdapter(prisma),
-  
+  // Temporarily disable adapter to isolate session issues
+  // adapter: PrismaAdapter(prisma),
+
   // Essential for Vercel deployment
   trustHost: true,
-  
+
   // Configure URLs properly
   basePath: '/api/auth',
 
@@ -75,7 +79,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             found: !!user,
             email: credentials.email,
             userActive: user?.isActive,
-            tenantActive: user?.tenant?.isActive
+            tenantActive: user?.tenant?.isActive,
           });
 
           if (!user) {
@@ -89,7 +93,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           }
 
           if (!user.tenant?.isActive) {
-            console.log('❌ Tenant account deactivated for:', user.tenant?.name);
+            console.log(
+              '❌ Tenant account deactivated for:',
+              user.tenant?.name
+            );
             return null; // Return null instead of throwing
           }
 
@@ -106,7 +113,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           }
 
           console.log('✅ Authentication successful for:', user.email);
-          
+
           // Return complete user object
           return {
             id: user.id,
@@ -131,7 +138,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     maxAge: 24 * 60 * 60, // 24 hours
     updateAge: 2 * 60 * 60, // 2 hours
   },
-  
+
   // JWT configuration for better Vercel performance
   jwt: {
     maxAge: 24 * 60 * 60, // 24 hours
@@ -161,30 +168,32 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     },
 
     async redirect({ url, baseUrl }) {
-      console.log('🔄 Redirect callback:', { url, baseUrl });
-
-      // Always redirect to dashboard after sign in
-      if (url === baseUrl || url === `${baseUrl}/`) {
-        console.log('🏠 Redirecting to dashboard');
-        return `${baseUrl}/dashboard`;
-      }
-
-      // Handle relative URLs
+      console.log('🔄 NextAuth redirect:', { url, baseUrl });
+      
+      // For relative URLs, make them absolute
       if (url.startsWith('/')) {
-        const redirectUrl = new URL(url, baseUrl).toString();
-        console.log('📍 Relative URL redirect:', redirectUrl);
-        return redirectUrl;
+        const fullUrl = new URL(url, baseUrl).toString();
+        console.log('📍 Converting relative to absolute:', fullUrl);
+        return fullUrl;
       }
-
-      // Same origin URLs
-      if (url.startsWith(baseUrl)) {
-        console.log('🔗 Same origin redirect:', url);
-        return url;
+      
+      // If it's the same origin, allow it
+      try {
+        const urlObj = new URL(url);
+        const baseObj = new URL(baseUrl);
+        
+        if (urlObj.origin === baseObj.origin) {
+          console.log('✅ Same origin redirect allowed:', url);
+          return url;
+        }
+      } catch (error) {
+        console.warn('⚠️ Invalid URL in redirect:', url);
       }
-
-      // Default to dashboard for safety
-      console.log('🛡️ Default redirect to dashboard');
-      return `${baseUrl}/dashboard`;
+      
+      // Default fallback
+      const defaultUrl = `${baseUrl}/dashboard`;
+      console.log('🛡️ Fallback redirect:', defaultUrl);
+      return defaultUrl;
     },
   },
 
@@ -246,10 +255,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   },
 
   secret: getAuthSecret(),
-  
+
   // Enhanced debugging for production issues
-  debug: process.env.NODE_ENV === 'development' || process.env.NEXTAUTH_DEBUG === 'true',
-  
+  debug:
+    process.env.NODE_ENV === 'development' ||
+    process.env.NEXTAUTH_DEBUG === 'true',
+
   // Logger for production debugging
   logger: {
     error(error: Error) {

@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useEffect, useRef, Suspense } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { signIn, useSession } from 'next-auth/react';
+import { signIn, useSession, getSession } from 'next-auth/react';
 import Link from 'next/link';
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
 
@@ -13,10 +13,10 @@ function LoginForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
+  const [redirecting, setRedirecting] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
   const { data: session, status } = useSession();
-  const redirectAttempted = useRef(false);
 
   // Handle success messages
   useEffect(() => {
@@ -26,27 +26,32 @@ function LoginForm() {
     }
   }, [searchParams]);
 
-  // Handle authenticated users - SINGLE REDIRECT LOGIC
+  // Simple redirect logic - only run once when fully authenticated
   useEffect(() => {
-    if (
-      status === 'authenticated' && 
-      session?.user?.id && 
-      !redirectAttempted.current
-    ) {
-      redirectAttempted.current = true;
+    if (status === 'authenticated' && session?.user?.email && !redirecting && !loading) {
+      console.log('🔄 Authenticated user detected, redirecting...');
+      setRedirecting(true);
+      
       const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
       
-      console.log('✅ User authenticated, redirecting to:', callbackUrl);
-      console.log('👤 User data:', {
-        id: session.user.id,
-        email: session.user.email,
-        role: session.user.role
-      });
-
-      // Use window.location for reliable production redirect
-      window.location.href = callbackUrl;
+      // Immediate redirect without any delays
+      window.location.replace(callbackUrl);
     }
-  }, [status, session, searchParams]);
+  }, [status, session, redirecting, loading, searchParams]);
+
+  // Don't render anything if we're redirecting or if already authenticated
+  if (redirecting || (status === 'authenticated' && session?.user?.email)) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-gray-900">
+        <div className="text-center">
+          <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-b-2 border-green-500"></div>
+          <p className="text-gray-600 dark:text-gray-400">
+            Redirecting to dashboard...
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   // Show loading while checking authentication
   if (status === 'loading') {
@@ -62,22 +67,10 @@ function LoginForm() {
     );
   }
 
-  // If already authenticated, show redirecting message
-  if (status === 'authenticated' && session?.user?.id) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-gray-900">
-        <div className="text-center">
-          <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-b-2 border-green-500"></div>
-          <p className="text-gray-600 dark:text-gray-400">
-            Redirecting to dashboard...
-          </p>
-        </div>
-      </div>
-    );
-  }
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (loading || redirecting) return;
+    
     setLoading(true);
     setError('');
 
@@ -95,26 +88,48 @@ function LoginForm() {
     }
 
     try {
-      console.log('🔑 Attempting sign-in:', { email });
+      console.log('🔑 Starting sign-in process for:', email);
 
+      // Use NextAuth signIn with redirect: true for simplicity
       const result = await signIn('credentials', {
         email,
         password,
-        redirect: false,
+        callbackUrl: searchParams.get('callbackUrl') || '/dashboard',
+        redirect: false, // We'll handle redirect manually after verification
       });
 
-      console.log('📋 Sign-in result:', result);
+      console.log('📋 Sign-in attempt result:', result);
 
       if (result?.error) {
-        console.error('❌ Authentication failed:', result.error);
-        setError('Invalid email or password. Please try again.');
+        console.error('❌ Sign-in failed:', result.error);
+        setError('Invalid email or password. Please check your credentials and try again.');
         setLoading(false);
       } else if (result?.ok) {
-        console.log('✅ Sign-in successful, waiting for session...');
-        // Don't redirect here - let the useEffect handle it after session updates
-        // The loading state will remain until session is established
+        console.log('✅ Sign-in successful, verifying session...');
+        
+        // Wait a moment for the session to be established, then check it
+        setTimeout(async () => {
+          try {
+            const newSession = await getSession();
+            console.log('🔍 Session check:', newSession);
+            
+            if (newSession?.user?.email) {
+              console.log('✅ Session confirmed, redirecting...');
+              const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
+              window.location.replace(callbackUrl);
+            } else {
+              console.log('❌ Session not established');
+              setError('Authentication failed. Please try again.');
+              setLoading(false);
+            }
+          } catch (sessionError) {
+            console.error('🚨 Session verification error:', sessionError);
+            setError('Authentication verification failed. Please try again.');
+            setLoading(false);
+          }
+        }, 1000);
       } else {
-        console.error('❓ Unexpected result:', result);
+        console.error('❓ Unexpected sign-in result:', result);
         setError('Authentication failed. Please try again.');
         setLoading(false);
       }
@@ -190,6 +205,7 @@ function LoginForm() {
                 type="button"
                 className="absolute inset-y-0 right-0 flex items-center pr-3"
                 onClick={() => setShowPassword(!showPassword)}
+                disabled={loading}
               >
                 {showPassword ? (
                   <EyeOff className="h-4 w-4 text-gray-400 dark:text-gray-500" />
@@ -215,6 +231,7 @@ function LoginForm() {
                 name="remember-me"
                 type="checkbox"
                 className="h-4 w-4 rounded border-gray-300 bg-white text-blue-600 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700"
+                disabled={loading}
               />
               <label
                 htmlFor="remember-me"
@@ -237,7 +254,7 @@ function LoginForm() {
           <div>
             <button
               type="submit"
-              disabled={loading}
+              disabled={loading || redirecting}
               className="group relative flex w-full justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-blue-600 dark:hover:bg-blue-700"
             >
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}

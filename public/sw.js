@@ -283,7 +283,7 @@ async function handleNetworkFirst(request, cacheName) {
     return networkResponse;
   } catch (error) {
     console.log('Network failed, trying cache:', error);
-    
+
     // Only try cache for GET requests
     if (request.method === 'GET') {
       const cachedResponse = await caches.match(request);

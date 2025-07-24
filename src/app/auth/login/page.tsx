@@ -16,42 +16,37 @@ function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { data: session, status } = useSession();
-  const isMountedRef = useRef(true);
+  const redirectAttempted = useRef(false);
 
-  // Cleanup function to prevent state updates after unmount
-  useEffect(() => {
-    return () => {
-      isMountedRef.current = false;
-    };
-  }, []);
-
+  // Handle success messages
   useEffect(() => {
     const successMessage = searchParams.get('message');
-    if (successMessage && isMountedRef.current) {
+    if (successMessage) {
       setMessage(successMessage);
     }
   }, [searchParams]);
 
-  // Handle authenticated users with simplified redirect logic
+  // Handle authenticated users - SINGLE REDIRECT LOGIC
   useEffect(() => {
-    console.log(
-      'Auth status:',
-      status,
-      'Session:',
-      !!session,
-      'Mounted:',
-      isMountedRef.current
-    );
-
-    if (status === 'authenticated' && session && isMountedRef.current) {
+    if (
+      status === 'authenticated' && 
+      session?.user?.id && 
+      !redirectAttempted.current
+    ) {
+      redirectAttempted.current = true;
       const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
-      console.log('User authenticated, redirecting to:', callbackUrl);
-      console.log('Session user:', session.user);
+      
+      console.log('✅ User authenticated, redirecting to:', callbackUrl);
+      console.log('👤 User data:', {
+        id: session.user.id,
+        email: session.user.email,
+        role: session.user.role
+      });
 
-      // Use router.replace for proper Next.js navigation
-      router.replace(callbackUrl);
+      // Use window.location for reliable production redirect
+      window.location.href = callbackUrl;
     }
-  }, [status, session, searchParams, router]);
+  }, [status, session, searchParams]);
 
   // Show loading while checking authentication
   if (status === 'loading') {
@@ -67,102 +62,66 @@ function LoginForm() {
     );
   }
 
-  // Don't show a separate authenticated state - let the redirect happen immediately
+  // If already authenticated, show redirecting message
+  if (status === 'authenticated' && session?.user?.id) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-gray-900">
+        <div className="text-center">
+          <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-b-2 border-green-500"></div>
+          <p className="text-gray-600 dark:text-gray-400">
+            Redirecting to dashboard...
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (!isMountedRef.current) return;
-
     setLoading(true);
     setError('');
 
     // Basic validation
     if (!email || !password) {
-      if (isMountedRef.current) {
-        setError('Please enter email and password');
-        setLoading(false);
-      }
+      setError('Please enter email and password');
+      setLoading(false);
       return;
     }
 
     if (!email.includes('@')) {
-      if (isMountedRef.current) {
-        setError('Please enter a valid email address');
-        setLoading(false);
-      }
+      setError('Please enter a valid email address');
+      setLoading(false);
       return;
     }
 
     try {
-      const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
-      console.log('🔑 Attempting sign-in with:', { email, callbackUrl });
-      console.log('🌐 Current environment:', {
-        NODE_ENV: process.env.NODE_ENV,
-        hostname: window.location.hostname,
-      });
+      console.log('🔑 Attempting sign-in:', { email });
 
-      // Add timeout to prevent infinite loading
-      const timeoutPromise = new Promise((_, reject) =>
-        setTimeout(() => reject(new Error('Request timeout')), 30000)
-      );
-
-      const signInPromise = signIn('credentials', {
+      const result = await signIn('credentials', {
         email,
         password,
-        callbackUrl,
         redirect: false,
       });
 
-      const result = (await Promise.race([
-        signInPromise,
-        timeoutPromise,
-      ])) as any;
+      console.log('📋 Sign-in result:', result);
 
-      console.log('SignIn result:', result);
-
-      if (result && 'error' in result && result.error) {
-        console.error('Authentication failed:', result.error);
-        if (isMountedRef.current) {
-          let errorMessage = 'Invalid email or password';
-          if (result.error === 'CredentialsSignin') {
-            errorMessage = 'Invalid email or password';
-          } else if (result.error === 'AccessDenied') {
-            errorMessage = 'Access denied. Account may be inactive.';
-          } else {
-            errorMessage = `Authentication error: ${result.error}`;
-          }
-          setError(errorMessage);
-          setLoading(false);
-        }
-      } else if (result && 'ok' in result && result.ok) {
-        console.log('Authentication successful, redirecting to:', callbackUrl);
-        // Successfully authenticated, redirect manually
-        router.replace(callbackUrl);
+      if (result?.error) {
+        console.error('❌ Authentication failed:', result.error);
+        setError('Invalid email or password. Please try again.');
+        setLoading(false);
+      } else if (result?.ok) {
+        console.log('✅ Sign-in successful, waiting for session...');
+        // Don't redirect here - let the useEffect handle it after session updates
+        // The loading state will remain until session is established
       } else {
-        console.error('Unexpected authentication result:', result);
-        if (isMountedRef.current) {
-          setError(
-            'Authentication failed. Please check your credentials and try again.'
-          );
-          setLoading(false);
-        }
-      }
-    } catch (error) {
-      console.error('Login error:', error);
-      if (isMountedRef.current) {
-        let errorMessage = 'An error occurred during login. Please try again.';
-        if (error instanceof Error) {
-          if (error.message === 'Request timeout') {
-            errorMessage =
-              'Login request timed out. Please check your connection and try again.';
-          } else {
-            errorMessage = `Login failed: ${error.message}`;
-          }
-        }
-        setError(errorMessage);
+        console.error('❓ Unexpected result:', result);
+        setError('Authentication failed. Please try again.');
         setLoading(false);
       }
+    } catch (error) {
+      console.error('🚨 Sign-in error:', error);
+      setError('An error occurred during login. Please try again.');
+      setLoading(false);
     }
   };
 
@@ -282,10 +241,19 @@ function LoginForm() {
               className="group relative flex w-full justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-blue-600 dark:hover:bg-blue-700"
             >
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Sign in
+              {loading ? 'Signing in...' : 'Sign in'}
             </button>
           </div>
         </form>
+
+        {/* Test Credentials Helper for Development */}
+        {process.env.NODE_ENV === 'development' && (
+          <div className="mt-4 rounded-md bg-blue-50 p-4 dark:bg-blue-900/50">
+            <p className="text-xs text-blue-600 dark:text-blue-400">
+              Test credentials: admin@demo.com / admin123
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );

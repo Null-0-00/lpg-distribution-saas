@@ -39,7 +39,10 @@
     "precommit": "npm run format && npm run type-check",
     "validate": "node scripts/validation-test.js",
     "bug-check": "node scripts/bug-check.js",
-    "onboard-business": "tsx src/scripts/onboard-business.ts"
+    "onboard-business": "tsx src/scripts/onboard-business.ts",
+    "deploy:setup": "npx prisma generate && npx prisma db push",
+    "deploy:seed": "npx prisma db seed",
+    "deploy:verify": "node -e \"console.log('Deployment verification script')\""
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.10.0",

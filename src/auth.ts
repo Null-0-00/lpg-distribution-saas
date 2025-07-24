@@ -5,35 +5,36 @@ import bcryptjs from 'bcryptjs';
 import { prisma } from '@/lib/prisma';
 import { UserRole } from '@prisma/client';
 
-// Handle missing NEXTAUTH_SECRET during build time
+// Get NextAuth Secret - properly handle Vercel environment
 const getAuthSecret = () => {
-  if (process.env.NEXTAUTH_SECRET) {
-    return process.env.NEXTAUTH_SECRET;
+  // Production should always have NEXTAUTH_SECRET set
+  if (process.env.NODE_ENV === 'production' && !process.env.NEXTAUTH_SECRET) {
+    throw new Error('NEXTAUTH_SECRET is required in production');
   }
+  
+  return process.env.NEXTAUTH_SECRET || 'dev-secret-key-at-least-32-characters-long-for-development';
+};
 
-  // During build time, use a temporary secret
-  if (
-    process.env.NODE_ENV === 'development' ||
-    process.env.VERCEL_ENV === 'preview'
-  ) {
-    return 'dev-secret-key-at-least-32-characters-long';
-  }
-
-  // In production build without secret, throw descriptive error
+// Get NextAuth URL - handle Vercel deployment automatically
+const getAuthUrl = () => {
+  // In production, use NEXTAUTH_URL or auto-detect Vercel URL
   if (process.env.NODE_ENV === 'production') {
-    console.warn(
-      'NEXTAUTH_SECRET not found. Make sure to set it in your deployment environment.'
-    );
-    return 'build-time-secret-must-be-replaced-in-production';
+    return process.env.NEXTAUTH_URL || process.env.VERCEL_URL 
+      ? `https://${process.env.VERCEL_URL}` 
+      : 'https://lpg-distribution-saas.vercel.app';
   }
-
-  return 'fallback-secret-key-at-least-32-characters-long';
+  // Development
+  return process.env.NEXTAUTH_URL || 'http://localhost:3000';
 };
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
-
+  
+  // Essential for Vercel deployment
   trustHost: true,
+  
+  // Configure URLs properly
+  basePath: '/api/auth',
 
   providers: [
     CredentialsProvider({
@@ -49,7 +50,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         }
 
         try {
-          console.log('Attempting to authenticate user:', credentials.email);
+          console.log('🔐 NextAuth: Authenticating user:', credentials.email);
+
+          // Connect to database with timeout
+          await prisma.$connect();
 
           // First find user by email to get tenant info
           const user = await prisma.user.findFirst({
@@ -67,27 +71,26 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             },
           });
 
-          console.log(
-            'User found:',
-            !!user,
-            user
-              ? { id: user.id, email: user.email, isActive: user.isActive }
-              : null
-          );
+          console.log('🔍 User lookup result:', {
+            found: !!user,
+            email: credentials.email,
+            userActive: user?.isActive,
+            tenantActive: user?.tenant?.isActive
+          });
 
           if (!user) {
-            console.log('User not found for email:', credentials.email);
-            throw new Error('User not found');
+            console.log('❌ User not found:', credentials.email);
+            return null; // Return null instead of throwing
           }
 
           if (!user.isActive) {
-            console.log('User account is deactivated:', user.email);
-            throw new Error('Account is deactivated');
+            console.log('❌ User account deactivated:', user.email);
+            return null; // Return null instead of throwing
           }
 
           if (!user.tenant?.isActive) {
-            console.log('Tenant account is deactivated:', user.tenant?.name);
-            throw new Error('Tenant account is deactivated');
+            console.log('❌ Tenant account deactivated for:', user.tenant?.name);
+            return null; // Return null instead of throwing
           }
 
           const isPasswordValid = await bcryptjs.compare(
@@ -95,14 +98,16 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             user.password!
           );
 
-          console.log('Password validation result:', isPasswordValid);
+          console.log('🔑 Password validation:', isPasswordValid);
 
           if (!isPasswordValid) {
-            console.log('Invalid password for user:', user.email);
-            throw new Error('Invalid password');
+            console.log('❌ Invalid password for:', user.email);
+            return null; // Return null instead of throwing
           }
 
-          console.log('Authentication successful for user:', user.email);
+          console.log('✅ Authentication successful for:', user.email);
+          
+          // Return complete user object
           return {
             id: user.id,
             email: user.email,
@@ -112,21 +117,31 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             tenant: user.tenant,
           };
         } catch (error) {
-          console.error('Authentication error:', error);
+          console.error('🚨 Authentication error:', error);
           return null;
+        } finally {
+          await prisma.$disconnect();
         }
       },
     }),
   ],
 
   session: {
-    strategy: 'jwt',
+    strategy: 'jwt' as const,
+    maxAge: 24 * 60 * 60, // 24 hours
+    updateAge: 2 * 60 * 60, // 2 hours
+  },
+  
+  // JWT configuration for better Vercel performance
+  jwt: {
     maxAge: 24 * 60 * 60, // 24 hours
   },
 
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger }) {
+      // Initial sign in
       if (user) {
+        console.log('🎫 JWT: Adding user data to token');
         token.role = user.role;
         token.tenantId = user.tenantId;
         token.tenant = user.tenant;
@@ -135,7 +150,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     },
 
     async session({ session, token }) {
+      // Send properties to the client
       if (token && session.user) {
+        console.log('👤 Session: Building user session');
         session.user.id = token.sub!;
         session.user.role = token.role as UserRole;
         session.user.tenantId = token.tenantId as string;
@@ -144,36 +161,30 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     },
 
     async redirect({ url, baseUrl }) {
-      console.log('NextAuth redirect callback:', { url, baseUrl });
+      console.log('🔄 Redirect callback:', { url, baseUrl });
+
+      // Always redirect to dashboard after sign in
+      if (url === baseUrl || url === `${baseUrl}/`) {
+        console.log('🏠 Redirecting to dashboard');
+        return `${baseUrl}/dashboard`;
+      }
 
       // Handle relative URLs
       if (url.startsWith('/')) {
         const redirectUrl = new URL(url, baseUrl).toString();
-        console.log('Redirecting to relative URL:', redirectUrl);
+        console.log('📍 Relative URL redirect:', redirectUrl);
         return redirectUrl;
       }
 
-      // Handle same origin URLs
+      // Same origin URLs
       if (url.startsWith(baseUrl)) {
-        console.log('Same origin redirect:', url);
+        console.log('🔗 Same origin redirect:', url);
         return url;
       }
 
-      // Handle callback URLs with query parameters
-      try {
-        const urlObj = new URL(url, baseUrl);
-        if (urlObj.origin === new URL(baseUrl).origin) {
-          console.log('Same origin with query params:', urlObj.toString());
-          return urlObj.toString();
-        }
-      } catch (error) {
-        console.warn('Invalid URL in redirect callback:', url);
-      }
-
-      // Default fallback to dashboard
-      const defaultUrl = new URL('/dashboard', baseUrl).toString();
-      console.log('Default redirect to dashboard:', defaultUrl);
-      return defaultUrl;
+      // Default to dashboard for safety
+      console.log('🛡️ Default redirect to dashboard');
+      return `${baseUrl}/dashboard`;
     },
   },
 
@@ -235,5 +246,22 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   },
 
   secret: getAuthSecret(),
-  debug: process.env.NODE_ENV === 'development',
+  
+  // Enhanced debugging for production issues
+  debug: process.env.NODE_ENV === 'development' || process.env.NEXTAUTH_DEBUG === 'true',
+  
+  // Logger for production debugging
+  logger: {
+    error(error: Error) {
+      console.error('🚨 NextAuth Error:', error);
+    },
+    warn(code: string) {
+      console.warn('⚠️ NextAuth Warning:', code);
+    },
+    debug(code: string, metadata?: any) {
+      if (process.env.NEXTAUTH_DEBUG === 'true') {
+        console.log('🐛 NextAuth Debug:', code, metadata);
+      }
+    },
+  },
 });

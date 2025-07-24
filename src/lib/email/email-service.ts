@@ -1,9 +1,4 @@
-import {
-  DailySales,
-  Driver,
-  Product,
-  Company,
-} from '@prisma/client';
+import { DailySales, Driver, Product, Company } from '@prisma/client';
 
 export interface MonthlyReportData {
   company: Company;

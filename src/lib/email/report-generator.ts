@@ -119,7 +119,9 @@ export class ReportGenerator {
     // Get driver details and format data
     const topDriversData = await Promise.all(
       driverSales
-        .sort((a, b) => ((b._count as any)?.id || 0) - ((a._count as any)?.id || 0))
+        .sort(
+          (a, b) => ((b._count as any)?.id || 0) - ((a._count as any)?.id || 0)
+        )
         .slice(0, 5)
         .map(async (driverSale) => {
           const driver = await prisma.driver.findUnique({
@@ -129,7 +131,9 @@ export class ReportGenerator {
           return {
             driver: driver!,
             totalSales: (driverSale._count as any)?.id || 0,
-            totalRevenue: ((driverSale._sum as any)?.packageSales || 0) + ((driverSale._sum as any)?.refillSales || 0),
+            totalRevenue:
+              ((driverSale._sum as any)?.packageSales || 0) +
+              ((driverSale._sum as any)?.refillSales || 0),
           };
         })
     );
@@ -147,9 +151,11 @@ export class ReportGenerator {
     // Get products for each inventory record
     const inventoryWithProducts = await Promise.all(
       inventoryData.map(async (inventory) => {
-        const product = inventory.productId ? await prisma.product.findUnique({
-          where: { id: inventory.productId }
-        }) : null;
+        const product = inventory.productId
+          ? await prisma.product.findUnique({
+              where: { id: inventory.productId },
+            })
+          : null;
         return { ...inventory, product };
       })
     );

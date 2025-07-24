@@ -25,7 +25,9 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
   submitLabel,
   isSubmitting,
 }) => {
-  const [formData, setFormData] = useState<ExpenseFormData & { parentCategoryId: string }>({
+  const [formData, setFormData] = useState<
+    ExpenseFormData & { parentCategoryId: string }
+  >({
     amount: 0,
     description: '',
     parentCategoryId: '',
@@ -200,7 +202,10 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
             <select
               value={formData.parentCategoryId}
               onChange={(e) =>
-                handleInputChange('parentCategoryId' as keyof ExpenseFormData, e.target.value)
+                handleInputChange(
+                  'parentCategoryId' as keyof ExpenseFormData,
+                  e.target.value
+                )
               }
               className={`w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white ${
                 errors.parentCategoryId

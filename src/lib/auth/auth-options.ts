@@ -1,4 +1,4 @@
-import { NextAuthOptions } from 'next-auth';
+import type { NextAuthConfig } from 'next-auth';
 import { PrismaAdapter } from '@auth/prisma-adapter';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import bcryptjs from 'bcryptjs';
@@ -6,7 +6,7 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-export const authOptions: NextAuthOptions = {
+export const authOptions: NextAuthConfig = {
   adapter: PrismaAdapter(prisma) as any,
 
   providers: [
@@ -52,8 +52,8 @@ export const authOptions: NextAuthOptions = {
           }
 
           const isPasswordValid = await bcryptjs.compare(
-            credentials.password,
-            user.password
+            credentials.password as string,
+            user.password as string
           );
 
           if (!isPasswordValid) {
@@ -82,7 +82,7 @@ export const authOptions: NextAuthOptions = {
   },
 
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user }: { token: any; user: any }) {
       if (user) {
         token.role = user.role;
         token.tenantId = user.tenantId;
@@ -91,7 +91,7 @@ export const authOptions: NextAuthOptions = {
       return token;
     },
 
-    async session({ session, token }) {
+    async session({ session, token }: { session: any; token: any }) {
       if (token) {
         session.user.id = token.sub!;
         session.user.role = token.role as string;
@@ -109,7 +109,8 @@ export const authOptions: NextAuthOptions = {
   },
 
   events: {
-    async signIn({ user, account, profile }) {
+    async signIn(message: any) {
+      const { user, account, profile } = message;
       console.log('User signed in');
 
       // Log the sign-in event
@@ -121,7 +122,7 @@ export const authOptions: NextAuthOptions = {
             action: 'USER_SIGN_IN',
             entityType: 'USER',
             entityId: user.id,
-            changes: {
+            metadata: {
               email: user.email,
               timestamp: new Date().toISOString(),
             },
@@ -132,7 +133,8 @@ export const authOptions: NextAuthOptions = {
       }
     },
 
-    async signOut({ session, token }) {
+    async signOut(message: any) {
+      const { session, token } = message || {};
       console.log('User signed out');
 
       // Log the sign-out event
@@ -145,7 +147,7 @@ export const authOptions: NextAuthOptions = {
               action: 'USER_SIGN_OUT',
               entityType: 'USER',
               entityId: session.user.id,
-              changes: {
+              metadata: {
                 email: session.user.email,
                 timestamp: new Date().toISOString(),
               },

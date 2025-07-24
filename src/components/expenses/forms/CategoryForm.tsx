@@ -31,7 +31,7 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({
     name: '',
     description: '',
     parentId: '',
-    budget: null,
+    budget: undefined,
     isParent: false,
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -47,7 +47,7 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({
         name: editingCategory.name,
         description: editingCategory.description || '',
         parentId: editingCategory.parentId || '',
-        budget: editingCategory.budget,
+        budget: editingCategory.budget || undefined,
         isParent: false,
       });
     }
@@ -63,7 +63,7 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({
         const newErrors: Record<string, string> = {};
         error.issues.forEach((err) => {
           if (err.path.length > 0) {
-            newErrors[err.path[0]] = err.message;
+            newErrors[err.path[0] as string] = err.message;
           }
         });
         setErrors(newErrors);
@@ -92,7 +92,7 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({
       name: '',
       description: '',
       parentId: '',
-      budget: null,
+      budget: undefined,
       isParent: false,
     });
     setErrors({});
@@ -121,7 +121,7 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({
       setFormData((prev) => ({
         ...prev,
         parentId: '',
-        budget: null,
+        budget: undefined,
       }));
     }
   };

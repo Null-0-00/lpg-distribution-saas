@@ -277,15 +277,15 @@ export class PushNotificationManager {
         body: payload.body,
         icon: payload.icon || '/images/icons/icon-192x192.png',
         badge: payload.badge || '/images/icons/badge-72x72.png',
-        image: payload.image,
+        // image: payload.image, // Not supported in NotificationOptions
         data: payload.data || {},
-        actions: payload.actions || [],
+        // actions: payload.actions || [], // Not supported in NotificationOptions
         requireInteraction: payload.requireInteraction || false,
         silent: payload.silent || false,
         tag: payload.tag,
-        renotify: payload.renotify || false,
-        timestamp: payload.timestamp || Date.now(),
-        vibrate: payload.vibrate || [200, 100, 200],
+        // renotify: payload.renotify || false, // Not supported in NotificationOptions
+        // timestamp: payload.timestamp || Date.now(), // Not supported in NotificationOptions
+        // vibrate: payload.vibrate || [200, 100, 200], // Not supported in NotificationOptions
       });
 
       return true;

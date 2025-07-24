@@ -46,8 +46,8 @@ export class AuditLogger {
             ...requestMetadata,
             ...data.metadata,
           },
-          ipAddress: requestMetadata.ipAddress,
-          userAgent: requestMetadata.userAgent,
+          ipAddress: (requestMetadata as any).ipAddress,
+          userAgent: (requestMetadata as any).userAgent,
         },
       });
     } catch (error) {

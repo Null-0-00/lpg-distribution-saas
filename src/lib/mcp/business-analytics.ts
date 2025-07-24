@@ -219,7 +219,7 @@ export class MCPBusinessAnalytics extends SequentialThinkingProcessor {
       Revenue: revenueRatio,
     };
     return Object.entries(ratios).reduce((a, b) =>
-      ratios[a[0]] > ratios[b[0]] ? a : b
+      ratios[a[0] as keyof typeof ratios] > ratios[b[0] as keyof typeof ratios] ? a : b
     )[0];
   }
 
@@ -234,7 +234,7 @@ export class MCPBusinessAnalytics extends SequentialThinkingProcessor {
       Revenue: revenueRatio,
     };
     return Object.entries(ratios).reduce((a, b) =>
-      ratios[a[0]] < ratios[b[0]] ? a : b
+      ratios[a[0] as keyof typeof ratios] < ratios[b[0] as keyof typeof ratios] ? a : b
     )[0];
   }
 

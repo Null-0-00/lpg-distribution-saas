@@ -25,7 +25,7 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
   submitLabel,
   isSubmitting,
 }) => {
-  const [formData, setFormData] = useState<ExpenseFormData>({
+  const [formData, setFormData] = useState<ExpenseFormData & { parentCategoryId: string }>({
     amount: 0,
     description: '',
     parentCategoryId: '',
@@ -42,7 +42,7 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
       setFormData((prev) => ({
         ...prev,
         ...initialData,
-        parentCategoryId: initialData.parentCategoryId || '',
+        parentCategoryId: (initialData as any).parentCategoryId || '',
       }));
     }
   }, [initialData]);
@@ -68,7 +68,7 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
         const newErrors: Record<string, string> = {};
         error.issues.forEach((err) => {
           if (err.path.length > 0) {
-            newErrors[err.path[0]] = err.message;
+            newErrors[err.path[0] as string] = err.message;
           }
         });
         setErrors(newErrors);
@@ -96,6 +96,7 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
     setFormData({
       amount: 0,
       description: '',
+      parentCategoryId: '',
       categoryId: '',
       expenseDate: '',
       receiptUrl: '',
@@ -199,7 +200,7 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
             <select
               value={formData.parentCategoryId}
               onChange={(e) =>
-                handleInputChange('parentCategoryId', e.target.value)
+                handleInputChange('parentCategoryId' as keyof ExpenseFormData, e.target.value)
               }
               className={`w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white ${
                 errors.parentCategoryId

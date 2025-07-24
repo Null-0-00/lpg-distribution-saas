@@ -389,7 +389,7 @@ export async function POST(request: NextRequest) {
       vehicleNumber,
       notes:
         isEmptyTransaction && cylinderSizeId && cylinderSize
-          ? `Empty Cylinder Transaction - Size: ${cylinderSize.size}. ${notes || ''}`
+          ? `Empty Cylinder Transaction - Size: ${(cylinderSize as any).size}. ${notes || ''}`
           : notes,
     };
 

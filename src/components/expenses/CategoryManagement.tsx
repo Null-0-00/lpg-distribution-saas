@@ -202,7 +202,7 @@ export const CategoryManagement: React.FC<CategoryManagementProps> = ({
                                 </div>
                               </td>
                               <td className="border border-gray-200 px-4 py-2 text-sm text-gray-600 dark:border-gray-600 dark:text-gray-400">
-                                {getParentName(category.parentId)}
+                                {getParentName(category.parentId || null)}
                               </td>
                               <td className="border border-gray-200 px-4 py-2 text-sm text-gray-600 dark:border-gray-600 dark:text-gray-400">
                                 {category.budget

@@ -141,7 +141,7 @@ export class OfflineStorageManager {
       const transaction = this.db!.transaction(['offline'], 'readonly');
       const store = transaction.objectStore('offline');
       const index = store.index('synced');
-      const request = index.getAll(false);
+      const request = index.getAll(IDBKeyRange.only(false));
 
       request.onsuccess = () => {
         let data = request.result as OfflineData[];

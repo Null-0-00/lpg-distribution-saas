@@ -72,7 +72,7 @@ export async function POST(request: NextRequest) {
       where: {
         tenantId_productId_month_year_costType: {
           tenantId: session.user.tenantId,
-          productId: validatedData.productId,
+          productId: validatedData.productId!,
           month: validatedData.month,
           year: validatedData.year,
           costType: validatedData.costType,

@@ -119,8 +119,8 @@ export async function GET(request: NextRequest) {
 
     if (dateFrom || dateTo) {
       where.expenseDate = {};
-      if (dateFrom) where.expenseDate.gte = new Date(dateFrom);
-      if (dateTo) where.expenseDate.lte = new Date(dateTo + 'T23:59:59.999Z');
+      if (dateFrom) (where.expenseDate as any).gte = new Date(dateFrom as string);
+      if (dateTo) (where.expenseDate as any).lte = new Date(dateTo as string + 'T23:59:59.999Z');
     }
 
     if (search) {
@@ -367,7 +367,7 @@ export async function POST(request: NextRequest) {
         : null,
     });
   } catch (error) {
-    console.error('Expense creation error type:', error.constructor.name);
+    console.error('Expense creation error type:', (error as Error).constructor.name);
     console.error('Expense creation error:', error);
 
     if (error instanceof z.ZodError) {

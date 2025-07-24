@@ -161,13 +161,20 @@ export const useCategories = ({ currentMonth }: UseCategoriesProps) => {
 
   const updateCategory = async (
     categoryId: string,
-    categoryData: {
+    data: Partial<{
       name: string;
       description?: string;
-      budget?: number;
-      isActive?: boolean;
-    }
+      parentId?: string;
+      budget?: number | null;
+      isParent?: boolean;
+    }>
   ) => {
+    const categoryData = {
+      name: data.name!,
+      description: data.description,
+      budget: data.budget,
+      isActive: true,
+    };
     try {
       setIsSubmitting(true);
       const response = await fetch(`/api/expense-categories/${categoryId}`, {

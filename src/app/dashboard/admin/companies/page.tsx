@@ -185,8 +185,8 @@ export default function AdminCompaniesPage() {
     } else {
       // Add new company
       const newCompany: Company = {
-        id: Date.now().toString(),
         ...(companyData as Company),
+        id: Date.now().toString(),
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };

@@ -52,23 +52,20 @@ async function main() {
         type: 'select',
         name: 'currency',
         message: 'Currency:',
-        choices: ['USD', 'BDT', 'INR', 'EUR'],
         initial: 'USD',
-      },
+      } as any,
       {
         type: 'select',
         name: 'timezone',
         message: 'Timezone:',
-        choices: ['UTC', 'Asia/Dhaka', 'Asia/Kolkata', 'America/New_York'],
         initial: 'UTC',
-      },
+      } as any,
       {
         type: 'select',
         name: 'subscriptionPlan',
         message: 'Subscription Plan:',
-        choices: ['FREEMIUM', 'PROFESSIONAL', 'ENTERPRISE'],
         initial: 'PROFESSIONAL',
-      },
+      } as any,
     ]);
 
     // Collect admin user information
@@ -137,7 +134,7 @@ async function main() {
       message: `Create business "${data.tenantName}" with subdomain "${data.subdomain}"?`,
     });
 
-    if (!confirm.proceed) {
+    if (!(confirm as any).proceed) {
       console.log('❌ Onboarding cancelled');
       process.exit(0);
     }

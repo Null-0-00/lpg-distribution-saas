@@ -42,9 +42,9 @@ export async function GET(request: NextRequest) {
     if (
       false &&
       cachedData &&
-      Date.now() - cachedData.timestamp < CACHE_DURATION
+      Date.now() - cachedData!.timestamp < CACHE_DURATION
     ) {
-      return NextResponse.json(cachedData.data, { headers });
+      return NextResponse.json(cachedData!.data, { headers });
     }
 
     const where: any = { tenantId };

@@ -1,6 +1,5 @@
 import {
   DailySales,
-  MonthlyInventory,
   Driver,
   Product,
   Company,

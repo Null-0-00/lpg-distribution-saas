@@ -66,15 +66,15 @@ export class ReportGenerator {
 
     const totalSales = salesData.length;
     const totalRevenue = salesData.reduce(
-      (sum, sale) => sum + sale.netValue,
+      (sum, sale) => sum + ((sale as any).netValue || 0),
       0
     );
     const totalQuantity = salesData.reduce(
-      (sum, sale) => sum + sale.quantity,
+      (sum, sale) => sum + ((sale as any).quantity || 0),
       0
     );
     const totalCashCollected = salesData.reduce(
-      (sum, sale) => sum + sale.cashDeposited,
+      (sum, sale) => sum + (sale.cashDeposits || 0),
       0
     );
 
@@ -111,14 +111,15 @@ export class ReportGenerator {
         id: true,
       },
       _sum: {
-        netValue: true,
+        packageSales: true,
+        refillSales: true,
       },
     });
 
     // Get driver details and format data
     const topDriversData = await Promise.all(
       driverSales
-        .sort((a, b) => (b._count.id || 0) - (a._count.id || 0))
+        .sort((a, b) => ((b._count as any)?.id || 0) - ((a._count as any)?.id || 0))
         .slice(0, 5)
         .map(async (driverSale) => {
           const driver = await prisma.driver.findUnique({
@@ -127,8 +128,8 @@ export class ReportGenerator {
 
           return {
             driver: driver!,
-            totalSales: driverSale._count.id || 0,
-            totalRevenue: driverSale._sum.netRevenue || 0,
+            totalSales: (driverSale._count as any)?.id || 0,
+            totalRevenue: ((driverSale._sum as any)?.packageSales || 0) + ((driverSale._sum as any)?.refillSales || 0),
           };
         })
     );
@@ -143,8 +144,18 @@ export class ReportGenerator {
       take: 10, // Get recent records for each product
     });
 
-    const currentStock = inventoryData.map((inventory) => ({
-      productId: inventory.productId,
+    // Get products for each inventory record
+    const inventoryWithProducts = await Promise.all(
+      inventoryData.map(async (inventory) => {
+        const product = inventory.productId ? await prisma.product.findUnique({
+          where: { id: inventory.productId }
+        }) : null;
+        return { ...inventory, product };
+      })
+    );
+
+    const currentStock = inventoryWithProducts.map((inventory) => ({
+      product: inventory.product!,
       fullCylinders: inventory.fullCylinders,
       emptyCylinders: inventory.emptyCylinders,
     }));
@@ -251,7 +262,7 @@ export async function generateAndEmailMonthlyReports() {
           tenantId: company.id,
           role: 'ADMIN',
           isActive: true,
-          email: { not: null },
+          email: { not: undefined },
         },
       });
 

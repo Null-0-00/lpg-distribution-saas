@@ -147,7 +147,7 @@ async function generateSummaryReport(
       averageAmount: expense._avg.amount || 0,
       budgetUtilization: categoryMap[expense.categoryId]?.budget
         ? ((expense._sum.amount || 0) /
-            categoryMap[expense.categoryId].budget) *
+            categoryMap[expense.categoryId]!.budget!) *
           100
         : null,
     }))

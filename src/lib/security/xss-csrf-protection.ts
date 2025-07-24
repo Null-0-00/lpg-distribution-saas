@@ -388,10 +388,10 @@ export class CSRFProtection {
       'csrf_tokens',
       token,
       {
-        sessionId,
         signature,
         expiresAt: expiresAt.toISOString(),
         ...tokenData,
+        sessionId,
       },
       this.config.csrfTokenExpiry
     );

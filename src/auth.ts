@@ -3,6 +3,7 @@ import { PrismaAdapter } from '@auth/prisma-adapter';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import bcryptjs from 'bcryptjs';
 import { prisma } from '@/lib/prisma';
+import { UserRole } from '@prisma/client';
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
@@ -51,7 +52,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
           const isPasswordValid = await bcryptjs.compare(
             credentials.password as string,
-            user.password
+            user.password!
           );
 
           if (!isPasswordValid) {
@@ -84,7 +85,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (user) {
         token.role = user.role;
         token.tenantId = user.tenantId;
-        token.tenant = user.tenant;
+        token.tenant = user.tenantId;
       }
       return token;
     },
@@ -92,9 +93,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     async session({ session, token }) {
       if (token && session.user) {
         session.user.id = token.sub!;
-        session.user.role = token.role as string;
+        session.user.role = token.role as UserRole;
         session.user.tenantId = token.tenantId as string;
-        session.user.tenant = token.tenant as any;
+        session.user.tenantId = token.tenantId as string;
       }
       return session;
     },
@@ -130,7 +131,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       }
     },
 
-    async signOut({ session, token }) {
+    async signOut(props: { session?: any; token?: any }) {
+      const { session, token } = props;
       console.log('User signed out');
 
       // Log the sign-out event
@@ -143,7 +145,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
               action: 'USER_SIGN_OUT',
               entityType: 'USER',
               entityId: session.user.id,
-              changes: {
+              metadata: {
                 email: session.user.email,
                 timestamp: new Date().toISOString(),
               },

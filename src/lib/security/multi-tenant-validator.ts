@@ -527,7 +527,7 @@ export class MultiTenantValidator {
           ipAddress: event.ipAddress,
           userAgent: event.userAgent,
           success: event.success,
-          details: event.details ? JSON.stringify(event.details) : null,
+          details: event.details ? JSON.stringify(event.details) : undefined,
         },
       });
 
@@ -548,7 +548,7 @@ export class MultiTenantValidator {
     return (
       request.headers.get('x-forwarded-for')?.split(',')[0] ||
       request.headers.get('x-real-ip') ||
-      request.ip ||
+      (request as any).ip ||
       'unknown'
     );
   }
@@ -576,7 +576,7 @@ export class MultiTenantValidator {
   private calculateSecurityScore(vulnerabilities: any[]): number {
     const weights = { critical: 40, high: 20, medium: 10, low: 5 };
     const totalDeductions = vulnerabilities.reduce(
-      (sum, vuln) => sum + (weights[vuln.severity] || 0),
+      (sum, vuln) => sum + (weights[vuln.severity as keyof typeof weights] || 0),
       0
     );
     return Math.max(0, 100 - totalDeductions);

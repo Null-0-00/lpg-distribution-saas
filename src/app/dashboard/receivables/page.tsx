@@ -887,10 +887,7 @@ export default function ReceivablesPage() {
                         {driver.driverName}
                       </h3>
                       {driver.hasValidationError && (
-                        <AlertCircle
-                          className="ml-2 h-5 w-5 text-red-500"
-                          title="Receivables totals don't match"
-                        />
+                        <AlertCircle className="ml-2 h-5 w-5 text-red-500" />
                       )}
                     </div>
                     <div className="flex items-center space-x-6">
@@ -1169,7 +1166,7 @@ export default function ReceivablesPage() {
                                     {customer.quantity}
                                   </td>
                                   <td className="text-foreground whitespace-nowrap px-4 py-4 text-sm">
-                                    {customer.size || '-'}
+                                    {(customer as any).size || '-'}
                                   </td>
                                   <td className="text-foreground whitespace-nowrap px-4 py-4 text-sm">
                                     {formatDate(customer.dueDate)}

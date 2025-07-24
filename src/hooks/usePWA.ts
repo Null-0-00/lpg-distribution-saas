@@ -122,7 +122,7 @@ export function usePWA(): PWAHookReturn {
     checkInstalled();
     checkServiceWorker();
 
-    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt as EventListener);
     window.addEventListener('appinstalled', handleAppInstalled);
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
@@ -135,7 +135,7 @@ export function usePWA(): PWAHookReturn {
     return () => {
       window.removeEventListener(
         'beforeinstallprompt',
-        handleBeforeInstallPrompt
+        handleBeforeInstallPrompt as EventListener
       );
       window.removeEventListener('appinstalled', handleAppInstalled);
       window.removeEventListener('online', handleOnline);

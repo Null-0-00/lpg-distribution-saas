@@ -15,7 +15,7 @@ import {
   Smartphone,
   Bell,
   Database,
-  Sync,
+  RefreshCw,
   Download,
   AlertTriangle,
   Play,
@@ -623,7 +623,7 @@ export function MobileTestSuite() {
       case 'PWA Installation':
         return <Download className="h-5 w-5" />;
       case 'Service Worker':
-        return <Sync className="h-5 w-5" />;
+        return <RefreshCw className="h-5 w-5" />;
       case 'Offline Storage':
         return <Database className="h-5 w-5" />;
       case 'Push Notifications':

@@ -26,8 +26,7 @@ export const categorySchema = z.object({
   budget: z
     .number()
     .positive('Budget must be greater than 0')
-    .optional()
-    .or(z.literal(null)),
+    .optional(),
   isParent: z.boolean().optional(),
 });
 

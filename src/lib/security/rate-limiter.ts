@@ -194,7 +194,7 @@ export function getClientIP(request: NextRequest): string {
   }
 
   // Fallback to request IP
-  return request.ip || '127.0.0.1';
+  return (request as any).ip || '127.0.0.1';
 }
 
 /**

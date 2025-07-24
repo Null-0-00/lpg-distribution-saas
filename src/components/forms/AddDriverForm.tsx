@@ -58,10 +58,10 @@ const driverFormSchema = z.object({
     .optional()
     .or(z.literal('')),
   status: z.enum(['ACTIVE', 'INACTIVE'], {
-    required_error: 'Status is required',
+    message: 'Status is required',
   }),
   driverType: z.enum(['RETAIL', 'SHIPMENT'], {
-    required_error: 'Driver type is required',
+    message: 'Driver type is required',
   }),
   notes: z.string().optional(),
 });

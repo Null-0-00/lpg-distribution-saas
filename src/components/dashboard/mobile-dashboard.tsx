@@ -282,7 +282,7 @@ export function MobileDashboard({ data, liveMetrics }: MobileDashboardProps) {
 
           <div className="grid grid-cols-1 gap-3">
             <Drawer>
-              <DrawerTrigger asChild>
+              <DrawerTrigger>
                 <Card className="cursor-pointer touch-manipulation transition-transform active:scale-95">
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between">
@@ -340,7 +340,7 @@ export function MobileDashboard({ data, liveMetrics }: MobileDashboardProps) {
             </Drawer>
 
             <Drawer>
-              <DrawerTrigger asChild>
+              <DrawerTrigger>
                 <Card className="cursor-pointer touch-manipulation transition-transform active:scale-95">
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between">

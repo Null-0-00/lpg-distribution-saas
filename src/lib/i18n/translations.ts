@@ -630,7 +630,6 @@ const englishTranslations: Translations = {
   currentStockHealth: 'Current Stock Health',
   productsInGoodStock: 'products in good stock',
   producentsWithLowStockWarning: 'products with low stock warning',
-  productsWithLowStockWarning: 'products with low stock warning',
   productsInCriticalStock: 'products in critical stock',
 
   // Dashboard and reports
@@ -1020,7 +1019,6 @@ const bengaliTranslations: Translations = {
   currentStockHealth: 'বর্তমান স্টকের অবস্থা',
   productsInGoodStock: 'ভাল স্টকে পণ্য',
   producentsWithLowStockWarning: 'কম স্টক সতর্কতা সহ পণ্য',
-  productsWithLowStockWarning: 'কম স্টক সতর্কতা সহ পণ্য',
   productsInCriticalStock: 'গুরুতর স্টকে পণ্য',
 
   // Dashboard and reports

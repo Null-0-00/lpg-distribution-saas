@@ -787,7 +787,7 @@ export default function InventoryPage() {
               {inventoryData.summary.stockHealth.warning}
             </div>
             <div className="text-muted-foreground text-sm">
-              {t('productsWithLowStockWarning')}
+              {t('producentsWithLowStockWarning')}
             </div>
           </div>
           <div className="text-center">

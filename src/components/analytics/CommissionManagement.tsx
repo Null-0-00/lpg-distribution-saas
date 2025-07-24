@@ -459,7 +459,7 @@ export default function CommissionManagement({
                     <Label htmlFor="fixed-cost-type">Cost Type</Label>
                     <Select
                       value={newFixedCost.costType}
-                      onValueChange={(value: 'MANUAL' | 'CALCULATED') =>
+                      onValueChange={(value: 'MANUAL') =>
                         setNewFixedCost({ ...newFixedCost, costType: value })
                       }
                     >

@@ -141,9 +141,7 @@ export const MobileInput = React.forwardRef<HTMLInputElement, MobileInputProps>(
     ref
   ) => {
     const [isListening, setIsListening] = useState(false);
-    const [recognition, setRecognition] = useState<SpeechRecognition | null>(
-      null
-    );
+    const [recognition, setRecognition] = useState<any>(null);
 
     useEffect(() => {
       if (voiceInput && 'webkitSpeechRecognition' in window) {
@@ -434,9 +432,7 @@ export const MobileTextarea = React.forwardRef<
     ref
   ) => {
     const [isListening, setIsListening] = useState(false);
-    const [recognition, setRecognition] = useState<SpeechRecognition | null>(
-      null
-    );
+    const [recognition, setRecognition] = useState<any>(null);
 
     useEffect(() => {
       if (voiceInput && 'webkitSpeechRecognition' in window) {

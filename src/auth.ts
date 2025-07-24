@@ -49,6 +49,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         }
 
         try {
+          console.log('Attempting to authenticate user:', credentials.email);
+
           // First find user by email to get tenant info
           const user = await prisma.user.findFirst({
             where: {
@@ -65,15 +67,26 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             },
           });
 
+          console.log(
+            'User found:',
+            !!user,
+            user
+              ? { id: user.id, email: user.email, isActive: user.isActive }
+              : null
+          );
+
           if (!user) {
+            console.log('User not found for email:', credentials.email);
             throw new Error('User not found');
           }
 
           if (!user.isActive) {
+            console.log('User account is deactivated:', user.email);
             throw new Error('Account is deactivated');
           }
 
           if (!user.tenant?.isActive) {
+            console.log('Tenant account is deactivated:', user.tenant?.name);
             throw new Error('Tenant account is deactivated');
           }
 
@@ -82,10 +95,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             user.password!
           );
 
+          console.log('Password validation result:', isPasswordValid);
+
           if (!isPasswordValid) {
+            console.log('Invalid password for user:', user.email);
             throw new Error('Invalid password');
           }
 
+          console.log('Authentication successful for user:', user.email);
           return {
             id: user.id,
             email: user.email,

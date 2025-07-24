@@ -96,38 +96,68 @@ function LoginForm() {
 
     try {
       const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
+      console.log('🔑 Attempting sign-in with:', { email, callbackUrl });
+      console.log('🌐 Current environment:', {
+        NODE_ENV: process.env.NODE_ENV,
+        hostname: window.location.hostname,
+      });
 
-      // Use redirect: false to handle the response manually
-      const result = await signIn('credentials', {
+      // Add timeout to prevent infinite loading
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Request timeout')), 30000)
+      );
+
+      const signInPromise = signIn('credentials', {
         email,
         password,
         callbackUrl,
         redirect: false,
       });
 
+      const result = await Promise.race([signInPromise, timeoutPromise]) as any;
+
       console.log('SignIn result:', result);
 
-      if (result?.error) {
+      if (result && 'error' in result && result.error) {
         console.error('Authentication failed:', result.error);
         if (isMountedRef.current) {
-          setError('Invalid email or password');
+          let errorMessage = 'Invalid email or password';
+          if (result.error === 'CredentialsSignin') {
+            errorMessage = 'Invalid email or password';
+          } else if (result.error === 'AccessDenied') {
+            errorMessage = 'Access denied. Account may be inactive.';
+          } else {
+            errorMessage = `Authentication error: ${result.error}`;
+          }
+          setError(errorMessage);
           setLoading(false);
         }
-      } else if (result?.ok) {
+      } else if (result && 'ok' in result && result.ok) {
         console.log('Authentication successful, redirecting to:', callbackUrl);
         // Successfully authenticated, redirect manually
         router.replace(callbackUrl);
       } else {
         console.error('Unexpected authentication result:', result);
         if (isMountedRef.current) {
-          setError('Authentication failed. Please try again.');
+          setError(
+            'Authentication failed. Please check your credentials and try again.'
+          );
           setLoading(false);
         }
       }
     } catch (error) {
       console.error('Login error:', error);
       if (isMountedRef.current) {
-        setError('An error occurred during login. Please try again.');
+        let errorMessage = 'An error occurred during login. Please try again.';
+        if (error instanceof Error) {
+          if (error.message === 'Request timeout') {
+            errorMessage =
+              'Login request timed out. Please check your connection and try again.';
+          } else {
+            errorMessage = `Login failed: ${error.message}`;
+          }
+        }
+        setError(errorMessage);
         setLoading(false);
       }
     }

@@ -17,21 +17,8 @@ const CACHE_STRATEGIES = {
   CACHE_ONLY: 'cache-only',
 };
 
-// Static assets to cache immediately
-const STATIC_ASSETS = [
-  '/',
-  '/manifest.json',
-  '/offline',
-  '/dashboard',
-  '/sales',
-  '/inventory',
-  '/drivers',
-  '/_next/static/css/',
-  '/_next/static/js/',
-  '/images/icons/icon-192x192.png',
-  '/images/icons/icon-512x512.png',
-  '/images/logo.png',
-];
+// Static assets to cache immediately (only existing ones)
+const STATIC_ASSETS = ['/', '/manifest.json'];
 
 // API endpoints to cache with different strategies
 const API_CACHE_PATTERNS = [
@@ -82,11 +69,21 @@ self.addEventListener('install', (event) => {
 
   event.waitUntil(
     Promise.all([
-      // Cache static assets
+      // Cache static assets safely
       caches.open(STATIC_CACHE_NAME).then((cache) => {
         console.log('Service Worker: Caching static assets');
-        return cache.addAll(
-          STATIC_ASSETS.filter((url) => !url.includes('_next'))
+        return Promise.all(
+          STATIC_ASSETS.map((url) =>
+            fetch(url)
+              .then((response) => {
+                if (response.ok) {
+                  return cache.put(url, response);
+                }
+              })
+              .catch((error) => {
+                console.log('Failed to cache:', url, error);
+              })
+          )
         );
       }),
 

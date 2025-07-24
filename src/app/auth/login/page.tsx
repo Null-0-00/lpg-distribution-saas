@@ -42,6 +42,8 @@ function LoginForm() {
     }
 
     try {
+      const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
+
       const result = await signIn('credentials', {
         email,
         password,
@@ -51,7 +53,7 @@ function LoginForm() {
       if (result?.error) {
         setError('Invalid email or password');
       } else if (result?.ok) {
-        router.push('/dashboard');
+        router.push(callbackUrl);
       }
     } catch (error) {
       console.error('Login error:', error);

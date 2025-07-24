@@ -110,7 +110,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (user) {
         token.role = user.role;
         token.tenantId = user.tenantId;
-        token.tenant = user.tenantId;
+        token.tenant = user.tenant;
       }
       return token;
     },

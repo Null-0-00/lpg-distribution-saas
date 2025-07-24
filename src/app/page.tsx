@@ -1,7 +1,14 @@
 import Link from 'next/link';
 import { APP_CONFIG } from '@/lib/utils/constants';
+import { auth } from '@/auth';
+import { redirect } from 'next/navigation';
 
-export default function Home() {
+export default async function Home() {
+  const session = await auth();
+
+  if (session) {
+    redirect('/dashboard');
+  }
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
       <div className="container mx-auto px-4 py-16">

@@ -24,86 +24,86 @@ spec:
         runAsGroup: 999
         fsGroup: 999
       containers:
-      - name: postgresql
-        image: postgres:15-alpine
-        env:
-        - name: POSTGRES_DB
-          value: lpg_distributor_prod
-        - name: POSTGRES_USER
-          valueFrom:
-            secretKeyRef:
-              name: postgresql-secrets
-              key: username
-        - name: POSTGRES_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: postgresql-secrets
-              key: password
-        - name: PGDATA
-          value: /var/lib/postgresql/data/pgdata
-        ports:
-        - containerPort: 5432
-          name: postgresql
+        - name: postgresql
+          image: postgres:15-alpine
+          env:
+            - name: POSTGRES_DB
+              value: lpg_distributor_prod
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: postgresql-secrets
+                  key: username
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgresql-secrets
+                  key: password
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
+          ports:
+            - containerPort: 5432
+              name: postgresql
+          resources:
+            requests:
+              memory: '1Gi'
+              cpu: '500m'
+            limits:
+              memory: '2Gi'
+              cpu: '1000m'
+          livenessProbe:
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - exec pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB" -h 127.0.0.1 -p 5432
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 6
+          readinessProbe:
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - exec pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB" -h 127.0.0.1 -p 5432
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 6
+          volumeMounts:
+            - name: postgresql-storage
+              mountPath: /var/lib/postgresql/data
+            - name: postgresql-config
+              mountPath: /etc/postgresql/postgresql.conf
+              subPath: postgresql.conf
+            - name: backup-script
+              mountPath: /usr/local/bin/backup.sh
+              subPath: backup.sh
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: false
+            runAsNonRoot: true
+            runAsUser: 999
+      volumes:
+        - name: postgresql-config
+          configMap:
+            name: postgresql-config
+        - name: backup-script
+          configMap:
+            name: postgresql-backup-script
+            defaultMode: 0755
+  volumeClaimTemplates:
+    - metadata:
+        name: postgresql-storage
+      spec:
+        accessModes: ['ReadWriteOnce']
+        storageClassName: fast-ssd
         resources:
           requests:
-            memory: "1Gi"
-            cpu: "500m"
-          limits:
-            memory: "2Gi"
-            cpu: "1000m"
-        livenessProbe:
-          exec:
-            command:
-            - /bin/sh
-            - -c
-            - exec pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB" -h 127.0.0.1 -p 5432
-          initialDelaySeconds: 30
-          periodSeconds: 10
-          timeoutSeconds: 5
-          successThreshold: 1
-          failureThreshold: 6
-        readinessProbe:
-          exec:
-            command:
-            - /bin/sh
-            - -c
-            - exec pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB" -h 127.0.0.1 -p 5432
-          initialDelaySeconds: 5
-          periodSeconds: 10
-          timeoutSeconds: 5
-          successThreshold: 1
-          failureThreshold: 6
-        volumeMounts:
-        - name: postgresql-storage
-          mountPath: /var/lib/postgresql/data
-        - name: postgresql-config
-          mountPath: /etc/postgresql/postgresql.conf
-          subPath: postgresql.conf
-        - name: backup-script
-          mountPath: /usr/local/bin/backup.sh
-          subPath: backup.sh
-        securityContext:
-          allowPrivilegeEscalation: false
-          readOnlyRootFilesystem: false
-          runAsNonRoot: true
-          runAsUser: 999
-      volumes:
-      - name: postgresql-config
-        configMap:
-          name: postgresql-config
-      - name: backup-script
-        configMap:
-          name: postgresql-backup-script
-          defaultMode: 0755
-  volumeClaimTemplates:
-  - metadata:
-      name: postgresql-storage
-    spec:
-      accessModes: ["ReadWriteOnce"]
-      storageClassName: fast-ssd
-      resources:
-        requests:
-          storage: 100Gi
+            storage: 100Gi
 
 ---
 apiVersion: v1
@@ -119,9 +119,9 @@ spec:
     app: postgresql
     environment: production
   ports:
-  - name: postgresql
-    port: 5432
-    targetPort: 5432
+    - name: postgresql
+      port: 5432
+      targetPort: 5432
   type: ClusterIP
 
 ---
@@ -145,7 +145,7 @@ data:
     work_mem = 2621kB
     min_wal_size = 1GB
     max_wal_size = 4GB
-    
+
     # Logging
     log_destination = 'stderr'
     logging_collector = on
@@ -158,12 +158,12 @@ data:
     log_duration = on
     log_lock_waits = on
     log_temp_files = 0
-    
+
     # Security
     ssl = on
     ssl_cert_file = '/var/lib/postgresql/server.crt'
     ssl_key_file = '/var/lib/postgresql/server.key'
-    
+
     # Backup and archiving
     archive_mode = on
     archive_command = 'test ! -f /backup/archive/%f && cp %p /backup/archive/%f'
@@ -180,32 +180,32 @@ data:
   backup.sh: |
     #!/bin/bash
     set -e
-    
+
     # Configuration
     BACKUP_DIR="/backup"
     ARCHIVE_DIR="$BACKUP_DIR/archive"
     DB_NAME="lpg_distributor_prod"
     RETENTION_DAYS=30
-    
+
     # Create backup directories
     mkdir -p "$BACKUP_DIR" "$ARCHIVE_DIR"
-    
+
     # Generate backup filename with timestamp
     BACKUP_FILE="$BACKUP_DIR/postgresql_backup_$(date +%Y%m%d_%H%M%S).sql.gz"
-    
+
     echo "Starting database backup..."
-    
+
     # Create database dump
     pg_dump -h localhost -U "$POSTGRES_USER" -d "$DB_NAME" | gzip > "$BACKUP_FILE"
-    
+
     echo "Backup completed: $BACKUP_FILE"
-    
+
     # Cleanup old backups
     find "$BACKUP_DIR" -name "postgresql_backup_*.sql.gz" -mtime +$RETENTION_DAYS -delete
     find "$ARCHIVE_DIR" -name "*.backup" -mtime +$RETENTION_DAYS -delete
-    
+
     echo "Backup cleanup completed"
-    
+
     # Upload to S3 if configured
     if [ -n "$AWS_ACCESS_KEY_ID" ] && [ -n "$S3_BACKUP_BUCKET" ]; then
         aws s3 cp "$BACKUP_FILE" "s3://$S3_BACKUP_BUCKET/database/$(basename $BACKUP_FILE)"
@@ -222,7 +222,7 @@ metadata:
     app: postgresql-backup
     environment: production
 spec:
-  schedule: "0 2 * * *"  # Daily at 2 AM
+  schedule: '0 2 * * *' # Daily at 2 AM
   concurrencyPolicy: Forbid
   successfulJobsHistoryLimit: 3
   failedJobsHistoryLimit: 3
@@ -236,58 +236,58 @@ spec:
         spec:
           restartPolicy: OnFailure
           containers:
-          - name: backup
-            image: postgres:15-alpine
-            env:
-            - name: POSTGRES_USER
-              valueFrom:
-                secretKeyRef:
-                  name: postgresql-secrets
-                  key: username
-            - name: POSTGRES_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: postgresql-secrets
-                  key: password
-            - name: AWS_ACCESS_KEY_ID
-              valueFrom:
-                secretKeyRef:
-                  name: aws-secrets
-                  key: access-key-id
-            - name: AWS_SECRET_ACCESS_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: aws-secrets
-                  key: secret-access-key
-            - name: S3_BACKUP_BUCKET
-              valueFrom:
-                configMapKeyRef:
-                  name: lpg-distributor-config
-                  key: s3-backup-bucket
-            command:
-            - /bin/bash
-            - /usr/local/bin/backup.sh
-            volumeMounts:
-            - name: backup-volume
-              mountPath: /backup
-            - name: backup-script
-              mountPath: /usr/local/bin/backup.sh
-              subPath: backup.sh
-            resources:
-              requests:
-                memory: "256Mi"
-                cpu: "100m"
-              limits:
-                memory: "512Mi"
-                cpu: "200m"
+            - name: backup
+              image: postgres:15-alpine
+              env:
+                - name: POSTGRES_USER
+                  valueFrom:
+                    secretKeyRef:
+                      name: postgresql-secrets
+                      key: username
+                - name: POSTGRES_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: postgresql-secrets
+                      key: password
+                - name: AWS_ACCESS_KEY_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: aws-secrets
+                      key: access-key-id
+                - name: AWS_SECRET_ACCESS_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: aws-secrets
+                      key: secret-access-key
+                - name: S3_BACKUP_BUCKET
+                  valueFrom:
+                    configMapKeyRef:
+                      name: lpg-distributor-config
+                      key: s3-backup-bucket
+              command:
+                - /bin/bash
+                - /usr/local/bin/backup.sh
+              volumeMounts:
+                - name: backup-volume
+                  mountPath: /backup
+                - name: backup-script
+                  mountPath: /usr/local/bin/backup.sh
+                  subPath: backup.sh
+              resources:
+                requests:
+                  memory: '256Mi'
+                  cpu: '100m'
+                limits:
+                  memory: '512Mi'
+                  cpu: '200m'
           volumes:
-          - name: backup-volume
-            persistentVolumeClaim:
-              claimName: backup-storage
-          - name: backup-script
-            configMap:
-              name: postgresql-backup-script
-              defaultMode: 0755
+            - name: backup-volume
+              persistentVolumeClaim:
+                claimName: backup-storage
+            - name: backup-script
+              configMap:
+                name: postgresql-backup-script
+                defaultMode: 0755
 
 ---
 apiVersion: v1

@@ -36,7 +36,7 @@
     "docker:build": "docker build -t lpg-distributor-saas .",
     "docker:run": "docker run -p 3000:3000 lpg-distributor-saas",
     "clean": "rm -rf .next node_modules/.cache",
-    "precommit": "npm run format:check && npm run type-check",
+    "precommit": "npm run format && npm run type-check",
     "validate": "node scripts/validation-test.js",
     "bug-check": "node scripts/bug-check.js",
     "onboard-business": "tsx src/scripts/onboard-business.ts"

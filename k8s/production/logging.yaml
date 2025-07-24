@@ -16,7 +16,7 @@ data:
       time_key time
       keep_time_key true
     </source>
-    
+
     <source>
       @type tail
       path /var/log/containers/*postgresql*.log
@@ -25,7 +25,7 @@ data:
       format none
       time_format %Y-%m-%d %H:%M:%S.%L %Z
     </source>
-    
+
     <source>
       @type tail
       path /var/log/containers/*redis*.log
@@ -33,7 +33,7 @@ data:
       tag redis.*
       format none
     </source>
-    
+
     # Kubernetes metadata
     <filter kubernetes.**>
       @type kubernetes_metadata
@@ -46,7 +46,7 @@ data:
       skip_master_url false
       skip_namespace_metadata false
     </filter>
-    
+
     # Parse application logs
     <filter kubernetes.var.log.containers.**lpg-distributor**.log>
       @type parser
@@ -68,7 +68,7 @@ data:
         </pattern>
       </parse>
     </filter>
-    
+
     # Add environment and service tags
     <filter kubernetes.**>
       @type record_transformer
@@ -81,7 +81,7 @@ data:
         node_name ${record.kubernetes.host}
       </record>
     </filter>
-    
+
     # Route logs based on severity
     <match kubernetes.**>
       @type rewrite_tag_filter
@@ -101,7 +101,7 @@ data:
         tag info.${tag}
       </rule>
     </match>
-    
+
     # Error logs to alerting system
     <match error.**>
       @type copy
@@ -126,7 +126,7 @@ data:
         flush_interval 10s
       </store>
     </match>
-    
+
     # Warning logs
     <match warning.**>
       @type elasticsearch
@@ -138,7 +138,7 @@ data:
       tag_key @log_name
       flush_interval 10s
     </match>
-    
+
     # Info logs
     <match info.**>
       @type elasticsearch
@@ -150,7 +150,7 @@ data:
       tag_key @log_name
       flush_interval 30s
     </match>
-    
+
     # Database logs
     <match postgresql.**>
       @type elasticsearch
@@ -162,7 +162,7 @@ data:
       tag_key @log_name
       flush_interval 30s
     </match>
-    
+
     # Redis logs
     <match redis.**>
       @type elasticsearch
@@ -196,52 +196,52 @@ spec:
     spec:
       serviceAccountName: fluentd
       tolerations:
-      - key: node-role.kubernetes.io/master
-        effect: NoSchedule
+        - key: node-role.kubernetes.io/master
+          effect: NoSchedule
       containers:
-      - name: fluentd
-        image: fluent/fluentd-kubernetes-daemonset:v1-debian-elasticsearch
-        env:
-        - name: FLUENT_ELASTICSEARCH_HOST
-          value: "elasticsearch-service"
-        - name: FLUENT_ELASTICSEARCH_PORT
-          value: "9200"
-        - name: FLUENT_ELASTICSEARCH_SCHEME
-          value: "http"
-        - name: SLACK_WEBHOOK_URL
-          valueFrom:
-            secretKeyRef:
-              name: fluentd-secrets
-              key: slack-webhook-url
-        resources:
-          limits:
-            memory: 512Mi
-            cpu: 100m
-          requests:
-            memory: 256Mi
-            cpu: 50m
-        volumeMounts:
-        - name: varlog
-          mountPath: /var/log
-        - name: varlibdockercontainers
-          mountPath: /var/lib/docker/containers
-          readOnly: true
-        - name: fluentd-config
-          mountPath: /fluentd/etc/fluent.conf
-          subPath: fluent.conf
-        securityContext:
-          runAsUser: 0
+        - name: fluentd
+          image: fluent/fluentd-kubernetes-daemonset:v1-debian-elasticsearch
+          env:
+            - name: FLUENT_ELASTICSEARCH_HOST
+              value: 'elasticsearch-service'
+            - name: FLUENT_ELASTICSEARCH_PORT
+              value: '9200'
+            - name: FLUENT_ELASTICSEARCH_SCHEME
+              value: 'http'
+            - name: SLACK_WEBHOOK_URL
+              valueFrom:
+                secretKeyRef:
+                  name: fluentd-secrets
+                  key: slack-webhook-url
+          resources:
+            limits:
+              memory: 512Mi
+              cpu: 100m
+            requests:
+              memory: 256Mi
+              cpu: 50m
+          volumeMounts:
+            - name: varlog
+              mountPath: /var/log
+            - name: varlibdockercontainers
+              mountPath: /var/lib/docker/containers
+              readOnly: true
+            - name: fluentd-config
+              mountPath: /fluentd/etc/fluent.conf
+              subPath: fluent.conf
+          securityContext:
+            runAsUser: 0
       terminationGracePeriodSeconds: 30
       volumes:
-      - name: varlog
-        hostPath:
-          path: /var/log
-      - name: varlibdockercontainers
-        hostPath:
-          path: /var/lib/docker/containers
-      - name: fluentd-config
-        configMap:
-          name: fluentd-config
+        - name: varlog
+          hostPath:
+            path: /var/log
+        - name: varlibdockercontainers
+          hostPath:
+            path: /var/lib/docker/containers
+        - name: fluentd-config
+          configMap:
+            name: fluentd-config
 
 ---
 apiVersion: v1
@@ -260,15 +260,15 @@ metadata:
   labels:
     app: fluentd
 rules:
-- apiGroups:
-  - ""
-  resources:
-  - pods
-  - namespaces
-  verbs:
-  - get
-  - list
-  - watch
+  - apiGroups:
+      - ''
+    resources:
+      - pods
+      - namespaces
+    verbs:
+      - get
+      - list
+      - watch
 
 ---
 apiVersion: rbac.authorization.k8s.io/v1
@@ -282,9 +282,9 @@ roleRef:
   name: fluentd
   apiGroup: rbac.authorization.k8s.io
 subjects:
-- kind: ServiceAccount
-  name: fluentd
-  namespace: lpg-distributor-production
+  - kind: ServiceAccount
+    name: fluentd
+    namespace: lpg-distributor-production
 
 ---
 apiVersion: apps/v1
@@ -312,53 +312,53 @@ spec:
         runAsGroup: 1000
         fsGroup: 1000
       containers:
-      - name: elasticsearch
-        image: docker.elastic.co/elasticsearch/elasticsearch:8.8.0
-        env:
-        - name: discovery.type
-          value: single-node
-        - name: ES_JAVA_OPTS
-          value: "-Xms512m -Xmx512m"
-        - name: xpack.security.enabled
-          value: "false"
-        - name: xpack.monitoring.collection.enabled
-          value: "true"
-        ports:
-        - containerPort: 9200
-          name: http
-        - containerPort: 9300
-          name: transport
+        - name: elasticsearch
+          image: docker.elastic.co/elasticsearch/elasticsearch:8.8.0
+          env:
+            - name: discovery.type
+              value: single-node
+            - name: ES_JAVA_OPTS
+              value: '-Xms512m -Xmx512m'
+            - name: xpack.security.enabled
+              value: 'false'
+            - name: xpack.monitoring.collection.enabled
+              value: 'true'
+          ports:
+            - containerPort: 9200
+              name: http
+            - containerPort: 9300
+              name: transport
+          resources:
+            requests:
+              memory: '1Gi'
+              cpu: '500m'
+            limits:
+              memory: '2Gi'
+              cpu: '1000m'
+          volumeMounts:
+            - name: elasticsearch-storage
+              mountPath: /usr/share/elasticsearch/data
+          readinessProbe:
+            httpGet:
+              path: /_cluster/health
+              port: 9200
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /_cluster/health?local=true
+              port: 9200
+            initialDelaySeconds: 90
+            periodSeconds: 10
+  volumeClaimTemplates:
+    - metadata:
+        name: elasticsearch-storage
+      spec:
+        accessModes: ['ReadWriteOnce']
+        storageClassName: fast-ssd
         resources:
           requests:
-            memory: "1Gi"
-            cpu: "500m"
-          limits:
-            memory: "2Gi"
-            cpu: "1000m"
-        volumeMounts:
-        - name: elasticsearch-storage
-          mountPath: /usr/share/elasticsearch/data
-        readinessProbe:
-          httpGet:
-            path: /_cluster/health
-            port: 9200
-          initialDelaySeconds: 30
-          periodSeconds: 10
-        livenessProbe:
-          httpGet:
-            path: /_cluster/health?local=true
-            port: 9200
-          initialDelaySeconds: 90
-          periodSeconds: 10
-  volumeClaimTemplates:
-  - metadata:
-      name: elasticsearch-storage
-    spec:
-      accessModes: ["ReadWriteOnce"]
-      storageClassName: fast-ssd
-      resources:
-        requests:
-          storage: 50Gi
+            storage: 50Gi
 
 ---
 apiVersion: v1
@@ -373,12 +373,12 @@ spec:
   selector:
     app: elasticsearch
   ports:
-  - name: http
-    port: 9200
-    targetPort: 9200
-  - name: transport
-    port: 9300
-    targetPort: 9300
+    - name: http
+      port: 9200
+      targetPort: 9200
+    - name: transport
+      port: 9300
+      targetPort: 9300
   type: ClusterIP
 
 ---
@@ -402,37 +402,37 @@ spec:
         environment: production
     spec:
       containers:
-      - name: kibana
-        image: docker.elastic.co/kibana/kibana:8.8.0
-        env:
-        - name: ELASTICSEARCH_HOSTS
-          value: "http://elasticsearch-service:9200"
-        - name: SERVER_NAME
-          value: "kibana"
-        - name: SERVER_HOST
-          value: "0.0.0.0"
-        ports:
-        - containerPort: 5601
-          name: kibana
-        resources:
-          requests:
-            memory: "512Mi"
-            cpu: "250m"
-          limits:
-            memory: "1Gi"
-            cpu: "500m"
-        readinessProbe:
-          httpGet:
-            path: /api/status
-            port: 5601
-          initialDelaySeconds: 30
-          periodSeconds: 10
-        livenessProbe:
-          httpGet:
-            path: /api/status
-            port: 5601
-          initialDelaySeconds: 90
-          periodSeconds: 10
+        - name: kibana
+          image: docker.elastic.co/kibana/kibana:8.8.0
+          env:
+            - name: ELASTICSEARCH_HOSTS
+              value: 'http://elasticsearch-service:9200'
+            - name: SERVER_NAME
+              value: 'kibana'
+            - name: SERVER_HOST
+              value: '0.0.0.0'
+          ports:
+            - containerPort: 5601
+              name: kibana
+          resources:
+            requests:
+              memory: '512Mi'
+              cpu: '250m'
+            limits:
+              memory: '1Gi'
+              cpu: '500m'
+          readinessProbe:
+            httpGet:
+              path: /api/status
+              port: 5601
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /api/status
+              port: 5601
+            initialDelaySeconds: 90
+            periodSeconds: 10
 
 ---
 apiVersion: v1
@@ -447,9 +447,9 @@ spec:
   selector:
     app: kibana
   ports:
-  - name: kibana
-    port: 5601
-    targetPort: 5601
+    - name: kibana
+      port: 5601
+      targetPort: 5601
   type: ClusterIP
 
 ---
@@ -464,23 +464,23 @@ metadata:
   annotations:
     kubernetes.io/ingress.class: nginx
     cert-manager.io/cluster-issuer: letsencrypt-prod
-    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/ssl-redirect: 'true'
     nginx.ingress.kubernetes.io/auth-type: basic
     nginx.ingress.kubernetes.io/auth-secret: kibana-auth
-    nginx.ingress.kubernetes.io/auth-realm: "Authentication Required"
+    nginx.ingress.kubernetes.io/auth-realm: 'Authentication Required'
 spec:
   tls:
-  - hosts:
-    - logs.lpg-distributor.com
-    secretName: kibana-tls
+    - hosts:
+        - logs.lpg-distributor.com
+      secretName: kibana-tls
   rules:
-  - host: logs.lpg-distributor.com
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: kibana-service
-            port:
-              number: 5601
+    - host: logs.lpg-distributor.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: kibana-service
+                port:
+                  number: 5601

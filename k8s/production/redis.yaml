@@ -24,77 +24,77 @@ spec:
         runAsGroup: 999
         fsGroup: 999
       containers:
-      - name: redis
-        image: redis:7-alpine
-        command:
-        - redis-server
-        - /etc/redis/redis.conf
-        env:
-        - name: REDIS_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: redis-secrets
-              key: password
-        ports:
-        - containerPort: 6379
-          name: redis
+        - name: redis
+          image: redis:7-alpine
+          command:
+            - redis-server
+            - /etc/redis/redis.conf
+          env:
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: redis-secrets
+                  key: password
+          ports:
+            - containerPort: 6379
+              name: redis
+          resources:
+            requests:
+              memory: '256Mi'
+              cpu: '100m'
+            limits:
+              memory: '512Mi'
+              cpu: '200m'
+          livenessProbe:
+            exec:
+              command:
+                - redis-cli
+                - --no-auth-warning
+                - -a
+                - $(REDIS_PASSWORD)
+                - ping
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 3
+          readinessProbe:
+            exec:
+              command:
+                - redis-cli
+                - --no-auth-warning
+                - -a
+                - $(REDIS_PASSWORD)
+                - ping
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 3
+            successThreshold: 1
+            failureThreshold: 3
+          volumeMounts:
+            - name: redis-storage
+              mountPath: /data
+            - name: redis-config
+              mountPath: /etc/redis/redis.conf
+              subPath: redis.conf
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: false
+            runAsNonRoot: true
+            runAsUser: 999
+      volumes:
+        - name: redis-config
+          configMap:
+            name: redis-config
+  volumeClaimTemplates:
+    - metadata:
+        name: redis-storage
+      spec:
+        accessModes: ['ReadWriteOnce']
+        storageClassName: fast-ssd
         resources:
           requests:
-            memory: "256Mi"
-            cpu: "100m"
-          limits:
-            memory: "512Mi"
-            cpu: "200m"
-        livenessProbe:
-          exec:
-            command:
-            - redis-cli
-            - --no-auth-warning
-            - -a
-            - $(REDIS_PASSWORD)
-            - ping
-          initialDelaySeconds: 30
-          periodSeconds: 10
-          timeoutSeconds: 5
-          successThreshold: 1
-          failureThreshold: 3
-        readinessProbe:
-          exec:
-            command:
-            - redis-cli
-            - --no-auth-warning
-            - -a
-            - $(REDIS_PASSWORD)
-            - ping
-          initialDelaySeconds: 5
-          periodSeconds: 5
-          timeoutSeconds: 3
-          successThreshold: 1
-          failureThreshold: 3
-        volumeMounts:
-        - name: redis-storage
-          mountPath: /data
-        - name: redis-config
-          mountPath: /etc/redis/redis.conf
-          subPath: redis.conf
-        securityContext:
-          allowPrivilegeEscalation: false
-          readOnlyRootFilesystem: false
-          runAsNonRoot: true
-          runAsUser: 999
-      volumes:
-      - name: redis-config
-        configMap:
-          name: redis-config
-  volumeClaimTemplates:
-  - metadata:
-      name: redis-storage
-    spec:
-      accessModes: ["ReadWriteOnce"]
-      storageClassName: fast-ssd
-      resources:
-        requests:
-          storage: 10Gi
+            storage: 10Gi
 
 ---
 apiVersion: v1
@@ -110,9 +110,9 @@ spec:
     app: redis
     environment: production
   ports:
-  - name: redis
-    port: 6379
-    targetPort: 6379
+    - name: redis
+      port: 6379
+      targetPort: 6379
   type: ClusterIP
 
 ---
@@ -128,7 +128,7 @@ data:
     port 6379
     timeout 0
     tcp-keepalive 300
-    
+
     # General
     daemonize no
     supervised no
@@ -136,10 +136,10 @@ data:
     loglevel notice
     logfile ""
     databases 16
-    
+
     # Security
     requirepass ${REDIS_PASSWORD}
-    
+
     # Persistence
     save 900 1
     save 300 10
@@ -149,7 +149,7 @@ data:
     rdbchecksum yes
     dbfilename dump.rdb
     dir /data
-    
+
     # Append only file
     appendonly yes
     appendfilename "appendonly.aof"
@@ -159,24 +159,24 @@ data:
     auto-aof-rewrite-min-size 64mb
     aof-load-truncated yes
     aof-use-rdb-preamble yes
-    
+
     # Memory management
     maxmemory 400mb
     maxmemory-policy allkeys-lru
     maxmemory-samples 5
-    
+
     # Performance
     tcp-backlog 511
     timeout 0
     tcp-keepalive 300
-    
+
     # Slow log
     slowlog-log-slower-than 10000
     slowlog-max-len 128
-    
+
     # Latency monitor
     latency-monitor-threshold 100
-    
+
     # Client output buffer limits
     client-output-buffer-limit normal 0 0 0
     client-output-buffer-limit replica 256mb 64mb 60

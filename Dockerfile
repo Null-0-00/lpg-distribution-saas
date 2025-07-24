@@ -23,9 +23,6 @@ RUN npx prisma generate
 # Build the application
 RUN npm run build
 
-# Install only production dependencies
-RUN npm ci --omit=dev && npm cache clean --force
-
 # Production stage
 FROM node:18-alpine AS runner
 
@@ -42,12 +39,14 @@ RUN adduser -S nextjs -u 1001
 # Set working directory
 WORKDIR /app
 
-# Copy necessary files from builder stage
+# Copy package files and install production dependencies
 COPY --from=builder --chown=nextjs:nodejs /app/package*.json ./
+RUN npm ci --omit=dev && npm cache clean --force
+
+# Copy necessary files from builder stage
 COPY --from=builder --chown=nextjs:nodejs /app/.next ./.next
 COPY --from=builder --chown=nextjs:nodejs /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
-COPY --from=builder --chown=nextjs:nodejs /app/node_modules ./node_modules
 
 # Copy startup scripts
 COPY --chown=nextjs:nodejs scripts/docker-entrypoint.sh ./

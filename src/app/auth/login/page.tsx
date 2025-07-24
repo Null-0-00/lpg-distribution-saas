@@ -2,10 +2,9 @@
 
 import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { signIn, useSession } from 'next-auth/react';
+import { signIn, signOut, useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
-import { AuthRedirect } from '@/components/auth/AuthRedirect';
 
 function LoginForm() {
   const [email, setEmail] = useState('');
@@ -25,9 +24,57 @@ function LoginForm() {
     }
   }, [searchParams]);
 
-  // Show redirect component if authenticated
+  // Handle authenticated users
+  useEffect(() => {
+    if (status === 'authenticated' && session) {
+      const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
+      console.log('User already authenticated, redirecting to:', callbackUrl);
+
+      // Force a hard redirect to avoid any client-side routing issues
+      window.location.href = callbackUrl;
+    }
+  }, [status, session, searchParams]);
+
+  // Show loading while checking authentication
+  if (status === 'loading') {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-gray-900">
+        <div className="text-center">
+          <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-b-2 border-blue-500"></div>
+          <p className="text-gray-600 dark:text-gray-400">
+            Checking authentication...
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show redirect message if authenticated (fallback)
   if (status === 'authenticated') {
-    return <AuthRedirect />;
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-gray-900">
+        <div className="text-center">
+          <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-b-2 border-green-500"></div>
+          <p className="text-gray-600 dark:text-gray-400">
+            Redirecting to dashboard...
+          </p>
+          <div className="mt-4 space-x-4">
+            <button
+              onClick={() => (window.location.href = '/dashboard')}
+              className="text-blue-600 underline hover:text-blue-500"
+            >
+              Go to Dashboard
+            </button>
+            <button
+              onClick={() => signOut({ callbackUrl: '/auth/login' })}
+              className="text-red-600 underline hover:text-red-500"
+            >
+              Sign Out & Login Again
+            </button>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   const handleSubmit = async (e: React.FormEvent) => {

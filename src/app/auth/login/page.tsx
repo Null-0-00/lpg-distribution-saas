@@ -114,7 +114,10 @@ function LoginForm() {
         redirect: false,
       });
 
-      const result = await Promise.race([signInPromise, timeoutPromise]) as any;
+      const result = (await Promise.race([
+        signInPromise,
+        timeoutPromise,
+      ])) as any;
 
       console.log('SignIn result:', result);
 

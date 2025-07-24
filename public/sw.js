@@ -136,6 +136,11 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
+  // Skip caching for authentication requests
+  if (request.url.includes('/api/auth/') || request.method !== 'GET') {
+    return;
+  }
+
   // Handle different types of requests
   if (request.url.includes('/api/')) {
     event.respondWith(handleAPIRequest(request));
@@ -222,6 +227,11 @@ async function handleStaticAssetRequest(request) {
  * Cache First Strategy
  */
 async function handleCacheFirst(request, cacheName, ttl = 3600000) {
+  // Only cache GET requests
+  if (request.method !== 'GET') {
+    return fetch(request);
+  }
+
   const cache = await caches.open(cacheName);
   const cachedResponse = await cache.match(request);
 
@@ -264,34 +274,38 @@ async function handleNetworkFirst(request, cacheName) {
   try {
     const networkResponse = await fetch(request);
 
-    if (networkResponse.ok) {
+    if (networkResponse.ok && request.method === 'GET') {
       const cache = await caches.open(cacheName);
       cache.put(request, networkResponse.clone());
       return networkResponse;
     }
 
-    throw new Error('Network response not ok');
+    return networkResponse;
   } catch (error) {
     console.log('Network failed, trying cache:', error);
-    const cachedResponse = await caches.match(request);
+    
+    // Only try cache for GET requests
+    if (request.method === 'GET') {
+      const cachedResponse = await caches.match(request);
 
-    if (cachedResponse) {
-      return cachedResponse;
-    }
+      if (cachedResponse) {
+        return cachedResponse;
+      }
 
-    // For API requests, return offline data structure
-    if (request.url.includes('/api/')) {
-      return new Response(
-        JSON.stringify({
-          offline: true,
-          message: 'This data was requested while offline',
-          timestamp: new Date().toISOString(),
-        }),
-        {
-          headers: { 'Content-Type': 'application/json' },
-          status: 200,
-        }
-      );
+      // For API requests, return offline data structure
+      if (request.url.includes('/api/')) {
+        return new Response(
+          JSON.stringify({
+            offline: true,
+            message: 'This data was requested while offline',
+            timestamp: new Date().toISOString(),
+          }),
+          {
+            headers: { 'Content-Type': 'application/json' },
+            status: 200,
+          }
+        );
+      }
     }
 
     return new Response('Offline', { status: 503 });

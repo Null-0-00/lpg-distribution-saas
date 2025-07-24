@@ -10,8 +10,9 @@ WORKDIR /app
 COPY package*.json ./
 COPY prisma ./prisma/
 
-# Install dependencies
-RUN npm ci --only=production && npm cache clean --force
+# Install ALL dependencies for building (set CI env to skip husky)
+ENV CI=true
+RUN npm ci && npm cache clean --force
 
 # Copy source code
 COPY . .
@@ -21,6 +22,9 @@ RUN npx prisma generate
 
 # Build the application
 RUN npm run build
+
+# Install only production dependencies
+RUN npm ci --omit=dev && npm cache clean --force
 
 # Production stage
 FROM node:18-alpine AS runner

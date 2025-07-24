@@ -46,7 +46,7 @@ COPY --from=builder --chown=nextjs:nodejs /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
 
 # Install production dependencies and generate Prisma client (skip husky)
-RUN CI=true npm ci --omit=dev && npx prisma generate && npm cache clean --force
+RUN npm ci --omit=dev --ignore-scripts && npx prisma generate && npm cache clean --force
 
 # Copy startup scripts
 COPY --chown=nextjs:nodejs scripts/docker-entrypoint.sh ./

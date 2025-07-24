@@ -32,40 +32,42 @@ function LoginForm() {
     }
   }, [searchParams]);
 
-  // Handle authenticated users with consolidated redirect logic
+  // Handle authenticated users with simplified redirect logic
   useEffect(() => {
+    console.log(
+      'Auth status:',
+      status,
+      'Session:',
+      !!session,
+      'Mounted:',
+      isMountedRef.current
+    );
+
     if (status === 'authenticated' && session && isMountedRef.current) {
       const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
-      console.log('User already authenticated, redirecting to:', callbackUrl);
+      console.log('User authenticated, redirecting to:', callbackUrl);
+      console.log('Session user:', session.user);
 
-      // Primary redirect attempt
+      // Use window.location.replace for more reliable redirect
       const redirectTimeout = setTimeout(() => {
         if (isMountedRef.current) {
+          console.log('Executing redirect to:', callbackUrl);
           try {
-            router.replace(callbackUrl);
+            window.location.replace(callbackUrl);
           } catch (error) {
-            console.error('Router redirect error:', error);
-            // Fallback to window.location if router fails
+            console.error('Redirect failed:', error);
+            // Fallback to href
             window.location.href = callbackUrl;
           }
         }
-      }, 100);
+      }, 500); // Slightly longer delay to ensure session is fully established
 
-      // Safety timeout - force redirect if primary doesn't work
-      const safetyTimeout = setTimeout(() => {
-        if (isMountedRef.current) {
-          console.warn('Redirect timeout - forcing navigation to dashboard');
-          window.location.href = callbackUrl;
-        }
-      }, 5000);
-
-      // Cleanup both timeouts
+      // Cleanup timeout
       return () => {
         clearTimeout(redirectTimeout);
-        clearTimeout(safetyTimeout);
       };
     }
-  }, [status, session, searchParams, router]);
+  }, [status, session, searchParams]);
 
   // Show loading while checking authentication
   if (status === 'loading') {
@@ -92,12 +94,16 @@ function LoginForm() {
           </p>
           <p className="mt-2 text-xs text-gray-500 dark:text-gray-500">
             If you're not redirected automatically,{' '}
-            <a
-              href={searchParams.get('callbackUrl') || '/dashboard'}
-              className="text-blue-500 hover:underline"
+            <button
+              onClick={() => {
+                const url = searchParams.get('callbackUrl') || '/dashboard';
+                console.log('Manual redirect to:', url);
+                window.location.replace(url);
+              }}
+              className="text-blue-500 underline hover:underline"
             >
               click here
-            </a>
+            </button>
           </p>
         </div>
       </div>

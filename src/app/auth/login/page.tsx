@@ -97,20 +97,37 @@ function LoginForm() {
     try {
       const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
 
-      // Let NextAuth handle the redirect automatically
-      await signIn('credentials', {
+      // Use redirect: false to handle the response manually
+      const result = await signIn('credentials', {
         email,
         password,
         callbackUrl,
-        redirect: true,
+        redirect: false,
       });
 
-      // This code should not execute if redirect: true works properly
-      // The function should redirect or throw an error
+      console.log('SignIn result:', result);
+
+      if (result?.error) {
+        console.error('Authentication failed:', result.error);
+        if (isMountedRef.current) {
+          setError('Invalid email or password');
+          setLoading(false);
+        }
+      } else if (result?.ok) {
+        console.log('Authentication successful, redirecting to:', callbackUrl);
+        // Successfully authenticated, redirect manually
+        router.replace(callbackUrl);
+      } else {
+        console.error('Unexpected authentication result:', result);
+        if (isMountedRef.current) {
+          setError('Authentication failed. Please try again.');
+          setLoading(false);
+        }
+      }
     } catch (error) {
       console.error('Login error:', error);
       if (isMountedRef.current) {
-        setError('Invalid email or password');
+        setError('An error occurred during login. Please try again.');
         setLoading(false);
       }
     }

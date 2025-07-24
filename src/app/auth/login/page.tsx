@@ -48,26 +48,10 @@ function LoginForm() {
       console.log('User authenticated, redirecting to:', callbackUrl);
       console.log('Session user:', session.user);
 
-      // Use window.location.replace for more reliable redirect
-      const redirectTimeout = setTimeout(() => {
-        if (isMountedRef.current) {
-          console.log('Executing redirect to:', callbackUrl);
-          try {
-            window.location.replace(callbackUrl);
-          } catch (error) {
-            console.error('Redirect failed:', error);
-            // Fallback to href
-            window.location.href = callbackUrl;
-          }
-        }
-      }, 500); // Slightly longer delay to ensure session is fully established
-
-      // Cleanup timeout
-      return () => {
-        clearTimeout(redirectTimeout);
-      };
+      // Use router.replace for proper Next.js navigation
+      router.replace(callbackUrl);
     }
-  }, [status, session, searchParams]);
+  }, [status, session, searchParams, router]);
 
   // Show loading while checking authentication
   if (status === 'loading') {
@@ -83,32 +67,7 @@ function LoginForm() {
     );
   }
 
-  // Show redirecting message if authenticated (should be brief)
-  if (status === 'authenticated') {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-gray-900">
-        <div className="text-center">
-          <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-b-2 border-green-500"></div>
-          <p className="text-gray-600 dark:text-gray-400">
-            Redirecting to dashboard...
-          </p>
-          <p className="mt-2 text-xs text-gray-500 dark:text-gray-500">
-            If you're not redirected automatically,{' '}
-            <button
-              onClick={() => {
-                const url = searchParams.get('callbackUrl') || '/dashboard';
-                console.log('Manual redirect to:', url);
-                window.location.replace(url);
-              }}
-              className="text-blue-500 underline hover:underline"
-            >
-              click here
-            </button>
-          </p>
-        </div>
-      </div>
-    );
-  }
+  // Don't show a separate authenticated state - let the redirect happen immediately
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

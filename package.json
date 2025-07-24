@@ -182,6 +182,9 @@
       "<rootDir>/.next/",
       "<rootDir>/node_modules/"
     ],
+    "modulePathIgnorePatterns": [
+      "<rootDir>/.next/"
+    ],
     "transform": {
       "^.+\\.tsx?$": "babel-jest"
     }

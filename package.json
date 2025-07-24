@@ -165,13 +165,40 @@
     ]
   },
   "jest": {
-    "testEnvironment": "jsdom",
-    "setupFilesAfterEnv": [
-      "<rootDir>/jest.setup.js"
+    "projects": [
+      {
+        "displayName": "integration",
+        "testMatch": [
+          "<rootDir>/tests/integration/**/*.test.ts"
+        ],
+        "testEnvironment": "node",
+        "setupFilesAfterEnv": [
+          "<rootDir>/jest.setup.js"
+        ],
+        "moduleNameMapper": {
+          "^@/(.*)$": "<rootDir>/src/$1"
+        },
+        "transform": {
+          "^.+\\.tsx?$": "babel-jest"
+        }
+      },
+      {
+        "displayName": "unit",
+        "testMatch": [
+          "<rootDir>/src/**/*.test.{js,jsx,ts,tsx}"
+        ],
+        "testEnvironment": "jsdom",
+        "setupFilesAfterEnv": [
+          "<rootDir>/jest.setup.js"
+        ],
+        "moduleNameMapper": {
+          "^@/(.*)$": "<rootDir>/src/$1"
+        },
+        "transform": {
+          "^.+\\.tsx?$": "babel-jest"
+        }
+      }
     ],
-    "moduleNameMapper": {
-      "^@/(.*)$": "<rootDir>/src/$1"
-    },
     "collectCoverageFrom": [
       "src/**/*.{js,jsx,ts,tsx}",
       "!src/**/*.d.ts",
@@ -183,10 +210,7 @@
     ],
     "modulePathIgnorePatterns": [
       "<rootDir>/.next/"
-    ],
-    "transform": {
-      "^.+\\.tsx?$": "babel-jest"
-    }
+    ]
   },
   "prettier": {
     "semi": true,

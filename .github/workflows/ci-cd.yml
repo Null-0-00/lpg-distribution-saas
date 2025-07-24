@@ -50,13 +50,14 @@ jobs:
       - name: Security audit
         run: npm audit --audit-level=high
 
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@v3
-        with:
-          languages: javascript
+      # CodeQL analysis disabled until code scanning is enabled in repository settings
+      # - name: Initialize CodeQL
+      #   uses: github/codeql-action/init@v3
+      #   with:
+      #     languages: javascript
 
-      - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v3
+      # - name: Perform CodeQL Analysis
+      #   uses: github/codeql-action/analyze@v3
 
       - name: Run Snyk security scan
         uses: snyk/actions/node@master

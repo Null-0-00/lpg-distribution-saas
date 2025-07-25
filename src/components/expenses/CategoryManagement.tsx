@@ -14,7 +14,11 @@ interface CategoryManagementProps {
     categoryId: string,
     data: Partial<CategoryFormData>
   ) => Promise<void>;
-  onDeleteCategory: (categoryId: string, categoryName: string) => Promise<void>;
+  onDeleteCategory: (
+    categoryId: string,
+    categoryName: string,
+    isParent?: boolean
+  ) => Promise<void>;
   loading: boolean;
   isSubmitting: boolean;
 }
@@ -33,6 +37,8 @@ export const CategoryManagement: React.FC<CategoryManagementProps> = ({
   const [showCategoryForm, setShowCategoryForm] = useState(false);
   const [editingCategory, setEditingCategory] =
     useState<ExpenseCategory | null>(null);
+  const [editingParentCategory, setEditingParentCategory] =
+    useState<ExpenseParentCategory | null>(null);
 
   const handleCreateCategory = async (data: CategoryFormData) => {
     await onCreateCategory(data);
@@ -43,6 +49,9 @@ export const CategoryManagement: React.FC<CategoryManagementProps> = ({
     if (editingCategory) {
       await onUpdateCategory(editingCategory.id, data);
       setEditingCategory(null);
+    } else if (editingParentCategory) {
+      await onUpdateCategory(editingParentCategory.id, data);
+      setEditingParentCategory(null);
     }
   };
 
@@ -50,8 +59,18 @@ export const CategoryManagement: React.FC<CategoryManagementProps> = ({
     setEditingCategory(category);
   };
 
+  const handleEditParentCategory = (parentCategory: ExpenseParentCategory) => {
+    setEditingParentCategory(parentCategory);
+  };
+
   const handleDeleteCategory = async (category: ExpenseCategory) => {
     await onDeleteCategory(category.id, category.name);
+  };
+
+  const handleDeleteParentCategory = async (
+    parentCategory: ExpenseParentCategory
+  ) => {
+    await onDeleteCategory(parentCategory.id, parentCategory.name, true);
   };
 
   const formatCurrency = (amount: number) => {
@@ -133,6 +152,28 @@ export const CategoryManagement: React.FC<CategoryManagementProps> = ({
                               <h4 className="font-medium text-gray-900 dark:text-white">
                                 {parent.name}
                               </h4>
+                            </div>
+                            <div className="flex space-x-2">
+                              <button
+                                onClick={() => handleEditParentCategory(parent)}
+                                className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200"
+                                title="Edit parent category"
+                              >
+                                <Edit2 className="h-4 w-4" />
+                              </button>
+                              <button
+                                onClick={() =>
+                                  handleDeleteParentCategory(parent)
+                                }
+                                className="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-200"
+                                title="Delete parent category"
+                                disabled={
+                                  parent.categories &&
+                                  parent.categories.length > 0
+                                }
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </button>
                             </div>
                           </div>
                           {parent.description && (
@@ -263,16 +304,35 @@ export const CategoryManagement: React.FC<CategoryManagementProps> = ({
 
       {/* Category Form Modal */}
       <CategoryForm
-        isOpen={showCategoryForm || !!editingCategory}
+        isOpen={
+          showCategoryForm || !!editingCategory || !!editingParentCategory
+        }
         onClose={() => {
           setShowCategoryForm(false);
           setEditingCategory(null);
+          setEditingParentCategory(null);
         }}
-        onSubmit={editingCategory ? handleUpdateCategory : handleCreateCategory}
+        onSubmit={
+          editingCategory || editingParentCategory
+            ? handleUpdateCategory
+            : handleCreateCategory
+        }
         parentCategories={parentCategories}
         editingCategory={editingCategory}
-        title={editingCategory ? 'Edit Category' : 'Add New Category'}
-        submitLabel={editingCategory ? 'Update Category' : 'Create Category'}
+        title={
+          editingCategory
+            ? 'Edit Category'
+            : editingParentCategory
+              ? 'Edit Parent Category'
+              : 'Add New Category'
+        }
+        submitLabel={
+          editingCategory
+            ? 'Update Category'
+            : editingParentCategory
+              ? 'Update Parent Category'
+              : 'Create Category'
+        }
         isSubmitting={isSubmitting}
       />
     </>

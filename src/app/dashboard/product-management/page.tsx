@@ -15,6 +15,7 @@ import {
   Settings,
   AlertCircle,
 } from 'lucide-react';
+import { useSettings } from '@/contexts/SettingsContext';
 
 interface Company {
   id: string;
@@ -65,6 +66,7 @@ interface Product {
 }
 
 export default function ProductManagementPage() {
+  const { t } = useSettings();
   const [companies, setCompanies] = useState<Company[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [cylinderSizes, setCylinderSizes] = useState<CylinderSize[]>([]);
@@ -122,10 +124,24 @@ export default function ProductManagementPage() {
   const fetchCompanies = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/companies?includeProducts=true');
+      console.log('🔄 Fetching companies...');
+      // Add cache-busting parameter to ensure fresh data
+      const response = await fetch(
+        `/api/companies?includeProducts=true&_t=${Date.now()}`,
+        {
+          cache: 'no-store',
+        }
+      );
       if (response.ok) {
         const data = await response.json();
+        console.log('📊 Companies fetched:', data.companies?.length || 0);
         setCompanies(data.companies || []);
+      } else {
+        console.error(
+          '❌ Failed to fetch companies:',
+          response.status,
+          response.statusText
+        );
       }
     } catch (error) {
       console.error('Error fetching companies:', error);
@@ -136,17 +152,22 @@ export default function ProductManagementPage() {
 
   const fetchProducts = async () => {
     try {
+      console.log('🔄 Fetching products...');
+      // Add timestamp for cache-busting
       const response = await fetch(
-        '/api/products?showAll=true&inventory=true',
+        `/api/products?showAll=true&inventory=true&_t=${Date.now()}`,
         {
-          cache: 'no-cache',
+          cache: 'no-store',
           headers: {
-            'Cache-Control': 'no-cache',
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            Pragma: 'no-cache',
+            Expires: '0',
           },
         }
       );
       if (response.ok) {
         const data = await response.json();
+        console.log('📦 Products fetched:', data.products?.length || 0);
         console.log('Frontend received:', data);
         data.products?.forEach((product: any) => {
           console.log(
@@ -154,6 +175,12 @@ export default function ProductManagementPage() {
           );
         });
         setProducts(data.products || []);
+      } else {
+        console.error(
+          '❌ Failed to fetch products:',
+          response.status,
+          response.statusText
+        );
       }
     } catch (error) {
       console.error('Error fetching products:', error);
@@ -188,10 +215,18 @@ export default function ProductManagementPage() {
       });
 
       if (response.ok) {
+        console.log(
+          '✅ Company created/updated successfully, refreshing list...'
+        );
         setShowCompanyModal(false);
         setEditingCompany(null);
         resetCompanyForm();
-        fetchCompanies();
+        await fetchCompanies();
+        console.log('✅ Company list refreshed');
+      } else {
+        const errorData = await response.json();
+        console.error('❌ Failed to save company:', errorData);
+        alert(`Failed to save company: ${errorData.error || 'Unknown error'}`);
       }
     } catch (error) {
       console.error('Error saving company:', error);
@@ -214,11 +249,19 @@ export default function ProductManagementPage() {
       });
 
       if (response.ok) {
+        console.log(
+          '✅ Product created/updated successfully, refreshing list...'
+        );
         setShowProductModal(false);
         setEditingProduct(null);
         resetProductForm();
-        fetchProducts();
-        fetchCompanies(); // Refresh to update product counts
+        await fetchProducts();
+        await fetchCompanies(); // Refresh to update product counts
+        console.log('✅ Product list refreshed');
+      } else {
+        const errorData = await response.json();
+        console.error('❌ Failed to save product:', errorData);
+        alert(`Failed to save product: ${errorData.error || 'Unknown error'}`);
       }
     } catch (error) {
       console.error('Error saving product:', error);
@@ -255,8 +298,16 @@ export default function ProductManagementPage() {
       });
 
       if (response.ok) {
-        fetchProducts();
-        fetchCompanies(); // Refresh to update product counts
+        console.log('✅ Product deleted successfully, refreshing list...');
+        await fetchProducts();
+        await fetchCompanies(); // Refresh to update product counts
+        console.log('✅ Product list refreshed after deletion');
+      } else {
+        const errorData = await response.json();
+        console.error('❌ Failed to delete product:', errorData);
+        alert(
+          `Failed to delete product: ${errorData.error || 'Unknown error'}`
+        );
       }
     } catch (error) {
       console.error('Error deleting product:', error);
@@ -422,10 +473,10 @@ export default function ProductManagementPage() {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-foreground text-3xl font-bold">
-            Product Management
+            {t('productManagement')}
           </h1>
           <p className="text-muted-foreground mt-2">
-            Manage companies and their product catalogs
+            {t('company')} {t('products')}
           </p>
         </div>
 
@@ -433,8 +484,8 @@ export default function ProductManagementPage() {
         <div className="border-border mb-6 border-b">
           <nav className="-mb-px flex space-x-8">
             {[
-              { id: 'companies', label: 'Companies', icon: Building2 },
-              { id: 'products', label: 'Products', icon: Package },
+              { id: 'companies', label: t('company'), icon: Building2 },
+              { id: 'products', label: t('products'), icon: Package },
               { id: 'cylinder-sizes', label: 'Cylinder Sizes', icon: Settings },
             ].map((tab) => {
               const Icon = tab.icon;

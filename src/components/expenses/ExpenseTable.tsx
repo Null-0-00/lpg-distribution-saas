@@ -40,7 +40,7 @@ export const ExpenseTable: React.FC<ExpenseTableProps> = ({
   onPageChange,
   onLimitChange,
 }) => {
-  const { formatCurrency, formatDate } = useSettings();
+  const { formatCurrency, formatDate, t } = useSettings();
 
   if (loading) {
     return (
@@ -77,10 +77,10 @@ export const ExpenseTable: React.FC<ExpenseTableProps> = ({
             </svg>
           </div>
           <h3 className="text-foreground mt-2 text-sm font-medium">
-            No expenses found
+            {t('noExpensesFound')}
           </h3>
           <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-            Get started by adding your first expense.
+            {t('getStartedByAddingFirstExpense')}
           </p>
         </div>
       </div>
@@ -91,7 +91,7 @@ export const ExpenseTable: React.FC<ExpenseTableProps> = ({
     <div className="bg-card rounded-lg shadow">
       <div className="border-border border-b px-6 py-4">
         <h3 className="text-foreground text-lg font-medium">
-          Expenses ({pagination.total})
+          {t('expenses')} ({pagination.total})
         </h3>
       </div>
 
@@ -100,28 +100,28 @@ export const ExpenseTable: React.FC<ExpenseTableProps> = ({
           <thead className="bg-muted">
             <tr>
               <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
-                Date
+                {t('date')}
               </th>
               <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
-                Description
+                {t('description')}
               </th>
               <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
-                Category
+                {t('category')}
               </th>
               <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
-                Parent Category
+                {t('parentCategory')}
               </th>
               <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
-                Amount
+                {t('amount')}
               </th>
               <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
-                Status
+                {t('status')}
               </th>
               <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
-                Submitted By
+                {t('submittedBy')}
               </th>
               <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
-                Actions
+                {t('actions')}
               </th>
             </tr>
           </thead>
@@ -148,7 +148,7 @@ export const ExpenseTable: React.FC<ExpenseTableProps> = ({
                   {expense.category.name}
                 </td>
                 <td className="text-foreground whitespace-nowrap px-6 py-4 text-sm">
-                  {expense.category.parent?.name || 'N/A'}
+                  {expense.category.parent?.name || t('notApplicable')}
                 </td>
                 <td className="text-foreground whitespace-nowrap px-6 py-4 text-sm font-medium">
                   {formatCurrency(expense.amount)}
@@ -161,7 +161,7 @@ export const ExpenseTable: React.FC<ExpenseTableProps> = ({
                         : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
                     }`}
                   >
-                    {expense.isApproved ? 'Approved' : 'Pending'}
+                    {expense.isApproved ? t('approved') : t('pending')}
                   </span>
                 </td>
                 <td className="text-foreground whitespace-nowrap px-6 py-4 text-sm">
@@ -175,7 +175,7 @@ export const ExpenseTable: React.FC<ExpenseTableProps> = ({
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300"
-                        title="View Receipt"
+                        title={t('viewReceipt')}
                       >
                         <ExternalLink className="h-4 w-4" />
                       </a>
@@ -184,7 +184,7 @@ export const ExpenseTable: React.FC<ExpenseTableProps> = ({
                     <button
                       onClick={() => onEditExpense(expense)}
                       className="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300"
-                      title="Edit Expense"
+                      title={t('editExpense')}
                     >
                       <Edit2 className="h-4 w-4" />
                     </button>
@@ -194,7 +194,7 @@ export const ExpenseTable: React.FC<ExpenseTableProps> = ({
                         onDeleteExpense(expense.id, expense.description)
                       }
                       className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300"
-                      title="Delete Expense"
+                      title={t('deleteExpense')}
                     >
                       <Trash2 className="h-4 w-4" />
                     </button>
@@ -204,14 +204,14 @@ export const ExpenseTable: React.FC<ExpenseTableProps> = ({
                         <button
                           onClick={() => onApproveExpense(expense.id)}
                           className="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-300"
-                          title="Approve Expense"
+                          title={t('approveExpense')}
                         >
                           <CheckCircle className="h-4 w-4" />
                         </button>
                         <button
                           onClick={() => onRejectExpense(expense.id)}
                           className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300"
-                          title="Reject Expense"
+                          title={t('rejectExpense')}
                         >
                           <XCircle className="h-4 w-4" />
                         </button>

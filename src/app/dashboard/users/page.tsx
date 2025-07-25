@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Users, UserPlus, Shield, Edit, Trash2, Eye, X } from 'lucide-react';
 import { UserRole } from '@prisma/client';
+import { useSettings } from '@/contexts/SettingsContext';
 
 interface User {
   id: string;
@@ -32,6 +33,7 @@ interface UserSummary {
 }
 
 export default function UsersPage() {
+  const { t } = useSettings();
   const [users, setUsers] = useState<User[]>([]);
   const [summary, setSummary] = useState<UserSummary>({
     totalUsers: 0,
@@ -96,7 +98,7 @@ export default function UsersPage() {
       // Check if user is authenticated first
       const isAuthenticated = await checkAuth();
       if (!isAuthenticated) {
-        setError('Please log in to access user management. Go to /auth/login');
+        setError(t('pleaseLogInToAccessUserManagement'));
         return;
       }
 
@@ -106,14 +108,12 @@ export default function UsersPage() {
         const errorData = await response.json();
 
         if (response.status === 401) {
-          setError(
-            'Please log in to access user management. Go to /auth/login'
-          );
+          setError(t('pleaseLogInToAccessUserManagement'));
         } else if (response.status === 403) {
-          setError('You need admin privileges to access user management.');
+          setError(t('needAdminPrivileges'));
         } else {
           setError(
-            errorData.message || errorData.error || 'Failed to fetch users'
+            errorData.message || errorData.error || t('failedToFetchUsers')
           );
         }
         return;
@@ -124,7 +124,7 @@ export default function UsersPage() {
       setSummary(data.summary);
     } catch (err) {
       console.error('Fetch users error:', err);
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      setError(err instanceof Error ? err.message : t('anErrorOccurred'));
     } finally {
       setLoading(false);
     }
@@ -163,7 +163,7 @@ export default function UsersPage() {
   };
 
   const formatLastLogin = (lastLoginAt?: string) => {
-    if (!lastLoginAt) return 'Never';
+    if (!lastLoginAt) return t('never');
 
     const lastLogin = new Date(lastLoginAt);
     const now = new Date();
@@ -171,13 +171,13 @@ export default function UsersPage() {
       (now.getTime() - lastLogin.getTime()) / (1000 * 60 * 60)
     );
 
-    if (diffInHours < 1) return 'Just now';
+    if (diffInHours < 1) return t('justNow');
     if (diffInHours < 24)
-      return `${diffInHours} hour${diffInHours > 1 ? 's' : ''} ago`;
+      return `${diffInHours} ${diffInHours > 1 ? t('hours') : t('hour')} ${t('ago')}`;
 
     const diffInDays = Math.floor(diffInHours / 24);
     if (diffInDays < 7)
-      return `${diffInDays} day${diffInDays > 1 ? 's' : ''} ago`;
+      return `${diffInDays} ${diffInDays > 1 ? t('days') : t('day')} ${t('ago')}`;
 
     return lastLogin.toLocaleDateString();
   };
@@ -197,7 +197,7 @@ export default function UsersPage() {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to create user');
+        throw new Error(errorData.error || t('failedToCreateUser'));
       }
 
       await fetchUsers(); // Refresh the user list
@@ -210,14 +210,14 @@ export default function UsersPage() {
       });
       setIsAddModalOpen(false);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      setError(err instanceof Error ? err.message : t('anErrorOccurred'));
     } finally {
       setSubmitting(false);
     }
   };
 
   const handleDeleteUser = async (userId: string) => {
-    if (!confirm('Are you sure you want to delete this user?')) return;
+    if (!confirm(t('confirmDeleteUser'))) return;
 
     try {
       const response = await fetch(`/api/users/${userId}`, {
@@ -226,12 +226,12 @@ export default function UsersPage() {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to delete user');
+        throw new Error(errorData.error || t('failedToDeleteUser'));
       }
 
       await fetchUsers(); // Refresh the user list
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      setError(err instanceof Error ? err.message : t('anErrorOccurred'));
     }
   };
 
@@ -257,14 +257,14 @@ export default function UsersPage() {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to update user');
+        throw new Error(errorData.error || t('failedToUpdateUser'));
       }
 
       await fetchUsers(); // Refresh the user list
       setIsEditModalOpen(false);
       setEditingUser(null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      setError(err instanceof Error ? err.message : t('anErrorOccurred'));
     } finally {
       setSubmitting(false);
     }
@@ -286,10 +286,10 @@ export default function UsersPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-foreground text-2xl font-bold">
-            User Management
+            {t('userManagement')}
           </h1>
           <p className="text-muted-foreground">
-            Manage system users and their permissions
+            {t('manageSystemUsers')} {t('manageSystemRoles')}
           </p>
         </div>
         <button
@@ -306,7 +306,7 @@ export default function UsersPage() {
           }}
         >
           <UserPlus className="mr-2 h-4 w-4" />
-          Add User
+          {t('addUser')}
         </button>
       </div>
 
@@ -320,7 +320,7 @@ export default function UsersPage() {
                 href="/auth/login"
                 className="rounded bg-red-600 px-3 py-1 text-sm text-white hover:bg-red-700"
               >
-                Login
+                {t('login')}
               </a>
             )}
           </div>
@@ -333,7 +333,7 @@ export default function UsersPage() {
           <div className="flex items-center">
             <Users className="h-8 w-8 text-blue-500" />
             <div className="ml-4">
-              <p className="text-muted-foreground text-sm">Total Users</p>
+              <p className="text-muted-foreground text-sm">{t('totalUsers')}</p>
               <p className="text-foreground text-2xl font-bold">
                 {summary.totalUsers}
               </p>
@@ -344,7 +344,9 @@ export default function UsersPage() {
           <div className="flex items-center">
             <Users className="h-8 w-8 text-green-500" />
             <div className="ml-4">
-              <p className="text-muted-foreground text-sm">Active Users</p>
+              <p className="text-muted-foreground text-sm">
+                {t('activeUsers')}
+              </p>
               <p className="text-foreground text-2xl font-bold">
                 {summary.activeUsers}
               </p>
@@ -355,7 +357,9 @@ export default function UsersPage() {
           <div className="flex items-center">
             <Shield className="h-8 w-8 text-red-500" />
             <div className="ml-4">
-              <p className="text-muted-foreground text-sm">Administrators</p>
+              <p className="text-muted-foreground text-sm">
+                {t('administrators')}
+              </p>
               <p className="text-foreground text-2xl font-bold">
                 {summary.adminUsers}
               </p>
@@ -366,7 +370,7 @@ export default function UsersPage() {
           <div className="flex items-center">
             <Shield className="h-8 w-8 text-purple-500" />
             <div className="ml-4">
-              <p className="text-muted-foreground text-sm">Managers</p>
+              <p className="text-muted-foreground text-sm">{t('managers')}</p>
               <p className="text-foreground text-2xl font-bold">
                 {summary.managerUsers}
               </p>
@@ -379,7 +383,7 @@ export default function UsersPage() {
       <div className="bg-card rounded-lg shadow">
         <div className="border-border border-b px-6 py-4">
           <h2 className="text-foreground text-lg font-semibold">
-            System Users
+            {t('systemUsers')}
           </h2>
         </div>
         <div className="overflow-x-auto">
@@ -387,22 +391,22 @@ export default function UsersPage() {
             <thead className="bg-muted">
               <tr>
                 <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase">
-                  User
+                  {t('user')}
                 </th>
                 <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase">
-                  Role
+                  {t('role')}
                 </th>
                 <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase">
-                  Status
+                  {t('status')}
                 </th>
                 <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase">
-                  Last Login
+                  {t('lastLogin')}
                 </th>
                 <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase">
-                  Permissions
+                  {t('permissions')}
                 </th>
                 <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase">
-                  Actions
+                  {t('actions')}
                 </th>
               </tr>
             </thead>
@@ -446,7 +450,7 @@ export default function UsersPage() {
                       <span
                         className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${getStatusColor(user.isActive)}`}
                       >
-                        {user.isActive ? 'ACTIVE' : 'INACTIVE'}
+                        {user.isActive ? t('active') : t('inactive')}
                       </span>
                     </td>
                     <td className="text-foreground whitespace-nowrap px-6 py-4 text-sm">
@@ -476,7 +480,7 @@ export default function UsersPage() {
                           setEditingUser(user);
                           setIsViewModalOpen(true);
                         }}
-                        title="View Details"
+                        title={t('viewDetails')}
                       >
                         <Eye className="h-4 w-4" />
                       </button>
@@ -493,14 +497,14 @@ export default function UsersPage() {
                           });
                           setIsEditModalOpen(true);
                         }}
-                        title="Edit User"
+                        title={t('editUser')}
                       >
                         <Edit className="h-4 w-4" />
                       </button>
                       <button
                         className="text-red-600 hover:text-red-900"
                         onClick={() => handleDeleteUser(user.id)}
-                        title="Delete User"
+                        title={t('deleteUser')}
                       >
                         <Trash2 className="h-4 w-4" />
                       </button>
@@ -517,29 +521,29 @@ export default function UsersPage() {
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         <div className="bg-card rounded-lg p-6 shadow">
           <h3 className="text-foreground mb-4 text-lg font-semibold">
-            Role Permissions
+            {t('rolePermissions')}
           </h3>
           <div className="space-y-3">
             <div className="border-border rounded-lg border p-3">
               <div className="mb-2 flex items-center justify-between">
                 <span className="font-medium text-red-600">ADMIN</span>
                 <span className="text-sm text-gray-500 dark:text-gray-400">
-                  Full Access
+                  {t('fullAccess')}
                 </span>
               </div>
               <p className="text-muted-foreground text-sm">
-                Complete system access and user management
+                {t('completeSystemAccessAndUserManagement')}
               </p>
             </div>
             <div className="border-border rounded-lg border p-3">
               <div className="mb-2 flex items-center justify-between">
                 <span className="font-medium text-blue-600">MANAGER</span>
                 <span className="text-sm text-gray-500 dark:text-gray-400">
-                  Operations
+                  {t('operations')}
                 </span>
               </div>
               <p className="text-muted-foreground text-sm">
-                Sales, inventory, and driver management
+                {t('salesInventoryAndDriverManagement')}
               </p>
             </div>
           </div>
@@ -547,7 +551,7 @@ export default function UsersPage() {
 
         <div className="bg-card rounded-lg p-6 shadow">
           <h3 className="text-foreground mb-4 text-lg font-semibold">
-            Recent Activity
+            {t('recentActivity')}
           </h3>
           <div className="space-y-3">
             {users.slice(0, 3).map((user, index) => (
@@ -565,7 +569,7 @@ export default function UsersPage() {
             ))}
             {users.length === 0 && (
               <div className="py-4 text-center text-gray-500 dark:text-gray-400">
-                No users found
+                {t('noUsersFound')}
               </div>
             )}
           </div>
@@ -647,8 +651,8 @@ export default function UsersPage() {
                   onChange={(e) => handleRoleChange(e.target.value as UserRole)}
                   className="border-border bg-input text-foreground w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
-                  <option value={UserRole.MANAGER}>Manager</option>
-                  <option value={UserRole.ADMIN}>Administrator</option>
+                  <option value={UserRole.MANAGER}>{t('manager')}</option>
+                  <option value={UserRole.ADMIN}>{t('administrator')}</option>
                 </select>
               </div>
 
@@ -685,7 +689,7 @@ export default function UsersPage() {
                 disabled={submitting}
                 className="text-muted-foreground border-border hover:bg-muted/50 rounded-lg border px-4 py-2 disabled:cursor-not-allowed disabled:opacity-50"
               >
-                Cancel
+                {t('cancel')}
               </button>
               <button
                 onClick={handleAddUser}
@@ -700,10 +704,10 @@ export default function UsersPage() {
                 {submitting ? (
                   <>
                     <div className="mr-2 h-4 w-4 animate-spin rounded-full border-b-2 border-white"></div>
-                    Creating...
+                    {t('creating')}...
                   </>
                 ) : (
-                  'Add User'
+                  t('addUser')
                 )}
               </button>
             </div>
@@ -717,7 +721,7 @@ export default function UsersPage() {
           <div className="bg-card w-full max-w-md rounded-lg p-6">
             <div className="mb-4 flex items-center justify-between">
               <h3 className="text-foreground text-lg font-semibold">
-                Edit User
+                {t('editUser')}
               </h3>
               <button
                 onClick={() => {
@@ -772,8 +776,8 @@ export default function UsersPage() {
                   onChange={(e) => handleRoleChange(e.target.value as UserRole)}
                   className="border-border bg-input text-foreground w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
-                  <option value={UserRole.MANAGER}>Manager</option>
-                  <option value={UserRole.ADMIN}>Administrator</option>
+                  <option value={UserRole.MANAGER}>{t('manager')}</option>
+                  <option value={UserRole.ADMIN}>{t('administrator')}</option>
                 </select>
               </div>
 
@@ -813,7 +817,7 @@ export default function UsersPage() {
                 disabled={submitting}
                 className="text-muted-foreground border-border hover:bg-muted/50 rounded-lg border px-4 py-2 disabled:cursor-not-allowed disabled:opacity-50"
               >
-                Cancel
+                {t('cancel')}
               </button>
               <button
                 onClick={handleEditUser}
@@ -823,10 +827,10 @@ export default function UsersPage() {
                 {submitting ? (
                   <>
                     <div className="mr-2 h-4 w-4 animate-spin rounded-full border-b-2 border-white"></div>
-                    Updating...
+                    {t('updating')}...
                   </>
                 ) : (
-                  'Update User'
+                  t('updateUser')
                 )}
               </button>
             </div>
@@ -840,7 +844,7 @@ export default function UsersPage() {
           <div className="bg-card w-full max-w-md rounded-lg p-6">
             <div className="mb-4 flex items-center justify-between">
               <h3 className="text-foreground text-lg font-semibold">
-                User Details
+                {t('userDetails')}
               </h3>
               <button
                 onClick={() => {
@@ -877,7 +881,7 @@ export default function UsersPage() {
                   Status
                 </label>
                 <p className="text-foreground">
-                  {editingUser.isActive ? 'Active' : 'Inactive'}
+                  {editingUser.isActive ? t('active') : t('inactive')}
                 </p>
               </div>
               <div>
@@ -913,7 +917,7 @@ export default function UsersPage() {
                 }}
                 className="text-muted-foreground border-border hover:bg-muted/50 rounded-lg border px-4 py-2"
               >
-                Close
+                {t('close')}
               </button>
             </div>
           </div>

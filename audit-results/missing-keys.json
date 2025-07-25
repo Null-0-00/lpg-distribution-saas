@@ -1,0 +1,4441 @@
+[
+  {
+    "path": "app\\(admin)\\admin\\distributor-assignments\\page.tsx",
+    "hardcodedStrings": [
+      {
+        "text": ">Access denied<",
+        "line": 340,
+        "pattern": 0,
+        "context": "(session.user.role !== 'ADMIN') {     return <div>Access denied</div>;   }    return (     <div cla"
+      },
+      {
+        "text": ">Distributor Assignments<",
+        "line": 347,
+        "pattern": 0,
+        "context": "<div>           <h1 className=\"text-3xl font-bold\">Distributor Assignments</h1>           <p classNa"
+      },
+      {
+        "text": ">\n            Manage company and product assignments to distributors\n          <",
+        "line": 348,
+        "pattern": 0,
+        "context": "h1>           <p className=\"text-muted-foreground\">             Manage company and product assignmen"
+      },
+      {
+        "text": ">\n          New Assignment\n        <",
+        "line": 353,
+        "pattern": 0,
+        "context": "reate}>           <Plus className=\"mr-2 h-4 w-4\" />           New Assignment         </Button>"
+      },
+      {
+        "text": ">\n            Filters\n          <",
+        "line": 362,
+        "pattern": 0,
+        "context": "gap-2\">             <Filter className=\"h-5 w-5\" />             Filters           </CardTitle>"
+      },
+      {
+        "text": ">All Distributors<",
+        "line": 373,
+        "pattern": 0,
+        "context": "ctContent>                 <SelectItem value=\"all\">All Distributors</SelectItem>                 {di"
+      },
+      {
+        "text": ">All Companies<",
+        "line": 387,
+        "pattern": 0,
+        "context": "ctContent>                 <SelectItem value=\"all\">All Companies</SelectItem>                 {compa"
+      },
+      {
+        "text": ">All Territories<",
+        "line": 401,
+        "pattern": 0,
+        "context": "ctContent>                 <SelectItem value=\"all\">All Territories</SelectItem>                 {ter"
+      },
+      {
+        "text": ">All Status<",
+        "line": 415,
+        "pattern": 0,
+        "context": "ctContent>                 <SelectItem value=\"all\">All Status</SelectItem>                 <SelectIt"
+      },
+      {
+        "text": ">Active<",
+        "line": 416,
+        "pattern": 0,
+        "context": "lectItem>                 <SelectItem value=\"true\">Active</SelectItem>                 <SelectItem v"
+      },
+      {
+        "text": ">Inactive<",
+        "line": 417,
+        "pattern": 0,
+        "context": "ectItem>                 <SelectItem value=\"false\">Inactive</SelectItem>               </SelectConte"
+      },
+      {
+        "text": ">\n              Apply Filters\n            <",
+        "line": 421,
+        "pattern": 0,
+        "context": "utton variant=\"outline\" onClick={fetchAssignments}>               Apply Filters             </Button"
+      },
+      {
+        "text": ">No assignments found<",
+        "line": 443,
+        "pattern": 0,
+        "context": "/>             <h3 className=\"text-lg font-medium\">No assignments found</h3>             <p classNam"
+      },
+      {
+        "text": ">\n            Previous\n          <",
+        "line": 556,
+        "pattern": 0,
+        "context": "1))}             disabled={page === 1}           >             Previous           </Button>"
+      },
+      {
+        "text": ">\n            Next\n          <",
+        "line": 566,
+        "pattern": 0,
+        "context": "disabled={page === totalPages}           >             Next           </Button>         </d"
+      },
+      {
+        "text": ">All Companies<",
+        "line": 633,
+        "pattern": 0,
+        "context": "tContent>                     <SelectItem value=\"\">All Companies</SelectItem>                     {c"
+      },
+      {
+        "text": ">All Products<",
+        "line": 656,
+        "pattern": 0,
+        "context": "tContent>                     <SelectItem value=\"\">All Products</SelectItem>                     {av"
+      },
+      {
+        "text": ">Territory<",
+        "line": 668,
+        "pattern": 0,
+        "context": "ace-y-2\">               <Label htmlFor=\"territory\">Territory</Label>               <Input"
+      },
+      {
+        "text": ">Notes<",
+        "line": 706,
+        "pattern": 0,
+        "context": "=\"space-y-2\">               <Label htmlFor=\"notes\">Notes</Label>               <Textarea"
+      },
+      {
+        "text": ">\n                Cancel\n              <",
+        "line": 726,
+        "pattern": 0,
+        "context": "alogOpen(false);                 }}               >                 Cancel               </Button>"
+      },
+      {
+        "text": "placeholder=\"Filter by distributor\"",
+        "line": 370,
+        "pattern": 1,
+        "context": "<SelectTrigger>                 <SelectValue placeholder=\"Filter by distributor\" />"
+      },
+      {
+        "text": "placeholder=\"Filter by company\"",
+        "line": 384,
+        "pattern": 1,
+        "context": "<SelectTrigger>                 <SelectValue placeholder=\"Filter by company\" />               <"
+      },
+      {
+        "text": "placeholder=\"Filter by territory\"",
+        "line": 398,
+        "pattern": 1,
+        "context": "<SelectTrigger>                 <SelectValue placeholder=\"Filter by territory\" />"
+      },
+      {
+        "text": "placeholder=\"Filter by status\"",
+        "line": 412,
+        "pattern": 1,
+        "context": "<SelectTrigger>                 <SelectValue placeholder=\"Filter by status\" />               </"
+      },
+      {
+        "text": "placeholder=\"Select distributor\"",
+        "line": 604,
+        "pattern": 1,
+        "context": "<SelectTrigger>                   <SelectValue placeholder=\"Select distributor\" />"
+      },
+      {
+        "text": "placeholder=\"Select company\"",
+        "line": 630,
+        "pattern": 1,
+        "context": "<SelectTrigger>                     <SelectValue placeholder=\"Select company\" />"
+      },
+      {
+        "text": "placeholder=\"Select product\"",
+        "line": 653,
+        "pattern": 1,
+        "context": "<SelectTrigger>                     <SelectValue placeholder=\"Select product\" />"
+      },
+      {
+        "text": "placeholder=\"Additional notes or conditions\"",
+        "line": 713,
+        "pattern": 1,
+        "context": "target.value })                 }                 placeholder=\"Additional notes or conditions\""
+      },
+      {
+        "text": "'Failed to save assignment'",
+        "line": 281,
+        "pattern": 2,
+        "context": ": 'Error',           description: result.error || 'Failed to save assignment',           variant: 'd"
+      },
+      {
+        "text": "'Failed to save assignment'",
+        "line": 288,
+        "pattern": 2,
+        "context": "st({         title: 'Error',         description: 'Failed to save assignment',         variant: 'des"
+      }
+    ],
+    "usedTranslationKeys": ["T", "T", "T", "T"],
+    "missingTranslationCalls": [
+      {
+        "key": "T",
+        "line": 120,
+        "context": ",     effectiveDate: new Date().toISOString().split('T')[0] ?? '',     expiryDate: '',     notes: ''"
+      },
+      {
+        "key": "T",
+        "line": 214,
+        "context": "effectiveDate: new Date().toISOString().split('T')[0] ?? '',       expiryDate: '',       notes"
+      },
+      {
+        "key": "T",
+        "line": 233,
+        "context": "effectiveDate: assignment.effectiveDate.split('T')[0] ?? '',       expiryDate: assignment.expi"
+      },
+      {
+        "key": "T",
+        "line": 234,
+        "context": "'',       expiryDate: assignment.expiryDate?.split('T')[0] ?? '',       notes: assignment.notes ??"
+      }
+    ],
+    "issues": ["Component has hardcoded text but no translation hook"]
+  },
+  {
+    "path": "app\\api\\admin\\companies\\route.ts",
+    "hardcodedStrings": [],
+    "usedTranslationKeys": ["page", "limit", "search", "isActive", "territory"],
+    "missingTranslationCalls": [
+      {
+        "key": "page",
+        "line": 15,
+        "context": "t.url);      const page = parseInt(searchParams.get('page') || '1');     const limit = parseInt(sear"
+      },
+      {
+        "key": "limit",
+        "line": 16,
+        "context": "| '1');     const limit = parseInt(searchParams.get('limit') || '20');     const search = searchPara"
+      },
+      {
+        "key": "isActive",
+        "line": 18,
+        "context": "arch') || '';     const isActive = searchParams.get('isActive');     const territory = searchParams."
+      },
+      {
+        "key": "territory",
+        "line": 19,
+        "context": "'isActive');     const territory = searchParams.get('territory');     const offset = (page - 1) * li"
+      }
+    ],
+    "issues": []
+  },
+  {
+    "path": "app\\api\\admin\\distributor-assignments\\route.ts",
+    "hardcodedStrings": [],
+    "usedTranslationKeys": [
+      "page",
+      "limit",
+      "tenantId",
+      "companyId",
+      "productId",
+      "territory",
+      "isActive"
+    ],
+    "missingTranslationCalls": [
+      {
+        "key": "page",
+        "line": 15,
+        "context": "t.url);      const page = parseInt(searchParams.get('page') || '1');     const limit = parseInt(sear"
+      },
+      {
+        "key": "limit",
+        "line": 16,
+        "context": "| '1');     const limit = parseInt(searchParams.get('limit') || '20');     const tenantId = searchPa"
+      },
+      {
+        "key": "tenantId",
+        "line": 17,
+        "context": "t') || '20');     const tenantId = searchParams.get('tenantId');     const companyId = searchParams."
+      },
+      {
+        "key": "companyId",
+        "line": 18,
+        "context": "'tenantId');     const companyId = searchParams.get('companyId');     const productId = searchParams"
+      },
+      {
+        "key": "productId",
+        "line": 19,
+        "context": "companyId');     const productId = searchParams.get('productId');     const territory = searchParams"
+      },
+      {
+        "key": "territory",
+        "line": 20,
+        "context": "productId');     const territory = searchParams.get('territory');     const isActive = searchParams."
+      },
+      {
+        "key": "isActive",
+        "line": 21,
+        "context": "'territory');     const isActive = searchParams.get('isActive');     const offset = (page - 1) * lim"
+      }
+    ],
+    "issues": []
+  },
+  {
+    "path": "app\\api\\admin\\pricing-assignments\\route.ts",
+    "hardcodedStrings": [],
+    "usedTranslationKeys": [
+      "page",
+      "limit",
+      "tenantId",
+      "companyTierId",
+      "productTierId",
+      "isActive"
+    ],
+    "missingTranslationCalls": [
+      {
+        "key": "page",
+        "line": 15,
+        "context": "t.url);      const page = parseInt(searchParams.get('page') || '1');     const limit = parseInt(sear"
+      },
+      {
+        "key": "limit",
+        "line": 16,
+        "context": "| '1');     const limit = parseInt(searchParams.get('limit') || '20');     const tenantId = searchPa"
+      },
+      {
+        "key": "tenantId",
+        "line": 17,
+        "context": "t') || '20');     const tenantId = searchParams.get('tenantId');     const companyTierId = searchPar"
+      },
+      {
+        "key": "companyTierId",
+        "line": 18,
+        "context": "antId');     const companyTierId = searchParams.get('companyTierId');     const productTierId = sear"
+      },
+      {
+        "key": "productTierId",
+        "line": 19,
+        "context": "ierId');     const productTierId = searchParams.get('productTierId');     const isActive = searchPar"
+      },
+      {
+        "key": "isActive",
+        "line": 20,
+        "context": "ductTierId');     const isActive = searchParams.get('isActive');     const offset = (page - 1) * lim"
+      }
+    ],
+    "issues": []
+  },
+  {
+    "path": "app\\api\\admin\\pricing-tiers\\route.ts",
+    "hardcodedStrings": [],
+    "usedTranslationKeys": ["type", "companyId", "productId", "isActive"],
+    "missingTranslationCalls": [
+      {
+        "key": "companyId",
+        "line": 16,
+        "context": "', or 'both'     const companyId = searchParams.get('companyId');     const productId = searchParams"
+      },
+      {
+        "key": "productId",
+        "line": 17,
+        "context": "companyId');     const productId = searchParams.get('productId');     const isActive = searchParams."
+      },
+      {
+        "key": "isActive",
+        "line": 18,
+        "context": "'productId');     const isActive = searchParams.get('isActive');      const responses: any = {};"
+      }
+    ],
+    "issues": []
+  },
+  {
+    "path": "app\\api\\admin\\products\\route.ts",
+    "hardcodedStrings": [],
+    "usedTranslationKeys": [
+      "page",
+      "limit",
+      "search",
+      "companyId",
+      "isActive",
+      "minPrice",
+      "maxPrice"
+    ],
+    "missingTranslationCalls": [
+      {
+        "key": "page",
+        "line": 15,
+        "context": "t.url);      const page = parseInt(searchParams.get('page') || '1');     const limit = parseInt(sear"
+      },
+      {
+        "key": "limit",
+        "line": 16,
+        "context": "| '1');     const limit = parseInt(searchParams.get('limit') || '20');     const search = searchPara"
+      },
+      {
+        "key": "companyId",
+        "line": 18,
+        "context": "rch') || '';     const companyId = searchParams.get('companyId');     const isActive = searchParams."
+      },
+      {
+        "key": "isActive",
+        "line": 19,
+        "context": "'companyId');     const isActive = searchParams.get('isActive');     const minPrice = searchParams.g"
+      },
+      {
+        "key": "minPrice",
+        "line": 20,
+        "context": "('isActive');     const minPrice = searchParams.get('minPrice');     const maxPrice = searchParams.g"
+      },
+      {
+        "key": "maxPrice",
+        "line": 21,
+        "context": "('minPrice');     const maxPrice = searchParams.get('maxPrice');     const offset = (page - 1) * lim"
+      }
+    ],
+    "issues": []
+  },
+  {
+    "path": "app\\api\\analytics\\route.ts",
+    "hardcodedStrings": [],
+    "usedTranslationKeys": ["month", "year", "driverId"],
+    "missingTranslationCalls": [
+      {
+        "key": "driverId",
+        "line": 23,
+        "context": "arams.get('year'),       driverId: searchParams.get('driverId') || undefined,     };      const vali"
+      }
+    ],
+    "issues": []
+  },
+  {
+    "path": "app\\api\\assets\\route.ts",
+    "hardcodedStrings": [],
+    "usedTranslationKeys": ["T"],
+    "missingTranslationCalls": [
+      {
+        "key": "T",
+        "line": 142,
+        "context": "als,       asOfDate: reportDate.toISOString().split('T')[0],       summary: {         totalAssets: a"
+      }
+    ],
+    "issues": []
+  },
+  {
+    "path": "app\\api\\balance-sheet\\route.ts",
+    "hardcodedStrings": [],
+    "usedTranslationKeys": ["T"],
+    "missingTranslationCalls": [
+      {
+        "key": "T",
+        "line": 103,
+        "context": "reportDate: reportDate.toISOString().split('T')[0],         ...(comparisonDate && { compari"
+      }
+    ],
+    "issues": []
+  },
+  {
+    "path": "app\\api\\commission-structures\\route.ts",
+    "hardcodedStrings": [],
+    "usedTranslationKeys": ["month", "year", "productId"],
+    "missingTranslationCalls": [
+      {
+        "key": "productId",
+        "line": 24,
+        "context": "get('year');     const productId = searchParams.get('productId');      let where: any = {       tena"
+      }
+    ],
+    "issues": []
+  },
+  {
+    "path": "app\\api\\companies\\route.ts",
+    "hardcodedStrings": [],
+    "usedTranslationKeys": ["search", "isActive", "includeProducts"],
+    "missingTranslationCalls": [
+      {
+        "key": "isActive",
+        "line": 17,
+        "context": "arch') || '';     const isActive = searchParams.get('isActive');     const includeProducts = searchP"
+      },
+      {
+        "key": "includeProducts",
+        "line": 18,
+        "context": "ive');     const includeProducts = searchParams.get('includeProducts') === 'true';      const whereC"
+      }
+    ],
+    "issues": []
+  },
+  {
+    "path": "app\\api\\dashboard\\analytics\\route.ts",
+    "hardcodedStrings": [
+      {
+        "text": "'Failed to fetch dashboard analytics'",
+        "line": 201,
+        "pattern": 2,
+        "context": "r);      return NextResponse.json(       { error: 'Failed to fetch dashboard analytics' },       { s"
+      }
+    ],
+    "usedTranslationKeys": ["T"],
+    "missingTranslationCalls": [
+      {
+        "key": "T",
+        "line": 48,
+        "context": "return {           date: date.toISOString().split('T')[0],           quantity: dailySales._sum.qua"
+      }
+    ],
+    "issues": []
+  },
+  {
+    "path": "app\\api\\dashboard\\trends\\route.ts",
+    "hardcodedStrings": [],
+    "usedTranslationKeys": ["range", "metric"],
+    "missingTranslationCalls": [
+      {
+        "key": "range",
+        "line": 16,
+        "context": "RL(request.url);     const range = searchParams.get('range') || '7d';     const metric = searchParam"
+      },
+      {
+        "key": "metric",
+        "line": 17,
+        "context": "ange') || '7d';     const metric = searchParams.get('metric') || 'sales';      const tenantId = sess"
+      }
+    ],
+    "issues": []
+  },
+  {
+    "path": "app\\api\\dashboard-updates\\route.ts",
+    "hardcodedStrings": [
+      {
+        "text": "'Failed to fetch dashboard updates'",
+        "line": 85,
+        "pattern": 2,
+        "context": "or);     return NextResponse.json(       { error: 'Failed to fetch dashboard updates' },       { sta"
+      }
+    ],
+    "usedTranslationKeys": ["lastUpdate", "type"],
+    "missingTranslationCalls": [
+      {
+        "key": "lastUpdate",
+        "line": 13,
+        "context": "quest.url);     const lastUpdate = searchParams.get('lastUpdate');     const type = searchParams.get"
+      }
+    ],
+    "issues": []
+  },
+  {
+    "path": "app\\api\\debug\\auth\\route.ts",
+    "hardcodedStrings": [],
+    "usedTranslationKeys": ["token"],
+    "missingTranslationCalls": [
+      {
+        "key": "token",
+        "line": 7,
+        "context": "const debugToken = request.nextUrl.searchParams.get('token');     if (       process.env.NODE_ENV =="
+      }
+    ],
+    "issues": []
+  },
+  {
+    "path": "app\\api\\drivers\\daily-sales\\route.ts",
+    "hardcodedStrings": [],
+    "usedTranslationKeys": ["month", "year", "driverType", "T", "T"],
+    "missingTranslationCalls": [
+      {
+        "key": "driverType",
+        "line": 15,
+        "context": "et('year');     const driverType = searchParams.get('driverType') || 'RETAIL'; // Default to retail"
+      },
+      {
+        "key": "T",
+        "line": 127,
+        "context": "{sale.driverId}-${sale.saleDate.toISOString().split('T')[0]}`;          if (!salesByDriverAndDate.ha"
+      },
+      {
+        "key": "T",
+        "line": 165,
+        "context": "record.driver.id}-${record.date.toISOString().split('T')[0]}`,           saleDate: record.date,"
+      }
+    ],
+    "issues": []
+  },
+  {
+    "path": "app\\api\\drivers\\route.ts",
+    "hardcodedStrings": [
+      {
+        "text": "'Cannot delete driver with existing sales records'",
+        "line": 401,
+        "pattern": 2,
+        "context": "urn NextResponse.json(         {           error: 'Cannot delete driver with existing sales records'"
+      },
+      {
+        "text": "'Driver deleted successfully'",
+        "line": 418,
+        "pattern": 2,
+        "context": "sponse.json({       success: true,       message: 'Driver deleted successfully',     });   } catch ("
+      }
+    ],
+    "usedTranslationKeys": [
+      "status",
+      "active",
+      "driverType",
+      "route",
+      "page",
+      "limit",
+      "includeMetrics",
+      "id"
+    ],
+    "missingTranslationCalls": [
+      {
+        "key": "driverType",
+        "line": 83,
+        "context": "s.get('active'),       driverType: searchParams.get('driverType'),       route: searchParams.get('ro"
+      },
+      {
+        "key": "route",
+        "line": 84,
+        "context": "ms.get('driverType'),       route: searchParams.get('route'),       page: searchParams.get('page'),"
+      },
+      {
+        "key": "page",
+        "line": 85,
+        "context": "chParams.get('route'),       page: searchParams.get('page'),       limit: searchParams.get('limit'),"
+      },
+      {
+        "key": "limit",
+        "line": 86,
+        "context": "chParams.get('page'),       limit: searchParams.get('limit'),       includeMetrics: searchParams.get"
+      },
+      {
+        "key": "includeMetrics",
+        "line": 87,
+        "context": "et('limit'),       includeMetrics: searchParams.get('includeMetrics'),     };      // Filter out nul"
+      },
+      {
+        "key": "id",
+        "line": 369,
+        "context": "request.url);     const driverId = searchParams.get('id');      if (!driverId) {       return NextRe"
+      }
+    ],
+    "issues": []
+  },
+  {
+    "path": "app\\api\\empty-cylinder-transactions\\route.ts",
+    "hardcodedStrings": [],
+    "usedTranslationKeys": [
+      "startDate",
+      "endDate",
+      "companyId",
+      "productId",
+      "transactionType",
+      "limit",
+      "offset"
+    ],
+    "missingTranslationCalls": [
+      {
+        "key": "startDate",
+        "line": 13,
+        "context": "equest.url);     const startDate = searchParams.get('startDate');     const endDate = searchParams.g"
+      },
+      {
+        "key": "endDate",
+        "line": 14,
+        "context": "('startDate');     const endDate = searchParams.get('endDate');     const companyId = searchParams.g"
+      },
+      {
+        "key": "companyId",
+        "line": 15,
+        "context": "('endDate');     const companyId = searchParams.get('companyId');     const productId = searchParams"
+      },
+      {
+        "key": "productId",
+        "line": 16,
+        "context": "companyId');     const productId = searchParams.get('productId');     const transactionType = search"
+      },
+      {
+        "key": "limit",
+        "line": 18,
+        "context": "'SELL'     const limit = parseInt(searchParams.get('limit') || '50');     const offset = parseInt(s"
+      },
+      {
+        "key": "offset",
+        "line": 19,
+        "context": "'50');     const offset = parseInt(searchParams.get('offset') || '0');      const tenantId = session"
+      }
+    ],
+    "issues": []
+  },
+  {
+    "path": "app\\api\\executive-dashboard\\route.ts",
+    "hardcodedStrings": [
+      {
+        "text": "'Failed to fetch dashboard data'",
+        "line": 49,
+        "pattern": 2,
+        "context": "or);     return NextResponse.json(       { error: 'Failed to fetch dashboard data' },       { status"
+      }
+    ],
+    "usedTranslationKeys": ["period", "T", "T", "T"],
+    "missingTranslationCalls": [
+      {
+        "key": "period",
+        "line": 13,
+        "context": "L(request.url);     const period = searchParams.get('period') || 'last-30-days';     const tenantId"
+      },
+      {
+        "key": "T",
+        "line": 136,
+        "context": "const date = sale.saleDate.toISOString().split('T')[0];       if (!acc[date]) {         acc[dat"
+      },
+      {
+        "key": "T",
+        "line": 425,
+        "context": "const date = sale.saleDate.toISOString().split('T')[0];       if (!acc[date]) {         acc[dat"
+      },
+      {
+        "key": "T",
+        "line": 439,
+        "context": "onst date = expense.expenseDate.toISOString().split('T')[0];       if (!acc[date]) {         acc[dat"
+      }
+    ],
+    "issues": []
+  },
+  {
+    "path": "app\\api\\expense-categories\\route.ts",
+    "hardcodedStrings": [],
+    "usedTranslationKeys": ["includeInactive", "month", "year"],
+    "missingTranslationCalls": [
+      {
+        "key": "includeInactive",
+        "line": 55,
+        "context": ".url);     const includeInactive = searchParams.get('includeInactive') === 'true';     const tenantI"
+      }
+    ],
+    "issues": []
+  },
+  {
+    "path": "app\\api\\expense-reports\\route.ts",
+    "hardcodedStrings": [
+      {
+        "text": "'Invalid report type'",
+        "line": 83,
+        "pattern": 2,
+        "context": "return NextResponse.json(           { error: 'Invalid report type' },           { status: 400 }"
+      }
+    ],
+    "usedTranslationKeys": ["summary", "monthly", "T", "T"],
+    "missingTranslationCalls": [
+      {
+        "key": "summary",
+        "line": 13,
+        "context": "alysis', 'cash-flow'])     .optional()     .default('summary'),   period: z     .enum(['monthly', 'q"
+      },
+      {
+        "key": "monthly",
+        "line": 17,
+        "context": "quarterly', 'yearly'])     .optional()     .default('monthly'),   dateFrom: z.string().optional(),"
+      },
+      {
+        "key": "T",
+        "line": 199,
+        "context": "Range: {         from: fromDate.toISOString().split('T')[0],         to: toDate.toISOString().split("
+      },
+      {
+        "key": "T",
+        "line": 200,
+        "context": "lit('T')[0],         to: toDate.toISOString().split('T')[0],       },     },     categoriesBreakdown"
+      }
+    ],
+    "issues": []
+  },
+  {
+    "path": "app\\api\\expenses\\route.ts",
+    "hardcodedStrings": [],
+    "usedTranslationKeys": [
+      "all",
+      "categoryId",
+      "status",
+      "dateFrom",
+      "dateTo",
+      "userId",
+      "search",
+      "page",
+      "limit"
+    ],
+    "missingTranslationCalls": [
+      {
+        "key": "all",
+        "line": 12,
+        "context": "(['pending', 'approved', 'all']).optional().default('all'),   dateFrom: z.string().optional(),   dat"
+      },
+      {
+        "key": "categoryId",
+        "line": 81,
+        "context": "queryParams = {       categoryId: searchParams.get('categoryId') || undefined,       status: search"
+      },
+      {
+        "key": "dateFrom",
+        "line": 83,
+        "context": "status') || 'all',       dateFrom: searchParams.get('dateFrom') || undefined,       dateTo: searchPa"
+      },
+      {
+        "key": "dateTo",
+        "line": 84,
+        "context": "From') || undefined,       dateTo: searchParams.get('dateTo') || undefined,       userId: searchPara"
+      },
+      {
+        "key": "userId",
+        "line": 85,
+        "context": "teTo') || undefined,       userId: searchParams.get('userId') || undefined,       search: searchPara"
+      },
+      {
+        "key": "page",
+        "line": 87,
+        "context": "search') || undefined,       page: searchParams.get('page') || '1',       limit: searchParams.get('l"
+      },
+      {
+        "key": "limit",
+        "line": 88,
+        "context": "s.get('page') || '1',       limit: searchParams.get('limit') || '20',     };      // Remove null/und"
+      }
+    ],
+    "issues": []
+  },
+  {
+    "path": "app\\api\\financial-reports\\balance-sheet\\route.ts",
+    "hardcodedStrings": [],
+    "usedTranslationKeys": ["asOfDate", "T", "compareDate"],
+    "missingTranslationCalls": [
+      {
+        "key": "asOfDate",
+        "line": 14,
+        "context": "t.url);     const asOfDate =       searchParams.get('asOfDate') || new Date().toISOString().split('T"
+      },
+      {
+        "key": "T",
+        "line": 14,
+        "context": "s.get('asOfDate') || new Date().toISOString().split('T')[0];     const compareDate = searchParams.ge"
+      },
+      {
+        "key": "compareDate",
+        "line": 15,
+        "context": "t('T')[0];     const compareDate = searchParams.get('compareDate');      const tenantId = session.us"
+      }
+    ],
+    "issues": []
+  },
+  {
+    "path": "app\\api\\financial-reports\\cash-flow\\route.ts",
+    "hardcodedStrings": [],
+    "usedTranslationKeys": [
+      "startDate",
+      "endDate",
+      "compareStartDate",
+      "compareEndDate"
+    ],
+    "missingTranslationCalls": [
+      {
+        "key": "startDate",
+        "line": 13,
+        "context": "equest.url);     const startDate = searchParams.get('startDate');     const endDate = searchParams.g"
+      },
+      {
+        "key": "endDate",
+        "line": 14,
+        "context": "('startDate');     const endDate = searchParams.get('endDate');     const compareStartDate = searchP"
+      },
+      {
+        "key": "compareStartDate",
+        "line": 15,
+        "context": "te');     const compareStartDate = searchParams.get('compareStartDate');     const compareEndDate ="
+      },
+      {
+        "key": "compareEndDate",
+        "line": 16,
+        "context": "Date');     const compareEndDate = searchParams.get('compareEndDate');      if (!startDate || !endDa"
+      }
+    ],
+    "issues": []
+  },
+  {
+    "path": "app\\api\\financial-reports\\income-statement\\route.ts",
+    "hardcodedStrings": [],
+    "usedTranslationKeys": [
+      "startDate",
+      "endDate",
+      "compareStartDate",
+      "compareEndDate"
+    ],
+    "missingTranslationCalls": [
+      {
+        "key": "startDate",
+        "line": 13,
+        "context": "equest.url);     const startDate = searchParams.get('startDate');     const endDate = searchParams.g"
+      },
+      {
+        "key": "endDate",
+        "line": 14,
+        "context": "('startDate');     const endDate = searchParams.get('endDate');     const compareStartDate = searchP"
+      },
+      {
+        "key": "compareStartDate",
+        "line": 15,
+        "context": "te');     const compareStartDate = searchParams.get('compareStartDate');     const compareEndDate ="
+      },
+      {
+        "key": "compareEndDate",
+        "line": 16,
+        "context": "Date');     const compareEndDate = searchParams.get('compareEndDate');      if (!startDate || !endDa"
+      }
+    ],
+    "issues": []
+  },
+  {
+    "path": "app\\api\\fixed-cost-structures\\route.ts",
+    "hardcodedStrings": [],
+    "usedTranslationKeys": ["month", "year", "productId", "includeGlobal"],
+    "missingTranslationCalls": [
+      {
+        "key": "productId",
+        "line": 25,
+        "context": "get('year');     const productId = searchParams.get('productId');     const includeGlobal = searchPa"
+      },
+      {
+        "key": "includeGlobal",
+        "line": 26,
+        "context": "uctId');     const includeGlobal = searchParams.get('includeGlobal') === 'true';      let where: any"
+      }
+    ],
+    "issues": []
+  },
+  {
+    "path": "app\\api\\inventory\\alerts\\route.ts",
+    "hardcodedStrings": [],
+    "usedTranslationKeys": ["severity", "resolved"],
+    "missingTranslationCalls": [
+      {
+        "key": "severity",
+        "line": 36,
+        "context": "equest.url);      const severity = searchParams.get('severity') as       | 'critical'       | 'warni"
+      },
+      {
+        "key": "resolved",
+        "line": 41,
+        "context": "ll;     // const includeResolved = searchParams.get('resolved') === 'true'; // Future feature      /"
+      }
+    ],
+    "issues": []
+  },
+  {
+    "path": "app\\api\\inventory\\daily\\route.ts",
+    "hardcodedStrings": [],
+    "usedTranslationKeys": ["endDate", "T", "startDate", "T", "T"],
+    "missingTranslationCalls": [
+      {
+        "key": "endDate",
+        "line": 37,
+        "context": "30 days     const endDate =       searchParams.get('endDate') || new Date().toISOString().split('T'"
+      },
+      {
+        "key": "T",
+        "line": 37,
+        "context": "ms.get('endDate') || new Date().toISOString().split('T')[0];     const startDate =       searchParam"
+      },
+      {
+        "key": "startDate",
+        "line": 39,
+        "context": "')[0];     const startDate =       searchParams.get('startDate') ||       (() => {         const dat"
+      },
+      {
+        "key": "T",
+        "line": 43,
+        "context": "te() - 30);         return date.toISOString().split('T')[0];       })();      // Generate date range"
+      },
+      {
+        "key": "T",
+        "line": 52,
+        "context": "end) {       dates.push(current.toISOString().split('T')[0]);       current.setDate(current.getDate("
+      }
+    ],
+    "issues": []
+  },
+  {
+    "path": "app\\api\\inventory\\movements\\route.ts",
+    "hardcodedStrings": [],
+    "usedTranslationKeys": [
+      "productId",
+      "driverId",
+      "type",
+      "startDate",
+      "endDate",
+      "page",
+      "limit"
+    ],
+    "missingTranslationCalls": [
+      {
+        "key": "productId",
+        "line": 42,
+        "context": "chema.safeParse({       productId: searchParams.get('productId'),       driverId: searchParams.get('"
+      },
+      {
+        "key": "driverId",
+        "line": 43,
+        "context": ".get('productId'),       driverId: searchParams.get('driverId'),       type: searchParams.get('type'"
+      },
+      {
+        "key": "startDate",
+        "line": 45,
+        "context": "rams.get('type'),       startDate: searchParams.get('startDate'),       endDate: searchParams.get('e"
+      },
+      {
+        "key": "endDate",
+        "line": 46,
+        "context": "s.get('startDate'),       endDate: searchParams.get('endDate'),       page: searchParams.get('page')"
+      },
+      {
+        "key": "page",
+        "line": 47,
+        "context": "Params.get('endDate'),       page: searchParams.get('page'),       limit: searchParams.get('limit'),"
+      },
+      {
+        "key": "limit",
+        "line": 48,
+        "context": "chParams.get('page'),       limit: searchParams.get('limit'),     });      if (!queryResult.success)"
+      }
+    ],
+    "issues": []
+  },
+  {
+    "path": "app\\api\\inventory\\route.ts",
+    "hardcodedStrings": [],
+    "usedTranslationKeys": [
+      "productId",
+      "companyId",
+      "companyName",
+      "startDate",
+      "endDate",
+      "includeMovements",
+      "includeLowStock"
+    ],
+    "missingTranslationCalls": [
+      {
+        "key": "productId",
+        "line": 20,
+        "context": "ers directly     const productId = searchParams.get('productId');     const companyId = searchParams"
+      },
+      {
+        "key": "companyId",
+        "line": 21,
+        "context": "productId');     const companyId = searchParams.get('companyId');     const companyName = searchPara"
+      },
+      {
+        "key": "companyName",
+        "line": 22,
+        "context": "mpanyId');     const companyName = searchParams.get('companyName');     const startDate = searchPara"
+      },
+      {
+        "key": "startDate",
+        "line": 23,
+        "context": "mpanyName');     const startDate = searchParams.get('startDate');     const endDate = searchParams.g"
+      },
+      {
+        "key": "endDate",
+        "line": 24,
+        "context": "('startDate');     const endDate = searchParams.get('endDate');     const includeMovements = searchP"
+      },
+      {
+        "key": "includeMovements",
+        "line": 25,
+        "context": "te');     const includeMovements = searchParams.get('includeMovements') === 'true';     const includ"
+      },
+      {
+        "key": "includeLowStock",
+        "line": 26,
+        "context": "true';     const includeLowStock = searchParams.get('includeLowStock') === 'true';      // Get produ"
+      }
+    ],
+    "issues": []
+  },
+  {
+    "path": "app\\api\\liabilities\\route.ts",
+    "hardcodedStrings": [],
+    "usedTranslationKeys": ["T"],
+    "missingTranslationCalls": [
+      {
+        "key": "T",
+        "line": 90,
+        "context": "ity,       asOfDate: reportDate.toISOString().split('T')[0],       summary: {         totalLiabiliti"
+      }
+    ],
+    "issues": []
+  },
+  {
+    "path": "app\\api\\products\\route.ts",
+    "hardcodedStrings": [],
+    "usedTranslationKeys": ["inventory", "showAll"],
+    "missingTranslationCalls": [
+      {
+        "key": "showAll",
+        "line": 19,
+        "context": "') === 'true';     const showAll = searchParams.get('showAll') === 'true';      const products = awa"
+      }
+    ],
+    "issues": []
+  },
+  {
+    "path": "app\\api\\purchase-orders\\route.ts",
+    "hardcodedStrings": [],
+    "usedTranslationKeys": [
+      "status",
+      "companyId",
+      "startDate",
+      "endDate",
+      "limit",
+      "offset"
+    ],
+    "missingTranslationCalls": [
+      {
+        "key": "companyId",
+        "line": 14,
+        "context": "t('status');     const companyId = searchParams.get('companyId');     const startDate = searchParams"
+      },
+      {
+        "key": "startDate",
+        "line": 15,
+        "context": "companyId');     const startDate = searchParams.get('startDate');     const endDate = searchParams.g"
+      },
+      {
+        "key": "endDate",
+        "line": 16,
+        "context": "('startDate');     const endDate = searchParams.get('endDate');     const limit = parseInt(searchPar"
+      },
+      {
+        "key": "limit",
+        "line": 17,
+        "context": "Date');     const limit = parseInt(searchParams.get('limit') || '50');     const offset = parseInt(s"
+      },
+      {
+        "key": "offset",
+        "line": 18,
+        "context": "'50');     const offset = parseInt(searchParams.get('offset') || '0');      const tenantId = session"
+      }
+    ],
+    "issues": []
+  },
+  {
+    "path": "app\\api\\receivables\\changes\\route.ts",
+    "hardcodedStrings": [],
+    "usedTranslationKeys": ["driverId", "page", "limit"],
+    "missingTranslationCalls": [
+      {
+        "key": "driverId",
+        "line": 13,
+        "context": "request.url);     const driverId = searchParams.get('driverId');     const page = parseInt(searchPar"
+      },
+      {
+        "key": "page",
+        "line": 14,
+        "context": "verId');     const page = parseInt(searchParams.get('page') || '1');     const limit = Math.min(pars"
+      },
+      {
+        "key": "limit",
+        "line": 15,
+        "context": "const limit = Math.min(parseInt(searchParams.get('limit') || '20'), 100);     const tenantId = se"
+      }
+    ],
+    "issues": []
+  },
+  {
+    "path": "app\\api\\receivables\\customers\\route.ts",
+    "hardcodedStrings": [],
+    "usedTranslationKeys": ["driverId", "T", "T", "T", "T", "T", "T"],
+    "missingTranslationCalls": [
+      {
+        "key": "driverId",
+        "line": 28,
+        "context": "request.url);     const driverId = searchParams.get('driverId');     const tenantId = session.user.t"
+      },
+      {
+        "key": "T",
+        "line": 116,
+        "context": "e();     const todayStr = today.toISOString().split('T')[0];      // Find drivers that either have n"
+      },
+      {
+        "key": "T",
+        "line": 122,
+        "context": "tRecordDate = latestRecord.date.toISOString().split('T')[0];       return latestRecordDate !== today"
+      },
+      {
+        "key": "T",
+        "line": 226,
+        "context": "? receivable.dueDate.toISOString().split('T')[0]             : '',           status: rece"
+      },
+      {
+        "key": "T",
+        "line": 390,
+        "context": "te: customerReceivable.dueDate?.toISOString().split('T')[0] || '',         status: customerReceivabl"
+      },
+      {
+        "key": "T",
+        "line": 406,
+        "context": "Date) {   const dateStr = date.toISOString().split('T')[0];    // Get all active retail drivers   c"
+      },
+      {
+        "key": "T",
+        "line": 467,
+        "context": "const yesterdayStr = yesterday.toISOString().split('T')[0];      const yesterdayRecord = await pris"
+      }
+    ],
+    "issues": []
+  },
+  {
+    "path": "app\\api\\receivables\\customers\\[id]\\route.ts",
+    "hardcodedStrings": [],
+    "usedTranslationKeys": ["T"],
+    "missingTranslationCalls": [
+      {
+        "key": "T",
+        "line": 146,
+        "context": "ate: updatedReceivable.dueDate?.toISOString().split('T')[0] || '',         status: updatedReceivable"
+      }
+    ],
+    "issues": []
+  },
+  {
+    "path": "app\\api\\receivables\\cylinder-returns\\route.ts",
+    "hardcodedStrings": [],
+    "usedTranslationKeys": ["T", "T"],
+    "missingTranslationCalls": [
+      {
+        "key": "T",
+        "line": 64,
+        "context": ");       const todayStr = today.toISOString().split('T')[0];        // Update customer receivable"
+      },
+      {
+        "key": "T",
+        "line": 85,
+        "context": ".toISOString()                 .split('T')[0] + 'T00:00:00.000Z'             ),"
+      }
+    ],
+    "issues": []
+  },
+  {
+    "path": "app\\api\\receivables\\payments\\route.ts",
+    "hardcodedStrings": [],
+    "usedTranslationKeys": ["T", "T"],
+    "missingTranslationCalls": [
+      {
+        "key": "T",
+        "line": 65,
+        "context": ");       const todayStr = today.toISOString().split('T')[0];        // Update customer receivable"
+      },
+      {
+        "key": "T",
+        "line": 86,
+        "context": ".toISOString()                 .split('T')[0] + 'T00:00:00.000Z'             ),"
+      }
+    ],
+    "issues": []
+  },
+  {
+    "path": "app\\api\\receivables\\recalculate\\route.ts",
+    "hardcodedStrings": [],
+    "usedTranslationKeys": ["days", "T", "T", "T"],
+    "missingTranslationCalls": [
+      {
+        "key": "T",
+        "line": 31,
+        "context": "const dateStr = calcDate.toISOString().split('T')[0];        console.log(`Calculating receiva"
+      },
+      {
+        "key": "T",
+        "line": 54,
+        "context": "Date) {   const dateStr = date.toISOString().split('T')[0];    // Get all active retail drivers   c"
+      },
+      {
+        "key": "T",
+        "line": 117,
+        "context": "const yesterdayStr = yesterday.toISOString().split('T')[0];      const yesterdayRecord = await pris"
+      }
+    ],
+    "issues": []
+  },
+  {
+    "path": "app\\api\\receivables\\route.ts",
+    "hardcodedStrings": [],
+    "usedTranslationKeys": ["T", "calculate", "T", "T", "T", "T", "T"],
+    "missingTranslationCalls": [
+      {
+        "key": "T",
+        "line": 120,
+        "context": "d.id,         date: record.date.toISOString().split('T')[0],         driver: record.driver,"
+      },
+      {
+        "key": "calculate",
+        "line": 163,
+        "context": "ction: z.enum(['calculate', 'recalculate']).default('calculate'),     });      const { date, driverI"
+      },
+      {
+        "key": "T",
+        "line": 179,
+        "context": "s: true,       date: targetDate.toISOString().split('T')[0],       action,       result,     });   }"
+      },
+      {
+        "key": "T",
+        "line": 198,
+        "context": "ring ) {   const dateStr = date.toISOString().split('T')[0];    // Get all drivers if no specific dr"
+      },
+      {
+        "key": "T",
+        "line": 224,
+        "context": ")               .toISOString()               .split('T')[0] + 'T00:00:00.000Z'           ),"
+      },
+      {
+        "key": "T",
+        "line": 249,
+        "context": ")               .toISOString()               .split('T')[0] + 'T00:00:00.000Z'           ),"
+      },
+      {
+        "key": "T",
+        "line": 280,
+        "context": "new Date(             yesterday.toISOString().split('T')[0] + 'T00:00:00.000Z'           ),"
+      }
+    ],
+    "issues": []
+  },
+  {
+    "path": "app\\api\\reports\\daily-sales\\route.ts",
+    "hardcodedStrings": [],
+    "usedTranslationKeys": ["date", "T", "T", "T", "T", "T", "T", "T"],
+    "missingTranslationCalls": [
+      {
+        "key": "T",
+        "line": 17,
+        "context": "arams.get('date') || new Date().toISOString().split('T')[0];     const tenantId = session.user.tenan"
+      },
+      {
+        "key": "T",
+        "line": 65,
+        "context": "const saleDate = sale.saleDate.toISOString().split('T')[0];       return saleDate === date;     });"
+      },
+      {
+        "key": "T",
+        "line": 74,
+        "context": "st previousDayStr = previousDay.toISOString().split('T')[0];      // First ensure receivables are ca"
+      },
+      {
+        "key": "T",
+        "line": 389,
+        "context": "Date) {   const dateStr = date.toISOString().split('T')[0];    // Get all active retail drivers   c"
+      },
+      {
+        "key": "T",
+        "line": 408,
+        "context": ")               .toISOString()               .split('T')[0] + 'T00:00:00.000Z'           ),"
+      },
+      {
+        "key": "T",
+        "line": 430,
+        "context": ")               .toISOString()               .split('T')[0] + 'T00:00:00.000Z'           ),"
+      },
+      {
+        "key": "T",
+        "line": 461,
+        "context": "new Date(             yesterday.toISOString().split('T')[0] + 'T00:00:00.000Z'           ),"
+      }
+    ],
+    "issues": []
+  },
+  {
+    "path": "app\\api\\sales\\daily-summary\\route.ts",
+    "hardcodedStrings": [],
+    "usedTranslationKeys": ["date", "T", "T", "T", "T", "T"],
+    "missingTranslationCalls": [
+      {
+        "key": "T",
+        "line": 20,
+        "context": "arams.get('date') || new Date().toISOString().split('T')[0];      console.log('Daily sales summary q"
+      },
+      {
+        "key": "T",
+        "line": 73,
+        "context": "const saleDate = sale.saleDate.toISOString().split('T')[0];       return saleDate === date;     });"
+      },
+      {
+        "key": "T",
+        "line": 82,
+        "context": "saleDateString: s.saleDate.toISOString().split('T')[0],         driver: s.driver.name,"
+      },
+      {
+        "key": "T",
+        "line": 91,
+        "context": "{sale.driverId}-${sale.saleDate.toISOString().split('T')[0]}`;          if (!acc[key]) {           a"
+      },
+      {
+        "key": "T",
+        "line": 96,
+        "context": "date: sale.saleDate.toISOString().split('T')[0],             driverId: sale.driverId,"
+      }
+    ],
+    "issues": []
+  },
+  {
+    "path": "app\\api\\sales\\details\\route.ts",
+    "hardcodedStrings": [],
+    "usedTranslationKeys": ["salesIds"],
+    "missingTranslationCalls": [
+      {
+        "key": "salesIds",
+        "line": 14,
+        "context": "st.url);     const salesIdsParam = searchParams.get('salesIds');      if (!salesIdsParam) {       re"
+      }
+    ],
+    "issues": []
+  },
+  {
+    "path": "app\\api\\sales\\route.ts",
+    "hardcodedStrings": [],
+    "usedTranslationKeys": [
+      "page",
+      "limit",
+      "driverId",
+      "productId",
+      "startDate",
+      "endDate",
+      "saleType"
+    ],
+    "missingTranslationCalls": [
+      {
+        "key": "page",
+        "line": 275,
+        "context": "rameters     const page = parseInt(searchParams.get('page') || '1');     const limit = Math.min(pars"
+      },
+      {
+        "key": "limit",
+        "line": 276,
+        "context": "const limit = Math.min(parseInt(searchParams.get('limit') || '50'), 100);     const driverId = se"
+      },
+      {
+        "key": "driverId",
+        "line": 277,
+        "context": "'50'), 100);     const driverId = searchParams.get('driverId');     const productId = searchParams."
+      },
+      {
+        "key": "productId",
+        "line": 278,
+        "context": "'driverId');     const productId = searchParams.get('productId');     const startDate = searchParams"
+      },
+      {
+        "key": "startDate",
+        "line": 279,
+        "context": "productId');     const startDate = searchParams.get('startDate');     const endDate = searchParams.g"
+      },
+      {
+        "key": "endDate",
+        "line": 280,
+        "context": "('startDate');     const endDate = searchParams.get('endDate');     const saleType = searchParams.ge"
+      },
+      {
+        "key": "saleType",
+        "line": 281,
+        "context": "t('endDate');     const saleType = searchParams.get('saleType') as SaleType | null;      // Build wh"
+      }
+    ],
+    "issues": []
+  },
+  {
+    "path": "app\\api\\shipments\\route.ts",
+    "hardcodedStrings": [],
+    "usedTranslationKeys": [
+      "startDate",
+      "endDate",
+      "companyId",
+      "productId",
+      "shipmentType",
+      "limit",
+      "offset"
+    ],
+    "missingTranslationCalls": [
+      {
+        "key": "startDate",
+        "line": 14,
+        "context": "equest.url);     const startDate = searchParams.get('startDate');     const endDate = searchParams.g"
+      },
+      {
+        "key": "endDate",
+        "line": 15,
+        "context": "('startDate');     const endDate = searchParams.get('endDate');     const companyId = searchParams.g"
+      },
+      {
+        "key": "companyId",
+        "line": 16,
+        "context": "('endDate');     const companyId = searchParams.get('companyId');     const productId = searchParams"
+      },
+      {
+        "key": "productId",
+        "line": 17,
+        "context": "companyId');     const productId = searchParams.get('productId');     const shipmentType = searchPar"
+      },
+      {
+        "key": "shipmentType",
+        "line": 18,
+        "context": "ductId');     const shipmentType = searchParams.get('shipmentType');     const limit = parseInt(sear"
+      },
+      {
+        "key": "limit",
+        "line": 19,
+        "context": "Type');     const limit = parseInt(searchParams.get('limit') || '50');     const offset = parseInt(s"
+      },
+      {
+        "key": "offset",
+        "line": 20,
+        "context": "'50');     const offset = parseInt(searchParams.get('offset') || '0');      const tenantId = session"
+      }
+    ],
+    "issues": []
+  },
+  {
+    "path": "app\\api\\upload\\route.ts",
+    "hardcodedStrings": [],
+    "usedTranslationKeys": ["file", "type"],
+    "missingTranslationCalls": [
+      {
+        "key": "file",
+        "line": 15,
+        "context": "t request.formData();     const file = formData.get('file') as File;     const type = formData.get('"
+      }
+    ],
+    "issues": []
+  },
+  {
+    "path": "app\\api\\users\\route.ts",
+    "hardcodedStrings": [],
+    "usedTranslationKeys": ["role", "active", "page", "limit"],
+    "missingTranslationCalls": [
+      {
+        "key": "page",
+        "line": 55,
+        "context": "t('active');     const pageParam = searchParams.get('page');     const limitParam = searchParams.get"
+      },
+      {
+        "key": "limit",
+        "line": 56,
+        "context": "et('page');     const limitParam = searchParams.get('limit');      // Simple validation and defaults"
+      }
+    ],
+    "issues": []
+  },
+  {
+    "path": "app\\api\\vendor-performance\\route.ts",
+    "hardcodedStrings": [],
+    "usedTranslationKeys": ["companyId", "startDate", "endDate", "period"],
+    "missingTranslationCalls": [
+      {
+        "key": "companyId",
+        "line": 13,
+        "context": "equest.url);     const companyId = searchParams.get('companyId');     const startDate = searchParams"
+      },
+      {
+        "key": "startDate",
+        "line": 14,
+        "context": "companyId');     const startDate = searchParams.get('startDate');     const endDate = searchParams.g"
+      },
+      {
+        "key": "endDate",
+        "line": 15,
+        "context": "('startDate');     const endDate = searchParams.get('endDate');     const period = searchParams.get("
+      },
+      {
+        "key": "period",
+        "line": 16,
+        "context": "get('endDate');     const period = searchParams.get('period') || 'last-12-months';      const tenant"
+      }
+    ],
+    "issues": []
+  },
+  {
+    "path": "app\\auth\\login\\page.tsx",
+    "hardcodedStrings": [
+      {
+        "text": ">\n            Sign in to your account\n          <",
+        "line": 155,
+        "pattern": 0,
+        "context": "-3xl font-extrabold text-gray-900 dark:text-white\">             Sign in to your account           </"
+      },
+      {
+        "text": ">\n                Email address\n              <",
+        "line": 180,
+        "pattern": 0,
+        "context": "<label htmlFor=\"email\" className=\"sr-only\">                 Email address               </la"
+      },
+      {
+        "text": ">\n                Password\n              <",
+        "line": 197,
+        "pattern": 0,
+        "context": "<label htmlFor=\"password\" className=\"sr-only\">                 Password               </label>"
+      },
+      {
+        "text": ">\n                Remember me\n              <",
+        "line": 247,
+        "pattern": 0,
+        "context": "t-sm text-gray-900 dark:text-white\"               >                 Remember me               </labe"
+      },
+      {
+        "text": "placeholder=\"Email address\"",
+        "line": 190,
+        "pattern": 1,
+        "context": "-white dark:placeholder-gray-400\"                 placeholder=\"Email address\"                 value="
+      },
+      {
+        "text": "placeholder=\"Password\"",
+        "line": 207,
+        "pattern": 1,
+        "context": "-white dark:placeholder-gray-400\"                 placeholder=\"Password\"                 value={pass"
+      },
+      {
+        "text": "'Please enter a valid email address'",
+        "line": 90,
+        "pattern": 2,
+        "context": "}      if (!email.includes('@')) {       setError('Please enter a valid email address');       setLo"
+      },
+      {
+        "text": "\"Email address\"",
+        "line": 190,
+        "pattern": 2,
+        "context": "placeholder-gray-400\"                 placeholder=\"Email address\"                 value={email}"
+      }
+    ],
+    "usedTranslationKeys": [
+      "message",
+      "callbackUrl",
+      "callbackUrl",
+      "callbackUrl"
+    ],
+    "missingTranslationCalls": [
+      {
+        "key": "message",
+        "line": 23,
+        "context": "() => {     const successMessage = searchParams.get('message');     if (successMessage) {       setM"
+      },
+      {
+        "key": "callbackUrl",
+        "line": 40,
+        "context": "(true);        const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';        // Immedi"
+      },
+      {
+        "key": "callbackUrl",
+        "line": 102,
+        "context": "password,         callbackUrl: searchParams.get('callbackUrl') || '/dashboard',         redirect"
+      },
+      {
+        "key": "callbackUrl",
+        "line": 126,
+        "context": "onst callbackUrl =                 searchParams.get('callbackUrl') || '/dashboard';               wi"
+      }
+    ],
+    "issues": ["Component has hardcoded text but no translation hook"]
+  },
+  {
+    "path": "app\\auth\\signin\\page.tsx",
+    "hardcodedStrings": [],
+    "usedTranslationKeys": ["callbackUrl"],
+    "missingTranslationCalls": [
+      {
+        "key": "callbackUrl",
+        "line": 12,
+        "context": "location.search);     const redirectTo = params.get('callbackUrl') || '/dashboard';      router.repl"
+      }
+    ],
+    "issues": []
+  },
+  {
+    "path": "app\\dashboard\\admin\\companies\\page.tsx",
+    "hardcodedStrings": [
+      {
+        "text": ">\n            Admin Only\n          <",
+        "line": 228,
+        "pattern": 0,
+        "context": "ed-100 px-3 py-1 text-sm font-medium text-red-800\">             Admin Only           </div>"
+      },
+      {
+        "text": ">\n            Add Company\n          <",
+        "line": 238,
+        "pattern": 0,
+        "context": ">             <Plus className=\"mr-2 h-4 w-4\" />             Add Company           </button>"
+      },
+      {
+        "text": ">Total Companies<",
+        "line": 250,
+        "pattern": 0,
+        "context": "<p className=\"text-sm text-gray-600\">Total Companies</p>               <p className=\"t"
+      },
+      {
+        "text": ">Active Products<",
+        "line": 259,
+        "pattern": 0,
+        "context": "<p className=\"text-sm text-gray-600\">Active Products</p>               <p className=\"t"
+      },
+      {
+        "text": ">Total Distributors<",
+        "line": 270,
+        "pattern": 0,
+        "context": "<p className=\"text-sm text-gray-600\">Total Distributors</p>               <p className"
+      },
+      {
+        "text": ">Monthly Volume<",
+        "line": 281,
+        "pattern": 0,
+        "context": "<p className=\"text-sm text-gray-600\">Monthly Volume</p>               <p className=\"te"
+      },
+      {
+        "text": ">All Types<",
+        "line": 339,
+        "pattern": 0,
+        "context": ">                   <option value=\"ALL\">All Types</option>                   <option valu"
+      },
+      {
+        "text": ">LPG Suppliers<",
+        "line": 340,
+        "pattern": 0,
+        "context": "on>                   <option value=\"LPG_SUPPLIER\">LPG Suppliers</option>                   <option"
+      },
+      {
+        "text": ">Local Distributors<",
+        "line": 341,
+        "pattern": 0,
+        "context": "<option value=\"LOCAL_DISTRIBUTOR\">Local Distributors</option>                 </sel"
+      },
+      {
+        "text": ">\n                        Company\n                      <",
+        "line": 350,
+        "pattern": 0,
+        "context": "-left text-xs font-medium uppercase text-gray-500\">                         Company"
+      },
+      {
+        "text": ">\n                        Type\n                      <",
+        "line": 353,
+        "pattern": 0,
+        "context": "-left text-xs font-medium uppercase text-gray-500\">                         Type"
+      },
+      {
+        "text": ">\n                        Contact\n                      <",
+        "line": 356,
+        "pattern": 0,
+        "context": "-left text-xs font-medium uppercase text-gray-500\">                         Contact"
+      },
+      {
+        "text": ">\n                        Products\n                      <",
+        "line": 359,
+        "pattern": 0,
+        "context": "-left text-xs font-medium uppercase text-gray-500\">                         Products"
+      },
+      {
+        "text": ">\n                        Volume\n                      <",
+        "line": 362,
+        "pattern": 0,
+        "context": "-left text-xs font-medium uppercase text-gray-500\">                         Volume"
+      },
+      {
+        "text": ">\n                        Credit Limit\n                      <",
+        "line": 365,
+        "pattern": 0,
+        "context": "-left text-xs font-medium uppercase text-gray-500\">                         Credit Limit"
+      },
+      {
+        "text": ">\n                        Status\n                      <",
+        "line": 368,
+        "pattern": 0,
+        "context": "-left text-xs font-medium uppercase text-gray-500\">                         Status"
+      },
+      {
+        "text": ">\n                        Actions\n                      <",
+        "line": 371,
+        "pattern": 0,
+        "context": "-left text-xs font-medium uppercase text-gray-500\">                         Actions"
+      },
+      {
+        "text": ">\n                  Product Management\n                <",
+        "line": 459,
+        "pattern": 0,
+        "context": "<h3 className=\"mb-4 text-lg font-semibold\">                   Product Management"
+      },
+      {
+        "text": ">LPG Supplier<",
+        "line": 583,
+        "pattern": 0,
+        "context": ">                     <option value=\"LPG_SUPPLIER\">LPG Supplier</option>                     <option"
+      },
+      {
+        "text": ">Local Distributor<",
+        "line": 584,
+        "pattern": 0,
+        "context": "<option value=\"LOCAL_DISTRIBUTOR\">Local Distributor</option>                   </se"
+      },
+      {
+        "text": ">\n                    Phone\n                  <",
+        "line": 612,
+        "pattern": 0,
+        "context": "ame=\"mb-1 block text-sm font-medium text-gray-700\">                     Phone                   </la"
+      },
+      {
+        "text": ">\n                    Tax ID\n                  <",
+        "line": 623,
+        "pattern": 0,
+        "context": "ame=\"mb-1 block text-sm font-medium text-gray-700\">                     Tax ID                   </l"
+      },
+      {
+        "text": ">\n                    Payment Terms\n                  <",
+        "line": 634,
+        "pattern": 0,
+        "context": "ame=\"mb-1 block text-sm font-medium text-gray-700\">                     Payment Terms"
+      },
+      {
+        "text": ">\n                    Monthly Volume\n                  <",
+        "line": 658,
+        "pattern": 0,
+        "context": "ame=\"mb-1 block text-sm font-medium text-gray-700\">                     Monthly Volume"
+      },
+      {
+        "text": ">\n                    Address\n                  <",
+        "line": 670,
+        "pattern": 0,
+        "context": "ame=\"mb-1 block text-sm font-medium text-gray-700\">                     Address                   </"
+      },
+      {
+        "text": ">\n                      Active Company\n                    <",
+        "line": 688,
+        "pattern": 0,
+        "context": "span className=\"text-sm font-medium text-gray-700\">                       Active Company"
+      },
+      {
+        "text": ">\n                  Cancel\n                <",
+        "line": 703,
+        "pattern": 0,
+        "context": "gray-300 px-4 py-2 text-gray-700\"                 >                   Cancel                 </butto"
+      },
+      {
+        "text": "'creditLimit'",
+        "line": 548,
+        "pattern": 2,
+        "context": "creditLimit: Number(formData.get('creditLimit')),                   isActive: formD"
+      },
+      {
+        "text": "\"creditLimit\"",
+        "line": 650,
+        "pattern": 2,
+        "context": "<input                     name=\"creditLimit\"                     type=\"number\""
+      }
+    ],
+    "usedTranslationKeys": [
+      "name",
+      "type",
+      "contactPerson",
+      "email",
+      "phone",
+      "address",
+      "taxId",
+      "paymentTerms",
+      "creditLimit",
+      "isActive",
+      "monthlyVolume",
+      "T"
+    ],
+    "missingTranslationCalls": [
+      {
+        "key": "contactPerson",
+        "line": 542,
+        "context": "TOR',                   contactPerson: formData.get('contactPerson') as string,                   em"
+      },
+      {
+        "key": "taxId",
+        "line": 546,
+        "context": "') as string,                   taxId: formData.get('taxId') as string,                   paymentTer"
+      },
+      {
+        "key": "creditLimit",
+        "line": 548,
+        "context": "creditLimit: Number(formData.get('creditLimit')),                   isActive: for"
+      },
+      {
+        "key": "isActive",
+        "line": 549,
+        "context": "tLimit')),                   isActive: formData.get('isActive') === 'on',                   products"
+      },
+      {
+        "key": "monthlyVolume",
+        "line": 552,
+        "context": "monthlyVolume: Number(formData.get('monthlyVolume')) || 0,                   lastOr"
+      },
+      {
+        "key": "T",
+        "line": 555,
+        "context": "new Date().toISOString().split('T')[0],                 };                 hand"
+      }
+    ],
+    "issues": ["Component has hardcoded text but no translation hook"]
+  },
+  {
+    "path": "app\\dashboard\\admin\\distributors\\page.tsx",
+    "hardcodedStrings": [
+      {
+        "text": ">\n            Distributor Assignments\n          <",
+        "line": 240,
+        "pattern": 0,
+        "context": "<h1 className=\"text-2xl font-bold text-gray-900\">             Distributor Assignments           </"
+      },
+      {
+        "text": ">\n            Territory management and pricing tier assignments\n          <",
+        "line": 243,
+        "pattern": 0,
+        "context": "</h1>           <p className=\"text-gray-600\">             Territory management and pricing tie"
+      },
+      {
+        "text": ">\n            Admin Only\n          <",
+        "line": 248,
+        "pattern": 0,
+        "context": "ed-100 px-3 py-1 text-sm font-medium text-red-800\">             Admin Only           </div>"
+      },
+      {
+        "text": ">\n            Bulk Assignment\n          <",
+        "line": 255,
+        "pattern": 0,
+        "context": ">             <Settings className=\"mr-2 h-4 w-4\" />             Bulk Assignment           </button>"
+      },
+      {
+        "text": ">Active Distributors<",
+        "line": 267,
+        "pattern": 0,
+        "context": "<p className=\"text-sm text-gray-600\">Active Distributors</p>               <p classNam"
+      },
+      {
+        "text": ">Territories Covered<",
+        "line": 278,
+        "pattern": 0,
+        "context": "<p className=\"text-sm text-gray-600\">Territories Covered</p>               <p classNam"
+      },
+      {
+        "text": ">Total Revenue<",
+        "line": 289,
+        "pattern": 0,
+        "context": "<p className=\"text-sm text-gray-600\">Total Revenue</p>               <p className=\"tex"
+      },
+      {
+        "text": ">Target Achievement<",
+        "line": 303,
+        "pattern": 0,
+        "context": "<p className=\"text-sm text-gray-600\">Target Achievement</p>               <p className"
+      },
+      {
+        "text": ">\n              Distributors\n            <",
+        "line": 328,
+        "pattern": 0,
+        "context": "over:text-gray-700'               }`}             >               Distributors             </button>"
+      },
+      {
+        "text": ">\n              Territory Management\n            <",
+        "line": 338,
+        "pattern": 0,
+        "context": "over:text-gray-700'               }`}             >               Territory Management             <"
+      },
+      {
+        "text": ">\n              Pricing Tiers\n            <",
+        "line": 348,
+        "pattern": 0,
+        "context": "over:text-gray-700'               }`}             >               Pricing Tiers             </button"
+      },
+      {
+        "text": ">All Tiers<",
+        "line": 374,
+        "pattern": 0,
+        "context": ">                   <option value=\"ALL\">All Tiers</option>                   <option valu"
+      },
+      {
+        "text": ">Premium<",
+        "line": 375,
+        "pattern": 0,
+        "context": "/option>                   <option value=\"PREMIUM\">Premium</option>                   <option value="
+      },
+      {
+        "text": ">Standard<",
+        "line": 376,
+        "pattern": 0,
+        "context": "option>                   <option value=\"STANDARD\">Standard</option>                   <option value"
+      },
+      {
+        "text": ">Basic<",
+        "line": 377,
+        "pattern": 0,
+        "context": "d</option>                   <option value=\"BASIC\">Basic</option>                 </select>"
+      },
+      {
+        "text": ">\n                        Distributor\n                      <",
+        "line": 386,
+        "pattern": 0,
+        "context": "-left text-xs font-medium uppercase text-gray-500\">                         Distributor"
+      },
+      {
+        "text": ">\n                        Territory\n                      <",
+        "line": 389,
+        "pattern": 0,
+        "context": "-left text-xs font-medium uppercase text-gray-500\">                         Territory"
+      },
+      {
+        "text": ">\n                        Pricing Tier\n                      <",
+        "line": 392,
+        "pattern": 0,
+        "context": "-left text-xs font-medium uppercase text-gray-500\">                         Pricing Tier"
+      },
+      {
+        "text": ">\n                        Companies\n                      <",
+        "line": 395,
+        "pattern": 0,
+        "context": "-left text-xs font-medium uppercase text-gray-500\">                         Companies"
+      },
+      {
+        "text": ">\n                        Performance\n                      <",
+        "line": 398,
+        "pattern": 0,
+        "context": "-left text-xs font-medium uppercase text-gray-500\">                         Performance"
+      },
+      {
+        "text": ">\n                        Status\n                      <",
+        "line": 401,
+        "pattern": 0,
+        "context": "-left text-xs font-medium uppercase text-gray-500\">                         Status"
+      },
+      {
+        "text": ">\n                        Actions\n                      <",
+        "line": 404,
+        "pattern": 0,
+        "context": "-left text-xs font-medium uppercase text-gray-500\">                         Actions"
+      },
+      {
+        "text": ">\n                Territory Coverage Map\n              <",
+        "line": 513,
+        "pattern": 0,
+        "context": "<h3 className=\"mb-4 text-lg font-semibold\">                 Territory Coverage Map"
+      },
+      {
+        "text": ">\n                Pricing Tiers Configuration\n              <",
+        "line": 560,
+        "pattern": 0,
+        "context": "<h3 className=\"mb-4 text-lg font-semibold\">                 Pricing Tiers Configuration"
+      },
+      {
+        "text": ">\n                    Territory Assignment\n                  <",
+        "line": 677,
+        "pattern": 0,
+        "context": "ame=\"mb-2 block text-sm font-medium text-gray-700\">                     Territory Assignment"
+      },
+      {
+        "text": ">Select Territory<",
+        "line": 686,
+        "pattern": 0,
+        "context": ">                     <option value=\"\">Select Territory</option>                     {te"
+      },
+      {
+        "text": ">\n                    Pricing Tier\n                  <",
+        "line": 696,
+        "pattern": 0,
+        "context": "ame=\"mb-2 block text-sm font-medium text-gray-700\">                     Pricing Tier"
+      },
+      {
+        "text": ">Select Pricing Tier<",
+        "line": 705,
+        "pattern": 0,
+        "context": ">                     <option value=\"\">Select Pricing Tier</option>"
+      },
+      {
+        "text": ">\n                    Assigned Companies\n                  <",
+        "line": 715,
+        "pattern": 0,
+        "context": "ame=\"mb-2 block text-sm font-medium text-gray-700\">                     Assigned Companies"
+      },
+      {
+        "text": ">\n                    Product Access\n                  <",
+        "line": 737,
+        "pattern": 0,
+        "context": "ame=\"mb-2 block text-sm font-medium text-gray-700\">                     Product Access"
+      },
+      {
+        "text": ">\n                  Cancel\n                <",
+        "line": 789,
+        "pattern": 0,
+        "context": "gray-300 px-4 py-2 text-gray-700\"                 >                   Cancel                 </butto"
+      },
+      {
+        "text": ">\n                  Update Assignments\n                <",
+        "line": 796,
+        "pattern": 0,
+        "context": "<Save className=\"mr-2 h-4 w-4\" />                   Update Assignments"
+      },
+      {
+        "text": "'Bulk Assignment Management'",
+        "line": 643,
+        "pattern": 2,
+        "context": "${selectedDistributor.name}`                   : 'Bulk Assignment Management'}               </h3>"
+      }
+    ],
+    "usedTranslationKeys": ["territory", "pricingTier"],
+    "missingTranslationCalls": [
+      {
+        "key": "territory",
+        "line": 668,
+        "context": "ring[],                     territory: formData.get('territory') as string,                     pric"
+      },
+      {
+        "key": "pricingTier",
+        "line": 669,
+        "context": "ring,                     pricingTier: formData.get('pricingTier') as string,                   };"
+      }
+    ],
+    "issues": ["Component has hardcoded text but no translation hook"]
+  },
+  {
+    "path": "app\\dashboard\\expenses\\page.tsx",
+    "hardcodedStrings": [],
+    "usedTranslationKeys": [
+      "addExpense",
+      "addExpense",
+      "edit",
+      "expenses",
+      "updateExpense"
+    ],
+    "missingTranslationCalls": [
+      {
+        "key": "updateExpense",
+        "line": 258,
+        "context": "t') + ' ' + t('expenses')}           submitLabel={t('updateExpense')}           isSubmitting={isSubm"
+      }
+    ],
+    "issues": []
+  },
+  {
+    "path": "app\\dashboard\\inventory\\page.tsx",
+    "hardcodedStrings": [
+      {
+        "text": "'inventoryManagement'",
+        "line": 295,
+        "pattern": 2,
+        "context": "xt-foreground text-2xl font-bold\">             {t('inventoryManagement')}           </h1>"
+      }
+    ],
+    "usedTranslationKeys": [
+      "T",
+      "loadingInventoryData",
+      "failedToLoadInventoryData",
+      "tryAgain",
+      "inventoryManagement",
+      "realTimeInventoryTracking",
+      "refresh",
+      "exportFunctionalityComingSoon",
+      "export",
+      "criticalAlert",
+      "productsOutOfStock",
+      "lowStockWarning",
+      "productsBelowMinimumThreshold",
+      "fullCylinders",
+      "currentStock",
+      "emptyCylinders",
+      "currentStock",
+      "todaysSales",
+      "cylindersSold",
+      "todaysPurchases",
+      "cylindersReceived",
+      "totalCylinders",
+      "allCylinders",
+      "fullCylinders",
+      "currentFullCylinderInventory",
+      "company",
+      "size",
+      "quantity",
+      "noFullCylindersInInventory",
+      "emptyCylinders",
+      "emptyCylinderInventoryAvailability",
+      "size",
+      "emptyCylinders",
+      "emptyCylindersInHand",
+      "noEmptyCylindersInInventory",
+      "note",
+      "totalCylinderReceivables",
+      "cylinders",
+      "dailyInventoryTracking",
+      "automatedCalculationsExactFormulas",
+      "date",
+      "packageSalesQty",
+      "refillSalesQty",
+      "totalSalesQty",
+      "packagePurchase",
+      "refillPurchase",
+      "emptyCylindersBuySell",
+      "fullCylinders",
+      "emptyCylinders",
+      "totalCylinders",
+      "latest",
+      "noDailyInventoryDataAvailable",
+      "businessFormulaImplementation",
+      "dailyCalculations",
+      "todaysFullCylinders",
+      "yesterdaysFull",
+      "packagePurchase",
+      "refillPurchase",
+      "totalSales",
+      "todaysEmptyCylinders",
+      "yesterdaysEmpty",
+      "refillSales",
+      "emptyCylindersBuySell",
+      "totalCylinders",
+      "fullCylinders",
+      "emptyCylinders",
+      "dataSources",
+      "packageRefillSales",
+      "sumAllDriversSalesForDate",
+      "packageRefillPurchase",
+      "sumCompletedShipmentsFromShipmentsPage",
+      "emptyCylindersBuySell",
+      "sumCompletedEmptyCylinderShipments",
+      "note",
+      "allCalculationsUpdatedRealTime",
+      "currentStockHealth",
+      "productsInGoodStock",
+      "producentsWithLowStockWarning",
+      "productsInCriticalStock"
+    ],
+    "missingTranslationCalls": [
+      {
+        "key": "T",
+        "line": 129,
+        "context": "ate] = useState(     new Date().toISOString().split('T')[0]   );   const [includeMovements, setInclu"
+      }
+    ],
+    "issues": []
+  },
+  {
+    "path": "app\\dashboard\\receivables\\page.tsx",
+    "hardcodedStrings": [
+      {
+        "text": ">\n            Export Report\n          <",
+        "line": 707,
+        "pattern": 0,
+        "context": ">             <Download className=\"mr-2 h-4 w-4\" />             Export Report           </button>"
+      },
+      {
+        "text": ">\n                Cylinder Receivables\n              <",
+        "line": 807,
+        "pattern": 0,
+        "context": "<p className=\"text-muted-foreground text-sm\">                 Cylinder Receivables"
+      },
+      {
+        "text": ">Active Drivers<",
+        "line": 820,
+        "pattern": 0,
+        "context": "<p className=\"text-muted-foreground text-sm\">Active Drivers</p>               <p className=\"te"
+      },
+      {
+        "text": ">No receivables found<",
+        "line": 873,
+        "pattern": 0,
+        "context": "<p className=\"mb-2 text-lg font-medium\">No receivables found</p>                 <p class"
+      },
+      {
+        "text": ">\n                          Add Customer\n                        <",
+        "line": 921,
+        "pattern": 0,
+        "context": "<Plus className=\"mr-1 h-4 w-4\" />                           Add Customer"
+      },
+      {
+        "text": ">\n                      Cash Receivables\n                    <",
+        "line": 975,
+        "pattern": 0,
+        "context": "assName=\"text-foreground mb-3 text-sm font-medium\">                       Cash Receivables"
+      },
+      {
+        "text": ">\n                                No cash receivables\n                              <",
+        "line": 1006,
+        "pattern": 0,
+        "context": "dark:text-gray-400\"                               >                                 No cash receivab"
+      },
+      {
+        "text": ">\n                      Cylinder Receivables\n                    <",
+        "line": 1111,
+        "pattern": 0,
+        "context": "assName=\"text-foreground mb-3 text-sm font-medium\">                       Cylinder Receivables"
+      },
+      {
+        "text": ">\n                                No cylinder receivables\n                              <",
+        "line": 1145,
+        "pattern": 0,
+        "context": "dark:text-gray-400\"                               >                                 No cylinder rece"
+      },
+      {
+        "text": ">\n              Receivables Changes Log\n            <",
+        "line": 1259,
+        "pattern": 0,
+        "context": "className=\"text-foreground text-lg font-semibold\">               Receivables Changes Log"
+      },
+      {
+        "text": ">\n              Recent changes to customer receivables\n            <",
+        "line": 1262,
+        "pattern": 0,
+        "context": "<p className=\"text-muted-foreground text-sm\">               Recent changes to customer receiva"
+      },
+      {
+        "text": ">No changes recorded<",
+        "line": 1279,
+        "pattern": 0,
+        "context": "<p className=\"mb-2 text-lg font-medium\">No changes recorded</p>               <p classNam"
+      },
+      {
+        "text": ">\n                      Date\n                    <",
+        "line": 1292,
+        "pattern": 0,
+        "context": "medium uppercase text-gray-500 dark:text-gray-300\">                       Date                     <"
+      },
+      {
+        "text": ">\n                      Action\n                    <",
+        "line": 1295,
+        "pattern": 0,
+        "context": "medium uppercase text-gray-500 dark:text-gray-300\">                       Action"
+      },
+      {
+        "text": ">\n                      Driver\n                    <",
+        "line": 1298,
+        "pattern": 0,
+        "context": "medium uppercase text-gray-500 dark:text-gray-300\">                       Driver"
+      },
+      {
+        "text": ">\n                      Customer\n                    <",
+        "line": 1301,
+        "pattern": 0,
+        "context": "medium uppercase text-gray-500 dark:text-gray-300\">                       Customer"
+      },
+      {
+        "text": ">\n                      Type\n                    <",
+        "line": 1304,
+        "pattern": 0,
+        "context": "medium uppercase text-gray-500 dark:text-gray-300\">                       Type                     <"
+      },
+      {
+        "text": ">\n                      User\n                    <",
+        "line": 1310,
+        "pattern": 0,
+        "context": "medium uppercase text-gray-500 dark:text-gray-300\">                       User                     <"
+      },
+      {
+        "text": ">Cash Receivable<",
+        "line": 1425,
+        "pattern": 0,
+        "context": ">                   <option value=\"CASH\">Cash Receivable</option>                   <optio"
+      },
+      {
+        "text": ">Cylinder Receivable<",
+        "line": 1426,
+        "pattern": 0,
+        "context": "option>                   <option value=\"CYLINDER\">Cylinder Receivable</option>                 </se"
+      },
+      {
+        "text": ">\n                  Due Date\n                <",
+        "line": 1471,
+        "pattern": 0,
+        "context": "t-sm font-medium text-gray-700 dark:text-gray-300\">                   Due Date                 </lab"
+      },
+      {
+        "text": ">\n                  Notes\n                <",
+        "line": 1488,
+        "pattern": 0,
+        "context": "t-sm font-medium text-gray-700 dark:text-gray-300\">                   Notes                 </label>"
+      },
+      {
+        "text": ">\n                Cancel\n              <",
+        "line": 1510,
+        "pattern": 0,
+        "context": "300 px-4 py-2 dark:border-gray-600\"               >                 Cancel               </button>"
+      },
+      {
+        "text": ">\n                Record Payment\n              <",
+        "line": 1540,
+        "pattern": 0,
+        "context": "className=\"text-foreground text-lg font-semibold\">                 Record Payment               </h"
+      },
+      {
+        "text": ">\n                  Payment Method\n                <",
+        "line": 1582,
+        "pattern": 0,
+        "context": "t-sm font-medium text-gray-700 dark:text-gray-300\">                   Payment Method"
+      },
+      {
+        "text": ">Cash<",
+        "line": 1595,
+        "pattern": 0,
+        "context": ">                   <option value=\"cash\">Cash</option>                   <option value=\"ba"
+      },
+      {
+        "text": ">Bank Transfer<",
+        "line": 1596,
+        "pattern": 0,
+        "context": "n>                   <option value=\"bank_transfer\">Bank Transfer</option>                   <option"
+      },
+      {
+        "text": ">Cheque<",
+        "line": 1597,
+        "pattern": 0,
+        "context": "</option>                   <option value=\"cheque\">Cheque</option>                   <option value=\""
+      },
+      {
+        "text": ">Digital Payment<",
+        "line": 1598,
+        "pattern": 0,
+        "context": "<option value=\"digital_payment\">Digital Payment</option>                 </select"
+      },
+      {
+        "text": ">\n                  Notes\n                <",
+        "line": 1603,
+        "pattern": 0,
+        "context": "t-sm font-medium text-gray-700 dark:text-gray-300\">                   Notes                 </label>"
+      },
+      {
+        "text": ">\n                Cancel\n              <",
+        "line": 1622,
+        "pattern": 0,
+        "context": "300 px-4 py-2 dark:border-gray-600\"               >                 Cancel               </button>"
+      },
+      {
+        "text": ">\n                Record Cylinder Return\n              <",
+        "line": 1649,
+        "pattern": 0,
+        "context": "className=\"text-foreground text-lg font-semibold\">                 Record Cylinder Return"
+      },
+      {
+        "text": ">\n                  Notes\n                <",
+        "line": 1692,
+        "pattern": 0,
+        "context": "t-sm font-medium text-gray-700 dark:text-gray-300\">                   Notes                 </label>"
+      },
+      {
+        "text": ">\n                Cancel\n              <",
+        "line": 1714,
+        "pattern": 0,
+        "context": "300 px-4 py-2 dark:border-gray-600\"               >                 Cancel               </button>"
+      },
+      {
+        "text": "aria-label=\"Tabs\"",
+        "line": 832,
+        "pattern": 1,
+        "context": "\">           <nav className=\"flex space-x-8 px-6\" aria-label=\"Tabs\">             <button"
+      },
+      {
+        "text": "placeholder=\"Enter customer name\"",
+        "line": 1407,
+        "pattern": 1,
+        "context": "rk:bg-gray-700 dark:text-white\"                   placeholder=\"Enter customer name\""
+      },
+      {
+        "text": "placeholder=\"Enter amount\"",
+        "line": 1445,
+        "pattern": 1,
+        "context": ":bg-gray-700 dark:text-white\"                     placeholder=\"Enter amount\"                   />"
+      },
+      {
+        "text": "placeholder=\"Enter quantity\"",
+        "line": 1465,
+        "pattern": 1,
+        "context": ":bg-gray-700 dark:text-white\"                     placeholder=\"Enter quantity\"                   />"
+      },
+      {
+        "text": "placeholder=\"Enter payment amount\"",
+        "line": 1577,
+        "pattern": 1,
+        "context": "rk:bg-gray-700 dark:text-white\"                   placeholder=\"Enter payment amount\""
+      },
+      {
+        "text": "placeholder=\"Enter number of cylinders\"",
+        "line": 1687,
+        "pattern": 1,
+        "context": "rk:bg-gray-700 dark:text-white\"                   placeholder=\"Enter number of cylinders\""
+      },
+      {
+        "text": "'Customer receivable added successfully'",
+        "line": 464,
+        "pattern": 2,
+        "context": "er receivable updated successfully'             : 'Customer receivable added successfully',"
+      },
+      {
+        "text": "'Failed to save customer receivable'",
+        "line": 483,
+        "pattern": 2,
+        "context": "Error',           description: errorData.error || 'Failed to save customer receivable',           va"
+      },
+      {
+        "text": "'Failed to save customer receivable'",
+        "line": 491,
+        "pattern": 2,
+        "context": "st({         title: 'Error',         description: 'Failed to save customer receivable',         vari"
+      },
+      {
+        "text": "'Customer receivable deleted successfully'",
+        "line": 522,
+        "pattern": 2,
+        "context": "title: 'Success',           description: 'Customer receivable deleted successfully',"
+      },
+      {
+        "text": "'Failed to delete customer receivable'",
+        "line": 535,
+        "pattern": 2,
+        "context": "description:             errorData.error || 'Failed to delete customer receivable',"
+      },
+      {
+        "text": "'Failed to delete customer receivable'",
+        "line": 543,
+        "pattern": 2,
+        "context": "st({         title: 'Error',         description: 'Failed to delete customer receivable',         va"
+      },
+      {
+        "text": "'receivableManagement'",
+        "line": 664,
+        "pattern": 2,
+        "context": "xt-foreground text-2xl font-bold\">             {t('receivableManagement')}           </h1>"
+      },
+      {
+        "text": "'Export Report functionality is under development'",
+        "line": 702,
+        "pattern": 2,
+        "context": "itle: 'Coming Soon',                 description: 'Export Report functionality is under development'"
+      },
+      {
+        "text": "'receivableManagement'",
+        "line": 841,
+        "pattern": 2,
+        "context": "}`}             >               {t('receivableManagement')}             </button>"
+      }
+    ],
+    "usedTranslationKeys": [
+      "receivableManagement",
+      "drivers",
+      "receivables",
+      "customers",
+      "users",
+      "type",
+      "refresh",
+      "totalCashReceivables",
+      "pending",
+      "receivableManagement",
+      "changesLog",
+      "customers",
+      "amount",
+      "date",
+      "actions",
+      "pay",
+      "total",
+      "customers",
+      "quantity",
+      "size",
+      "date",
+      "actions",
+      "return",
+      "total"
+    ],
+    "missingTranslationCalls": [
+      {
+        "key": "customers",
+        "line": 667,
+        "context": "\">             {t('drivers')} {t('receivables')} {t('customers')}           </p>         </div>"
+      },
+      {
+        "key": "customers",
+        "line": 983,
+        "context": "rk:text-gray-300\">                               {t('customers')}                             </th>"
+      },
+      {
+        "key": "customers",
+        "line": 1119,
+        "context": "rk:text-gray-300\">                               {t('customers')}                             </th>"
+      }
+    ],
+    "issues": []
+  },
+  {
+    "path": "app\\dashboard\\reports\\daily-sales\\page.tsx",
+    "hardcodedStrings": [
+      {
+        "text": "'failedToLoadDailySalesReport'",
+        "line": 144,
+        "pattern": 2,
+        "context": "title: t('error'),           description: t('failedToLoadDailySalesReport'),           variant"
+      },
+      {
+        "text": "'failedToLoadDailySalesReport'",
+        "line": 152,
+        "pattern": 2,
+        "context": "title: t('error'),         description: t('failedToLoadDailySalesReport'),         variant:"
+      },
+      {
+        "text": "'loadingDailySalesReport'",
+        "line": 186,
+        "pattern": 2,
+        "context": "className=\"text-muted-foreground\">             {t('loadingDailySalesReport')}           </span>"
+      },
+      {
+        "text": "'noReportDataAvailable'",
+        "line": 199,
+        "pattern": 2,
+        "context": "ssName=\"mb-2 text-lg font-medium\">             {t('noReportDataAvailable')}           </p>"
+      },
+      {
+        "text": "'dailySalesReport'",
+        "line": 213,
+        "pattern": 2,
+        "context": "xt-foreground text-2xl font-bold\">             {t('dailySalesReport')}           </h1>           <p"
+      },
+      {
+        "text": "'comprehensiveDailySalesReport'",
+        "line": 216,
+        "pattern": 2,
+        "context": "className=\"text-muted-foreground\">             {t('comprehensiveDailySalesReport')}           </p>"
+      },
+      {
+        "text": "'dailySalesReport'",
+        "line": 302,
+        "pattern": 2,
+        "context": "foreground text-lg font-semibold\">             {t('dailySalesReport')} - {formatDate(selectedDate)}"
+      }
+    ],
+    "usedTranslationKeys": [
+      "cashDepositsByDriver",
+      "driverExpense",
+      "fuelExpense",
+      "maintenanceExpense",
+      "officeExpense",
+      "transportExpense",
+      "miscellaneousExpense",
+      "generalExpense",
+      "T",
+      "error",
+      "failedToLoadDailySalesReport",
+      "error",
+      "failedToLoadDailySalesReport",
+      "loadingDailySalesReport",
+      "noReportDataAvailable",
+      "tryAgainOrSelectDate",
+      "dailySalesReport",
+      "comprehensiveDailySalesReport",
+      "refresh",
+      "totalSalesValue",
+      "totalDeposited",
+      "totalExpenses",
+      "availableCash",
+      "dailySalesReport",
+      "driver",
+      "packageSalesQty",
+      "refillSalesQty",
+      "totalSalesQty",
+      "totalSalesValue",
+      "discount",
+      "totalDeposited",
+      "totalCylindersReceivables",
+      "totalCashReceivables",
+      "changeInReceivablesCashCylinders",
+      "retailDriver",
+      "cash",
+      "cylinders",
+      "total",
+      "cash",
+      "cylinders",
+      "dailyDepositsExpenses",
+      "detailedBreakdownDepositsExpenses",
+      "deposits",
+      "particulars",
+      "description",
+      "amount",
+      "cashDepositsByDriver",
+      "noDepositsFound",
+      "totalDepositsCalculated",
+      "expenses",
+      "particulars",
+      "description",
+      "amount",
+      "generalExpense",
+      "noExpensesFound",
+      "totalExpensesCalculated",
+      "availableCash",
+      "totalAvailableCash",
+      "totalDepositsIncludingSales"
+    ],
+    "missingTranslationCalls": [
+      {
+        "key": "T",
+        "line": 112,
+        "context": "ate] = useState(     new Date().toISOString().split('T')[0]   );   const [refreshing, setRefreshing]"
+      }
+    ],
+    "issues": []
+  },
+  {
+    "path": "app\\dashboard\\reports\\page.tsx",
+    "hardcodedStrings": [
+      {
+        "text": ">\n            Financial Reports\n          <",
+        "line": 339,
+        "pattern": 0,
+        "context": "<h1 className=\"text-foreground text-2xl font-bold\">             Financial Reports           </h1>"
+      },
+      {
+        "text": ">\n            Generate and view comprehensive business reports\n          <",
+        "line": 342,
+        "pattern": 0,
+        "context": "h1>           <p className=\"text-muted-foreground\">             Generate and view comprehensive busi"
+      },
+      {
+        "text": ">Today<",
+        "line": 356,
+        "pattern": 0,
+        "context": "700\"           >             <option value=\"today\">Today</option>             <option value=\"this_we"
+      },
+      {
+        "text": ">This Week<",
+        "line": 357,
+        "pattern": 0,
+        "context": "day</option>             <option value=\"this_week\">This Week</option>             <option value=\"thi"
+      },
+      {
+        "text": ">This Month<",
+        "line": 358,
+        "pattern": 0,
+        "context": "ek</option>             <option value=\"this_month\">This Month</option>             <option value=\"la"
+      },
+      {
+        "text": ">Last Month<",
+        "line": 359,
+        "pattern": 0,
+        "context": "th</option>             <option value=\"last_month\">Last Month</option>             <option value=\"th"
+      },
+      {
+        "text": ">This Quarter<",
+        "line": 360,
+        "pattern": 0,
+        "context": "</option>             <option value=\"this_quarter\">This Quarter</option>             <option value=\""
+      },
+      {
+        "text": ">This Year<",
+        "line": 361,
+        "pattern": 0,
+        "context": "ter</option>             <option value=\"this_year\">This Year</option>           </select>"
+      },
+      {
+        "text": ">\n            Refresh\n          <",
+        "line": 370,
+        "pattern": 0,
+        "context": "4 ${loading ? 'animate-spin' : ''}`}             />             Refresh           </button>"
+      },
+      {
+        "text": ">\n            Custom Report\n          <",
+        "line": 377,
+        "pattern": 0,
+        "context": ">             <FileText className=\"mr-2 h-4 w-4\" />             Custom Report           </button>"
+      },
+      {
+        "text": ">Total Revenue<",
+        "line": 389,
+        "pattern": 0,
+        "context": "<p className=\"text-muted-foreground text-sm\">Total Revenue</p>               <p className=\"tex"
+      },
+      {
+        "text": ">Total Expenses<",
+        "line": 400,
+        "pattern": 0,
+        "context": "<p className=\"text-muted-foreground text-sm\">Total Expenses</p>               <p className=\"te"
+      },
+      {
+        "text": ">Net Profit<",
+        "line": 411,
+        "pattern": 0,
+        "context": "<p className=\"text-muted-foreground text-sm\">Net Profit</p>               <p className=\"text-f"
+      },
+      {
+        "text": ">Profit Margin<",
+        "line": 422,
+        "pattern": 0,
+        "context": "<p className=\"text-muted-foreground text-sm\">Profit Margin</p>               <p className=\"tex"
+      },
+      {
+        "text": ">\n                    View\n                  <",
+        "line": 460,
+        "pattern": 0,
+        "context": "<FileText className=\"mr-1 h-3 w-3\" />                     View                   </but"
+      },
+      {
+        "text": ">\n                    Email\n                  <",
+        "line": 491,
+        "pattern": 0,
+        "context": "<Mail className=\"mr-1 h-3 w-3\" />                     Email                   </bu"
+      },
+      {
+        "text": ">\n            Recent Reports\n          <",
+        "line": 504,
+        "pattern": 0,
+        "context": "className=\"text-foreground text-lg font-semibold\">             Recent Reports           </h2>"
+      },
+      {
+        "text": ">\n                  Report Type\n                <",
+        "line": 512,
+        "pattern": 0,
+        "context": "px-6 py-3 text-left text-xs font-medium uppercase\">                   Report Type                 </"
+      },
+      {
+        "text": ">\n                  Period\n                <",
+        "line": 515,
+        "pattern": 0,
+        "context": "px-6 py-3 text-left text-xs font-medium uppercase\">                   Period                 </th>"
+      },
+      {
+        "text": ">\n                  Generated Date\n                <",
+        "line": 518,
+        "pattern": 0,
+        "context": "px-6 py-3 text-left text-xs font-medium uppercase\">                   Generated Date"
+      },
+      {
+        "text": ">\n                  Generated By\n                <",
+        "line": 521,
+        "pattern": 0,
+        "context": "px-6 py-3 text-left text-xs font-medium uppercase\">                   Generated By                 <"
+      },
+      {
+        "text": ">\n                  Status\n                <",
+        "line": 524,
+        "pattern": 0,
+        "context": "px-6 py-3 text-left text-xs font-medium uppercase\">                   Status                 </th>"
+      },
+      {
+        "text": ">\n                  Actions\n                <",
+        "line": 527,
+        "pattern": 0,
+        "context": "px-6 py-3 text-left text-xs font-medium uppercase\">                   Actions                 </th>"
+      },
+      {
+        "text": ">\n                      Income Statement\n                    <",
+        "line": 537,
+        "pattern": 0,
+        "context": "an className=\"text-foreground text-sm font-medium\">                       Income Statement"
+      },
+      {
+        "text": ">\n                  Finance Officer\n                <",
+        "line": 548,
+        "pattern": 0,
+        "context": "xt-foreground whitespace-nowrap px-6 py-4 text-sm\">                   Finance Officer"
+      },
+      {
+        "text": ">\n                    Completed\n                  <",
+        "line": 552,
+        "pattern": 0,
+        "context": "reen-800 dark:bg-green-900/50 dark:text-green-200\">                     Completed"
+      },
+      {
+        "text": ">\n                    View\n                  <",
+        "line": 560,
+        "pattern": 0,
+        "context": "rt('View Report coming soon!')}                   >                     View                   </but"
+      },
+      {
+        "text": ">\n                    Download\n                  <",
+        "line": 566,
+        "pattern": 0,
+        "context": "Download Report coming soon!')}                   >                     Download                   <"
+      },
+      {
+        "text": ">\n                      Sales Report\n                    <",
+        "line": 575,
+        "pattern": 0,
+        "context": "an className=\"text-foreground text-sm font-medium\">                       Sales Report"
+      },
+      {
+        "text": ">\n                  Sales Manager\n                <",
+        "line": 586,
+        "pattern": 0,
+        "context": "xt-foreground whitespace-nowrap px-6 py-4 text-sm\">                   Sales Manager"
+      },
+      {
+        "text": ">\n                    Completed\n                  <",
+        "line": 590,
+        "pattern": 0,
+        "context": "reen-800 dark:bg-green-900/50 dark:text-green-200\">                     Completed"
+      },
+      {
+        "text": ">\n                    View\n                  <",
+        "line": 598,
+        "pattern": 0,
+        "context": "rt('View Report coming soon!')}                   >                     View                   </but"
+      },
+      {
+        "text": ">\n                    Download\n                  <",
+        "line": 604,
+        "pattern": 0,
+        "context": "Download Report coming soon!')}                   >                     Download                   <"
+      },
+      {
+        "text": ">\n                      Inventory Report\n                    <",
+        "line": 613,
+        "pattern": 0,
+        "context": "an className=\"text-foreground text-sm font-medium\">                       Inventory Report"
+      },
+      {
+        "text": ">\n                  Weekly\n                <",
+        "line": 618,
+        "pattern": 0,
+        "context": "xt-foreground whitespace-nowrap px-6 py-4 text-sm\">                   Weekly                 </td>"
+      },
+      {
+        "text": ">\n                  Inventory Manager\n                <",
+        "line": 624,
+        "pattern": 0,
+        "context": "xt-foreground whitespace-nowrap px-6 py-4 text-sm\">                   Inventory Manager"
+      },
+      {
+        "text": ">\n                    Processing\n                  <",
+        "line": 628,
+        "pattern": 0,
+        "context": "ow-800 dark:bg-yellow-900/50 dark:text-yellow-200\">                     Processing"
+      },
+      {
+        "text": ">\n            Key Performance Indicators\n          <",
+        "line": 644,
+        "pattern": 0,
+        "context": "sName=\"text-foreground mb-4 text-lg font-semibold\">             Key Performance Indicators"
+      },
+      {
+        "text": ">\n                Monthly Revenue Growth\n              <",
+        "line": 649,
+        "pattern": 0,
+        "context": "<span className=\"text-muted-foreground text-sm\">                 Monthly Revenue Growth"
+      },
+      {
+        "text": ">\n                Customer Acquisition\n              <",
+        "line": 655,
+        "pattern": 0,
+        "context": "<span className=\"text-muted-foreground text-sm\">                 Customer Acquisition"
+      },
+      {
+        "text": ">\n                Inventory Turnover\n              <",
+        "line": 661,
+        "pattern": 0,
+        "context": "<span className=\"text-muted-foreground text-sm\">                 Inventory Turnover"
+      },
+      {
+        "text": ">\n                Driver Efficiency\n              <",
+        "line": 667,
+        "pattern": 0,
+        "context": "<span className=\"text-muted-foreground text-sm\">                 Driver Efficiency"
+      },
+      {
+        "text": ">\n            Report Schedule\n          <",
+        "line": 676,
+        "pattern": 0,
+        "context": "sName=\"text-foreground mb-4 text-lg font-semibold\">             Report Schedule           </h3>"
+      },
+      {
+        "text": ">\n                  Daily Sales Summary\n                <",
+        "line": 682,
+        "pattern": 0,
+        "context": "an className=\"text-foreground text-sm font-medium\">                   Daily Sales Summary"
+      },
+      {
+        "text": ">\n                Active\n              <",
+        "line": 689,
+        "pattern": 0,
+        "context": "reen-800 dark:bg-green-900/50 dark:text-green-200\">                 Active               </span>"
+      },
+      {
+        "text": ">\n                  Weekly Inventory Report\n                <",
+        "line": 695,
+        "pattern": 0,
+        "context": "an className=\"text-foreground text-sm font-medium\">                   Weekly Inventory Report"
+      },
+      {
+        "text": ">\n                Active\n              <",
+        "line": 702,
+        "pattern": 0,
+        "context": "reen-800 dark:bg-green-900/50 dark:text-green-200\">                 Active               </span>"
+      },
+      {
+        "text": ">\n                  Monthly Financial Report\n                <",
+        "line": 708,
+        "pattern": 0,
+        "context": "an className=\"text-foreground text-sm font-medium\">                   Monthly Financial Report"
+      },
+      {
+        "text": ">\n                Active\n              <",
+        "line": 715,
+        "pattern": 0,
+        "context": "reen-800 dark:bg-green-900/50 dark:text-green-200\">                 Active               </span>"
+      },
+      {
+        "text": ">\n                  REVENUE\n                <",
+        "line": 764,
+        "pattern": 0,
+        "context": "an className=\"text-foreground text-sm font-medium\">                   REVENUE                 </span"
+      },
+      {
+        "text": ">\n                  COST OF GOODS SOLD\n                <",
+        "line": 789,
+        "pattern": 0,
+        "context": "an className=\"text-foreground text-sm font-medium\">                   COST OF GOODS SOLD"
+      },
+      {
+        "text": ">\n                  GROSS PROFIT\n                <",
+        "line": 807,
+        "pattern": 0,
+        "context": "t-sm font-medium text-blue-900 dark:text-blue-200\">                   GROSS PROFIT                 <"
+      },
+      {
+        "text": ">\n                  OPERATING EXPENSES\n                <",
+        "line": 816,
+        "pattern": 0,
+        "context": "an className=\"text-foreground text-sm font-medium\">                   OPERATING EXPENSES"
+      },
+      {
+        "text": ">\n                  NET INCOME\n                <",
+        "line": 873,
+        "pattern": 0,
+        "context": "t-sm font-bold text-green-900 dark:text-green-200\">                   NET INCOME                 </s"
+      },
+      {
+        "text": ">ASSETS<",
+        "line": 950,
+        "pattern": 0,
+        "context": "<h4 className=\"text-foreground mb-2 font-medium\">ASSETS</h4>                 <div className=\"ml-4"
+      },
+      {
+        "text": ">\n                      Current Assets\n                    <",
+        "line": 953,
+        "pattern": 0,
+        "context": "<span className=\"text-muted-foreground text-sm\">                       Current Assets"
+      },
+      {
+        "text": ">\n                      Fixed Assets\n                    <",
+        "line": 989,
+        "pattern": 0,
+        "context": "<span className=\"text-muted-foreground text-sm\">                       Fixed Assets"
+      },
+      {
+        "text": ">\n                      Total Assets\n                    <",
+        "line": 1025,
+        "pattern": 0,
+        "context": "span className=\"text-foreground text-sm font-bold\">                       Total Assets"
+      },
+      {
+        "text": ">\n                      Current Liabilities\n                    <",
+        "line": 1041,
+        "pattern": 0,
+        "context": "<span className=\"text-muted-foreground text-sm\">                       Current Liabilities"
+      },
+      {
+        "text": ">\n                  PDF\n                <",
+        "line": 1170,
+        "pattern": 0,
+        "context": "<Download className=\"mr-1 inline h-3 w-3\" />                   PDF                 </>"
+      },
+      {
+        "text": ">\n                  Excel\n                <",
+        "line": 1184,
+        "pattern": 0,
+        "context": "<Download className=\"mr-1 inline h-3 w-3\" />                   Excel                 </>"
+      },
+      {
+        "text": ">\n              Email\n            <",
+        "line": 1193,
+        "pattern": 0,
+        "context": "<Mail className=\"mr-1 inline h-3 w-3\" />               Email             </button>"
+      },
+      {
+        "text": ">\n                Operating Activities\n              <",
+        "line": 1202,
+        "pattern": 0,
+        "context": "<h4 className=\"text-foreground mb-3 font-medium\">                 Operating Activities"
+      },
+      {
+        "text": ">\n                    Net Income\n                  <",
+        "line": 1207,
+        "pattern": 0,
+        "context": "<span className=\"text-muted-foreground text-sm\">                     Net Income"
+      },
+      {
+        "text": ">\n                    Depreciation\n                  <",
+        "line": 1215,
+        "pattern": 0,
+        "context": "<span className=\"text-muted-foreground text-sm\">                     Depreciation"
+      },
+      {
+        "text": ">\n                    Change in Receivables\n                  <",
+        "line": 1224,
+        "pattern": 0,
+        "context": "<span className=\"text-muted-foreground text-sm\">                     Change in Receivables"
+      },
+      {
+        "text": ">\n                    Change in Inventory\n                  <",
+        "line": 1240,
+        "pattern": 0,
+        "context": "<span className=\"text-muted-foreground text-sm\">                     Change in Inventory"
+      },
+      {
+        "text": ">\n                    Change in Payables\n                  <",
+        "line": 1256,
+        "pattern": 0,
+        "context": "<span className=\"text-muted-foreground text-sm\">                     Change in Payables"
+      },
+      {
+        "text": ">\n                    Operating Cash Flow\n                  <",
+        "line": 1272,
+        "pattern": 0,
+        "context": "an className=\"text-foreground text-sm font-medium\">                     Operating Cash Flow"
+      },
+      {
+        "text": ">\n                Investing Activities\n              <",
+        "line": 1289,
+        "pattern": 0,
+        "context": "<h4 className=\"text-foreground mb-3 font-medium\">                 Investing Activities"
+      },
+      {
+        "text": ">\n                    Vehicle Purchases\n                  <",
+        "line": 1294,
+        "pattern": 0,
+        "context": "<span className=\"text-muted-foreground text-sm\">                     Vehicle Purchases"
+      },
+      {
+        "text": ">\n                    Equipment Purchases\n                  <",
+        "line": 1310,
+        "pattern": 0,
+        "context": "<span className=\"text-muted-foreground text-sm\">                     Equipment Purchases"
+      },
+      {
+        "text": ">\n                    Investing Cash Flow\n                  <",
+        "line": 1326,
+        "pattern": 0,
+        "context": "an className=\"text-foreground text-sm font-medium\">                     Investing Cash Flow"
+      },
+      {
+        "text": ">\n                Financing Activities\n              <",
+        "line": 1343,
+        "pattern": 0,
+        "context": "<h4 className=\"text-foreground mb-3 font-medium\">                 Financing Activities"
+      },
+      {
+        "text": ">\n                    Owner Drawings\n                  <",
+        "line": 1348,
+        "pattern": 0,
+        "context": "<span className=\"text-muted-foreground text-sm\">                     Owner Drawings"
+      },
+      {
+        "text": ">\n                    Loan Repayments\n                  <",
+        "line": 1362,
+        "pattern": 0,
+        "context": "<span className=\"text-muted-foreground text-sm\">                     Loan Repayments"
+      },
+      {
+        "text": ">\n                    Financing Cash Flow\n                  <",
+        "line": 1378,
+        "pattern": 0,
+        "context": "an className=\"text-foreground text-sm font-medium\">                     Financing Cash Flow"
+      },
+      {
+        "text": ">\n                Net Change in Cash\n              <",
+        "line": 1396,
+        "pattern": 0,
+        "context": "ame=\"font-medium text-blue-900 dark:text-blue-200\">                 Net Change in Cash"
+      },
+      {
+        "text": ">\n                Cash at Beginning of Period\n              <",
+        "line": 1407,
+        "pattern": 0,
+        "context": "assName=\"text-sm text-blue-700 dark:text-blue-300\">                 Cash at Beginning of Period"
+      },
+      {
+        "text": ">\n                Cash at End of Period\n              <",
+        "line": 1415,
+        "pattern": 0,
+        "context": "ame=\"font-medium text-blue-900 dark:text-blue-200\">                 Cash at End of Period"
+      },
+      {
+        "text": ">Profitability<",
+        "line": 1455,
+        "pattern": 0,
+        "context": "<h4 className=\"text-foreground mb-3 font-medium\">Profitability</h4>             <div className=\"sp"
+      },
+      {
+        "text": ">\n                  Net Profit Margin\n                <",
+        "line": 1461,
+        "pattern": 0,
+        "context": "sName=\"text-xs text-green-700 dark:text-green-300\">                   Net Profit Margin"
+      },
+      {
+        "text": ">\n                  Gross Profit Margin\n                <",
+        "line": 1467,
+        "pattern": 0,
+        "context": "assName=\"text-xs text-blue-700 dark:text-blue-300\">                   Gross Profit Margin"
+      },
+      {
+        "text": ">Liquidity<",
+        "line": 1476,
+        "pattern": 0,
+        "context": "<h4 className=\"text-foreground mb-3 font-medium\">Liquidity</h4>             <div className=\"space-"
+      },
+      {
+        "text": ">\n                  Current Ratio\n                <",
+        "line": 1480,
+        "pattern": 0,
+        "context": "ame=\"text-xs text-purple-700 dark:text-purple-300\">                   Current Ratio"
+      },
+      {
+        "text": ">\n                  Quick Ratio\n                <",
+        "line": 1486,
+        "pattern": 0,
+        "context": "ame=\"text-xs text-orange-700 dark:text-orange-300\">                   Quick Ratio                 </"
+      },
+      {
+        "text": ">Efficiency<",
+        "line": 1495,
+        "pattern": 0,
+        "context": "<h4 className=\"text-foreground mb-3 font-medium\">Efficiency</h4>             <div className=\"space"
+      },
+      {
+        "text": ">\n                  Days in Receivables\n                <",
+        "line": 1501,
+        "pattern": 0,
+        "context": "assName=\"text-xs text-teal-700 dark:text-teal-300\">                   Days in Receivables"
+      },
+      {
+        "text": ">\n                  Inventory Turnover\n                <",
+        "line": 1509,
+        "pattern": 0,
+        "context": "ame=\"text-xs text-indigo-700 dark:text-indigo-300\">                   Inventory Turnover"
+      },
+      {
+        "text": ">Leverage<",
+        "line": 1518,
+        "pattern": 0,
+        "context": "<h4 className=\"text-foreground mb-3 font-medium\">Leverage</h4>             <div className=\"space-y"
+      },
+      {
+        "text": ">\n                  Equity Ratio\n                <",
+        "line": 1532,
+        "pattern": 0,
+        "context": "ame=\"text-xs text-yellow-700 dark:text-yellow-300\">                   Equity Ratio                 <"
+      },
+      {
+        "text": ">\n          Automated Report Delivery\n        <",
+        "line": 1543,
+        "pattern": 0,
+        "context": "sName=\"text-foreground mb-4 text-lg font-semibold\">           Automated Report Delivery         </h3"
+      },
+      {
+        "text": ">Email Settings<",
+        "line": 1548,
+        "pattern": 0,
+        "context": "<h4 className=\"text-foreground mb-3 font-medium\">Email Settings</h4>             <div className=\"s"
+      },
+      {
+        "text": ">\n                    Daily Sales Summary\n                  <",
+        "line": 1552,
+        "pattern": 0,
+        "context": "an className=\"text-foreground text-sm font-medium\">                     Daily Sales Summary"
+      },
+      {
+        "text": ">\n                    Monthly Financial Report\n                  <",
+        "line": 1570,
+        "pattern": 0,
+        "context": "an className=\"text-foreground text-sm font-medium\">                     Monthly Financial Report"
+      },
+      {
+        "text": ">Recipients<",
+        "line": 1589,
+        "pattern": 0,
+        "context": "<h4 className=\"text-foreground mb-3 font-medium\">Recipients</h4>             <div className=\"space"
+      },
+      {
+        "text": ">\n                  Add\n                <",
+        "line": 1597,
+        "pattern": 0,
+        "context": "00 px-3 py-2 text-sm text-white hover:bg-blue-700\">                   Add                 </button>"
+      },
+      {
+        "text": "placeholder=\"Add email address\"",
+        "line": 1594,
+        "pattern": 1,
+        "context": "type=\"email\"                   placeholder=\"Add email address\""
+      },
+      {
+        "text": "'Sales Report'",
+        "line": 275,
+        "pattern": 2,
+        "context": "},     {       id: 'sales_report',       title: 'Sales Report',       description: 'Detailed sales"
+      },
+      {
+        "text": "'Detailed sales performance analysis'",
+        "line": 276,
+        "pattern": 2,
+        "context": ",       title: 'Sales Report',       description: 'Detailed sales performance analysis',       icon:"
+      },
+      {
+        "text": "'Inventory Report'",
+        "line": 283,
+        "pattern": 2,
+        "context": "{       id: 'inventory_report',       title: 'Inventory Report',       description: 'Stock leve"
+      },
+      {
+        "text": "'Stock levels and movement analysis'",
+        "line": 284,
+        "pattern": 2,
+        "context": "title: 'Inventory Report',       description: 'Stock levels and movement analysis',       icon:"
+      },
+      {
+        "text": "\"Add email address\"",
+        "line": 1594,
+        "pattern": 2,
+        "context": "type=\"email\"                   placeholder=\"Add email address\"                   className=\"t"
+      }
+    ],
+    "usedTranslationKeys": ["T"],
+    "missingTranslationCalls": [
+      {
+        "key": "T",
+        "line": 227,
+        "context": "_${selectedPeriod}_${new Date().toISOString().split('T')[0]}.${format === 'pdf' ? 'pdf' : 'xlsx'}`;"
+      }
+    ],
+    "issues": ["Component has hardcoded text but no translation hook"]
+  },
+  {
+    "path": "app\\dashboard\\sales\\page.tsx",
+    "hardcodedStrings": [
+      {
+        "text": "'Failed to load entry data for editing'",
+        "line": 260,
+        "pattern": 2,
+        "context": "st({         title: 'Error',         description: 'Failed to load entry data for editing',         v"
+      },
+      {
+        "text": "'Failed to delete existing sales'",
+        "line": 286,
+        "pattern": 2,
+        "context": "if (!deleteResponse.ok) {         throw new Error('Failed to delete existing sales');       }"
+      },
+      {
+        "text": "'Failed to delete sales'",
+        "line": 356,
+        "pattern": 2,
+        "context": "se.json();         throw new Error(error.error || 'Failed to delete sales');       }     } catch (er"
+      },
+      {
+        "text": "'Failed to delete sales'",
+        "line": 363,
+        "pattern": 2,
+        "context": "error instanceof Error ? error.message : 'Failed to delete sales',         variant: 'destru"
+      },
+      {
+        "text": "'salesManagement'",
+        "line": 396,
+        "pattern": 2,
+        "context": "xt-foreground text-2xl font-bold\">             {t('salesManagement')}           </h1>           <p c"
+      }
+    ],
+    "usedTranslationKeys": [
+      "T",
+      "loadingData",
+      "salesManagement",
+      "recordDailySales",
+      "trackPerformance",
+      "refresh",
+      "create",
+      "sales",
+      "packageSale",
+      "cylindersSold",
+      "refillSale",
+      "refillSalesQty",
+      "totalRevenue",
+      "totalSales",
+      "cash",
+      "deposits",
+      "cash",
+      "deposits",
+      "todaysSales",
+      "loading",
+      "lastUpdated",
+      "filter",
+      "export",
+      "date",
+      "drivers",
+      "packageSale",
+      "quantity",
+      "refillSale",
+      "quantity",
+      "totalValue",
+      "discount",
+      "cash",
+      "deposits",
+      "cylinders",
+      "deposits",
+      "actions",
+      "noDataFound",
+      "create",
+      "newSale",
+      "readOnly",
+      "create",
+      "sales",
+      "edit",
+      "sales",
+      "loadingData",
+      "operationFailed",
+      "loadingData",
+      "close"
+    ],
+    "missingTranslationCalls": [
+      {
+        "key": "T",
+        "line": 104,
+        "context": "const today = new Date().toISOString().split('T')[0];       console.log('Fetching daily sales"
+      }
+    ],
+    "issues": []
+  },
+  {
+    "path": "app\\dashboard\\shipments\\page.tsx",
+    "hardcodedStrings": [
+      {
+        "text": "'Failed to delete existing shipments'",
+        "line": 418,
+        "pattern": 2,
+        "context": ");      if (deleteFailed) {       throw new Error('Failed to delete existing shipments');     }"
+      },
+      {
+        "text": "'shipmentsManagement'",
+        "line": 881,
+        "pattern": 2,
+        "context": "oreground text-3xl font-bold\">                 {t('shipmentsManagement')}               </h1>"
+      },
+      {
+        "text": "'enterAdditionalNotes'",
+        "line": 1547,
+        "pattern": 2,
+        "context": "rows={3}                           placeholder={t('enterAdditionalNotes')}                         /"
+      },
+      {
+        "text": "'lineTotalPreview'",
+        "line": 1784,
+        "pattern": 2,
+        "context": "font-medium\">                                 {t('lineTotalPreview')}"
+      },
+      {
+        "text": "'lineTotal'",
+        "line": 1908,
+        "pattern": 2,
+        "context": "t-gray-300\">                                   {t('lineTotal')}                                 </th"
+      }
+    ],
+    "usedTranslationKeys": [
+      "T",
+      "T",
+      "T",
+      "T",
+      "T",
+      "shipmentsManagement",
+      "trackPurchaseOrdersAndShipments",
+      "newPurchase",
+      "emptyCylinderBuySell",
+      "allShipments",
+      "outstandingOrders",
+      "completedOrders",
+      "company",
+      "allCompanies",
+      "product",
+      "allProducts",
+      "fromDate",
+      "toDate",
+      "clearFilters",
+      "loadingShipments",
+      "noShipmentsFound",
+      "driver",
+      "invoice",
+      "quantity",
+      "units",
+      "gas",
+      "unit",
+      "cylinder",
+      "unit",
+      "unitCost",
+      "gasCost",
+      "cylinderCost",
+      "total",
+      "total",
+      "vehicle",
+      "markAsFulfilled",
+      "edit",
+      "delete",
+      "totalItems",
+      "totalCost",
+      "editPurchaseOrder",
+      "createNewPurchaseOrder",
+      "step",
+      "of",
+      "orderInformation",
+      "company",
+      "selectCompany",
+      "driver",
+      "selectDriver",
+      "shipmentDate",
+      "expectedDeliveryDate",
+      "invoiceNumber",
+      "enterInvoiceNumber",
+      "paymentTerms",
+      "cashOnDelivery",
+      "net30Days",
+      "net60Days",
+      "advancePayment",
+      "priority",
+      "low",
+      "normal",
+      "high",
+      "urgent",
+      "vehicleNumber",
+      "enterVehicleNumber",
+      "notes",
+      "enterAdditionalNotes",
+      "addLineItem",
+      "product",
+      "selectProduct",
+      "selectCompanyFirst",
+      "type",
+      "package",
+      "refill",
+      "quantity",
+      "gasPrice",
+      "cylinderPrice",
+      "discount",
+      "taxRate",
+      "lineTotalPreview",
+      "gasCost",
+      "cylinderCost",
+      "discount",
+      "total",
+      "packageInfo",
+      "refillInfo",
+      "addItem",
+      "purchaseItems",
+      "product",
+      "type",
+      "qty",
+      "gasCost",
+      "cylinderCost",
+      "lineTotal",
+      "action",
+      "editItem",
+      "edit",
+      "removeItem",
+      "remove",
+      "totalPurchaseValue",
+      "orderPreview",
+      "orderInformation",
+      "company",
+      "driver",
+      "shipmentDate",
+      "paymentTerms",
+      "priority",
+      "orderSummary",
+      "totalItems",
+      "totalQuantity",
+      "totalValue",
+      "previous",
+      "cancel",
+      "companyRequired",
+      "driverRequired",
+      "shipmentDateRequired",
+      "atLeastOneLineItemRequired",
+      "next",
+      "creating",
+      "updatePurchaseOrder",
+      "createPurchaseOrder",
+      "emptyCylinderBuySell",
+      "transactionType",
+      "buyEmptyCylinders",
+      "sellEmptyCylinders",
+      "addEmptyCylindersToInventory",
+      "removeEmptyCylindersFromInventory",
+      "cylinderSize",
+      "selectCylinderSize",
+      "emptyCylindersNote",
+      "quantity",
+      "unitPrice",
+      "transactionDate",
+      "notes",
+      "enterTransactionDetails",
+      "totalCost",
+      "cancel",
+      "buy",
+      "sell",
+      "emptyCylinders"
+    ],
+    "missingTranslationCalls": [
+      {
+        "key": "T",
+        "line": 111,
+        "context": "',     shipmentDate: new Date().toISOString().split('T')[0],     invoiceNumber: '',     vehicleNumbe"
+      },
+      {
+        "key": "T",
+        "line": 141,
+        "context": "| 'SELL',     date: new Date().toISOString().split('T')[0],     notes: '',   });    useEffect(() =>"
+      },
+      {
+        "key": "T",
+        "line": 529,
+        "context": "shipmentDate: new Date().toISOString().split('T')[0],       invoiceNumber: '',       vehicleN"
+      },
+      {
+        "key": "T",
+        "line": 559,
+        "context": ": 'BUY',       date: new Date().toISOString().split('T')[0],       notes: '',     });   };    const"
+      },
+      {
+        "key": "T",
+        "line": 615,
+        "context": "'',       shipmentDate: shipment.shipmentDate.split('T')[0], // Convert to YYYY-MM-DD format       i"
+      }
+    ],
+    "issues": []
+  },
+  {
+    "path": "components\\auth\\AuthRedirect.tsx",
+    "hardcodedStrings": [],
+    "usedTranslationKeys": ["callbackUrl"],
+    "missingTranslationCalls": [
+      {
+        "key": "callbackUrl",
+        "line": 14,
+        "context": "ssion) {       const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';       console.lo"
+      }
+    ],
+    "issues": []
+  },
+  {
+    "path": "components\\dashboard\\kpi-tracker.tsx",
+    "hardcodedStrings": [
+      {
+        "text": ">Ahead<",
+        "line": 333,
+        "pattern": 0,
+        "context": "urn <Badge className=\"bg-green-100 text-green-800\">Ahead</Badge>;       case 'on-track':         ret"
+      },
+      {
+        "text": ">On Track<",
+        "line": 335,
+        "pattern": 0,
+        "context": "eturn <Badge className=\"bg-blue-100 text-blue-800\">On Track</Badge>;       case 'behind':         re"
+      },
+      {
+        "text": ">Behind<",
+        "line": 337,
+        "pattern": 0,
+        "context": "n <Badge className=\"bg-yellow-100 text-yellow-800\">Behind</Badge>;       case 'at-risk':         ret"
+      },
+      {
+        "text": ">At Risk<",
+        "line": 339,
+        "pattern": 0,
+        "context": "risk':         return <Badge variant=\"destructive\">At Risk</Badge>;       default:         return <B"
+      },
+      {
+        "text": ">Unknown<",
+        "line": 341,
+        "pattern": 0,
+        "context": "default:         return <Badge variant=\"outline\">Unknown</Badge>;     }   };    const calculateOve"
+      },
+      {
+        "text": ">KPI Tracker<",
+        "line": 361,
+        "pattern": 0,
+        "context": "<h2 className=\"text-2xl font-bold tracking-tight\">KPI Tracker</h2>           <p className=\"text-mut"
+      },
+      {
+        "text": ">\n            Monitor key performance indicators and targets\n          <",
+        "line": 362,
+        "pattern": 0,
+        "context": "h2>           <p className=\"text-muted-foreground\">             Monitor key performance indicators a"
+      },
+      {
+        "text": ">All Categories<",
+        "line": 373,
+        "pattern": 0,
+        "context": "lectContent>               <SelectItem value=\"all\">All Categories</SelectItem>               <Select"
+      },
+      {
+        "text": ">Sales<",
+        "line": 374,
+        "pattern": 0,
+        "context": "electItem>               <SelectItem value=\"sales\">Sales</SelectItem>               <SelectItem valu"
+      },
+      {
+        "text": ">Inventory<",
+        "line": 375,
+        "pattern": 0,
+        "context": "tItem>               <SelectItem value=\"inventory\">Inventory</SelectItem>               <SelectItem"
+      },
+      {
+        "text": ">Financial<",
+        "line": 376,
+        "pattern": 0,
+        "context": "tItem>               <SelectItem value=\"financial\">Financial</SelectItem>               <SelectItem"
+      },
+      {
+        "text": ">Operational<",
+        "line": 377,
+        "pattern": 0,
+        "context": "tem>               <SelectItem value=\"operational\">Operational</SelectItem>             </SelectCont"
+      },
+      {
+        "text": ">All Periods<",
+        "line": 386,
+        "pattern": 0,
+        "context": "lectContent>               <SelectItem value=\"all\">All Periods</SelectItem>               <SelectIte"
+      },
+      {
+        "text": ">Daily<",
+        "line": 387,
+        "pattern": 0,
+        "context": "electItem>               <SelectItem value=\"daily\">Daily</SelectItem>               <SelectItem valu"
+      },
+      {
+        "text": ">Weekly<",
+        "line": 388,
+        "pattern": 0,
+        "context": "lectItem>               <SelectItem value=\"weekly\">Weekly</SelectItem>               <SelectItem val"
+      },
+      {
+        "text": ">Monthly<",
+        "line": 389,
+        "pattern": 0,
+        "context": "ectItem>               <SelectItem value=\"monthly\">Monthly</SelectItem>               <SelectItem va"
+      },
+      {
+        "text": ">Quarterly<",
+        "line": 390,
+        "pattern": 0,
+        "context": "tItem>               <SelectItem value=\"quarterly\">Quarterly</SelectItem>             </SelectConten"
+      },
+      {
+        "text": ">Overall Score<",
+        "line": 399,
+        "pattern": 0,
+        "context": "<CardTitle className=\"text-sm font-medium\">Overall Score</CardTitle>             <Award clas"
+      },
+      {
+        "text": ">\n                  Performance score\n                <",
+        "line": 421,
+        "pattern": 0,
+        "context": "<p className=\"text-muted-foreground text-xs\">                   Performance score"
+      },
+      {
+        "text": ">On Track<",
+        "line": 431,
+        "pattern": 0,
+        "context": "<CardTitle className=\"text-sm font-medium\">On Track</CardTitle>             <CheckCircle cla"
+      },
+      {
+        "text": ">Behind<",
+        "line": 450,
+        "pattern": 0,
+        "context": "<CardTitle className=\"text-sm font-medium\">Behind</CardTitle>             <Clock className=\""
+      },
+      {
+        "text": ">At Risk<",
+        "line": 463,
+        "pattern": 0,
+        "context": "<CardTitle className=\"text-sm font-medium\">At Risk</CardTitle>             <AlertTriangle cl"
+      },
+      {
+        "text": "placeholder=\"Category\"",
+        "line": 370,
+        "pattern": 1,
+        "context": "className=\"w-[140px]\">               <SelectValue placeholder=\"Category\" />             </SelectTrig"
+      },
+      {
+        "text": "placeholder=\"Period\"",
+        "line": 383,
+        "pattern": 1,
+        "context": "className=\"w-[120px]\">               <SelectValue placeholder=\"Period\" />             </SelectTrigge"
+      }
+    ],
+    "usedTranslationKeys": ["T"],
+    "missingTranslationCalls": [
+      {
+        "key": "T",
+        "line": 286,
+        "context": "data.push({         date: date.toISOString().split('T')[0],         value: Math.max(0, current * (1"
+      }
+    ],
+    "issues": ["Component has hardcoded text but no translation hook"]
+  },
+  {
+    "path": "components\\expenses\\ExpenseFilters.tsx",
+    "hardcodedStrings": [],
+    "usedTranslationKeys": [
+      "searchExpenses",
+      "allStatus",
+      "pending",
+      "approved",
+      "allCategories",
+      "from",
+      "to",
+      "clear",
+      "status",
+      "category",
+      "unknown",
+      "date",
+      "to"
+    ],
+    "missingTranslationCalls": [
+      {
+        "key": "searchExpenses",
+        "line": 38,
+        "context": "type=\"text\"             placeholder={t('searchExpenses')}             value={filters.se"
+      },
+      {
+        "key": "allStatus",
+        "line": 60,
+        "context": "500\"           >             <option value=\"all\">{t('allStatus')}</option>             <option value"
+      },
+      {
+        "key": "approved",
+        "line": 62,
+        "context": ")}</option>             <option value=\"approved\">{t('approved')}</option>           </select>"
+      },
+      {
+        "key": "allCategories",
+        "line": 73,
+        "context": "ue-500\"           >             <option value=\"\">{t('allCategories')}</option>             {activeCa"
+      },
+      {
+        "key": "from",
+        "line": 86,
+        "context": "type=\"date\"             placeholder={t('from')}             value={filters.dateFrom}"
+      },
+      {
+        "key": "to",
+        "line": 93,
+        "context": "type=\"date\"             placeholder={t('to')}             value={filters.dateTo}"
+      },
+      {
+        "key": "clear",
+        "line": 107,
+        "context": "<X className=\"mr-1 h-4 w-4\" />             {t('clear')}           </button>         )}       <"
+      },
+      {
+        "key": "unknown",
+        "line": 131,
+        "context": "= filters.categoryId)                   ?.name || t('unknown')}                 <button"
+      },
+      {
+        "key": "to",
+        "line": 142,
+        "context": "{t('date')}: {filters.dateFrom} {t('to')} {filters.dateTo}                 <button"
+      }
+    ],
+    "issues": []
+  },
+  {
+    "path": "components\\expenses\\ExpenseHeader.tsx",
+    "hardcodedStrings": [
+      {
+        "text": "'expenseManagement'",
+        "line": 19,
+        "pattern": 2,
+        "context": "bold text-gray-900 dark:text-white\">           {t('expenseManagement')}         </h1>         <p cla"
+      }
+    ],
+    "usedTranslationKeys": [
+      "expenseManagement",
+      "trackExpensesAndManageBudgets",
+      "manageCategories",
+      "addExpense"
+    ],
+    "missingTranslationCalls": [
+      {
+        "key": "trackExpensesAndManageBudgets",
+        "line": 22,
+        "context": "me=\"text-gray-600 dark:text-gray-300\">           {t('trackExpensesAndManageBudgets')}         </p>"
+      },
+      {
+        "key": "manageCategories",
+        "line": 31,
+        "context": "<Settings className=\"mr-2 h-4 w-4\" />           {t('manageCategories')}         </button>         <"
+      }
+    ],
+    "issues": []
+  },
+  {
+    "path": "components\\expenses\\ExpenseStatCards.tsx",
+    "hardcodedStrings": [],
+    "usedTranslationKeys": [
+      "totalExpenses",
+      "pendingApproval",
+      "approvedExpenses",
+      "expenses",
+      "expense"
+    ],
+    "missingTranslationCalls": [
+      {
+        "key": "pendingApproval",
+        "line": 32,
+        "context": "Color: 'text-blue-600',     },     {       title: t('pendingApproval'),       amount: summary.pendin"
+      },
+      {
+        "key": "approvedExpenses",
+        "line": 40,
+        "context": "lor: 'text-yellow-600',     },     {       title: t('approvedExpenses'),       amount: summary.appro"
+      },
+      {
+        "key": "expense",
+        "line": 69,
+        "context": "{card.count} {card.count !== 1 ? t('expenses') : t('expense')}                   </p>"
+      }
+    ],
+    "issues": []
+  },
+  {
+    "path": "components\\expenses\\ExpenseTable.tsx",
+    "hardcodedStrings": [
+      {
+        "text": "'getStartedByAddingFirstExpense'",
+        "line": 83,
+        "pattern": 2,
+        "context": "text-gray-500 dark:text-gray-400\">             {t('getStartedByAddingFirstExpense')}           </p>"
+      }
+    ],
+    "usedTranslationKeys": [
+      "noExpensesFound",
+      "getStartedByAddingFirstExpense",
+      "expenses",
+      "date",
+      "description",
+      "category",
+      "parentCategory",
+      "amount",
+      "status",
+      "submittedBy",
+      "actions",
+      "notApplicable",
+      "approved",
+      "pending",
+      "viewReceipt",
+      "editExpense",
+      "deleteExpense",
+      "approveExpense",
+      "rejectExpense"
+    ],
+    "missingTranslationCalls": [
+      {
+        "key": "getStartedByAddingFirstExpense",
+        "line": 83,
+        "context": "m text-gray-500 dark:text-gray-400\">             {t('getStartedByAddingFirstExpense')}           </p"
+      },
+      {
+        "key": "parentCategory",
+        "line": 112,
+        "context": "edium uppercase tracking-wider\">                 {t('parentCategory')}               </th>"
+      },
+      {
+        "key": "submittedBy",
+        "line": 121,
+        "context": "edium uppercase tracking-wider\">                 {t('submittedBy')}               </th>"
+      },
+      {
+        "key": "notApplicable",
+        "line": 151,
+        "context": "{expense.category.parent?.name || t('notApplicable')}                 </td>"
+      },
+      {
+        "key": "approved",
+        "line": 164,
+        "context": ">                     {expense.isApproved ? t('approved') : t('pending')}                   </"
+      },
+      {
+        "key": "viewReceipt",
+        "line": 178,
+        "context": "ver:text-blue-300\"                         title={t('viewReceipt')}                       >"
+      },
+      {
+        "key": "editExpense",
+        "line": 187,
+        "context": "ver:text-indigo-300\"                       title={t('editExpense')}                     >"
+      },
+      {
+        "key": "deleteExpense",
+        "line": 197,
+        "context": ":hover:text-red-300\"                       title={t('deleteExpense')}                     >"
+      },
+      {
+        "key": "approveExpense",
+        "line": 207,
+        "context": ":text-green-300\"                           title={t('approveExpense')}                         >"
+      },
+      {
+        "key": "rejectExpense",
+        "line": 214,
+        "context": "er:text-red-300\"                           title={t('rejectExpense')}                         >"
+      }
+    ],
+    "issues": []
+  },
+  {
+    "path": "components\\expenses\\MonthNavigation.tsx",
+    "hardcodedStrings": [],
+    "usedTranslationKeys": ["previous", "next", "viewingExpensesFor"],
+    "missingTranslationCalls": [
+      {
+        "key": "viewingExpensesFor",
+        "line": 49,
+        "context": "-sm text-gray-600 dark:text-gray-400\">           {t('viewingExpensesFor')} {formatMonthYear(currentM"
+      }
+    ],
+    "issues": []
+  },
+  {
+    "path": "components\\forms\\PurchaseOrderForm.tsx",
+    "hardcodedStrings": [
+      {
+        "text": ">Select Company<",
+        "line": 213,
+        "pattern": 0,
+        "context": "required           >             <option value=\"\">Select Company</option>             {companies.ma"
+      },
+      {
+        "text": ">Select Driver<",
+        "line": 234,
+        "pattern": 0,
+        "context": "required           >             <option value=\"\">Select Driver</option>             {drivers.map(("
+      },
+      {
+        "text": ">\n            Invoice Number\n          <",
+        "line": 262,
+        "pattern": 0,
+        "context": "t-muted-foreground mb-1 block text-sm font-medium\">             Invoice Number           </label>"
+      },
+      {
+        "text": ">\n            Vehicle Number\n          <",
+        "line": 280,
+        "pattern": 0,
+        "context": "t-muted-foreground mb-1 block text-sm font-medium\">             Vehicle Number           </label>"
+      },
+      {
+        "text": ">\n          Add Purchase Item\n        <",
+        "line": 300,
+        "pattern": 0,
+        "context": "assName=\"text-md text-foreground mb-4 font-medium\">           Add Purchase Item         </h4>"
+      },
+      {
+        "text": ">\n              Product\n            <",
+        "line": 306,
+        "pattern": 0,
+        "context": "t-muted-foreground mb-1 block text-sm font-medium\">               Product             </label>"
+      },
+      {
+        "text": ">Select Product<",
+        "line": 319,
+        "pattern": 0,
+        "context": "t-sm\"             >               <option value=\"\">Select Product</option>               {products.m"
+      },
+      {
+        "text": ">\n              Type\n            <",
+        "line": 329,
+        "pattern": 0,
+        "context": "t-muted-foreground mb-1 block text-sm font-medium\">               Type             </label>"
+      },
+      {
+        "text": ">Package<",
+        "line": 342,
+        "pattern": 0,
+        "context": ">               <option value=\"PACKAGE\">Package</option>               <option value=\"REF"
+      },
+      {
+        "text": ">Refill<",
+        "line": 343,
+        "pattern": 0,
+        "context": "kage</option>               <option value=\"REFILL\">Refill</option>             </select>           <"
+      },
+      {
+        "text": ">\n              Qty\n            <",
+        "line": 348,
+        "pattern": 0,
+        "context": "t-muted-foreground mb-1 block text-sm font-medium\">               Qty             </label>"
+      },
+      {
+        "text": ">\n              Gas Price\n            <",
+        "line": 366,
+        "pattern": 0,
+        "context": "t-muted-foreground mb-1 block text-sm font-medium\">               Gas Price             </label>"
+      },
+      {
+        "text": ">\n                Cylinder Price\n              <",
+        "line": 386,
+        "pattern": 0,
+        "context": "t-muted-foreground mb-1 block text-sm font-medium\">                 Cylinder Price               </l"
+      },
+      {
+        "text": ">Add<",
+        "line": 412,
+        "pattern": 0,
+        "context": "<Plus className=\"h-4 w-4\" />               <span>Add</span>             </button>           </div>"
+      },
+      {
+        "text": ">\n            Purchase Items\n          <",
+        "line": 421,
+        "pattern": 0,
+        "context": "foreground border-border border-b p-4 font-medium\">             Purchase Items           </h4>"
+      },
+      {
+        "text": ">\n                    Product\n                  <",
+        "line": 428,
+        "pattern": 0,
+        "context": "left text-xs font-medium uppercase tracking-wider\">                     Product                   </"
+      },
+      {
+        "text": ">\n                    Type\n                  <",
+        "line": 431,
+        "pattern": 0,
+        "context": "left text-xs font-medium uppercase tracking-wider\">                     Type                   </th>"
+      },
+      {
+        "text": ">\n                    Qty\n                  <",
+        "line": 434,
+        "pattern": 0,
+        "context": "left text-xs font-medium uppercase tracking-wider\">                     Qty                   </th>"
+      },
+      {
+        "text": ">\n                    Gas Cost\n                  <",
+        "line": 437,
+        "pattern": 0,
+        "context": "left text-xs font-medium uppercase tracking-wider\">                     Gas Cost                   <"
+      },
+      {
+        "text": ">\n                    Cylinder Cost\n                  <",
+        "line": 440,
+        "pattern": 0,
+        "context": "left text-xs font-medium uppercase tracking-wider\">                     Cylinder Cost"
+      },
+      {
+        "text": ">\n                    Line Total\n                  <",
+        "line": 443,
+        "pattern": 0,
+        "context": "left text-xs font-medium uppercase tracking-wider\">                     Line Total"
+      },
+      {
+        "text": ">\n                    Action\n                  <",
+        "line": 446,
+        "pattern": 0,
+        "context": "left text-xs font-medium uppercase tracking-wider\">                     Action                   </t"
+      },
+      {
+        "text": ">\n          Additional Notes\n        <",
+        "line": 520,
+        "pattern": 0,
+        "context": "t-muted-foreground mb-1 block text-sm font-medium\">           Additional Notes         </label>"
+      },
+      {
+        "text": ">\n          Cancel\n        <",
+        "line": 540,
+        "pattern": 0,
+        "context": "-2 text-sm font-medium transition-colors\"         >           Cancel         </button>         <butt"
+      },
+      {
+        "text": ">\n          Create Purchase Order\n        <",
+        "line": 547,
+        "pattern": 0,
+        "context": "Items.length === 0 || !formData.driverId}         >           Create Purchase Order         </button"
+      },
+      {
+        "text": "placeholder=\"Enter invoice number\"",
+        "line": 275,
+        "pattern": 1,
+        "context": "d w-full rounded-md border px-3 py-2\"             placeholder=\"Enter invoice number\"           />"
+      },
+      {
+        "text": "placeholder=\"Enter vehicle number\"",
+        "line": 293,
+        "pattern": 1,
+        "context": "d w-full rounded-md border px-3 py-2\"             placeholder=\"Enter vehicle number\"           />"
+      },
+      {
+        "text": "'Please add at least one line item'",
+        "line": 178,
+        "pattern": 2,
+        "context": "}      if (lineItems.length === 0) {       alert('Please add at least one line item');       return"
+      }
+    ],
+    "usedTranslationKeys": ["T"],
+    "missingTranslationCalls": [
+      {
+        "key": "T",
+        "line": 63,
+        "context": "ata?.shipmentDate || new Date().toISOString().split('T')[0],     invoiceNumber: initialData?.invoice"
+      }
+    ],
+    "issues": []
+  },
+  {
+    "path": "components\\mobile\\MobileTestSuite.tsx",
+    "hardcodedStrings": [
+      {
+        "text": ">\n              Test\n            <",
+        "line": 685,
+        "pattern": 0,
+        "context": "nning}               className=\"px-3\"             >               Test             </MobileButton>"
+      },
+      {
+        "text": ">\n              No tests run yet\n            <",
+        "line": 720,
+        "pattern": 0,
+        "context": "className=\"py-4 text-center text-sm text-gray-500\">               No tests run yet             </p>"
+      }
+    ],
+    "usedTranslationKeys": ["div"],
+    "missingTranslationCalls": [
+      {
+        "key": "div",
+        "line": 403,
+        "context": "ack)     const testElement = document.createElement('div');     testElement.style.transform = 'scale"
+      }
+    ],
+    "issues": ["Component has hardcoded text but no translation hook"]
+  },
+  {
+    "path": "hooks\\useDailySalesData.ts",
+    "hardcodedStrings": [],
+    "usedTranslationKeys": ["T", "T"],
+    "missingTranslationCalls": [
+      {
+        "key": "T",
+        "line": 191,
+        "context": "{       const targetDate = date.toISOString().split('T')[0];       return dailySales.filter("
+      },
+      {
+        "key": "T",
+        "line": 193,
+        "context": "(record) => record.saleDate.toISOString().split('T')[0] === targetDate       );     },     [dail"
+      }
+    ],
+    "issues": []
+  },
+  {
+    "path": "lib\\cache\\cache-strategies.ts",
+    "hardcodedStrings": [],
+    "usedTranslationKeys": ["T"],
+    "missingTranslationCalls": [
+      {
+        "key": "T",
+        "line": 113,
+        "context": "{     const today = new Date().toISOString().split('T')[0];     const cacheKey = `today:${today}`;"
+      }
+    ],
+    "issues": []
+  },
+  {
+    "path": "lib\\cache\\redis-client.ts",
+    "hardcodedStrings": [
+      {
+        "text": "> Promise<",
+        "line": 149,
+        "pattern": 0,
+        "context": "espace: string,     key: string,     fetcher: () => Promise<T>,     ttl?: number   ): Promise<T> {"
+      }
+    ],
+    "usedTranslationKeys": ["hex"],
+    "missingTranslationCalls": [
+      {
+        "key": "hex",
+        "line": 57,
+        "context": "h('sha256')       .update(identifier)       .digest('hex')       .substring(0, 16);     return `${te"
+      }
+    ],
+    "issues": []
+  },
+  {
+    "path": "lib\\security\\encryption.ts",
+    "hardcodedStrings": [],
+    "usedTranslationKeys": ["hex", "hex", "hex"],
+    "missingTranslationCalls": [
+      {
+        "key": "hex",
+        "line": 222,
+        "context": "thm)       .update(data + actualSalt)       .digest('hex');      return { hash, salt: actualSalt };"
+      },
+      {
+        "key": "hex",
+        "line": 233,
+        "context": "Algorithm)       .update(data + salt)       .digest('hex');      return this.constantTimeCompare(com"
+      },
+      {
+        "key": "hex",
+        "line": 251,
+        "context": "hmac.update(data + secret);     return hmac.digest('hex');   }    /**    * Verify HMAC    */   veri"
+      }
+    ],
+    "issues": []
+  },
+  {
+    "path": "lib\\security\\https-enforcer.ts",
+    "hardcodedStrings": [],
+    "usedTranslationKeys": ["host", "host"],
+    "missingTranslationCalls": [
+      {
+        "key": "host",
+        "line": 73,
+        "context": "isHTTPS,           host: request.headers.get('host'),           userAgent: request.headers.ge"
+      },
+      {
+        "key": "host",
+        "line": 371,
+        "context": "string;   } {     const host = request.headers.get('host');      if (!host) {       return { isVali"
+      }
+    ],
+    "issues": []
+  },
+  {
+    "path": "lib\\security\\xss-csrf-protection.ts",
+    "hardcodedStrings": [],
+    "usedTranslationKeys": ["hex", "origin", "referer", "host"],
+    "missingTranslationCalls": [
+      {
+        "key": "hex",
+        "line": 495,
+        "context": "update(data + this.config.csrfSecret)       .digest('hex');   }    /**    * Validate request origin"
+      },
+      {
+        "key": "origin",
+        "line": 505,
+        "context": "tring;   } {     const origin = request.headers.get('origin');     const referer = request.headers.g"
+      },
+      {
+        "key": "referer",
+        "line": 506,
+        "context": "('origin');     const referer = request.headers.get('referer');     const host = request.headers.get"
+      },
+      {
+        "key": "host",
+        "line": 507,
+        "context": "et('referer');     const host = request.headers.get('host');      // For same-origin requests, origi"
+      }
+    ],
+    "issues": []
+  },
+  {
+    "path": "lib\\testing\\security-tests.ts",
+    "hardcodedStrings": [
+      {
+        "text": "> Promise<",
+        "line": 40,
+        "pattern": 0,
+        "context": "| 'performance' | 'configuration';   execute: () => Promise<SecurityTestResult>; }  export interface"
+      },
+      {
+        "text": "'Session Management'",
+        "line": 281,
+        "pattern": 2,
+        "context": "ordPolicy(),         },         {           name: 'Session Management',           description: 'Test"
+      },
+      {
+        "text": "'Key Management'",
+        "line": 348,
+        "pattern": 2,
+        "context": "s.testTLS(),         },         {           name: 'Key Management',           description: 'Test enc"
+      },
+      {
+        "text": "'Session Management'",
+        "line": 445,
+        "pattern": 2,
+        "context": "t variable');     }      return {       testName: 'Session Management',       category: 'vulnerabili"
+      },
+      {
+        "text": "'Session management properly configured'",
+        "line": 453,
+        "pattern": 2,
+        "context": "`Issues found: ${issues.join(', ')}`           : 'Session management properly configured',       re"
+      },
+      {
+        "text": "'Configure missing session security settings'",
+        "line": 456,
+        "pattern": 2,
+        "context": "mmendation:         issues.length > 0           ? 'Configure missing session security settings'"
+      },
+      {
+        "text": "'Session management is properly configured'",
+        "line": 457,
+        "pattern": 2,
+        "context": "re missing session security settings'           : 'Session management is properly configured',     }"
+      },
+      {
+        "text": "'Key Management'",
+        "line": 674,
+        "pattern": 2,
+        "context": "JWT secret');     }      return {       testName: 'Key Management',       category: 'compliance',"
+      },
+      {
+        "text": "'Key management properly configured'",
+        "line": 682,
+        "pattern": 2,
+        "context": "`Missing keys: ${issues.join(', ')}`           : 'Key management properly configured',       recomm"
+      },
+      {
+        "text": "'Key management is properly configured'",
+        "line": 686,
+        "pattern": 2,
+        "context": "? 'Configure missing encryption keys'           : 'Key management is properly configured',     };"
+      }
+    ],
+    "usedTranslationKeys": ["XSS", "XSS"],
+    "missingTranslationCalls": [
+      {
+        "key": "XSS",
+        "line": 520,
+        "context": "t> {     const xssPayloads = [       '<script>alert(\"XSS\")</script>',       'javascript:alert(\"XSS\")"
+      },
+      {
+        "key": "XSS",
+        "line": 521,
+        "context": "ipt>alert(\"XSS\")</script>',       'javascript:alert(\"XSS\")',       '<img src=\"x\" onerror=\"alert(\\'XS"
+      }
+    ],
+    "issues": []
+  },
+  {
+    "path": "lib\\utils\\expense.ts",
+    "hardcodedStrings": [],
+    "usedTranslationKeys": ["T", "T"],
+    "missingTranslationCalls": [
+      {
+        "key": "T",
+        "line": 38,
+        "context": "0);   return {     start: start.toISOString().split('T')[0],     end: end.toISOString().split('T')[0"
+      },
+      {
+        "key": "T",
+        "line": 39,
+        "context": "g().split('T')[0],     end: end.toISOString().split('T')[0],   }; };  export const calculateBudgetUt"
+      }
+    ],
+    "issues": []
+  },
+  {
+    "path": "lib\\validations\\expense.ts",
+    "hardcodedStrings": [],
+    "usedTranslationKeys": ["all"],
+    "missingTranslationCalls": [
+      {
+        "key": "all",
+        "line": 31,
+        "context": "tus: z.enum(['all', 'pending', 'approved']).default('all'),   categoryId: z.string().optional(),   d"
+      }
+    ],
+    "issues": []
+  }
+]

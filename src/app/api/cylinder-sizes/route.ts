@@ -1,15 +1,36 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
+import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 
 export async function GET(request: NextRequest) {
   try {
+    // Get session using auth function
     const session = await auth();
+    console.log('🔍 Cylinder sizes API - Session check:', {
+      hasSession: !!session,
+      hasUser: !!session?.user,
+      userId: session?.user?.id,
+      tenantId: session?.user?.tenantId,
+      userObject: session?.user,
+    });
+
     if (!session?.user) {
+      console.log('❌ Cylinder sizes: No session or user found');
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const { tenantId } = session.user;
+
+    if (!tenantId) {
+      console.log(
+        '❌ Cylinder sizes: No tenantId found for user:',
+        session.user.id
+      );
+      return NextResponse.json(
+        { error: 'Unauthorized - No tenant' },
+        { status: 401 }
+      );
+    }
 
     const cylinderSizes = await prisma.cylinderSize.findMany({
       where: { tenantId },

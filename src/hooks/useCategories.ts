@@ -169,15 +169,36 @@ export const useCategories = ({ currentMonth }: UseCategoriesProps) => {
       isParent?: boolean;
     }>
   ) => {
-    const categoryData = {
-      name: data.name!,
-      description: data.description,
-      budget: data.budget,
-      isActive: true,
-    };
     try {
       setIsSubmitting(true);
-      const response = await fetch(`/api/expense-categories/${categoryId}`, {
+
+      const isParentCategory =
+        data.isParent ||
+        parentCategories.some((parent) => parent.id === categoryId);
+
+      let response;
+      let endpoint;
+      let categoryData;
+
+      if (isParentCategory) {
+        // Update parent category
+        endpoint = `/api/expense-parent-categories/${categoryId}`;
+        categoryData = {
+          name: data.name!,
+          description: data.description,
+        };
+      } else {
+        // Update regular category
+        endpoint = `/api/expense-categories/${categoryId}`;
+        categoryData = {
+          name: data.name!,
+          description: data.description,
+          budget: data.budget,
+          isActive: true,
+        };
+      }
+
+      response = await fetch(endpoint, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(categoryData),
@@ -188,11 +209,16 @@ export const useCategories = ({ currentMonth }: UseCategoriesProps) => {
         throw new Error(errorData.message || 'Failed to update category');
       }
 
-      await fetchCategories();
+      // Refresh appropriate data
+      if (isParentCategory) {
+        await fetchParentCategories();
+      } else {
+        await fetchCategories();
+      }
 
       toast({
         title: 'Success',
-        description: 'Category updated successfully',
+        description: `${isParentCategory ? 'Parent category' : 'Category'} updated successfully`,
         variant: 'default',
       });
     } catch (error) {
@@ -209,7 +235,11 @@ export const useCategories = ({ currentMonth }: UseCategoriesProps) => {
     }
   };
 
-  const deleteCategory = async (categoryId: string, categoryName: string) => {
+  const deleteCategory = async (
+    categoryId: string,
+    categoryName: string,
+    isParent: boolean = false
+  ) => {
     if (
       !window.confirm(
         `Are you sure you want to delete "${categoryName}"? This action cannot be undone.`
@@ -219,7 +249,11 @@ export const useCategories = ({ currentMonth }: UseCategoriesProps) => {
     }
 
     try {
-      const response = await fetch(`/api/expense-categories/${categoryId}`, {
+      const endpoint = isParent
+        ? `/api/expense-parent-categories/${categoryId}`
+        : `/api/expense-categories/${categoryId}`;
+
+      const response = await fetch(endpoint, {
         method: 'DELETE',
       });
 
@@ -228,11 +262,16 @@ export const useCategories = ({ currentMonth }: UseCategoriesProps) => {
         throw new Error(errorData.message || 'Failed to delete category');
       }
 
-      await fetchCategories();
+      // Refresh appropriate data
+      if (isParent) {
+        await fetchParentCategories();
+      } else {
+        await fetchCategories();
+      }
 
       toast({
         title: 'Success',
-        description: 'Category deleted successfully',
+        description: `${isParent ? 'Parent category' : 'Category'} deleted successfully`,
         variant: 'default',
       });
     } catch (error) {
@@ -243,6 +282,7 @@ export const useCategories = ({ currentMonth }: UseCategoriesProps) => {
           error instanceof Error ? error.message : 'Failed to delete category',
         variant: 'destructive',
       });
+      throw error;
     }
   };
 

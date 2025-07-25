@@ -8,6 +8,7 @@ import { useExpenses } from '@/hooks/useExpenses';
 import { useCategories } from '@/hooks/useCategories';
 import { useExpenseFilters } from '@/hooks/useExpenseFilters';
 import { useExpensePagination } from '@/hooks/useExpensePagination';
+import { useSettings } from '@/contexts/SettingsContext';
 
 // Components
 import { ExpenseErrorBoundary } from '@/components/expenses/ErrorBoundary';
@@ -23,6 +24,7 @@ import { CategoryManagement } from '@/components/expenses/CategoryManagement';
 import { ExpenseFormData, CategoryFormData } from '@/lib/validations/expense';
 
 export default function ExpensesPage() {
+  const { t } = useSettings();
   const { data: session } = useSession();
   const currentUserRole = session?.user?.role;
 
@@ -116,12 +118,18 @@ export default function ExpensesPage() {
 
   // Form handlers
   const handleCreateExpense = async (data: ExpenseFormData) => {
-    await createExpense(data);
+    await createExpense({
+      ...data,
+      description: data.description || '',
+    });
   };
 
   const handleUpdateExpense = async (data: ExpenseFormData) => {
     if (editingExpense) {
-      await updateExpense(editingExpense.id, data);
+      await updateExpense(editingExpense.id, {
+        ...data,
+        description: data.description || '',
+      });
       setEditingExpense(null);
     }
   };
@@ -226,8 +234,8 @@ export default function ExpensesPage() {
           onClose={() => setIsAddExpenseModalOpen(false)}
           onSubmit={handleCreateExpense}
           parentCategories={parentCategories}
-          title="Add New Expense"
-          submitLabel="Add Expense"
+          title={t('addExpense')}
+          submitLabel={t('addExpense')}
           isSubmitting={isSubmitting}
         />
 
@@ -252,8 +260,8 @@ export default function ExpensesPage() {
                 }
               : undefined
           }
-          title="Edit Expense"
-          submitLabel="Update Expense"
+          title={t('edit') + ' ' + t('expenses')}
+          submitLabel={t('updateExpense')}
           isSubmitting={isSubmitting}
         />
 

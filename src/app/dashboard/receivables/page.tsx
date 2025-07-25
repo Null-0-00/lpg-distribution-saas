@@ -65,6 +65,7 @@ export default function ReceivablesPage() {
     formatDate: globalFormatDate,
     formatDateTime,
     settings,
+    t,
   } = useSettings();
 
   // Debug: Log current settings
@@ -660,15 +661,17 @@ export default function ReceivablesPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-foreground text-2xl font-bold">
-            Receivables Management
+            {t('receivableManagement')}
           </h1>
           <p className="text-muted-foreground">
-            Driver-based receivables with customer breakdown
+            {t('drivers')} {t('receivables')} {t('customers')}
           </p>
         </div>
         <div className="flex items-center space-x-4">
           <div className="flex items-center space-x-2">
-            <span className="text-muted-foreground text-sm">User Role:</span>
+            <span className="text-muted-foreground text-sm">
+              {t('users')} {t('type')}:
+            </span>
             <span
               className={`rounded-full px-2 py-1 text-xs font-semibold ${
                 currentUserRole === 'ADMIN'
@@ -690,7 +693,7 @@ export default function ReceivablesPage() {
               ) : (
                 <TrendingUp className="mr-2 h-4 w-4" />
               )}
-              Recalculate
+              {t('refresh')}
             </button>
           )}
           <button
@@ -715,30 +718,54 @@ export default function ReceivablesPage() {
           <div className="mb-2 flex items-center">
             <AlertCircle className="mr-2 h-5 w-5 text-red-500" />
             <span className="font-medium text-red-800 dark:text-red-200">
-              Driver receivables validation errors detected - Customer totals
-              don't match sales totals
+              ⚠️ Receivables Validation Error: Customer receivables don't match
+              sales-based totals
             </span>
           </div>
-          <div className="ml-7 space-y-1">
+          <div className="ml-7 space-y-2">
+            <p className="mb-2 text-xs text-red-600 dark:text-red-400">
+              Driver total receivables come from sales data and cannot be
+              edited. Customer receivable totals must equal the sales totals for
+              each driver.
+            </p>
             {validationErrors.map((error) => (
               <div
                 key={error.driverId}
-                className="text-sm text-red-700 dark:text-red-300"
+                className="rounded bg-red-100 p-2 text-sm dark:bg-red-900/30"
               >
-                <strong>{error.driverName}:</strong>
+                <strong className="text-red-800 dark:text-red-200">
+                  {error.driverName}:
+                </strong>
                 {error.cashMismatch && (
-                  <span className="ml-2">
-                    Cash: Customer {formatCurrency(error.cashMismatch.customer)}{' '}
-                    vs Sales {formatCurrency(error.cashMismatch.sales)}
-                    (diff: {formatCurrency(error.cashMismatch.difference)})
-                  </span>
+                  <div className="ml-2 mt-1">
+                    <span className="text-red-700 dark:text-red-300">
+                      💰 Cash Mismatch: Customer Total{' '}
+                      {formatCurrency(error.cashMismatch.customer)} ≠ Sales
+                      Total {formatCurrency(error.cashMismatch.sales)}
+                      <span className="font-bold">
+                        {' '}
+                        (Difference:{' '}
+                        {formatCurrency(
+                          Math.abs(error.cashMismatch.difference)
+                        )}
+                        )
+                      </span>
+                    </span>
+                  </div>
                 )}
                 {error.cylinderMismatch && (
-                  <span className="ml-2">
-                    Cylinders: Customer {error.cylinderMismatch.customer} vs
-                    Sales {error.cylinderMismatch.sales}
-                    (diff: {error.cylinderMismatch.difference})
-                  </span>
+                  <div className="ml-2 mt-1">
+                    <span className="text-red-700 dark:text-red-300">
+                      🛢️ Cylinder Mismatch: Customer Total{' '}
+                      {error.cylinderMismatch.customer} ≠ Sales Total{' '}
+                      {error.cylinderMismatch.sales}
+                      <span className="font-bold">
+                        {' '}
+                        (Difference:{' '}
+                        {Math.abs(error.cylinderMismatch.difference)})
+                      </span>
+                    </span>
+                  </div>
                 )}
               </div>
             ))}
@@ -760,18 +787,45 @@ export default function ReceivablesPage() {
         </div>
       )}
 
-      {/* Permission Notice for Managers */}
-      {currentUserRole === 'MANAGER' && (
-        <div className="rounded-lg border border-blue-200 bg-blue-50 p-4 dark:border-blue-700 dark:bg-blue-900/20">
-          <div className="flex items-center">
-            <AlertCircle className="mr-2 h-5 w-5 text-blue-500" />
-            <span className="font-medium text-blue-800 dark:text-blue-200">
-              Manager Access: You can record payments and cylinder returns, but
-              only administrators can add, edit, or delete customer receivables.
-            </span>
+      {/* System Information Banner */}
+      <div className="rounded-lg border border-blue-200 bg-blue-50 p-4 dark:border-blue-700 dark:bg-blue-900/20">
+        <div className="flex items-start">
+          <AlertCircle className="mr-2 mt-0.5 h-5 w-5 text-blue-500" />
+          <div className="text-blue-800 dark:text-blue-200">
+            <div className="mb-2 font-medium">
+              📋 Receivables Management System Rules:
+            </div>
+            <ul className="ml-4 space-y-1 text-sm">
+              <li>
+                • <strong>Driver Total Receivables:</strong> Automatically
+                calculated from sales data (non-editable)
+              </li>
+              <li>
+                • <strong>Customer Receivables:</strong> Manually managed by
+                administrators under each driver
+              </li>
+              <li>
+                • <strong>Validation:</strong> Customer totals must equal driver
+                sales totals
+              </li>
+              <li>
+                • <strong>Payments:</strong> Automatically added to daily
+                deposits when recorded
+              </li>
+              <li>
+                • <strong>Changes Log:</strong> All receivable actions are
+                tracked in the Changes tab
+              </li>
+            </ul>
+            {currentUserRole === 'MANAGER' && (
+              <div className="mt-2 text-sm">
+                <strong>Manager Access:</strong> You can record payments and
+                returns, but only admins can add/edit customers.
+              </div>
+            )}
           </div>
         </div>
-      )}
+      </div>
 
       {/* Summary Stats */}
       <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
@@ -780,10 +834,13 @@ export default function ReceivablesPage() {
             <CreditCard className="h-8 w-8 text-blue-500" />
             <div className="ml-4">
               <p className="text-muted-foreground text-sm">
-                Total Cash Receivables
+                Sales Cash Receivables
               </p>
               <p className="text-foreground text-2xl font-bold">
                 {formatCurrency(totalCashReceivables)}
+              </p>
+              <p className="text-xs text-blue-600 dark:text-blue-400">
+                From Sales Data
               </p>
             </div>
           </div>
@@ -792,7 +849,7 @@ export default function ReceivablesPage() {
           <div className="flex items-center">
             <AlertCircle className="h-8 w-8 text-red-500" />
             <div className="ml-4">
-              <p className="text-muted-foreground text-sm">Overdue Amount</p>
+              <p className="text-muted-foreground text-sm">{t('pending')}</p>
               <p className="text-foreground text-2xl font-bold">
                 {formatCurrency(overdueAmount)}
               </p>
@@ -804,10 +861,13 @@ export default function ReceivablesPage() {
             <Clock className="h-8 w-8 text-purple-500" />
             <div className="ml-4">
               <p className="text-muted-foreground text-sm">
-                Cylinder Receivables
+                Sales Cylinder Receivables
               </p>
               <p className="text-foreground text-2xl font-bold">
                 {totalCylinderReceivables}
+              </p>
+              <p className="text-xs text-purple-600 dark:text-purple-400">
+                From Sales Data
               </p>
             </div>
           </div>
@@ -837,7 +897,7 @@ export default function ReceivablesPage() {
                   : 'text-muted-foreground hover:text-foreground hover:border-border border-transparent'
               }`}
             >
-              Receivables Management
+              {t('receivableManagement')}
             </button>
             <button
               onClick={() => setActiveTab('changes')}
@@ -847,7 +907,7 @@ export default function ReceivablesPage() {
                   : 'text-muted-foreground hover:text-foreground hover:border-border border-transparent'
               }`}
             >
-              Changes Log
+              {t('changesLog')}
             </button>
           </nav>
         </div>
@@ -892,21 +952,25 @@ export default function ReceivablesPage() {
                     </div>
                     <div className="flex items-center space-x-6">
                       <div className="text-muted-foreground text-sm">
-                        <span className="font-medium">
-                          Cash Receivable:{' '}
+                        <span className="font-medium text-blue-600 dark:text-blue-400">
+                          Sales Cash Receivable:{' '}
                           {formatCurrency(driver.totalCashReceivables)}
                         </span>
                         <span className="mx-2">|</span>
-                        <span className="font-medium">
-                          Cylinder Receivable: {driver.totalCylinderReceivables}
+                        <span className="font-medium text-purple-600 dark:text-purple-400">
+                          Sales Cylinder Receivable:{' '}
+                          {driver.totalCylinderReceivables}
                         </span>
                         <span className="mx-2">|</span>
                         <span className="text-xs">
-                          Total Records: {driver.customerBreakdown?.length || 0}
+                          Customer Records:{' '}
+                          {driver.customerBreakdown?.filter(
+                            (c) => c.status === 'CURRENT'
+                          ).length || 0}
                         </span>
                         <span className="mx-1">|</span>
-                        <span className="text-xs">
-                          Current:{' '}
+                        <span className="text-xs text-green-600">
+                          Active:{' '}
                           {driver.customerBreakdown?.filter(
                             (c) => c.status === 'CURRENT'
                           ).length || 0}
@@ -979,16 +1043,16 @@ export default function ReceivablesPage() {
                         <thead className="bg-muted">
                           <tr>
                             <th className="px-4 py-3 text-left text-xs font-medium uppercase text-gray-500 dark:text-gray-300">
-                              Customer
+                              {t('customers')}
                             </th>
                             <th className="px-4 py-3 text-right text-xs font-medium uppercase text-gray-500 dark:text-gray-300">
-                              Amount
+                              {t('amount')}
                             </th>
                             <th className="px-4 py-3 text-left text-xs font-medium uppercase text-gray-500 dark:text-gray-300">
-                              Date
+                              {t('date')}
                             </th>
                             <th className="px-4 py-3 text-left text-xs font-medium uppercase text-gray-500 dark:text-gray-300">
-                              Actions
+                              {t('actions')}
                             </th>
                           </tr>
                         </thead>
@@ -1037,7 +1101,7 @@ export default function ReceivablesPage() {
                                         }
                                         className="text-sm text-green-600 hover:text-green-900 dark:text-green-400"
                                       >
-                                        Pay
+                                        {t('pay')}
                                       </button>
                                       {currentUserRole === 'ADMIN' && (
                                         <>
@@ -1079,7 +1143,7 @@ export default function ReceivablesPage() {
                           ).length > 0 && (
                             <tr className="bg-muted font-bold">
                               <td className="text-foreground whitespace-nowrap px-4 py-4 text-sm">
-                                TOTAL
+                                {t('total')}
                               </td>
                               <td className="text-foreground whitespace-nowrap px-4 py-4 text-right text-sm">
                                 {formatCurrency(
@@ -1115,19 +1179,19 @@ export default function ReceivablesPage() {
                         <thead className="bg-muted">
                           <tr>
                             <th className="px-4 py-3 text-left text-xs font-medium uppercase text-gray-500 dark:text-gray-300">
-                              Customer
+                              {t('customers')}
                             </th>
                             <th className="px-4 py-3 text-center text-xs font-medium uppercase text-gray-500 dark:text-gray-300">
-                              Quantity
+                              {t('quantity')}
                             </th>
                             <th className="px-4 py-3 text-left text-xs font-medium uppercase text-gray-500 dark:text-gray-300">
-                              Size
+                              {t('size')}
                             </th>
                             <th className="px-4 py-3 text-left text-xs font-medium uppercase text-gray-500 dark:text-gray-300">
-                              Date
+                              {t('date')}
                             </th>
                             <th className="px-4 py-3 text-left text-xs font-medium uppercase text-gray-500 dark:text-gray-300">
-                              Actions
+                              {t('actions')}
                             </th>
                           </tr>
                         </thead>
@@ -1179,7 +1243,7 @@ export default function ReceivablesPage() {
                                         }
                                         className="text-sm text-purple-600 hover:text-purple-900 dark:text-purple-400"
                                       >
-                                        Return
+                                        {t('return')}
                                       </button>
                                       {currentUserRole === 'ADMIN' && (
                                         <>
@@ -1221,7 +1285,7 @@ export default function ReceivablesPage() {
                           ).length > 0 && (
                             <tr className="bg-muted font-bold">
                               <td className="text-foreground whitespace-nowrap px-4 py-4 text-sm">
-                                TOTAL
+                                {t('total')}
                               </td>
                               <td className="text-foreground whitespace-nowrap px-4 py-4 text-center text-sm">
                                 {driver.customerBreakdown

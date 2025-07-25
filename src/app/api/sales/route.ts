@@ -2,7 +2,7 @@
 // Handles all sales operations with real-time inventory updates
 
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
+import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import { InventoryCalculator, BusinessValidator } from '@/lib/business';
 import { ReceivablesCalculator } from '@/lib/business/receivables';

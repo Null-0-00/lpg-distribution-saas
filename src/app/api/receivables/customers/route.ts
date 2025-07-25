@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
+import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
 
@@ -205,9 +205,9 @@ export async function GET(request: NextRequest) {
       return {
         id: driver.id,
         driverName: driver.name,
-        totalCashReceivables: currentCustomerCashTotal, // Current customer receivables (displayed)
-        totalCylinderReceivables: currentCustomerCylinderTotal, // Current customer receivables (displayed)
-        totalReceivables: currentCustomerCashTotal,
+        totalCashReceivables: salesTotals.cash, // FROM SALES ONLY - Non-editable
+        totalCylinderReceivables: salesTotals.cylinders, // FROM SALES ONLY - Non-editable
+        totalReceivables: salesTotals.cash,
         salesCashReceivables: salesTotals.cash, // For validation
         salesCylinderReceivables: salesTotals.cylinders, // For validation
         customerCashTotal, // For validation (all statuses)

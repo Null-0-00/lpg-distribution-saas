@@ -110,13 +110,13 @@ export default function DashboardPage() {
         router.push('/auth/login');
         return;
       } else {
-        throw new Error(`Failed to load dashboard data: ${response.status}`);
+        throw new Error(
+          `${t('failedToLoadDashboardData')}: ${response.status}`
+        );
       }
     } catch (error) {
-      console.error('Error loading combined dashboard data:', error);
-      setError(
-        'Failed to load dashboard data. Please try refreshing the page.'
-      );
+      console.error(t('errorLoadingCombinedDashboardData'), error);
+      setError(t('failedToLoadDashboardDataRefresh'));
     } finally {
       setLoading(false);
     }
@@ -561,25 +561,25 @@ export default function DashboardPage() {
               {(
                 analytics?.topDrivers || [
                   {
-                    name: 'Rahman Ali',
+                    name: t('fallbackDriverName1'),
                     sales: 15,
                     revenue: 7500,
                     percentage: 100,
                   },
                   {
-                    name: 'Karim Hassan',
+                    name: t('fallbackDriverName2'),
                     sales: 12,
                     revenue: 6000,
                     percentage: 80,
                   },
                   {
-                    name: 'Hasan Ahmed',
+                    name: t('fallbackDriverName3'),
                     sales: 8,
                     revenue: 4000,
                     percentage: 53,
                   },
                   {
-                    name: 'Ali Rahman',
+                    name: t('fallbackDriverName4'),
                     sales: 10,
                     revenue: 5000,
                     percentage: 67,
@@ -601,7 +601,8 @@ export default function DashboardPage() {
                         {driver.name}
                       </p>
                       <p className="text-xs text-gray-500 dark:text-gray-400">
-                        {driver.sales} sales • {formatCurrency(driver.revenue)}
+                        {driver.sales} {t('salesCount')} •{' '}
+                        {formatCurrency(driver.revenue)}
                       </p>
                     </div>
                   </div>

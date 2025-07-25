@@ -69,7 +69,7 @@ interface LiabilitiesData {
 
 export default function AssetsPage() {
   const { toast } = useToast();
-  const { formatCurrency } = useSettings();
+  const { formatCurrency, t } = useSettings();
   const [assets, setAssets] = useState<Asset[]>([]);
   const [liabilities, setLiabilities] = useState<Liability[]>([]);
   const [assetsData, setAssetsData] = useState<AssetsData | null>(null);
@@ -268,9 +268,7 @@ export default function AssetsPage() {
       <div className="p-6">
         <div className="flex h-64 items-center justify-center">
           <div className="mr-3 h-8 w-8 animate-spin rounded-full border-b-2 border-blue-500"></div>
-          <span className="text-muted-foreground">
-            Loading assets and liabilities...
-          </span>
+          <span className="text-muted-foreground">{t('loadingData')}...</span>
         </div>
       </div>
     );
@@ -315,7 +313,7 @@ export default function AssetsPage() {
           <div className="flex items-center">
             <TrendingUp className="h-8 w-8 text-green-500" />
             <div className="ml-4">
-              <p className="text-muted-foreground text-sm">Total Assets</p>
+              <p className="text-muted-foreground text-sm">{t('assets')}</p>
               <p className="text-foreground text-2xl font-bold">
                 {formatCurrency(totalAssets / 1000000)}M
               </p>
@@ -326,7 +324,7 @@ export default function AssetsPage() {
           <div className="flex items-center">
             <TrendingDown className="h-8 w-8 text-red-500" />
             <div className="ml-4">
-              <p className="text-muted-foreground text-sm">Total Liabilities</p>
+              <p className="text-muted-foreground text-sm">{t('pending')}</p>
               <p className="text-foreground text-2xl font-bold">
                 {formatCurrency(totalLiabilities / 1000000)}M
               </p>
@@ -766,88 +764,6 @@ export default function AssetsPage() {
               </tr>
             </tbody>
           </table>
-        </div>
-      </div>
-
-      {/* Financial Impact Analysis */}
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-        <div className="bg-card rounded-lg p-6 shadow">
-          <h3 className="text-foreground mb-4 text-lg font-semibold">
-            Asset Performance Analysis
-          </h3>
-          <div className="space-y-4">
-            <div className="border-border rounded-lg border p-4">
-              <h4 className="text-foreground mb-2 font-medium">
-                Return on Assets (ROA)
-              </h4>
-              <div className="text-3xl font-bold text-green-600">4.5%</div>
-              <p className="text-muted-foreground mt-1 text-sm">
-                Net Income / Total Assets
-              </p>
-            </div>
-            <div className="border-border rounded-lg border p-4">
-              <h4 className="text-foreground mb-2 font-medium">
-                Asset Turnover
-              </h4>
-              <div className="text-3xl font-bold text-blue-600">1.27x</div>
-              <p className="text-muted-foreground mt-1 text-sm">
-                Revenue / Total Assets
-              </p>
-            </div>
-            <div className="border-border rounded-lg border p-4">
-              <h4 className="text-foreground mb-2 font-medium">
-                Working Capital
-              </h4>
-              <div className="text-3xl font-bold text-purple-600">
-                {formatCurrency(500000)}
-              </div>
-              <p className="text-muted-foreground mt-1 text-sm">
-                Current Assets - Current Liabilities
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-card rounded-lg p-6 shadow">
-          <h3 className="text-foreground mb-4 text-lg font-semibold">
-            Balance Sheet Impact
-          </h3>
-          <div className="space-y-3">
-            <div className="flex items-center justify-between rounded-lg bg-green-50 p-3 dark:bg-green-900/20">
-              <span className="text-sm font-medium text-green-900 dark:text-green-200">
-                Today's Asset Changes
-              </span>
-              <span className="text-sm font-bold text-green-600">
-                +{formatCurrency(50000)}
-              </span>
-            </div>
-            <div className="flex items-center justify-between rounded-lg bg-red-50 p-3 dark:bg-red-900/20">
-              <span className="text-sm font-medium text-red-900 dark:text-red-200">
-                Today's Liability Changes
-              </span>
-              <span className="text-sm font-bold text-red-600">
-                -{formatCurrency(25000)}
-              </span>
-            </div>
-            <div className="flex items-center justify-between rounded-lg bg-blue-50 p-3 dark:bg-blue-900/20">
-              <span className="text-sm font-medium text-blue-900 dark:text-blue-200">
-                Net Equity Change
-              </span>
-              <span className="text-sm font-bold text-blue-600">
-                +{formatCurrency(75000)}
-              </span>
-            </div>
-            <div className="border-border mt-4 border-t p-3">
-              <h4 className="text-foreground mb-2 text-sm font-medium">
-                Recent Transactions
-              </h4>
-              <div className="text-muted-foreground space-y-2 text-xs">
-                <div>• Added 50 new cylinders ({formatCurrency(60000)})</div>
-                <div>• Paid loan installment ({formatCurrency(25000)})</div>
-                <div>• Equipment depreciation ({formatCurrency(5000)})</div>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
 

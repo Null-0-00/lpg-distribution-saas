@@ -1,0 +1,3118 @@
+{
+  "timestamp": "2025-07-24T19:42:30.304Z",
+  "existingKeysCount": 432,
+  "suggestedKeysCount": 250,
+  "suggestions": [
+    [
+      "selectDate",
+      {
+        "contexts": [
+          "app\\(admin)\\admin\\companies\\page.tsx",
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx",
+          "app\\(admin)\\admin\\page.tsx",
+          "app\\(admin)\\admin\\products\\page.tsx",
+          "app\\admin\\onboarding\\page.tsx"
+        ],
+        "priority": 171,
+        "category": "form"
+      }
+    ],
+    [
+      "selectTime",
+      {
+        "contexts": [
+          "app\\(admin)\\admin\\companies\\page.tsx",
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx",
+          "app\\(admin)\\admin\\page.tsx",
+          "app\\(admin)\\admin\\products\\page.tsx",
+          "app\\admin\\onboarding\\page.tsx"
+        ],
+        "priority": 171,
+        "category": "form"
+      }
+    ],
+    [
+      "dateRange",
+      {
+        "contexts": [
+          "app\\(admin)\\admin\\companies\\page.tsx",
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx",
+          "app\\(admin)\\admin\\page.tsx",
+          "app\\(admin)\\admin\\products\\page.tsx",
+          "app\\admin\\onboarding\\page.tsx"
+        ],
+        "priority": 171,
+        "category": "date"
+      }
+    ],
+    [
+      "startDate",
+      {
+        "contexts": [
+          "app\\(admin)\\admin\\companies\\page.tsx",
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx",
+          "app\\(admin)\\admin\\page.tsx",
+          "app\\(admin)\\admin\\products\\page.tsx",
+          "app\\admin\\onboarding\\page.tsx"
+        ],
+        "priority": 171,
+        "category": "date"
+      }
+    ],
+    [
+      "endDate",
+      {
+        "contexts": [
+          "app\\(admin)\\admin\\companies\\page.tsx",
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx",
+          "app\\(admin)\\admin\\page.tsx",
+          "app\\(admin)\\admin\\products\\page.tsx",
+          "app\\admin\\onboarding\\page.tsx"
+        ],
+        "priority": 171,
+        "category": "date"
+      }
+    ],
+    [
+      "dueDate",
+      {
+        "contexts": [
+          "app\\(admin)\\admin\\companies\\page.tsx",
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx",
+          "app\\(admin)\\admin\\page.tsx",
+          "app\\(admin)\\admin\\products\\page.tsx",
+          "app\\admin\\onboarding\\page.tsx"
+        ],
+        "priority": 171,
+        "category": "date"
+      }
+    ],
+    [
+      "approved",
+      {
+        "contexts": [
+          "app\\(admin)\\admin\\companies\\page.tsx",
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx",
+          "app\\(admin)\\admin\\page.tsx",
+          "app\\(admin)\\admin\\products\\page.tsx",
+          "app\\api\\admin\\companies\\route.ts"
+        ],
+        "priority": 169,
+        "category": "status"
+      }
+    ],
+    [
+      "rejected",
+      {
+        "contexts": [
+          "app\\(admin)\\admin\\companies\\page.tsx",
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx",
+          "app\\(admin)\\admin\\page.tsx",
+          "app\\(admin)\\admin\\products\\page.tsx",
+          "app\\api\\admin\\companies\\route.ts"
+        ],
+        "priority": 169,
+        "category": "status"
+      }
+    ],
+    [
+      "draft",
+      {
+        "contexts": [
+          "app\\(admin)\\admin\\companies\\page.tsx",
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx",
+          "app\\(admin)\\admin\\page.tsx",
+          "app\\(admin)\\admin\\products\\page.tsx",
+          "app\\api\\admin\\companies\\route.ts"
+        ],
+        "priority": 169,
+        "category": "common"
+      }
+    ],
+    [
+      "published",
+      {
+        "contexts": [
+          "app\\(admin)\\admin\\companies\\page.tsx",
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx",
+          "app\\(admin)\\admin\\page.tsx",
+          "app\\(admin)\\admin\\products\\page.tsx",
+          "app\\api\\admin\\companies\\route.ts"
+        ],
+        "priority": 169,
+        "category": "common"
+      }
+    ],
+    [
+      "archived",
+      {
+        "contexts": [
+          "app\\(admin)\\admin\\companies\\page.tsx",
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx",
+          "app\\(admin)\\admin\\page.tsx",
+          "app\\(admin)\\admin\\products\\page.tsx",
+          "app\\api\\admin\\companies\\route.ts"
+        ],
+        "priority": 169,
+        "category": "common"
+      }
+    ],
+    [
+      "enabled",
+      {
+        "contexts": [
+          "app\\(admin)\\admin\\companies\\page.tsx",
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx",
+          "app\\(admin)\\admin\\page.tsx",
+          "app\\(admin)\\admin\\products\\page.tsx",
+          "app\\api\\admin\\companies\\route.ts"
+        ],
+        "priority": 169,
+        "category": "status"
+      }
+    ],
+    [
+      "disabled",
+      {
+        "contexts": [
+          "app\\(admin)\\admin\\companies\\page.tsx",
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx",
+          "app\\(admin)\\admin\\page.tsx",
+          "app\\(admin)\\admin\\products\\page.tsx",
+          "app\\api\\admin\\companies\\route.ts"
+        ],
+        "priority": 169,
+        "category": "status"
+      }
+    ],
+    [
+      "validationError",
+      {
+        "contexts": [
+          "app\\(admin)\\admin\\companies\\page.tsx",
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx",
+          "app\\(admin)\\admin\\page.tsx",
+          "app\\(admin)\\admin\\products\\page.tsx",
+          "app\\api\\admin\\companies\\route.ts"
+        ],
+        "priority": 160,
+        "category": "form"
+      }
+    ],
+    [
+      "requiredField",
+      {
+        "contexts": [
+          "app\\(admin)\\admin\\companies\\page.tsx",
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx",
+          "app\\(admin)\\admin\\page.tsx",
+          "app\\(admin)\\admin\\products\\page.tsx",
+          "app\\api\\admin\\companies\\route.ts"
+        ],
+        "priority": 160,
+        "category": "form"
+      }
+    ],
+    [
+      "invalidFormat",
+      {
+        "contexts": [
+          "app\\(admin)\\admin\\companies\\page.tsx",
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx",
+          "app\\(admin)\\admin\\page.tsx",
+          "app\\(admin)\\admin\\products\\page.tsx",
+          "app\\api\\admin\\companies\\route.ts"
+        ],
+        "priority": 160,
+        "category": "common"
+      }
+    ],
+    [
+      "errorOccurred",
+      {
+        "contexts": [
+          "app\\(admin)\\admin\\companies\\page.tsx",
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx",
+          "app\\(admin)\\admin\\page.tsx",
+          "app\\(admin)\\admin\\products\\page.tsx",
+          "app\\api\\admin\\companies\\route.ts"
+        ],
+        "priority": 160,
+        "category": "message"
+      }
+    ],
+    [
+      "tryAgainLater",
+      {
+        "contexts": [
+          "app\\(admin)\\admin\\companies\\page.tsx",
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx",
+          "app\\(admin)\\admin\\page.tsx",
+          "app\\(admin)\\admin\\products\\page.tsx",
+          "app\\api\\admin\\companies\\route.ts"
+        ],
+        "priority": 160,
+        "category": "common"
+      }
+    ],
+    [
+      "required",
+      {
+        "contexts": [
+          "app\\(admin)\\admin\\companies\\page.tsx",
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx",
+          "app\\(admin)\\admin\\page.tsx",
+          "app\\(admin)\\admin\\products\\page.tsx",
+          "app\\admin\\onboarding\\page.tsx"
+        ],
+        "priority": 121,
+        "category": "form"
+      }
+    ],
+    [
+      "optional",
+      {
+        "contexts": [
+          "app\\(admin)\\admin\\companies\\page.tsx",
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx",
+          "app\\(admin)\\admin\\page.tsx",
+          "app\\(admin)\\admin\\products\\page.tsx",
+          "app\\admin\\onboarding\\page.tsx"
+        ],
+        "priority": 121,
+        "category": "form"
+      }
+    ],
+    [
+      "pleaseSelect",
+      {
+        "contexts": [
+          "app\\(admin)\\admin\\companies\\page.tsx",
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx",
+          "app\\(admin)\\admin\\page.tsx",
+          "app\\(admin)\\admin\\products\\page.tsx",
+          "app\\admin\\onboarding\\page.tsx"
+        ],
+        "priority": 121,
+        "category": "form"
+      }
+    ],
+    [
+      "selectOption",
+      {
+        "contexts": [
+          "app\\(admin)\\admin\\companies\\page.tsx",
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx",
+          "app\\(admin)\\admin\\page.tsx",
+          "app\\(admin)\\admin\\products\\page.tsx",
+          "app\\admin\\onboarding\\page.tsx"
+        ],
+        "priority": 121,
+        "category": "form"
+      }
+    ],
+    [
+      "enterValue",
+      {
+        "contexts": [
+          "app\\(admin)\\admin\\companies\\page.tsx",
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx",
+          "app\\(admin)\\admin\\page.tsx",
+          "app\\(admin)\\admin\\products\\page.tsx",
+          "app\\admin\\onboarding\\page.tsx"
+        ],
+        "priority": 121,
+        "category": "form"
+      }
+    ],
+    [
+      "invalidInput",
+      {
+        "contexts": [
+          "app\\(admin)\\admin\\companies\\page.tsx",
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx",
+          "app\\(admin)\\admin\\page.tsx",
+          "app\\(admin)\\admin\\products\\page.tsx",
+          "app\\admin\\onboarding\\page.tsx"
+        ],
+        "priority": 121,
+        "category": "form"
+      }
+    ],
+    [
+      "fieldRequired",
+      {
+        "contexts": [
+          "app\\(admin)\\admin\\companies\\page.tsx",
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx",
+          "app\\(admin)\\admin\\page.tsx",
+          "app\\(admin)\\admin\\products\\page.tsx",
+          "app\\admin\\onboarding\\page.tsx"
+        ],
+        "priority": 121,
+        "category": "form"
+      }
+    ],
+    [
+      "loadingPlease",
+      {
+        "contexts": [
+          "app\\(admin)\\admin\\companies\\page.tsx",
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx",
+          "app\\(admin)\\admin\\page.tsx",
+          "app\\(admin)\\admin\\products\\page.tsx",
+          "app\\admin\\onboarding\\page.tsx"
+        ],
+        "priority": 84,
+        "category": "message"
+      }
+    ],
+    [
+      "noItemsFound",
+      {
+        "contexts": [
+          "app\\(admin)\\admin\\companies\\page.tsx",
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx",
+          "app\\(admin)\\admin\\page.tsx",
+          "app\\(admin)\\admin\\products\\page.tsx",
+          "app\\admin\\onboarding\\page.tsx"
+        ],
+        "priority": 84,
+        "category": "common"
+      }
+    ],
+    [
+      "emptyState",
+      {
+        "contexts": [
+          "app\\(admin)\\admin\\companies\\page.tsx",
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx",
+          "app\\(admin)\\admin\\page.tsx",
+          "app\\(admin)\\admin\\products\\page.tsx",
+          "app\\admin\\onboarding\\page.tsx"
+        ],
+        "priority": 84,
+        "category": "common"
+      }
+    ],
+    [
+      "noResultsFound",
+      {
+        "contexts": [
+          "app\\(admin)\\admin\\companies\\page.tsx",
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx",
+          "app\\(admin)\\admin\\page.tsx",
+          "app\\(admin)\\admin\\products\\page.tsx",
+          "app\\admin\\onboarding\\page.tsx"
+        ],
+        "priority": 84,
+        "category": "table"
+      }
+    ],
+    [
+      "loadingFailed",
+      {
+        "contexts": [
+          "app\\(admin)\\admin\\companies\\page.tsx",
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx",
+          "app\\(admin)\\admin\\page.tsx",
+          "app\\(admin)\\admin\\products\\page.tsx",
+          "app\\admin\\onboarding\\page.tsx"
+        ],
+        "priority": 84,
+        "category": "message"
+      }
+    ],
+    [
+      "firstPage",
+      {
+        "contexts": [
+          "app\\(admin)\\admin\\companies\\page.tsx",
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx",
+          "app\\(admin)\\admin\\page.tsx",
+          "app\\(admin)\\admin\\products\\page.tsx",
+          "app\\api\\admin\\companies\\route.ts"
+        ],
+        "priority": 62,
+        "category": "table"
+      }
+    ],
+    [
+      "lastPage",
+      {
+        "contexts": [
+          "app\\(admin)\\admin\\companies\\page.tsx",
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx",
+          "app\\(admin)\\admin\\page.tsx",
+          "app\\(admin)\\admin\\products\\page.tsx",
+          "app\\api\\admin\\companies\\route.ts"
+        ],
+        "priority": 62,
+        "category": "table"
+      }
+    ],
+    [
+      "goToPage",
+      {
+        "contexts": [
+          "app\\(admin)\\admin\\companies\\page.tsx",
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx",
+          "app\\(admin)\\admin\\page.tsx",
+          "app\\(admin)\\admin\\products\\page.tsx",
+          "app\\api\\admin\\companies\\route.ts"
+        ],
+        "priority": 62,
+        "category": "table"
+      }
+    ],
+    [
+      "itemsPerPage",
+      {
+        "contexts": [
+          "app\\(admin)\\admin\\companies\\page.tsx",
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx",
+          "app\\(admin)\\admin\\page.tsx",
+          "app\\(admin)\\admin\\products\\page.tsx",
+          "app\\api\\admin\\companies\\route.ts"
+        ],
+        "priority": 62,
+        "category": "table"
+      }
+    ],
+    [
+      "showMore",
+      {
+        "contexts": [
+          "app\\(admin)\\admin\\companies\\page.tsx",
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx",
+          "app\\(admin)\\admin\\page.tsx",
+          "app\\(admin)\\admin\\products\\page.tsx",
+          "app\\api\\admin\\companies\\route.ts"
+        ],
+        "priority": 62,
+        "category": "common"
+      }
+    ],
+    [
+      "showLess",
+      {
+        "contexts": [
+          "app\\(admin)\\admin\\companies\\page.tsx",
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx",
+          "app\\(admin)\\admin\\page.tsx",
+          "app\\(admin)\\admin\\products\\page.tsx",
+          "app\\api\\admin\\companies\\route.ts"
+        ],
+        "priority": 62,
+        "category": "common"
+      }
+    ],
+    [
+      "apply",
+      {
+        "contexts": [
+          "app\\(admin)\\admin\\companies\\page.tsx",
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx",
+          "app\\(admin)\\admin\\products\\page.tsx",
+          "app\\admin\\onboarding\\page.tsx",
+          "app\\auth\\forgot-password\\page.tsx"
+        ],
+        "priority": 57,
+        "category": "common"
+      }
+    ],
+    [
+      "reset",
+      {
+        "contexts": [
+          "app\\(admin)\\admin\\companies\\page.tsx",
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx",
+          "app\\(admin)\\admin\\products\\page.tsx",
+          "app\\admin\\onboarding\\page.tsx",
+          "app\\auth\\forgot-password\\page.tsx"
+        ],
+        "priority": 57,
+        "category": "common"
+      }
+    ],
+    [
+      "clear",
+      {
+        "contexts": [
+          "app\\(admin)\\admin\\companies\\page.tsx",
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx",
+          "app\\(admin)\\admin\\products\\page.tsx",
+          "app\\admin\\onboarding\\page.tsx",
+          "app\\auth\\forgot-password\\page.tsx"
+        ],
+        "priority": 57,
+        "category": "common"
+      }
+    ],
+    [
+      "selectAll",
+      {
+        "contexts": [
+          "app\\(admin)\\admin\\companies\\page.tsx",
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx",
+          "app\\(admin)\\admin\\products\\page.tsx",
+          "app\\admin\\onboarding\\page.tsx",
+          "app\\auth\\forgot-password\\page.tsx"
+        ],
+        "priority": 57,
+        "category": "form"
+      }
+    ],
+    [
+      "deselectAll",
+      {
+        "contexts": [
+          "app\\(admin)\\admin\\companies\\page.tsx",
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx",
+          "app\\(admin)\\admin\\products\\page.tsx",
+          "app\\admin\\onboarding\\page.tsx",
+          "app\\auth\\forgot-password\\page.tsx"
+        ],
+        "priority": 57,
+        "category": "form"
+      }
+    ],
+    [
+      "continue",
+      {
+        "contexts": [
+          "app\\(admin)\\admin\\companies\\page.tsx",
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx",
+          "app\\(admin)\\admin\\products\\page.tsx",
+          "app\\admin\\onboarding\\page.tsx",
+          "app\\auth\\forgot-password\\page.tsx"
+        ],
+        "priority": 57,
+        "category": "common"
+      }
+    ],
+    [
+      "finish",
+      {
+        "contexts": [
+          "app\\(admin)\\admin\\companies\\page.tsx",
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx",
+          "app\\(admin)\\admin\\products\\page.tsx",
+          "app\\admin\\onboarding\\page.tsx",
+          "app\\auth\\forgot-password\\page.tsx"
+        ],
+        "priority": 57,
+        "category": "common"
+      }
+    ],
+    [
+      "skip",
+      {
+        "contexts": [
+          "app\\(admin)\\admin\\companies\\page.tsx",
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx",
+          "app\\(admin)\\admin\\products\\page.tsx",
+          "app\\admin\\onboarding\\page.tsx",
+          "app\\auth\\forgot-password\\page.tsx"
+        ],
+        "priority": 57,
+        "category": "common"
+      }
+    ],
+    [
+      "tableHeaders",
+      {
+        "contexts": [
+          "app\\api\\admin\\products\\[id]\\route.ts",
+          "app\\api\\dashboard\\metrics\\route.ts",
+          "app\\api\\dashboard\\real-time-metrics\\route.ts",
+          "app\\api\\dashboard\\trends\\route.ts",
+          "app\\api\\db-test\\route.ts"
+        ],
+        "priority": 36,
+        "category": "table"
+      }
+    ],
+    [
+      "noDataInTable",
+      {
+        "contexts": [
+          "app\\api\\admin\\products\\[id]\\route.ts",
+          "app\\api\\dashboard\\metrics\\route.ts",
+          "app\\api\\dashboard\\real-time-metrics\\route.ts",
+          "app\\api\\dashboard\\trends\\route.ts",
+          "app\\api\\db-test\\route.ts"
+        ],
+        "priority": 36,
+        "category": "table"
+      }
+    ],
+    [
+      "sortBy",
+      {
+        "contexts": [
+          "app\\api\\admin\\products\\[id]\\route.ts",
+          "app\\api\\dashboard\\metrics\\route.ts",
+          "app\\api\\dashboard\\real-time-metrics\\route.ts",
+          "app\\api\\dashboard\\trends\\route.ts",
+          "app\\api\\db-test\\route.ts"
+        ],
+        "priority": 36,
+        "category": "table"
+      }
+    ],
+    [
+      "filterTable",
+      {
+        "contexts": [
+          "app\\api\\admin\\products\\[id]\\route.ts",
+          "app\\api\\dashboard\\metrics\\route.ts",
+          "app\\api\\dashboard\\real-time-metrics\\route.ts",
+          "app\\api\\dashboard\\trends\\route.ts",
+          "app\\api\\db-test\\route.ts"
+        ],
+        "priority": 36,
+        "category": "table"
+      }
+    ],
+    [
+      "rowsPerPage",
+      {
+        "contexts": [
+          "app\\api\\admin\\products\\[id]\\route.ts",
+          "app\\api\\dashboard\\metrics\\route.ts",
+          "app\\api\\dashboard\\real-time-metrics\\route.ts",
+          "app\\api\\dashboard\\trends\\route.ts",
+          "app\\api\\db-test\\route.ts"
+        ],
+        "priority": 36,
+        "category": "table"
+      }
+    ],
+    [
+      "showingResults",
+      {
+        "contexts": [
+          "app\\api\\admin\\products\\[id]\\route.ts",
+          "app\\api\\dashboard\\metrics\\route.ts",
+          "app\\api\\dashboard\\real-time-metrics\\route.ts",
+          "app\\api\\dashboard\\trends\\route.ts",
+          "app\\api\\db-test\\route.ts"
+        ],
+        "priority": 36,
+        "category": "table"
+      }
+    ]
+  ],
+  "byCategory": {
+    "form": [
+      {
+        "key": "selectDate",
+        "contexts": [
+          "app\\(admin)\\admin\\companies\\page.tsx",
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx",
+          "app\\(admin)\\admin\\page.tsx",
+          "app\\(admin)\\admin\\products\\page.tsx",
+          "app\\admin\\onboarding\\page.tsx"
+        ],
+        "priority": 171,
+        "category": "form"
+      },
+      {
+        "key": "selectTime",
+        "contexts": [
+          "app\\(admin)\\admin\\companies\\page.tsx",
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx",
+          "app\\(admin)\\admin\\page.tsx",
+          "app\\(admin)\\admin\\products\\page.tsx",
+          "app\\admin\\onboarding\\page.tsx"
+        ],
+        "priority": 171,
+        "category": "form"
+      },
+      {
+        "key": "validationError",
+        "contexts": [
+          "app\\(admin)\\admin\\companies\\page.tsx",
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx",
+          "app\\(admin)\\admin\\page.tsx",
+          "app\\(admin)\\admin\\products\\page.tsx",
+          "app\\api\\admin\\companies\\route.ts"
+        ],
+        "priority": 160,
+        "category": "form"
+      },
+      {
+        "key": "requiredField",
+        "contexts": [
+          "app\\(admin)\\admin\\companies\\page.tsx",
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx",
+          "app\\(admin)\\admin\\page.tsx",
+          "app\\(admin)\\admin\\products\\page.tsx",
+          "app\\api\\admin\\companies\\route.ts"
+        ],
+        "priority": 160,
+        "category": "form"
+      },
+      {
+        "key": "required",
+        "contexts": [
+          "app\\(admin)\\admin\\companies\\page.tsx",
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx",
+          "app\\(admin)\\admin\\page.tsx",
+          "app\\(admin)\\admin\\products\\page.tsx",
+          "app\\admin\\onboarding\\page.tsx"
+        ],
+        "priority": 121,
+        "category": "form"
+      },
+      {
+        "key": "optional",
+        "contexts": [
+          "app\\(admin)\\admin\\companies\\page.tsx",
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx",
+          "app\\(admin)\\admin\\page.tsx",
+          "app\\(admin)\\admin\\products\\page.tsx",
+          "app\\admin\\onboarding\\page.tsx"
+        ],
+        "priority": 121,
+        "category": "form"
+      },
+      {
+        "key": "pleaseSelect",
+        "contexts": [
+          "app\\(admin)\\admin\\companies\\page.tsx",
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx",
+          "app\\(admin)\\admin\\page.tsx",
+          "app\\(admin)\\admin\\products\\page.tsx",
+          "app\\admin\\onboarding\\page.tsx"
+        ],
+        "priority": 121,
+        "category": "form"
+      },
+      {
+        "key": "selectOption",
+        "contexts": [
+          "app\\(admin)\\admin\\companies\\page.tsx",
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx",
+          "app\\(admin)\\admin\\page.tsx",
+          "app\\(admin)\\admin\\products\\page.tsx",
+          "app\\admin\\onboarding\\page.tsx"
+        ],
+        "priority": 121,
+        "category": "form"
+      },
+      {
+        "key": "enterValue",
+        "contexts": [
+          "app\\(admin)\\admin\\companies\\page.tsx",
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx",
+          "app\\(admin)\\admin\\page.tsx",
+          "app\\(admin)\\admin\\products\\page.tsx",
+          "app\\admin\\onboarding\\page.tsx"
+        ],
+        "priority": 121,
+        "category": "form"
+      },
+      {
+        "key": "invalidInput",
+        "contexts": [
+          "app\\(admin)\\admin\\companies\\page.tsx",
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx",
+          "app\\(admin)\\admin\\page.tsx",
+          "app\\(admin)\\admin\\products\\page.tsx",
+          "app\\admin\\onboarding\\page.tsx"
+        ],
+        "priority": 121,
+        "category": "form"
+      },
+      {
+        "key": "fieldRequired",
+        "contexts": [
+          "app\\(admin)\\admin\\companies\\page.tsx",
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx",
+          "app\\(admin)\\admin\\page.tsx",
+          "app\\(admin)\\admin\\products\\page.tsx",
+          "app\\admin\\onboarding\\page.tsx"
+        ],
+        "priority": 121,
+        "category": "form"
+      },
+      {
+        "key": "selectAll",
+        "contexts": [
+          "app\\(admin)\\admin\\companies\\page.tsx",
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx",
+          "app\\(admin)\\admin\\products\\page.tsx",
+          "app\\admin\\onboarding\\page.tsx",
+          "app\\auth\\forgot-password\\page.tsx"
+        ],
+        "priority": 57,
+        "category": "form"
+      },
+      {
+        "key": "deselectAll",
+        "contexts": [
+          "app\\(admin)\\admin\\companies\\page.tsx",
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx",
+          "app\\(admin)\\admin\\products\\page.tsx",
+          "app\\admin\\onboarding\\page.tsx",
+          "app\\auth\\forgot-password\\page.tsx"
+        ],
+        "priority": 57,
+        "category": "form"
+      }
+    ],
+    "date": [
+      {
+        "key": "dateRange",
+        "contexts": [
+          "app\\(admin)\\admin\\companies\\page.tsx",
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx",
+          "app\\(admin)\\admin\\page.tsx",
+          "app\\(admin)\\admin\\products\\page.tsx",
+          "app\\admin\\onboarding\\page.tsx"
+        ],
+        "priority": 171,
+        "category": "date"
+      },
+      {
+        "key": "startDate",
+        "contexts": [
+          "app\\(admin)\\admin\\companies\\page.tsx",
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx",
+          "app\\(admin)\\admin\\page.tsx",
+          "app\\(admin)\\admin\\products\\page.tsx",
+          "app\\admin\\onboarding\\page.tsx"
+        ],
+        "priority": 171,
+        "category": "date"
+      },
+      {
+        "key": "endDate",
+        "contexts": [
+          "app\\(admin)\\admin\\companies\\page.tsx",
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx",
+          "app\\(admin)\\admin\\page.tsx",
+          "app\\(admin)\\admin\\products\\page.tsx",
+          "app\\admin\\onboarding\\page.tsx"
+        ],
+        "priority": 171,
+        "category": "date"
+      },
+      {
+        "key": "dueDate",
+        "contexts": [
+          "app\\(admin)\\admin\\companies\\page.tsx",
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx",
+          "app\\(admin)\\admin\\page.tsx",
+          "app\\(admin)\\admin\\products\\page.tsx",
+          "app\\admin\\onboarding\\page.tsx"
+        ],
+        "priority": 171,
+        "category": "date"
+      }
+    ],
+    "status": [
+      {
+        "key": "approved",
+        "contexts": [
+          "app\\(admin)\\admin\\companies\\page.tsx",
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx",
+          "app\\(admin)\\admin\\page.tsx",
+          "app\\(admin)\\admin\\products\\page.tsx",
+          "app\\api\\admin\\companies\\route.ts"
+        ],
+        "priority": 169,
+        "category": "status"
+      },
+      {
+        "key": "rejected",
+        "contexts": [
+          "app\\(admin)\\admin\\companies\\page.tsx",
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx",
+          "app\\(admin)\\admin\\page.tsx",
+          "app\\(admin)\\admin\\products\\page.tsx",
+          "app\\api\\admin\\companies\\route.ts"
+        ],
+        "priority": 169,
+        "category": "status"
+      },
+      {
+        "key": "enabled",
+        "contexts": [
+          "app\\(admin)\\admin\\companies\\page.tsx",
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx",
+          "app\\(admin)\\admin\\page.tsx",
+          "app\\(admin)\\admin\\products\\page.tsx",
+          "app\\api\\admin\\companies\\route.ts"
+        ],
+        "priority": 169,
+        "category": "status"
+      },
+      {
+        "key": "disabled",
+        "contexts": [
+          "app\\(admin)\\admin\\companies\\page.tsx",
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx",
+          "app\\(admin)\\admin\\page.tsx",
+          "app\\(admin)\\admin\\products\\page.tsx",
+          "app\\api\\admin\\companies\\route.ts"
+        ],
+        "priority": 169,
+        "category": "status"
+      }
+    ],
+    "common": [
+      {
+        "key": "draft",
+        "contexts": [
+          "app\\(admin)\\admin\\companies\\page.tsx",
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx",
+          "app\\(admin)\\admin\\page.tsx",
+          "app\\(admin)\\admin\\products\\page.tsx",
+          "app\\api\\admin\\companies\\route.ts"
+        ],
+        "priority": 169,
+        "category": "common"
+      },
+      {
+        "key": "published",
+        "contexts": [
+          "app\\(admin)\\admin\\companies\\page.tsx",
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx",
+          "app\\(admin)\\admin\\page.tsx",
+          "app\\(admin)\\admin\\products\\page.tsx",
+          "app\\api\\admin\\companies\\route.ts"
+        ],
+        "priority": 169,
+        "category": "common"
+      },
+      {
+        "key": "archived",
+        "contexts": [
+          "app\\(admin)\\admin\\companies\\page.tsx",
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx",
+          "app\\(admin)\\admin\\page.tsx",
+          "app\\(admin)\\admin\\products\\page.tsx",
+          "app\\api\\admin\\companies\\route.ts"
+        ],
+        "priority": 169,
+        "category": "common"
+      },
+      {
+        "key": "invalidFormat",
+        "contexts": [
+          "app\\(admin)\\admin\\companies\\page.tsx",
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx",
+          "app\\(admin)\\admin\\page.tsx",
+          "app\\(admin)\\admin\\products\\page.tsx",
+          "app\\api\\admin\\companies\\route.ts"
+        ],
+        "priority": 160,
+        "category": "common"
+      },
+      {
+        "key": "tryAgainLater",
+        "contexts": [
+          "app\\(admin)\\admin\\companies\\page.tsx",
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx",
+          "app\\(admin)\\admin\\page.tsx",
+          "app\\(admin)\\admin\\products\\page.tsx",
+          "app\\api\\admin\\companies\\route.ts"
+        ],
+        "priority": 160,
+        "category": "common"
+      },
+      {
+        "key": "noItemsFound",
+        "contexts": [
+          "app\\(admin)\\admin\\companies\\page.tsx",
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx",
+          "app\\(admin)\\admin\\page.tsx",
+          "app\\(admin)\\admin\\products\\page.tsx",
+          "app\\admin\\onboarding\\page.tsx"
+        ],
+        "priority": 84,
+        "category": "common"
+      },
+      {
+        "key": "emptyState",
+        "contexts": [
+          "app\\(admin)\\admin\\companies\\page.tsx",
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx",
+          "app\\(admin)\\admin\\page.tsx",
+          "app\\(admin)\\admin\\products\\page.tsx",
+          "app\\admin\\onboarding\\page.tsx"
+        ],
+        "priority": 84,
+        "category": "common"
+      },
+      {
+        "key": "showMore",
+        "contexts": [
+          "app\\(admin)\\admin\\companies\\page.tsx",
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx",
+          "app\\(admin)\\admin\\page.tsx",
+          "app\\(admin)\\admin\\products\\page.tsx",
+          "app\\api\\admin\\companies\\route.ts"
+        ],
+        "priority": 62,
+        "category": "common"
+      },
+      {
+        "key": "showLess",
+        "contexts": [
+          "app\\(admin)\\admin\\companies\\page.tsx",
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx",
+          "app\\(admin)\\admin\\page.tsx",
+          "app\\(admin)\\admin\\products\\page.tsx",
+          "app\\api\\admin\\companies\\route.ts"
+        ],
+        "priority": 62,
+        "category": "common"
+      },
+      {
+        "key": "apply",
+        "contexts": [
+          "app\\(admin)\\admin\\companies\\page.tsx",
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx",
+          "app\\(admin)\\admin\\products\\page.tsx",
+          "app\\admin\\onboarding\\page.tsx",
+          "app\\auth\\forgot-password\\page.tsx"
+        ],
+        "priority": 57,
+        "category": "common"
+      },
+      {
+        "key": "reset",
+        "contexts": [
+          "app\\(admin)\\admin\\companies\\page.tsx",
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx",
+          "app\\(admin)\\admin\\products\\page.tsx",
+          "app\\admin\\onboarding\\page.tsx",
+          "app\\auth\\forgot-password\\page.tsx"
+        ],
+        "priority": 57,
+        "category": "common"
+      },
+      {
+        "key": "clear",
+        "contexts": [
+          "app\\(admin)\\admin\\companies\\page.tsx",
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx",
+          "app\\(admin)\\admin\\products\\page.tsx",
+          "app\\admin\\onboarding\\page.tsx",
+          "app\\auth\\forgot-password\\page.tsx"
+        ],
+        "priority": 57,
+        "category": "common"
+      },
+      {
+        "key": "continue",
+        "contexts": [
+          "app\\(admin)\\admin\\companies\\page.tsx",
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx",
+          "app\\(admin)\\admin\\products\\page.tsx",
+          "app\\admin\\onboarding\\page.tsx",
+          "app\\auth\\forgot-password\\page.tsx"
+        ],
+        "priority": 57,
+        "category": "common"
+      },
+      {
+        "key": "finish",
+        "contexts": [
+          "app\\(admin)\\admin\\companies\\page.tsx",
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx",
+          "app\\(admin)\\admin\\products\\page.tsx",
+          "app\\admin\\onboarding\\page.tsx",
+          "app\\auth\\forgot-password\\page.tsx"
+        ],
+        "priority": 57,
+        "category": "common"
+      },
+      {
+        "key": "skip",
+        "contexts": [
+          "app\\(admin)\\admin\\companies\\page.tsx",
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx",
+          "app\\(admin)\\admin\\products\\page.tsx",
+          "app\\admin\\onboarding\\page.tsx",
+          "app\\auth\\forgot-password\\page.tsx"
+        ],
+        "priority": 57,
+        "category": "common"
+      },
+      {
+        "key": "update",
+        "contexts": [
+          "app\\(admin)\\admin\\companies\\page.tsx (Update)",
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx (Update)",
+          "app\\(admin)\\admin\\products\\page.tsx (Update)",
+          "app\\dashboard\\admin\\companies\\page.tsx (Update)",
+          "app\\dashboard\\product-management\\page.tsx (Update)",
+          "app\\dashboard\\product-management\\page.tsx (Update)",
+          "app\\dashboard\\product-management\\page.tsx (Update)",
+          "app\\dashboard\\receivables\\page.tsx (Update)"
+        ],
+        "priority": 8,
+        "category": "common",
+        "originalText": "Update"
+      },
+      {
+        "key": "invalidEmailFormat",
+        "contexts": [
+          "app\\api\\drivers\\route.ts (Invalid email format)",
+          "app\\api\\drivers\\[id]\\route.ts (Invalid email format)",
+          "app\\api\\users\\route.ts (Invalid email format)",
+          "app\\api\\users\\[id]\\route.ts (Invalid email format)",
+          "lib\\business\\validation.ts (Invalid email format)",
+          "lib\\business\\validation.ts (Invalid email format)"
+        ],
+        "priority": 6,
+        "category": "common",
+        "originalText": "Invalid email format"
+      },
+      {
+        "key": "failedToFetchCompanies",
+        "contexts": [
+          "app\\(admin)\\admin\\companies\\page.tsx (Failed to fetch companies)",
+          "app\\(admin)\\admin\\companies\\page.tsx (Failed to fetch companies)",
+          "app\\api\\admin\\companies\\route.ts (Failed to fetch companies)",
+          "app\\api\\companies\\route.ts (Failed to fetch companies)"
+        ],
+        "priority": 4,
+        "category": "common",
+        "originalText": "Failed to fetch companies"
+      },
+      {
+        "key": "pleaseEnterAValidEmailAddress",
+        "contexts": [
+          "app\\auth\\forgot-password\\page.tsx (Please enter a valid email address)",
+          "app\\auth\\login\\page-complex.tsx (Please enter a valid email address)",
+          "app\\auth\\login\\page.tsx (Please enter a valid email address)",
+          "scripts\\onboard-business.ts (Please enter a valid email address)"
+        ],
+        "priority": 4,
+        "category": "common",
+        "originalText": "Please enter a valid email address"
+      },
+      {
+        "key": "failedToFetchAssignments",
+        "contexts": [
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx (Failed to fetch assignments)",
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx (Failed to fetch assignments)",
+          "app\\api\\admin\\distributor-assignments\\route.ts (Failed to fetch assignments)"
+        ],
+        "priority": 3,
+        "category": "common",
+        "originalText": "Failed to fetch assignments"
+      },
+      {
+        "key": "failedToFetchProducts",
+        "contexts": [
+          "app\\(admin)\\admin\\products\\page.tsx (Failed to fetch products)",
+          "app\\(admin)\\admin\\products\\page.tsx (Failed to fetch products)",
+          "app\\api\\admin\\products\\route.ts (Failed to fetch products)"
+        ],
+        "priority": 3,
+        "category": "common",
+        "originalText": "Failed to fetch products"
+      },
+      {
+        "key": "invalidEmailAddress",
+        "contexts": [
+          "app\\api\\auth\\register\\route.ts (Invalid email address)",
+          "components\\forms\\AddDriverForm.tsx (Invalid email address)",
+          "lib\\utils\\validators.ts (Invalid email address)"
+        ],
+        "priority": 3,
+        "category": "common",
+        "originalText": "Invalid email address"
+      },
+      {
+        "key": "invalidPhoneNumberFormat",
+        "contexts": [
+          "app\\api\\drivers\\route.ts (Invalid phone number format)",
+          "app\\api\\drivers\\[id]\\route.ts (Invalid phone number format)",
+          "lib\\business\\validation.ts (Invalid phone number format)"
+        ],
+        "priority": 3,
+        "category": "common",
+        "originalText": "Invalid phone number format"
+      },
+      {
+        "key": "totalLiabilities",
+        "contexts": [
+          "app\\api\\financial-reports\\export\\route.ts (Total Liabilities)",
+          "app\\api\\financial-reports\\export\\route.ts (Total Liabilities)",
+          "app\\api\\financial-reports\\export\\route.ts (Total Liabilities)"
+        ],
+        "priority": 3,
+        "category": "common",
+        "originalText": "Total Liabilities"
+      },
+      {
+        "key": "optionalDescription",
+        "contexts": [
+          "app\\dashboard\\assets\\page.tsx (Optional description)",
+          "app\\dashboard\\assets\\page.tsx (Optional description)",
+          "app\\dashboard\\product-management\\page.tsx (Optional description)"
+        ],
+        "priority": 3,
+        "category": "common",
+        "originalText": "Optional description"
+      },
+      {
+        "key": "invalidDate",
+        "contexts": [
+          "app\\dashboard\\receivables\\page.tsx (Invalid date)",
+          "app\\dashboard\\receivables\\page.tsx (Invalid date)",
+          "hooks\\useDailySalesData.ts (Invalid Date)"
+        ],
+        "priority": 3,
+        "category": "common",
+        "originalText": "Invalid Date"
+      },
+      {
+        "key": "invalidUrlFormat",
+        "contexts": [
+          "lib\\business\\validation.ts (Invalid URL format)",
+          "lib\\utils\\expense.ts (Invalid URL format)",
+          "lib\\validations\\expense.ts (Invalid URL format)"
+        ],
+        "priority": 3,
+        "category": "common",
+        "originalText": "Invalid URL format"
+      },
+      {
+        "key": "time",
+        "contexts": [
+          "lib\\monitoring\\alerting-system.ts (Time)",
+          "lib\\monitoring\\alerting-system.ts (Time)",
+          "lib\\monitoring\\alerting-system.ts (Time)"
+        ],
+        "priority": 3,
+        "category": "common",
+        "originalText": "Time"
+      },
+      {
+        "key": "failedToSaveCompany",
+        "contexts": [
+          "app\\(admin)\\admin\\companies\\page.tsx (Failed to save company)",
+          "app\\(admin)\\admin\\companies\\page.tsx (Failed to save company)"
+        ],
+        "priority": 2,
+        "category": "common",
+        "originalText": "Failed to save company"
+      },
+      {
+        "key": "failedToUpdateCompanyStatus",
+        "contexts": [
+          "app\\(admin)\\admin\\companies\\page.tsx (Failed to update company status)",
+          "app\\(admin)\\admin\\companies\\page.tsx (Failed to update company status)"
+        ],
+        "priority": 2,
+        "category": "common",
+        "originalText": "Failed to update company status"
+      },
+      {
+        "key": "failedToSaveAssignment",
+        "contexts": [
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx (Failed to save assignment)",
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx (Failed to save assignment)"
+        ],
+        "priority": 2,
+        "category": "common",
+        "originalText": "Failed to save assignment"
+      },
+      {
+        "key": "failedToUpdateAssignmentStatus",
+        "contexts": [
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx (Failed to update assignment status)",
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx (Failed to update assignment status)"
+        ],
+        "priority": 2,
+        "category": "common",
+        "originalText": "Failed to update assignment status"
+      },
+      {
+        "key": "failedToSaveProduct",
+        "contexts": [
+          "app\\(admin)\\admin\\products\\page.tsx (Failed to save product)",
+          "app\\(admin)\\admin\\products\\page.tsx (Failed to save product)"
+        ],
+        "priority": 2,
+        "category": "common",
+        "originalText": "Failed to save product"
+      },
+      {
+        "key": "failedToUpdateProductStatus",
+        "contexts": [
+          "app\\(admin)\\admin\\products\\page.tsx (Failed to update product status)",
+          "app\\(admin)\\admin\\products\\page.tsx (Failed to update product status)"
+        ],
+        "priority": 2,
+        "category": "common",
+        "originalText": "Failed to update product status"
+      },
+      {
+        "key": "failedToOnboardBusiness",
+        "contexts": [
+          "app\\admin\\onboarding\\page.tsx (Failed to onboard business)",
+          "app\\api\\admin\\onboard-business\\route.ts (Failed to onboard business)"
+        ],
+        "priority": 2,
+        "category": "common",
+        "originalText": "Failed to onboard business"
+      },
+      {
+        "key": "failedToCreateCompany",
+        "contexts": [
+          "app\\api\\admin\\companies\\route.ts (Failed to create company)",
+          "app\\api\\companies\\route.ts (Failed to create company)"
+        ],
+        "priority": 2,
+        "category": "common",
+        "originalText": "Failed to create company"
+      },
+      {
+        "key": "failedToFetchCompany",
+        "contexts": [
+          "app\\api\\admin\\companies\\[id]\\route.ts (Failed to fetch company)",
+          "app\\api\\companies\\[id]\\route.ts (Failed to fetch company)"
+        ],
+        "priority": 2,
+        "category": "common",
+        "originalText": "Failed to fetch company"
+      },
+      {
+        "key": "failedToUpdateCompany",
+        "contexts": [
+          "app\\api\\admin\\companies\\[id]\\route.ts (Failed to update company)",
+          "app\\api\\companies\\[id]\\route.ts (Failed to update company)"
+        ],
+        "priority": 2,
+        "category": "common",
+        "originalText": "Failed to update company"
+      },
+      {
+        "key": "failedToDeleteCompany",
+        "contexts": [
+          "app\\api\\admin\\companies\\[id]\\route.ts (Failed to delete company)",
+          "app\\api\\companies\\[id]\\route.ts (Failed to delete company)"
+        ],
+        "priority": 2,
+        "category": "common",
+        "originalText": "Failed to delete company"
+      },
+      {
+        "key": "failedToCreateProduct",
+        "contexts": [
+          "app\\api\\admin\\products\\route.ts (Failed to create product)",
+          "app\\api\\products\\route.ts (Failed to create product)"
+        ],
+        "priority": 2,
+        "category": "common",
+        "originalText": "Failed to create product"
+      },
+      {
+        "key": "failedToFetchProduct",
+        "contexts": [
+          "app\\api\\admin\\products\\[id]\\route.ts (Failed to fetch product)",
+          "app\\api\\products\\[id]\\route.ts (Failed to fetch product)"
+        ],
+        "priority": 2,
+        "category": "common",
+        "originalText": "Failed to fetch product"
+      },
+      {
+        "key": "failedToUpdateProduct",
+        "contexts": [
+          "app\\api\\admin\\products\\[id]\\route.ts (Failed to update product)",
+          "app\\api\\products\\[id]\\route.ts (Failed to update product)"
+        ],
+        "priority": 2,
+        "category": "common",
+        "originalText": "Failed to update product"
+      },
+      {
+        "key": "failedToDeleteProduct",
+        "contexts": [
+          "app\\api\\admin\\products\\[id]\\route.ts (Failed to delete product)",
+          "app\\api\\products\\[id]\\route.ts (Failed to delete product)"
+        ],
+        "priority": 2,
+        "category": "common",
+        "originalText": "Failed to delete product"
+      },
+      {
+        "key": "failedToFetchAnalyticsData",
+        "contexts": [
+          "app\\api\\analytics\\route.ts (Failed to fetch analytics data)",
+          "lib\\i18n\\translations.ts (Failed to fetch analytics data)"
+        ],
+        "priority": 2,
+        "category": "common",
+        "originalText": "Failed to fetch analytics data"
+      },
+      {
+        "key": "failedToFetchDashboardData",
+        "contexts": [
+          "app\\api\\dashboard\\combined\\route.ts (Failed to fetch dashboard data)",
+          "app\\api\\executive-dashboard\\route.ts (Failed to fetch dashboard data)"
+        ],
+        "priority": 2,
+        "category": "common",
+        "originalText": "Failed to fetch dashboard data"
+      },
+      {
+        "key": "invalidQueryParameters",
+        "contexts": [
+          "app\\api\\drivers\\route.ts (Invalid query parameters)",
+          "app\\api\\inventory\\movements\\route.ts (Invalid query parameters)"
+        ],
+        "priority": 2,
+        "category": "common",
+        "originalText": "Invalid query parameters"
+      },
+      {
+        "key": "invalidAmountFormat",
+        "contexts": [
+          "app\\api\\expenses\\route.ts (Invalid amount format)",
+          "app\\api\\expenses\\[id]\\route.ts (Invalid amount format)"
+        ],
+        "priority": 2,
+        "category": "common",
+        "originalText": "Invalid amount format"
+      },
+      {
+        "key": "invalidDateFormat",
+        "contexts": [
+          "app\\api\\expenses\\route.ts (Invalid date format)",
+          "app\\api\\expenses\\[id]\\route.ts (Invalid date format)"
+        ],
+        "priority": 2,
+        "category": "common",
+        "originalText": "Invalid date format"
+      },
+      {
+        "key": "totalAssets",
+        "contexts": [
+          "app\\api\\financial-reports\\export\\route.ts (Total Assets)",
+          "app\\api\\financial-reports\\export\\route.ts (Total Assets)"
+        ],
+        "priority": 2,
+        "category": "common",
+        "originalText": "Total Assets"
+      },
+      {
+        "key": "totalOperatingExpenses",
+        "contexts": [
+          "app\\api\\financial-reports\\export\\route.ts (Total Operating Expenses)",
+          "app\\api\\financial-reports\\export\\route.ts (Total Operating Expenses)"
+        ],
+        "priority": 2,
+        "category": "common",
+        "originalText": "Total Operating Expenses"
+      },
+      {
+        "key": "totalEquity",
+        "contexts": [
+          "app\\api\\financial-reports\\export\\route.ts (Total Equity)",
+          "app\\api\\financial-reports\\export\\route.ts (Total Equity)"
+        ],
+        "priority": 2,
+        "category": "common",
+        "originalText": "Total Equity"
+      },
+      {
+        "key": "failedToFetchSettings",
+        "contexts": [
+          "app\\api\\settings\\route.ts (Failed to fetch settings)",
+          "contexts\\SettingsContext.tsx (Failed to fetch settings)"
+        ],
+        "priority": 2,
+        "category": "common",
+        "originalText": "Failed to fetch settings"
+      },
+      {
+        "key": "failedToUpdateSettings",
+        "contexts": [
+          "app\\api\\settings\\route.ts (Failed to update settings)",
+          "contexts\\SettingsContext.tsx (Failed to update settings)"
+        ],
+        "priority": 2,
+        "category": "common",
+        "originalText": "Failed to update settings"
+      },
+      {
+        "key": "failedToCreateShipment",
+        "contexts": [
+          "app\\api\\shipments\\route.ts (Failed to create shipment)",
+          "app\\dashboard\\shipments\\page.tsx (Failed to create shipment)"
+        ],
+        "priority": 2,
+        "category": "common",
+        "originalText": "Failed to create shipment"
+      },
+      {
+        "key": "pleaseEnterEmailAndPassword",
+        "contexts": [
+          "app\\auth\\login\\page-complex.tsx (Please enter email and password)",
+          "app\\auth\\login\\page.tsx (Please enter email and password)"
+        ],
+        "priority": 2,
+        "category": "common",
+        "originalText": "Please enter email and password"
+      },
+      {
+        "key": "failedToFetchDrivers",
+        "contexts": [
+          "app\\dashboard\\drivers\\page.tsx (Failed to fetch drivers)",
+          "app\\dashboard\\drivers\\page.tsx (Failed to fetch drivers)"
+        ],
+        "priority": 2,
+        "category": "common",
+        "originalText": "Failed to fetch drivers"
+      },
+      {
+        "key": "failedToFetchReceivables",
+        "contexts": [
+          "app\\dashboard\\receivables\\page.tsx (Failed to fetch receivables)",
+          "app\\dashboard\\receivables\\page.tsx (Failed to fetch receivables)"
+        ],
+        "priority": 2,
+        "category": "common",
+        "originalText": "Failed to fetch receivables"
+      },
+      {
+        "key": "failedToRecalculateReceivables",
+        "contexts": [
+          "app\\dashboard\\receivables\\page.tsx (Failed to recalculate receivables)",
+          "app\\dashboard\\receivables\\page.tsx (Failed to recalculate receivables)"
+        ],
+        "priority": 2,
+        "category": "common",
+        "originalText": "Failed to recalculate receivables"
+      },
+      {
+        "key": "failedToFetchReceivablesChanges",
+        "contexts": [
+          "app\\dashboard\\receivables\\page.tsx (Failed to fetch receivables changes)",
+          "app\\dashboard\\receivables\\page.tsx (Failed to fetch receivables changes)"
+        ],
+        "priority": 2,
+        "category": "common",
+        "originalText": "Failed to fetch receivables changes"
+      },
+      {
+        "key": "failedToSaveCustomerReceivable",
+        "contexts": [
+          "app\\dashboard\\receivables\\page.tsx (Failed to save customer receivable)",
+          "app\\dashboard\\receivables\\page.tsx (Failed to save customer receivable)"
+        ],
+        "priority": 2,
+        "category": "common",
+        "originalText": "Failed to save customer receivable"
+      },
+      {
+        "key": "failedToDeleteCustomerReceivable",
+        "contexts": [
+          "app\\dashboard\\receivables\\page.tsx (Failed to delete customer receivable)",
+          "app\\dashboard\\receivables\\page.tsx (Failed to delete customer receivable)"
+        ],
+        "priority": 2,
+        "category": "common",
+        "originalText": "Failed to delete customer receivable"
+      },
+      {
+        "key": "failedToRecordPayment",
+        "contexts": [
+          "app\\dashboard\\receivables\\page.tsx (Failed to record payment)",
+          "app\\dashboard\\receivables\\page.tsx (Failed to record payment)"
+        ],
+        "priority": 2,
+        "category": "common",
+        "originalText": "Failed to record payment"
+      },
+      {
+        "key": "failedToRecordCylinderReturn",
+        "contexts": [
+          "app\\dashboard\\receivables\\page.tsx (Failed to record cylinder return)",
+          "app\\dashboard\\receivables\\page.tsx (Failed to record cylinder return)"
+        ],
+        "priority": 2,
+        "category": "common",
+        "originalText": "Failed to record cylinder return"
+      },
+      {
+        "key": "failedToCreateSale",
+        "contexts": [
+          "app\\dashboard\\sales\\page.tsx (Failed to create sale)",
+          "app\\dashboard\\sales\\page.tsx (Failed to create sale)"
+        ],
+        "priority": 2,
+        "category": "common",
+        "originalText": "Failed to create sale"
+      },
+      {
+        "key": "failedToUpdateSalesEntry",
+        "contexts": [
+          "app\\dashboard\\sales\\page.tsx (Failed to update sales entry)",
+          "app\\dashboard\\sales\\page.tsx (Failed to update sales entry)"
+        ],
+        "priority": 2,
+        "category": "common",
+        "originalText": "Failed to update sales entry"
+      },
+      {
+        "key": "failedToDeleteSales",
+        "contexts": [
+          "app\\dashboard\\sales\\page.tsx (Failed to delete sales)",
+          "app\\dashboard\\sales\\page.tsx (Failed to delete sales)"
+        ],
+        "priority": 2,
+        "category": "common",
+        "originalText": "Failed to delete sales"
+      },
+      {
+        "key": "failedToSendReport",
+        "contexts": [
+          "components\\reports\\MonthlyReportSender.tsx (Failed to send report)",
+          "components\\reports\\MonthlyReportSender.tsx (Failed to Send Report)"
+        ],
+        "priority": 2,
+        "category": "common",
+        "originalText": "Failed to Send Report"
+      },
+      {
+        "key": "failedToCreateCategory",
+        "contexts": [
+          "hooks\\useCategories.ts (Failed to create category)",
+          "hooks\\useCategories.ts (Failed to create category)"
+        ],
+        "priority": 2,
+        "category": "common",
+        "originalText": "Failed to create category"
+      },
+      {
+        "key": "failedToUpdateCategory",
+        "contexts": [
+          "hooks\\useCategories.ts (Failed to update category)",
+          "hooks\\useCategories.ts (Failed to update category)"
+        ],
+        "priority": 2,
+        "category": "common",
+        "originalText": "Failed to update category"
+      },
+      {
+        "key": "failedToDeleteCategory",
+        "contexts": [
+          "hooks\\useCategories.ts (Failed to delete category)",
+          "hooks\\useCategories.ts (Failed to delete category)"
+        ],
+        "priority": 2,
+        "category": "common",
+        "originalText": "Failed to delete category"
+      },
+      {
+        "key": "failedToCreateExpense",
+        "contexts": [
+          "hooks\\useExpenses.ts (Failed to create expense)",
+          "hooks\\useExpenses.ts (Failed to create expense)"
+        ],
+        "priority": 2,
+        "category": "common",
+        "originalText": "Failed to create expense"
+      },
+      {
+        "key": "failedToUpdateExpense",
+        "contexts": [
+          "hooks\\useExpenses.ts (Failed to update expense)",
+          "hooks\\useExpenses.ts (Failed to update expense)"
+        ],
+        "priority": 2,
+        "category": "common",
+        "originalText": "Failed to update expense"
+      },
+      {
+        "key": "failedToDeleteExpense",
+        "contexts": [
+          "hooks\\useExpenses.ts (Failed to delete expense)",
+          "hooks\\useExpenses.ts (Failed to delete expense)"
+        ],
+        "priority": 2,
+        "category": "common",
+        "originalText": "Failed to delete expense"
+      },
+      {
+        "key": "failedToApproveExpense",
+        "contexts": [
+          "hooks\\useExpenses.ts (Failed to approve expense)",
+          "hooks\\useExpenses.ts (Failed to approve expense)"
+        ],
+        "priority": 2,
+        "category": "common",
+        "originalText": "Failed to approve expense"
+      },
+      {
+        "key": "failedToRejectExpense",
+        "contexts": [
+          "hooks\\useExpenses.ts (Failed to reject expense)",
+          "hooks\\useExpenses.ts (Failed to reject expense)"
+        ],
+        "priority": 2,
+        "category": "common",
+        "originalText": "Failed to reject expense"
+      },
+      {
+        "key": "failedToCreateAssignment",
+        "contexts": [
+          "app\\api\\admin\\distributor-assignments\\route.ts (Failed to create assignment)"
+        ],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Failed to create assignment"
+      },
+      {
+        "key": "failedToFetchAssignment",
+        "contexts": [
+          "app\\api\\admin\\distributor-assignments\\[id]\\route.ts (Failed to fetch assignment)"
+        ],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Failed to fetch assignment"
+      },
+      {
+        "key": "failedToUpdateAssignment",
+        "contexts": [
+          "app\\api\\admin\\distributor-assignments\\[id]\\route.ts (Failed to update assignment)"
+        ],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Failed to update assignment"
+      },
+      {
+        "key": "failedToRemoveAssignment",
+        "contexts": [
+          "app\\api\\admin\\distributor-assignments\\[id]\\route.ts (Failed to remove assignment)"
+        ],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Failed to remove assignment"
+      },
+      {
+        "key": "failedToFetchPricingAssignments",
+        "contexts": [
+          "app\\api\\admin\\pricing-assignments\\route.ts (Failed to fetch pricing assignments)"
+        ],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Failed to fetch pricing assignments"
+      },
+      {
+        "key": "failedToCreatePricingAssignment",
+        "contexts": [
+          "app\\api\\admin\\pricing-assignments\\route.ts (Failed to create pricing assignment)"
+        ],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Failed to create pricing assignment"
+      },
+      {
+        "key": "failedToFetchPricingAssignment",
+        "contexts": [
+          "app\\api\\admin\\pricing-assignments\\[id]\\route.ts (Failed to fetch pricing assignment)"
+        ],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Failed to fetch pricing assignment"
+      },
+      {
+        "key": "failedToUpdatePricingAssignment",
+        "contexts": [
+          "app\\api\\admin\\pricing-assignments\\[id]\\route.ts (Failed to update pricing assignment)"
+        ],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Failed to update pricing assignment"
+      },
+      {
+        "key": "failedToDeletePricingAssignment",
+        "contexts": [
+          "app\\api\\admin\\pricing-assignments\\[id]\\route.ts (Failed to delete pricing assignment)"
+        ],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Failed to delete pricing assignment"
+      },
+      {
+        "key": "failedToFetchPricingTiers",
+        "contexts": [
+          "app\\api\\admin\\pricing-tiers\\route.ts (Failed to fetch pricing tiers)"
+        ],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Failed to fetch pricing tiers"
+      },
+      {
+        "key": "failedToCreatePricingTier",
+        "contexts": [
+          "app\\api\\admin\\pricing-tiers\\route.ts (Failed to create pricing tier)"
+        ],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Failed to create pricing tier"
+      },
+      {
+        "key": "failedToCheckSession",
+        "contexts": [
+          "app\\api\\auth\\session\\route.ts (Failed to check session)"
+        ],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Failed to check session"
+      },
+      {
+        "key": "failedToFetchCommissionStructures",
+        "contexts": [
+          "app\\api\\commission-structures\\route.ts (Failed to fetch commission structures)"
+        ],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Failed to fetch commission structures"
+      },
+      {
+        "key": "failedToCreateCommissionStructure",
+        "contexts": [
+          "app\\api\\commission-structures\\route.ts (Failed to create commission structure)"
+        ],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Failed to create commission structure"
+      },
+      {
+        "key": "failedToFetchCylinderSizes",
+        "contexts": [
+          "app\\api\\cylinder-sizes\\route.ts (Failed to fetch cylinder sizes)"
+        ],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Failed to fetch cylinder sizes"
+      },
+      {
+        "key": "failedToCreateCylinderSize",
+        "contexts": [
+          "app\\api\\cylinder-sizes\\route.ts (Failed to create cylinder size)"
+        ],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Failed to create cylinder size"
+      },
+      {
+        "key": "failedToUpdateCylinderSize",
+        "contexts": [
+          "app\\api\\cylinder-sizes\\[id]\\route.ts (Failed to update cylinder size)"
+        ],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Failed to update cylinder size"
+      },
+      {
+        "key": "failedToDeleteCylinderSize",
+        "contexts": [
+          "app\\api\\cylinder-sizes\\[id]\\route.ts (Failed to delete cylinder size)"
+        ],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Failed to delete cylinder size"
+      },
+      {
+        "key": "failedToFetchDashboardAnalytics",
+        "contexts": [
+          "app\\api\\dashboard\\analytics\\route.ts (Failed to fetch dashboard analytics)"
+        ],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Failed to fetch dashboard analytics"
+      },
+      {
+        "key": "failedToFetchLiveFeed",
+        "contexts": [
+          "app\\api\\dashboard\\live-feed\\route.ts (Failed to fetch live feed)"
+        ],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Failed to fetch live feed"
+      },
+      {
+        "key": "failedToFetchDashboardMetrics",
+        "contexts": [
+          "app\\api\\dashboard\\metrics\\route.ts (Failed to fetch dashboard metrics)"
+        ],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Failed to fetch dashboard metrics"
+      },
+      {
+        "key": "failedToUpdateDashboardPreferences",
+        "contexts": [
+          "app\\api\\dashboard\\metrics\\route.ts (Failed to update dashboard preferences)"
+        ],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Failed to update dashboard preferences"
+      },
+      {
+        "key": "failedToFetchTrendData",
+        "contexts": [
+          "app\\api\\dashboard\\trends\\route.ts (Failed to fetch trend data)"
+        ],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Failed to fetch trend data"
+      },
+      {
+        "key": "failedToFetchDashboardUpdates",
+        "contexts": [
+          "app\\api\\dashboard-updates\\route.ts (Failed to fetch dashboard updates)"
+        ],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Failed to fetch dashboard updates"
+      },
+      {
+        "key": "failedToConnectToSupabase",
+        "contexts": [
+          "app\\api\\db-test\\route.ts (Failed to connect to Supabase)"
+        ],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Failed to connect to Supabase"
+      },
+      {
+        "key": "failedToFetchEmptyCylinderTransactions",
+        "contexts": [
+          "app\\api\\empty-cylinder-transactions\\route.ts (Failed to fetch empty cylinder transactions)"
+        ],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Failed to fetch empty cylinder transactions"
+      },
+      {
+        "key": "failedToCreateEmptyCylinderTransaction",
+        "contexts": [
+          "app\\api\\empty-cylinder-transactions\\route.ts (Failed to create empty cylinder transaction)"
+        ],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Failed to create empty cylinder transaction"
+      },
+      {
+        "key": "invalidReportType",
+        "contexts": [
+          "app\\api\\expense-reports\\route.ts (Invalid report type)"
+        ],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Invalid report type"
+      },
+      {
+        "key": "failedToGenerateBalanceSheet",
+        "contexts": [
+          "app\\api\\financial-reports\\balance-sheet\\route.ts (Failed to generate balance sheet)"
+        ],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Failed to generate balance sheet"
+      },
+      {
+        "key": "failedToGenerateCashFlowStatement",
+        "contexts": [
+          "app\\api\\financial-reports\\cash-flow\\route.ts (Failed to generate cash flow statement)"
+        ],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Failed to generate cash flow statement"
+      },
+      {
+        "key": "failedToExportFinancialReport",
+        "contexts": [
+          "app\\api\\financial-reports\\export\\route.ts (Failed to export financial report)"
+        ],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Failed to export financial report"
+      },
+      {
+        "key": "totalCogs",
+        "contexts": [
+          "app\\api\\financial-reports\\export\\route.ts (Total COGS)"
+        ],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Total COGS"
+      },
+      {
+        "key": "totalCurrentAssets",
+        "contexts": [
+          "app\\api\\financial-reports\\export\\route.ts (Total Current Assets)"
+        ],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Total Current Assets"
+      },
+      {
+        "key": "totalFixedAssets",
+        "contexts": [
+          "app\\api\\financial-reports\\export\\route.ts (Total Fixed Assets)"
+        ],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Total Fixed Assets"
+      },
+      {
+        "key": "failedToGenerateIncomeStatement",
+        "contexts": [
+          "app\\api\\financial-reports\\income-statement\\route.ts (Failed to generate income statement)"
+        ],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Failed to generate income statement"
+      },
+      {
+        "key": "failedToFetchFixedCostStructures",
+        "contexts": [
+          "app\\api\\fixed-cost-structures\\route.ts (Failed to fetch fixed cost structures)"
+        ],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Failed to fetch fixed cost structures"
+      },
+      {
+        "key": "failedToCreateFixedCostStructure",
+        "contexts": [
+          "app\\api\\fixed-cost-structures\\route.ts (Failed to create fixed cost structure)"
+        ],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Failed to create fixed cost structure"
+      },
+      {
+        "key": "failedToFetchLiveMetrics",
+        "contexts": [
+          "app\\api\\live-metrics\\route.ts (Failed to fetch live metrics)"
+        ],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Failed to fetch live metrics"
+      },
+      {
+        "key": "invalidTestType",
+        "contexts": ["app\\api\\mcp\\test\\route.ts (Invalid test type)"],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Invalid test type"
+      },
+      {
+        "key": "failedToFetchPurchaseOrders",
+        "contexts": [
+          "app\\api\\purchase-orders\\route.ts (Failed to fetch purchase orders)"
+        ],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Failed to fetch purchase orders"
+      },
+      {
+        "key": "failedToCreatePurchaseOrder",
+        "contexts": [
+          "app\\api\\purchase-orders\\route.ts (Failed to create purchase order)"
+        ],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Failed to create purchase order"
+      },
+      {
+        "key": "failedToFetchPurchaseOrder",
+        "contexts": [
+          "app\\api\\purchase-orders\\[id]\\route.ts (Failed to fetch purchase order)"
+        ],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Failed to fetch purchase order"
+      },
+      {
+        "key": "failedToUpdatePurchaseOrder",
+        "contexts": [
+          "app\\api\\purchase-orders\\[id]\\route.ts (Failed to update purchase order)"
+        ],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Failed to update purchase order"
+      },
+      {
+        "key": "failedToDeletePurchaseOrder",
+        "contexts": [
+          "app\\api\\purchase-orders\\[id]\\route.ts (Failed to delete purchase order)"
+        ],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Failed to delete purchase order"
+      },
+      {
+        "key": "failedToSendEmail",
+        "contexts": [
+          "app\\api\\reports\\monthly\\send\\route.ts (Failed to send email)"
+        ],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Failed to send email"
+      },
+      {
+        "key": "failedToSendMonthlyReport",
+        "contexts": [
+          "app\\api\\reports\\monthly\\send\\route.ts (Failed to send monthly report)"
+        ],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Failed to send monthly report"
+      },
+      {
+        "key": "failedToFetchReportHistory",
+        "contexts": [
+          "app\\api\\reports\\monthly\\send\\route.ts (Failed to fetch report history)"
+        ],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Failed to fetch report history"
+      },
+      {
+        "key": "invalidRequestData",
+        "contexts": [
+          "app\\api\\sales\\bulk-delete\\route.ts (Invalid request data)"
+        ],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Invalid request data"
+      },
+      {
+        "key": "invalidInputData",
+        "contexts": [
+          "app\\api\\sales\\combined\\route.ts (Invalid input data)"
+        ],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Invalid input data"
+      },
+      {
+        "key": "invalidDriverOrProduct",
+        "contexts": ["app\\api\\sales\\route.ts (Invalid driver or product)"],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Invalid driver or product"
+      },
+      {
+        "key": "invalidData",
+        "contexts": ["app\\api\\settings\\route.ts (Invalid data)"],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Invalid data"
+      },
+      {
+        "key": "failedToFetchShipments",
+        "contexts": [
+          "app\\api\\shipments\\route.ts (Failed to fetch shipments)"
+        ],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Failed to fetch shipments"
+      },
+      {
+        "key": "failedToFetchShipment",
+        "contexts": [
+          "app\\api\\shipments\\[id]\\route.ts (Failed to fetch shipment)"
+        ],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Failed to fetch shipment"
+      },
+      {
+        "key": "failedToUpdateShipment",
+        "contexts": [
+          "app\\api\\shipments\\[id]\\route.ts (Failed to update shipment)"
+        ],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Failed to update shipment"
+      },
+      {
+        "key": "failedToDeleteShipment",
+        "contexts": [
+          "app\\api\\shipments\\[id]\\route.ts (Failed to delete shipment)"
+        ],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Failed to delete shipment"
+      },
+      {
+        "key": "failedToUploadFile",
+        "contexts": ["app\\api\\upload\\route.ts (Failed to upload file)"],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Failed to upload file"
+      },
+      {
+        "key": "invalidAvatarUrl",
+        "contexts": ["app\\api\\users\\route.ts (Invalid avatar URL)"],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Invalid avatar URL"
+      },
+      {
+        "key": "failedToFetchVendorPerformance",
+        "contexts": [
+          "app\\api\\vendor-performance\\route.ts (Failed to fetch vendor performance)"
+        ],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Failed to fetch vendor performance"
+      },
+      {
+        "key": "pleaseEnterYourEmailAddress",
+        "contexts": [
+          "app\\auth\\forgot-password\\page.tsx (Please enter your email address)"
+        ],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Please enter your email address"
+      },
+      {
+        "key": "failedToFetchData",
+        "contexts": ["app\\dashboard\\assets\\page.tsx (Failed to fetch data)"],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Failed to fetch data"
+      },
+      {
+        "key": "failedToCreateEntry",
+        "contexts": [
+          "app\\dashboard\\assets\\page.tsx (Failed to create entry)"
+        ],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Failed to create entry"
+      },
+      {
+        "key": "failedToCreateDriver",
+        "contexts": [
+          "app\\dashboard\\drivers\\page.tsx (Failed to create driver)"
+        ],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Failed to create driver"
+      },
+      {
+        "key": "invalidTimestamp",
+        "contexts": [
+          "app\\dashboard\\receivables\\page.tsx (Invalid timestamp)"
+        ],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Invalid timestamp"
+      },
+      {
+        "key": "failedToLoadEntryData",
+        "contexts": [
+          "app\\dashboard\\sales\\page.tsx (Failed to load entry data)"
+        ],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Failed to load entry data"
+      },
+      {
+        "key": "failedToLoadEntryDataForEditing",
+        "contexts": [
+          "app\\dashboard\\sales\\page.tsx (Failed to load entry data for editing)"
+        ],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Failed to load entry data for editing"
+      },
+      {
+        "key": "failedToDeleteExistingSales",
+        "contexts": [
+          "app\\dashboard\\sales\\page.tsx (Failed to delete existing sales)"
+        ],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Failed to delete existing sales"
+      },
+      {
+        "key": "failedToDeleteExistingShipments",
+        "contexts": [
+          "app\\dashboard\\shipments\\page.tsx (Failed to delete existing shipments)"
+        ],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Failed to delete existing shipments"
+      },
+      {
+        "key": "failedToCreateUpdatedShipments",
+        "contexts": [
+          "app\\dashboard\\shipments\\page.tsx (Failed to create updated shipments)"
+        ],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Failed to create updated shipments"
+      },
+      {
+        "key": "failedToFetchPermissions",
+        "contexts": [
+          "app\\dashboard\\users\\page.tsx (Failed to fetch permissions)"
+        ],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Failed to fetch permissions"
+      },
+      {
+        "key": "failedToLoadInventoryAlerts",
+        "contexts": [
+          "components\\dashboard\\InventoryAlerts.tsx (Failed to load inventory alerts)"
+        ],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Failed to load inventory alerts"
+      },
+      {
+        "key": "failedToLoadAlerts",
+        "contexts": [
+          "components\\dashboard\\InventoryAlerts.tsx (Failed to load alerts)"
+        ],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Failed to load alerts"
+      },
+      {
+        "key": "failedToLoadInventory",
+        "contexts": [
+          "components\\dashboard\\InventoryOverview.tsx (Failed to load inventory)"
+        ],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Failed to load inventory"
+      },
+      {
+        "key": "totalOrders",
+        "contexts": ["components\\dashboard\\kpi-cards.tsx (Total Orders)"],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Total Orders"
+      },
+      {
+        "key": "totalIncome",
+        "contexts": ["components\\dashboard\\kpi-cards.tsx (Total income)"],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Total income"
+      },
+      {
+        "key": "totalCosts",
+        "contexts": ["components\\dashboard\\kpi-cards.tsx (Total costs)"],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Total costs"
+      },
+      {
+        "key": "failedToLoadOfflineData",
+        "contexts": [
+          "components\\dashboard\\offline-indicator.tsx (Failed to load offline data)"
+        ],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Failed to load offline data"
+      },
+      {
+        "key": "pleaseFillInAllRequiredFieldsForTheLineItem",
+        "contexts": [
+          "components\\forms\\PurchaseOrderForm.tsx (Please fill in all required fields for the line item)"
+        ],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Please fill in all required fields for the line item"
+      },
+      {
+        "key": "pleaseEnterCylinderPriceForPackagePurchases",
+        "contexts": [
+          "components\\forms\\PurchaseOrderForm.tsx (Please enter cylinder price for package purchases)"
+        ],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Please enter cylinder price for package purchases"
+      },
+      {
+        "key": "pleaseSelectADriver",
+        "contexts": [
+          "components\\forms\\PurchaseOrderForm.tsx (Please select a driver)"
+        ],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Please select a driver"
+      },
+      {
+        "key": "pleaseAddAtLeastOneLineItem",
+        "contexts": [
+          "components\\forms\\PurchaseOrderForm.tsx (Please add at least one line item)"
+        ],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Please add at least one line item"
+      },
+      {
+        "key": "hide",
+        "contexts": ["components\\mcp\\ThinkingProcess.tsx (Hide)"],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Hide"
+      },
+      {
+        "key": "show",
+        "contexts": ["components\\mcp\\ThinkingProcess.tsx (Show)"],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Show"
+      },
+      {
+        "key": "failedToLoadManifest",
+        "contexts": [
+          "components\\mobile\\MobileTestSuite.tsx (Failed to load manifest)"
+        ],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Failed to load manifest"
+      },
+      {
+        "key": "failedToCheckRegistration",
+        "contexts": [
+          "components\\mobile\\MobileTestSuite.tsx (Failed to check registration)"
+        ],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Failed to check registration"
+      },
+      {
+        "key": "successfullyStoredOfflineData",
+        "contexts": [
+          "components\\mobile\\MobileTestSuite.tsx (Successfully stored offline data)"
+        ],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Successfully stored offline data"
+      },
+      {
+        "key": "failedToStoreOfflineData",
+        "contexts": [
+          "components\\mobile\\MobileTestSuite.tsx (Failed to store offline data)"
+        ],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Failed to store offline data"
+      },
+      {
+        "key": "failedToInitializePushManager",
+        "contexts": [
+          "components\\mobile\\MobileTestSuite.tsx (Failed to initialize push manager)"
+        ],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Failed to initialize push manager"
+      },
+      {
+        "key": "invalidRecipients",
+        "contexts": [
+          "components\\reports\\MonthlyReportSender.tsx (Invalid Recipients)"
+        ],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Invalid Recipients"
+      },
+      {
+        "key": "pleaseProvideAtLeastOneValidEmailAddress",
+        "contexts": [
+          "components\\reports\\MonthlyReportSender.tsx (Please provide at least one valid email address)"
+        ],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Please provide at least one valid email address"
+      },
+      {
+        "key": "pleaseTryAgain",
+        "contexts": [
+          "components\\reports\\MonthlyReportSender.tsx (Please try again)"
+        ],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Please try again"
+      },
+      {
+        "key": "failedToFetchCategories",
+        "contexts": ["hooks\\useCategories.ts (Failed to fetch categories)"],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Failed to fetch categories"
+      },
+      {
+        "key": "failedToFetchParentCategories",
+        "contexts": [
+          "hooks\\useCategories.ts (Failed to fetch parent categories)"
+        ],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Failed to fetch parent categories"
+      },
+      {
+        "key": "failedToCreateParentCategory",
+        "contexts": [
+          "hooks\\useCategories.ts (Failed to create parent category)"
+        ],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Failed to create parent category"
+      },
+      {
+        "key": "failedToFetchDailySalesData",
+        "contexts": [
+          "hooks\\useDailySalesData.ts (Failed to fetch daily sales data)"
+        ],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Failed to fetch daily sales data"
+      },
+      {
+        "key": "failedToFetchDriverPerformance",
+        "contexts": [
+          "hooks\\useDriverPerformance.ts (Failed to fetch driver performance)"
+        ],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Failed to fetch driver performance"
+      },
+      {
+        "key": "failedToFetchExpenses",
+        "contexts": ["hooks\\useExpenses.ts (Failed to fetch expenses)"],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Failed to fetch expenses"
+      },
+      {
+        "key": "invalidPassword",
+        "contexts": ["lib\\auth\\auth-options.ts (Invalid password)"],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Invalid password"
+      },
+      {
+        "key": "errorCalculatingInventoryValues",
+        "contexts": [
+          "lib\\business\\BusinessValidator.ts (Error calculating inventory values)"
+        ],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Error calculating inventory values"
+      },
+      {
+        "key": "errorCalculatingReceivablesValues",
+        "contexts": [
+          "lib\\business\\BusinessValidator.ts (Error calculating receivables values)"
+        ],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Error calculating receivables values"
+      },
+      {
+        "key": "fullCylinderWeightMustBeGreaterThanEmptyCylinderWeight",
+        "contexts": [
+          "lib\\business\\validation.ts (Full cylinder weight must be greater than empty cylinder weight)"
+        ],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Full cylinder weight must be greater than empty cylinder weight"
+      },
+      {
+        "key": "invalidSearchType",
+        "contexts": ["lib\\database\\query-optimizer.ts (Invalid search type)"],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Invalid search type"
+      },
+      {
+        "key": "failedToSaveSettings",
+        "contexts": ["lib\\i18n\\translations.ts (Failed to save settings)"],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Failed to save settings"
+      },
+      {
+        "key": "errorLoadingAnalyticsData",
+        "contexts": [
+          "lib\\i18n\\translations.ts (Error loading analytics data)"
+        ],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Error loading analytics data"
+      },
+      {
+        "key": "errorNotFound",
+        "contexts": ["lib\\monitoring\\error-tracker.ts (Error not found)"],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Error not found"
+      },
+      {
+        "key": "invalidHostFormat",
+        "contexts": ["lib\\security\\https-enforcer.ts (Invalid host format)"],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Invalid host format"
+      },
+      {
+        "key": "invalidJsonFormat",
+        "contexts": ["lib\\security\\input-sanitizer.ts (Invalid JSON format)"],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Invalid JSON format"
+      },
+      {
+        "key": "invalidOriginOrRefererUrl",
+        "contexts": [
+          "lib\\security\\xss-csrf-protection.ts (Invalid origin or referer URL)"
+        ],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Invalid origin or referer URL"
+      },
+      {
+        "key": "invalidRequestBody",
+        "contexts": [
+          "lib\\security\\xss-csrf-protection.ts (Invalid request body)"
+        ],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Invalid request body"
+      },
+      {
+        "key": "failed",
+        "contexts": ["lib\\testing\\security-tests.ts (Failed)"],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Failed"
+      },
+      {
+        "key": "invalidBangladeshiPhoneNumber",
+        "contexts": [
+          "lib\\utils\\validators.ts (Invalid Bangladeshi phone number)"
+        ],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Invalid Bangladeshi phone number"
+      },
+      {
+        "key": "invalidCharactersInCompanyName",
+        "contexts": [
+          "lib\\utils\\validators.ts (Invalid characters in company name)"
+        ],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Invalid characters in company name"
+      },
+      {
+        "key": "totalSalesCannotBeNegative",
+        "contexts": [
+          "lib\\utils\\validators.ts (Total sales cannot be negative)"
+        ],
+        "priority": 1,
+        "category": "common",
+        "originalText": "Total sales cannot be negative"
+      }
+    ],
+    "message": [
+      {
+        "key": "errorOccurred",
+        "contexts": [
+          "app\\(admin)\\admin\\companies\\page.tsx",
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx",
+          "app\\(admin)\\admin\\page.tsx",
+          "app\\(admin)\\admin\\products\\page.tsx",
+          "app\\api\\admin\\companies\\route.ts"
+        ],
+        "priority": 160,
+        "category": "message"
+      },
+      {
+        "key": "loadingPlease",
+        "contexts": [
+          "app\\(admin)\\admin\\companies\\page.tsx",
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx",
+          "app\\(admin)\\admin\\page.tsx",
+          "app\\(admin)\\admin\\products\\page.tsx",
+          "app\\admin\\onboarding\\page.tsx"
+        ],
+        "priority": 84,
+        "category": "message"
+      },
+      {
+        "key": "loadingFailed",
+        "contexts": [
+          "app\\(admin)\\admin\\companies\\page.tsx",
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx",
+          "app\\(admin)\\admin\\page.tsx",
+          "app\\(admin)\\admin\\products\\page.tsx",
+          "app\\admin\\onboarding\\page.tsx"
+        ],
+        "priority": 84,
+        "category": "message"
+      }
+    ],
+    "table": [
+      {
+        "key": "noResultsFound",
+        "contexts": [
+          "app\\(admin)\\admin\\companies\\page.tsx",
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx",
+          "app\\(admin)\\admin\\page.tsx",
+          "app\\(admin)\\admin\\products\\page.tsx",
+          "app\\admin\\onboarding\\page.tsx"
+        ],
+        "priority": 84,
+        "category": "table"
+      },
+      {
+        "key": "firstPage",
+        "contexts": [
+          "app\\(admin)\\admin\\companies\\page.tsx",
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx",
+          "app\\(admin)\\admin\\page.tsx",
+          "app\\(admin)\\admin\\products\\page.tsx",
+          "app\\api\\admin\\companies\\route.ts"
+        ],
+        "priority": 62,
+        "category": "table"
+      },
+      {
+        "key": "lastPage",
+        "contexts": [
+          "app\\(admin)\\admin\\companies\\page.tsx",
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx",
+          "app\\(admin)\\admin\\page.tsx",
+          "app\\(admin)\\admin\\products\\page.tsx",
+          "app\\api\\admin\\companies\\route.ts"
+        ],
+        "priority": 62,
+        "category": "table"
+      },
+      {
+        "key": "goToPage",
+        "contexts": [
+          "app\\(admin)\\admin\\companies\\page.tsx",
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx",
+          "app\\(admin)\\admin\\page.tsx",
+          "app\\(admin)\\admin\\products\\page.tsx",
+          "app\\api\\admin\\companies\\route.ts"
+        ],
+        "priority": 62,
+        "category": "table"
+      },
+      {
+        "key": "itemsPerPage",
+        "contexts": [
+          "app\\(admin)\\admin\\companies\\page.tsx",
+          "app\\(admin)\\admin\\distributor-assignments\\page.tsx",
+          "app\\(admin)\\admin\\page.tsx",
+          "app\\(admin)\\admin\\products\\page.tsx",
+          "app\\api\\admin\\companies\\route.ts"
+        ],
+        "priority": 62,
+        "category": "table"
+      },
+      {
+        "key": "tableHeaders",
+        "contexts": [
+          "app\\api\\admin\\products\\[id]\\route.ts",
+          "app\\api\\dashboard\\metrics\\route.ts",
+          "app\\api\\dashboard\\real-time-metrics\\route.ts",
+          "app\\api\\dashboard\\trends\\route.ts",
+          "app\\api\\db-test\\route.ts"
+        ],
+        "priority": 36,
+        "category": "table"
+      },
+      {
+        "key": "noDataInTable",
+        "contexts": [
+          "app\\api\\admin\\products\\[id]\\route.ts",
+          "app\\api\\dashboard\\metrics\\route.ts",
+          "app\\api\\dashboard\\real-time-metrics\\route.ts",
+          "app\\api\\dashboard\\trends\\route.ts",
+          "app\\api\\db-test\\route.ts"
+        ],
+        "priority": 36,
+        "category": "table"
+      },
+      {
+        "key": "sortBy",
+        "contexts": [
+          "app\\api\\admin\\products\\[id]\\route.ts",
+          "app\\api\\dashboard\\metrics\\route.ts",
+          "app\\api\\dashboard\\real-time-metrics\\route.ts",
+          "app\\api\\dashboard\\trends\\route.ts",
+          "app\\api\\db-test\\route.ts"
+        ],
+        "priority": 36,
+        "category": "table"
+      },
+      {
+        "key": "filterTable",
+        "contexts": [
+          "app\\api\\admin\\products\\[id]\\route.ts",
+          "app\\api\\dashboard\\metrics\\route.ts",
+          "app\\api\\dashboard\\real-time-metrics\\route.ts",
+          "app\\api\\dashboard\\trends\\route.ts",
+          "app\\api\\db-test\\route.ts"
+        ],
+        "priority": 36,
+        "category": "table"
+      },
+      {
+        "key": "rowsPerPage",
+        "contexts": [
+          "app\\api\\admin\\products\\[id]\\route.ts",
+          "app\\api\\dashboard\\metrics\\route.ts",
+          "app\\api\\dashboard\\real-time-metrics\\route.ts",
+          "app\\api\\dashboard\\trends\\route.ts",
+          "app\\api\\db-test\\route.ts"
+        ],
+        "priority": 36,
+        "category": "table"
+      },
+      {
+        "key": "showingResults",
+        "contexts": [
+          "app\\api\\admin\\products\\[id]\\route.ts",
+          "app\\api\\dashboard\\metrics\\route.ts",
+          "app\\api\\dashboard\\real-time-metrics\\route.ts",
+          "app\\api\\dashboard\\trends\\route.ts",
+          "app\\api\\db-test\\route.ts"
+        ],
+        "priority": 36,
+        "category": "table"
+      }
+    ],
+    "dashboardPage": [
+      {
+        "key": "welcomeMessage",
+        "contexts": ["src/app/dashboard/page.tsx"],
+        "priority": 5,
+        "category": "dashboardPage",
+        "pageSpecific": true
+      },
+      {
+        "key": "quickActions",
+        "contexts": ["src/app/dashboard/page.tsx"],
+        "priority": 5,
+        "category": "dashboardPage",
+        "pageSpecific": true
+      },
+      {
+        "key": "systemStatus",
+        "contexts": ["src/app/dashboard/page.tsx"],
+        "priority": 5,
+        "category": "dashboardPage",
+        "pageSpecific": true
+      },
+      {
+        "key": "notifications",
+        "contexts": ["src/app/dashboard/page.tsx"],
+        "priority": 5,
+        "category": "dashboardPage",
+        "pageSpecific": true
+      }
+    ],
+    "salesPage": [
+      {
+        "key": "addSale",
+        "contexts": ["src/app/dashboard/sales"],
+        "priority": 5,
+        "category": "salesPage",
+        "pageSpecific": true
+      },
+      {
+        "key": "editSale",
+        "contexts": ["src/app/dashboard/sales"],
+        "priority": 5,
+        "category": "salesPage",
+        "pageSpecific": true
+      },
+      {
+        "key": "deleteSale",
+        "contexts": ["src/app/dashboard/sales"],
+        "priority": 5,
+        "category": "salesPage",
+        "pageSpecific": true
+      },
+      {
+        "key": "saleDetails",
+        "contexts": ["src/app/dashboard/sales"],
+        "priority": 5,
+        "category": "salesPage",
+        "pageSpecific": true
+      },
+      {
+        "key": "customerInfo",
+        "contexts": ["src/app/dashboard/sales"],
+        "priority": 5,
+        "category": "salesPage",
+        "pageSpecific": true
+      },
+      {
+        "key": "paymentMethod",
+        "contexts": ["src/app/dashboard/sales"],
+        "priority": 5,
+        "category": "salesPage",
+        "pageSpecific": true
+      },
+      {
+        "key": "saleStatus",
+        "contexts": ["src/app/dashboard/sales"],
+        "priority": 5,
+        "category": "salesPage",
+        "pageSpecific": true
+      }
+    ],
+    "inventoryPage": [
+      {
+        "key": "stockLevel",
+        "contexts": ["src/app/dashboard/inventory"],
+        "priority": 5,
+        "category": "inventoryPage",
+        "pageSpecific": true
+      },
+      {
+        "key": "reorderPoint",
+        "contexts": ["src/app/dashboard/inventory"],
+        "priority": 5,
+        "category": "inventoryPage",
+        "pageSpecific": true
+      },
+      {
+        "key": "lastRestocked",
+        "contexts": ["src/app/dashboard/inventory"],
+        "priority": 5,
+        "category": "inventoryPage",
+        "pageSpecific": true
+      },
+      {
+        "key": "stockAlert",
+        "contexts": ["src/app/dashboard/inventory"],
+        "priority": 5,
+        "category": "inventoryPage",
+        "pageSpecific": true
+      },
+      {
+        "key": "inventoryValue",
+        "contexts": ["src/app/dashboard/inventory"],
+        "priority": 5,
+        "category": "inventoryPage",
+        "pageSpecific": true
+      },
+      {
+        "key": "stockMovement",
+        "contexts": ["src/app/dashboard/inventory"],
+        "priority": 5,
+        "category": "inventoryPage",
+        "pageSpecific": true
+      }
+    ],
+    "driversPage": [
+      {
+        "key": "driverInfo",
+        "contexts": ["src/app/dashboard/drivers"],
+        "priority": 5,
+        "category": "driversPage",
+        "pageSpecific": true
+      },
+      {
+        "key": "assignRoute",
+        "contexts": ["src/app/dashboard/drivers"],
+        "priority": 5,
+        "category": "driversPage",
+        "pageSpecific": true
+      },
+      {
+        "key": "driverPerformance",
+        "contexts": ["src/app/dashboard/drivers"],
+        "priority": 5,
+        "category": "driversPage",
+        "pageSpecific": true
+      },
+      {
+        "key": "driverStatus",
+        "contexts": ["src/app/dashboard/drivers"],
+        "priority": 5,
+        "category": "driversPage",
+        "pageSpecific": true
+      },
+      {
+        "key": "vehicleInfo",
+        "contexts": ["src/app/dashboard/drivers"],
+        "priority": 5,
+        "category": "driversPage",
+        "pageSpecific": true
+      }
+    ],
+    "analyticsPage": [
+      {
+        "key": "chartTitle",
+        "contexts": ["src/app/dashboard/analytics"],
+        "priority": 5,
+        "category": "analyticsPage",
+        "pageSpecific": true
+      },
+      {
+        "key": "dataRange",
+        "contexts": ["src/app/dashboard/analytics"],
+        "priority": 5,
+        "category": "analyticsPage",
+        "pageSpecific": true
+      },
+      {
+        "key": "analyticsFilter",
+        "contexts": ["src/app/dashboard/analytics"],
+        "priority": 5,
+        "category": "analyticsPage",
+        "pageSpecific": true
+      },
+      {
+        "key": "exportChart",
+        "contexts": ["src/app/dashboard/analytics"],
+        "priority": 5,
+        "category": "analyticsPage",
+        "pageSpecific": true
+      },
+      {
+        "key": "chartType",
+        "contexts": ["src/app/dashboard/analytics"],
+        "priority": 5,
+        "category": "analyticsPage",
+        "pageSpecific": true
+      },
+      {
+        "key": "dataSource",
+        "contexts": ["src/app/dashboard/analytics"],
+        "priority": 5,
+        "category": "analyticsPage",
+        "pageSpecific": true
+      }
+    ]
+  }
+}

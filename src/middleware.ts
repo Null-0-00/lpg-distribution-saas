@@ -19,9 +19,10 @@ export async function middleware(request: NextRequest) {
     '/icons/',
   ];
 
-  const isPublicPath = publicPaths.some(path => pathname.startsWith(path)) || 
-                      pathname.includes('.') ||
-                      pathname === '/';
+  const isPublicPath =
+    publicPaths.some((path) => pathname.startsWith(path)) ||
+    pathname.includes('.') ||
+    pathname === '/';
 
   if (isPublicPath) {
     return NextResponse.next();

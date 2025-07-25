@@ -112,16 +112,16 @@ export default function DriversPage() {
         setDrivers(data.drivers || []);
       } else {
         toast({
-          title: 'Error',
-          description: 'Failed to fetch drivers',
+          title: t('error'),
+          description: t('failedToDeleteDriver'),
           variant: 'destructive',
         });
       }
     } catch (error) {
       console.error('Error fetching drivers:', error);
       toast({
-        title: 'Error',
-        description: 'Failed to fetch drivers',
+        title: t('error'),
+        description: t('failedToDeleteDriver'),
         variant: 'destructive',
       });
     } finally {
@@ -184,8 +184,8 @@ export default function DriversPage() {
       await fetchDrivers();
 
       toast({
-        title: 'Success',
-        description: 'Driver added successfully!',
+        title: t('success'),
+        description: t('driverAddedSuccessfully'),
       });
 
       setShowAddDriverForm(false);
@@ -209,7 +209,7 @@ export default function DriversPage() {
   const handleDeleteDriver = async (driverId: string, driverName: string) => {
     if (
       !confirm(
-        `Are you sure you want to delete driver "${driverName}"? This action cannot be undone.`
+        `${t('areYouSureDeleteDriver')} "${driverName}"? ${t('thisActionCannotBeUndone')}`
       )
     ) {
       return;
@@ -231,8 +231,8 @@ export default function DriversPage() {
       await fetchDrivers();
 
       toast({
-        title: 'Success',
-        description: 'Driver deleted successfully!',
+        title: t('success'),
+        description: t('driverDeletedSuccessfully'),
       });
     } catch (error) {
       console.error('Failed to delete driver:', error);
@@ -343,7 +343,7 @@ export default function DriversPage() {
             onClick={() => setShowAddDriverForm(true)}
           >
             <Plus className="mr-2 h-4 w-4" />
-            {t('addDriver')}
+            {t('addNewDriver')}
           </button>
         </div>
       </div>
@@ -457,7 +457,7 @@ export default function DriversPage() {
           <div className="p-8 text-center">
             <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-b-2 border-blue-500"></div>
             <p className="text-muted-foreground">
-              Loading driver performance...
+              {t('loadingDriverPerformance')}
             </p>
           </div>
         ) : (
@@ -537,7 +537,7 @@ export default function DriversPage() {
                           {driver.totalRefillSales}
                         </div>
                         <div className="text-muted-foreground text-sm">
-                          units
+                          {t('units')}
                         </div>
                       </td>
                       <td className="whitespace-nowrap px-6 py-4">
@@ -545,7 +545,7 @@ export default function DriversPage() {
                           {driver.totalPackageSales}
                         </div>
                         <div className="text-muted-foreground text-sm">
-                          units
+                          {t('units')}
                         </div>
                       </td>
                       <td className="whitespace-nowrap px-6 py-4">
@@ -554,7 +554,7 @@ export default function DriversPage() {
                         </div>
                         {driver.totalCashReceivables > 0 && (
                           <div className="text-sm text-yellow-600 dark:text-yellow-400">
-                            Outstanding
+                            {t('outstanding')}
                           </div>
                         )}
                       </td>
@@ -563,7 +563,7 @@ export default function DriversPage() {
                           {driver.totalCylinderReceivables}
                         </div>
                         <div className="text-muted-foreground text-sm">
-                          cylinders
+                          {t('cylinders')}
                         </div>
                       </td>
                       <td className="whitespace-nowrap px-6 py-4">
@@ -580,7 +580,7 @@ export default function DriversPage() {
                         >
                           <div className="flex items-center">
                             <Eye className="mr-1 h-4 w-4" />
-                            Details
+                            {t('details')}
                           </div>
                         </button>
                         <button
@@ -589,7 +589,7 @@ export default function DriversPage() {
                         >
                           <div className="flex items-center">
                             <Edit2 className="mr-1 h-4 w-4" />
-                            Edit
+                            {t('edit')}
                           </div>
                         </button>
                         {isAdmin && (
@@ -603,12 +603,12 @@ export default function DriversPage() {
                             {deletingId === driver.id ? (
                               <div className="flex items-center">
                                 <div className="mr-1 h-4 w-4 animate-spin rounded-full border-b-2 border-red-500"></div>
-                                Deleting...
+                                {t('deleting')}
                               </div>
                             ) : (
                               <div className="flex items-center">
                                 <Trash2 className="mr-1 h-4 w-4" />
-                                Delete
+                                {t('delete')}
                               </div>
                             )}
                           </button>
@@ -629,10 +629,10 @@ export default function DriversPage() {
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-foreground text-lg font-semibold">
-                Daily Sales - Retail Drivers
+                {t('dailySalesRetailDrivers')}
               </h2>
               <p className="text-muted-foreground mt-1 text-sm">
-                Individual daily sales data for {dailySalesPeriod.monthName}{' '}
+                {t('individualDailySalesData')} {dailySalesPeriod.monthName}{' '}
                 {dailySalesPeriod.year}
               </p>
             </div>
@@ -648,16 +648,16 @@ export default function DriversPage() {
                   });
                 }}
               >
-                <option value="2025-07">July 2025</option>
-                <option value="2025-06">June 2025</option>
-                <option value="2025-05">May 2025</option>
-                <option value="2025-04">April 2025</option>
-                <option value="2025-03">March 2025</option>
-                <option value="2025-02">February 2025</option>
-                <option value="2025-01">January 2025</option>
-                <option value="2024-12">December 2024</option>
-                <option value="2024-11">November 2024</option>
-                <option value="2024-10">October 2024</option>
+                <option value="2025-07">{t('july2025')}</option>
+                <option value="2025-06">{t('june2025')}</option>
+                <option value="2025-05">{t('may2025')}</option>
+                <option value="2025-04">{t('april2025')}</option>
+                <option value="2025-03">{t('march2025')}</option>
+                <option value="2025-02">{t('february2025')}</option>
+                <option value="2025-01">{t('january2025')}</option>
+                <option value="2024-12">{t('december2024')}</option>
+                <option value="2024-11">{t('november2024')}</option>
+                <option value="2024-10">{t('october2024')}</option>
               </select>
               <button
                 onClick={refreshDailySalesData}
@@ -676,35 +676,35 @@ export default function DriversPage() {
             <div className="p-8 text-center">
               <div className="flex items-center justify-center">
                 <div className="mr-3 h-6 w-6 animate-spin rounded-full border-b-2 border-blue-500"></div>
-                Loading daily sales data...
+                {t('loadingDailySalesData')}
               </div>
             </div>
           ) : dailySales.length === 0 ? (
             <div className="text-muted-foreground p-8 text-center">
-              No daily sales data found for retail drivers in{' '}
-              {dailySalesPeriod.monthName} {dailySalesPeriod.year}.
+              {t('noDailySalesDataFound')} {dailySalesPeriod.monthName}{' '}
+              {dailySalesPeriod.year}.
             </div>
           ) : (
             <table className="w-full">
               <thead className="bg-muted">
                 <tr>
                   <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase">
-                    Date
+                    {t('date')}
                   </th>
                   <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase">
-                    Driver
+                    {t('driver')}
                   </th>
                   <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase">
-                    Package Sales
+                    {t('packageSales')}
                   </th>
                   <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase">
-                    Refill Sales
+                    {t('refillSales')}
                   </th>
                   <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase">
-                    Total Sales
+                    {t('totalSales')}
                   </th>
                   <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase">
-                    Sales Value
+                    {t('salesValue')}
                   </th>
                 </tr>
               </thead>
@@ -744,7 +744,7 @@ export default function DriversPage() {
       <Dialog open={showAddDriverForm} onOpenChange={setShowAddDriverForm}>
         <DialogContent className="max-h-[90vh] max-w-4xl overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Add New Driver</DialogTitle>
+            <DialogTitle>{t('addNewDriver')}</DialogTitle>
           </DialogHeader>
           <AddDriverForm
             onSubmit={handleCreateDriver}
@@ -758,7 +758,7 @@ export default function DriversPage() {
       <Dialog open={showEditDriverForm} onOpenChange={setShowEditDriverForm}>
         <DialogContent className="max-h-[90vh] max-w-4xl overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Edit Driver</DialogTitle>
+            <DialogTitle>{t('editDriver')}</DialogTitle>
           </DialogHeader>
           {selectedDriver && (
             <AddDriverForm
@@ -788,7 +788,7 @@ export default function DriversPage() {
         <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center justify-between">
-              Driver Details
+              {t('driverDetails')}
               <button
                 onClick={() => setShowDriverDetails(false)}
                 className="text-muted-foreground hover:text-foreground"
@@ -803,7 +803,7 @@ export default function DriversPage() {
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div>
                   <label className="text-foreground mb-1 block text-sm font-medium">
-                    Driver Name
+                    {t('driverName')}
                   </label>
                   <p className="text-foreground bg-muted rounded p-2 text-sm">
                     {selectedDriver.name}
@@ -811,12 +811,12 @@ export default function DriversPage() {
                 </div>
                 <div>
                   <label className="text-foreground mb-1 block text-sm font-medium">
-                    Driver Type
+                    {t('driverType')}
                   </label>
                   <p className="text-foreground bg-muted rounded p-2 text-sm">
                     {selectedDriver.driverType === 'RETAIL'
-                      ? 'Retail Driver'
-                      : 'Shipment Driver'}
+                      ? t('retailDriver')
+                      : t('shipmentDrivers')}
                   </p>
                 </div>
               </div>
@@ -825,7 +825,7 @@ export default function DriversPage() {
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div>
                   <label className="text-foreground mb-1 block text-sm font-medium">
-                    Phone Number
+                    {t('phoneNumber')}
                   </label>
                   <p className="text-foreground bg-muted rounded p-2 text-sm">
                     {selectedDriver.phone || 'N/A'}
@@ -833,7 +833,7 @@ export default function DriversPage() {
                 </div>
                 <div>
                   <label className="text-foreground mb-1 block text-sm font-medium">
-                    Email
+                    {t('email')}
                   </label>
                   <p className="text-foreground bg-muted rounded p-2 text-sm">
                     {selectedDriver.email || 'N/A'}
@@ -845,7 +845,7 @@ export default function DriversPage() {
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div>
                   <label className="text-foreground mb-1 block text-sm font-medium">
-                    License Number
+                    {t('licenseNumber')}
                   </label>
                   <p className="text-foreground bg-muted rounded p-2 text-sm">
                     {selectedDriver.licenseNumber || 'N/A'}
@@ -853,7 +853,7 @@ export default function DriversPage() {
                 </div>
                 <div>
                   <label className="text-foreground mb-1 block text-sm font-medium">
-                    Route/Area
+                    {t('routeArea')}
                   </label>
                   <p className="text-foreground bg-muted rounded p-2 text-sm">
                     {selectedDriver.route || 'N/A'}
@@ -864,7 +864,7 @@ export default function DriversPage() {
               {/* Address */}
               <div>
                 <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Address
+                  {t('address')}
                 </label>
                 <p className="rounded bg-gray-50 p-2 text-sm text-gray-900 dark:bg-gray-700 dark:text-white">
                   {selectedDriver.address || 'N/A'}
@@ -875,7 +875,7 @@ export default function DriversPage() {
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div>
                   <label className="text-foreground mb-1 block text-sm font-medium">
-                    Status
+                    {t('status')}
                   </label>
                   <p className="text-sm">
                     <span
@@ -887,7 +887,7 @@ export default function DriversPage() {
                 </div>
                 <div>
                   <label className="text-foreground mb-1 block text-sm font-medium">
-                    Joining Date
+                    {t('joiningDate')}
                   </label>
                   <p className="text-foreground bg-muted rounded p-2 text-sm">
                     {selectedDriver.joiningDate
@@ -900,7 +900,7 @@ export default function DriversPage() {
               {/* Performance Stats */}
               <div className="border-t pt-4">
                 <h4 className="text-foreground mb-3 text-lg font-semibold">
-                  Performance Statistics
+                  {t('performanceStatistics')}
                 </h4>
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
                   <div className="rounded-lg bg-blue-50 p-3 dark:bg-blue-900/20">
@@ -908,7 +908,7 @@ export default function DriversPage() {
                       {selectedDriver.counts?.totalSales || 0}
                     </div>
                     <div className="text-sm text-blue-600 dark:text-blue-400">
-                      Total Sales
+                      {t('totalSales')}
                     </div>
                   </div>
                   <div className="rounded-lg bg-green-50 p-3 dark:bg-green-900/20">
@@ -918,7 +918,7 @@ export default function DriversPage() {
                       )}
                     </div>
                     <div className="text-sm text-green-600 dark:text-green-400">
-                      Total Revenue
+                      {t('totalRevenue')}
                     </div>
                   </div>
                   <div className="rounded-lg bg-purple-50 p-3 dark:bg-purple-900/20">
@@ -926,7 +926,7 @@ export default function DriversPage() {
                       {selectedDriver.counts?.receivableRecords || 0}
                     </div>
                     <div className="text-sm text-purple-600 dark:text-purple-400">
-                      Receivable Records
+                      {t('receivableRecords')}
                     </div>
                   </div>
                 </div>

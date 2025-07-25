@@ -81,7 +81,7 @@ export default function DashboardLayout({
       <div className="bg-background flex min-h-screen items-center justify-center">
         <div className="text-center">
           <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-b-2 border-blue-500"></div>
-          <p className="text-muted-foreground">Loading...</p>
+          <p className="text-muted-foreground">{t('loadingDashboard')}</p>
         </div>
       </div>
     );
@@ -104,7 +104,7 @@ export default function DashboardLayout({
         <div className="bg-card fixed inset-y-0 left-0 flex w-64 flex-col shadow-xl">
           <div className="border-border flex items-center justify-between border-b px-4 py-4">
             <h1 className="text-card-foreground text-lg font-semibold">
-              LPG Distributor
+              {t('lpgDistributor')}
             </h1>
             <button
               onClick={() => setSidebarOpen(false)}
@@ -152,7 +152,7 @@ export default function DashboardLayout({
         <div className="bg-card border-border flex min-h-0 flex-1 flex-col border-r">
           <div className="border-border flex items-center justify-between border-b px-4 py-4">
             <h1 className="text-card-foreground text-lg font-semibold">
-              LPG Distributor
+              {t('lpgDistributor')}
             </h1>
           </div>
           <nav className="flex-1 space-y-2 px-4 py-4">
@@ -203,13 +203,13 @@ export default function DashboardLayout({
                 </button>
                 <div className="ml-4 lg:ml-0">
                   <p className="text-muted-foreground text-sm">
-                    Welcome back, {session?.user?.name}
+                    {t('welcomeBack')}, {session?.user?.name}
                   </p>
                 </div>
               </div>
               <div className="flex items-center space-x-4">
                 <span className="text-muted-foreground text-sm">
-                  Role: {session?.user?.role}
+                  {t('role')}: {session?.user?.role}
                 </span>
                 <ThemeToggle />
                 <button

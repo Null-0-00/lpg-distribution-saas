@@ -2,7 +2,7 @@
 // Comprehensive daily sales report with all drivers, receivables, and cash flow
 
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
+import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 
 export async function GET(request: NextRequest) {

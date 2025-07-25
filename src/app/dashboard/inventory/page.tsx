@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Package,
   AlertTriangle,
@@ -73,17 +73,39 @@ interface InventoryData {
   lastUpdated: string;
 }
 
+interface ProductBreakdown {
+  productId: string;
+  productName: string;
+  productSize: string;
+  companyName: string;
+  quantity: number;
+}
+
+interface SizeBreakdown {
+  size: string;
+  quantity: number;
+}
+
 interface DailyInventoryRecord {
   date: string;
   packageSalesQty: number;
+  packageSalesProducts: ProductBreakdown[];
   refillSalesQty: number;
+  refillSalesProducts: ProductBreakdown[];
   totalSalesQty: number;
+  totalSalesProducts: ProductBreakdown[];
   packagePurchase: number;
+  packagePurchaseProducts: ProductBreakdown[];
   refillPurchase: number;
+  refillPurchaseProducts: ProductBreakdown[];
   emptyCylindersBuySell: number;
+  emptyCylindersBuySellBySizes: SizeBreakdown[];
   fullCylinders: number;
+  fullCylindersBySizes: SizeBreakdown[];
   emptyCylinders: number;
+  emptyCylindersBySizes: SizeBreakdown[];
   totalCylinders: number;
+  totalCylindersBySizes: SizeBreakdown[];
 }
 
 interface DailyInventoryData {
@@ -163,7 +185,7 @@ export default function InventoryPage() {
         }
       }
     } catch (error) {
-      console.error('Error fetching inventory data:', error);
+      console.error(t('errorFetchingInventoryData'), error);
     } finally {
       setLoading(false);
     }
@@ -171,25 +193,55 @@ export default function InventoryPage() {
 
   const fetchDailyInventoryData = async () => {
     try {
-      const response = await fetch('/api/inventory/daily', {
-        cache: 'no-cache',
-        headers: {
-          'Cache-Control': 'no-cache',
-        },
-      });
+      console.log('🔄 Fetching daily inventory data...');
+      const startTime = performance.now();
+
+      // Add reduced date range for faster loading - default to 7 days instead of 30
+      const endDate = new Date().toISOString().split('T')[0];
+      const startDate = (() => {
+        const date = new Date();
+        date.setDate(date.getDate() - 7); // Reduced from 30 to 7 days
+        return date.toISOString().split('T')[0];
+      })();
+
+      const response = await fetch(
+        `/api/inventory/daily?startDate=${startDate}&endDate=${endDate}&_t=${Date.now()}`,
+        {
+          cache: 'no-store',
+          headers: {
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            Pragma: 'no-cache',
+            Expires: '0',
+          },
+        }
+      );
 
       if (response.ok) {
         const data = await response.json();
+        const endTime = performance.now();
+        console.log(
+          `✅ Daily inventory data loaded in ${(endTime - startTime).toFixed(2)}ms`
+        );
+        console.log(
+          `📊 Daily inventory records:`,
+          data.dailyInventory?.length || 0
+        );
         setDailyInventoryData(data);
+      } else {
+        console.error(
+          '❌ Failed to fetch daily inventory data:',
+          response.status,
+          response.statusText
+        );
       }
     } catch (error) {
-      console.error('Error fetching daily inventory data:', error);
+      console.error(t('errorFetchingDailyInventoryData'), error);
     }
   };
 
   const fetchCylindersSummaryData = async () => {
     try {
-      console.log('Fetching cylinders summary data...');
+      console.log(t('fetchingCylindersSummaryData'));
       const response = await fetch('/api/inventory/cylinders-summary', {
         cache: 'no-cache',
         headers: {
@@ -197,22 +249,22 @@ export default function InventoryPage() {
         },
       });
 
-      console.log('Cylinders summary response status:', response.status);
+      console.log(t('cylindersSummaryResponseStatus'), response.status);
 
       if (response.ok) {
         const data = await response.json();
-        console.log('Cylinders summary data received:', data);
+        console.log(t('cylindersSummaryDataReceived'), data);
         setCylindersSummaryData(data);
       } else {
         const errorText = await response.text();
         console.error(
-          'Cylinders summary API error:',
+          t('cylindersSummaryApiError'),
           response.status,
           errorText
         );
       }
     } catch (error) {
-      console.error('Error fetching cylinders summary data:', error);
+      console.error(t('errorFetchingCylindersSummaryData'), error);
     }
   };
 
@@ -608,71 +660,223 @@ export default function InventoryPage() {
               </thead>
               <tbody className="bg-card divide-border divide-y">
                 {dailyInventoryData.dailyInventory.map((record, index) => (
-                  <tr
-                    key={record.date}
-                    className={`hover:bg-muted/50 ${
-                      index === 0
-                        ? 'bg-blue-50 font-medium dark:bg-blue-900/20'
-                        : ''
-                    }`}
-                  >
-                    <td className="text-foreground whitespace-nowrap px-4 py-4 text-sm font-medium">
-                      {formatDate(record.date)}
-                      {index === 0 && (
-                        <span className="ml-2 inline-flex rounded-full bg-blue-100 px-2 py-1 text-xs font-semibold text-blue-800 dark:bg-blue-900 dark:text-blue-200">
-                          {t('latest')}
-                        </span>
-                      )}
-                    </td>
-                    <td className="text-foreground whitespace-nowrap px-4 py-4 text-sm">
-                      {record.packageSalesQty}
-                    </td>
-                    <td className="text-foreground whitespace-nowrap px-4 py-4 text-sm">
-                      {record.refillSalesQty}
-                    </td>
-                    <td className="text-foreground whitespace-nowrap px-4 py-4 text-sm font-medium">
-                      {record.totalSalesQty}
-                    </td>
-                    <td className="text-foreground whitespace-nowrap px-4 py-4 text-sm">
-                      {record.packagePurchase > 0 ? (
-                        <span className="font-medium text-green-600 dark:text-green-400">
-                          +{record.packagePurchase}
-                        </span>
-                      ) : (
-                        <span className="text-muted-foreground">0</span>
-                      )}
-                    </td>
-                    <td className="text-foreground whitespace-nowrap px-4 py-4 text-sm">
-                      {record.refillPurchase > 0 ? (
-                        <span className="font-medium text-green-600 dark:text-green-400">
-                          +{record.refillPurchase}
-                        </span>
-                      ) : (
-                        <span className="text-muted-foreground">0</span>
-                      )}
-                    </td>
-                    <td className="text-foreground whitespace-nowrap px-4 py-4 text-sm">
-                      <span
-                        className={
-                          record.emptyCylindersBuySell >= 0
-                            ? 'text-green-600 dark:text-green-400'
-                            : 'text-red-600 dark:text-red-400'
-                        }
-                      >
-                        {record.emptyCylindersBuySell >= 0 ? '+' : ''}
-                        {record.emptyCylindersBuySell}
-                      </span>
-                    </td>
-                    <td className="whitespace-nowrap px-4 py-4 text-sm font-bold text-blue-600 dark:text-blue-400">
-                      {record.fullCylinders}
-                    </td>
-                    <td className="whitespace-nowrap px-4 py-4 text-sm font-bold text-gray-600 dark:text-gray-400">
-                      {record.emptyCylinders}
-                    </td>
-                    <td className="whitespace-nowrap px-4 py-4 text-sm font-bold text-purple-600 dark:text-purple-400">
-                      {record.totalCylinders}
-                    </td>
-                  </tr>
+                  <React.Fragment key={record.date}>
+                    {/* Main row with totals */}
+                    <tr
+                      className={`hover:bg-muted/50 ${
+                        index === 0
+                          ? 'bg-blue-50 font-medium dark:bg-blue-900/20'
+                          : ''
+                      }`}
+                    >
+                      <td className="text-foreground whitespace-nowrap border-r border-gray-200 px-4 py-4 text-sm font-medium dark:border-gray-700">
+                        {formatDate(record.date)}
+                        {index === 0 && (
+                          <span className="ml-2 inline-flex rounded-full bg-blue-100 px-2 py-1 text-xs font-semibold text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                            {t('latest')}
+                          </span>
+                        )}
+                      </td>
+                      <td className="border-r border-gray-200 px-4 py-4 dark:border-gray-700">
+                        <div className="mb-1 text-sm font-bold text-blue-600 dark:text-blue-400">
+                          {record.packageSalesQty}
+                        </div>
+                        {record.packageSalesProducts.map((product) => (
+                          <div
+                            key={product.productId}
+                            className="py-0.5 text-xs text-gray-600 dark:text-gray-400"
+                          >
+                            <span className="font-medium">
+                              {product.companyName}
+                            </span>
+                            <span className="mx-1">-</span>
+                            <span>
+                              {product.productName} ({product.productSize})
+                            </span>
+                            <span className="ml-1 font-semibold">
+                              {product.quantity}
+                            </span>
+                          </div>
+                        ))}
+                      </td>
+                      <td className="border-r border-gray-200 px-4 py-4 dark:border-gray-700">
+                        <div className="mb-1 text-sm font-bold text-green-600 dark:text-green-400">
+                          {record.refillSalesQty}
+                        </div>
+                        {record.refillSalesProducts.map((product) => (
+                          <div
+                            key={product.productId}
+                            className="py-0.5 text-xs text-gray-600 dark:text-gray-400"
+                          >
+                            <span className="font-medium">
+                              {product.companyName}
+                            </span>
+                            <span className="mx-1">-</span>
+                            <span>
+                              {product.productName} ({product.productSize})
+                            </span>
+                            <span className="ml-1 font-semibold">
+                              {product.quantity}
+                            </span>
+                          </div>
+                        ))}
+                      </td>
+                      <td className="border-r border-gray-200 px-4 py-4 dark:border-gray-700">
+                        <div className="mb-1 text-sm font-bold text-purple-600 dark:text-purple-400">
+                          {record.totalSalesQty}
+                        </div>
+                        {record.totalSalesProducts.map((product) => (
+                          <div
+                            key={product.productId}
+                            className="py-0.5 text-xs text-gray-600 dark:text-gray-400"
+                          >
+                            <span className="font-medium">
+                              {product.companyName}
+                            </span>
+                            <span className="mx-1">-</span>
+                            <span>
+                              {product.productName} ({product.productSize})
+                            </span>
+                            <span className="ml-1 font-semibold">
+                              {product.quantity}
+                            </span>
+                          </div>
+                        ))}
+                      </td>
+                      <td className="border-r border-gray-200 px-4 py-4 dark:border-gray-700">
+                        <div className="mb-1 text-sm font-bold text-green-600 dark:text-green-400">
+                          {record.packagePurchase > 0
+                            ? `+${record.packagePurchase}`
+                            : '0'}
+                        </div>
+                        {record.packagePurchaseProducts.map((product) => (
+                          <div
+                            key={product.productId}
+                            className="py-0.5 text-xs text-gray-600 dark:text-gray-400"
+                          >
+                            <span className="font-medium">
+                              {product.companyName}
+                            </span>
+                            <span className="mx-1">-</span>
+                            <span>
+                              {product.productName} ({product.productSize})
+                            </span>
+                            <span className="ml-1 font-semibold text-green-600">
+                              +{product.quantity}
+                            </span>
+                          </div>
+                        ))}
+                      </td>
+                      <td className="border-r border-gray-200 px-4 py-4 dark:border-gray-700">
+                        <div className="mb-1 text-sm font-bold text-green-600 dark:text-green-400">
+                          {record.refillPurchase > 0
+                            ? `+${record.refillPurchase}`
+                            : '0'}
+                        </div>
+                        {record.refillPurchaseProducts.map((product) => (
+                          <div
+                            key={product.productId}
+                            className="py-0.5 text-xs text-gray-600 dark:text-gray-400"
+                          >
+                            <span className="font-medium">
+                              {product.companyName}
+                            </span>
+                            <span className="mx-1">-</span>
+                            <span>
+                              {product.productName} ({product.productSize})
+                            </span>
+                            <span className="ml-1 font-semibold text-green-600">
+                              +{product.quantity}
+                            </span>
+                          </div>
+                        ))}
+                      </td>
+                      <td className="border-r border-gray-200 px-4 py-4 dark:border-gray-700">
+                        <div className="mb-1 text-sm font-bold text-orange-600 dark:text-orange-400">
+                          <span
+                            className={
+                              record.emptyCylindersBuySell >= 0
+                                ? 'text-green-600 dark:text-green-400'
+                                : 'text-red-600 dark:text-red-400'
+                            }
+                          >
+                            {record.emptyCylindersBuySell >= 0 ? '+' : ''}
+                            {record.emptyCylindersBuySell}
+                          </span>
+                        </div>
+                        {record.emptyCylindersBuySellBySizes?.map(
+                          (sizeBreakdown) => (
+                            <div
+                              key={sizeBreakdown.size}
+                              className="py-0.5 text-xs text-gray-600 dark:text-gray-400"
+                            >
+                              <span className="font-medium">
+                                {sizeBreakdown.size}
+                              </span>
+                              <span className="ml-2 font-semibold">
+                                {sizeBreakdown.quantity >= 0 ? '+' : ''}
+                                {sizeBreakdown.quantity}
+                              </span>
+                            </div>
+                          )
+                        )}
+                      </td>
+                      <td className="border-r border-gray-200 px-4 py-4 dark:border-gray-700">
+                        <div className="mb-1 text-sm font-bold text-blue-600 dark:text-blue-400">
+                          {record.fullCylinders}
+                        </div>
+                        {record.fullCylindersBySizes?.map((sizeBreakdown) => (
+                          <div
+                            key={sizeBreakdown.size}
+                            className="py-0.5 text-xs text-gray-600 dark:text-gray-400"
+                          >
+                            <span className="font-medium">
+                              {sizeBreakdown.size}
+                            </span>
+                            <span className="ml-2 font-semibold text-blue-600">
+                              {sizeBreakdown.quantity}
+                            </span>
+                          </div>
+                        ))}
+                      </td>
+                      <td className="border-r border-gray-200 px-4 py-4 dark:border-gray-700">
+                        <div className="mb-1 text-sm font-bold text-gray-600 dark:text-gray-400">
+                          {record.emptyCylinders}
+                        </div>
+                        {record.emptyCylindersBySizes?.map((sizeBreakdown) => (
+                          <div
+                            key={sizeBreakdown.size}
+                            className="py-0.5 text-xs text-gray-600 dark:text-gray-400"
+                          >
+                            <span className="font-medium">
+                              {sizeBreakdown.size}
+                            </span>
+                            <span className="ml-2 font-semibold text-gray-600">
+                              {sizeBreakdown.quantity}
+                            </span>
+                          </div>
+                        ))}
+                      </td>
+                      <td className="px-4 py-4">
+                        <div className="mb-1 text-sm font-bold text-purple-600 dark:text-purple-400">
+                          {record.totalCylinders}
+                        </div>
+                        {record.totalCylindersBySizes?.map((sizeBreakdown) => (
+                          <div
+                            key={sizeBreakdown.size}
+                            className="py-0.5 text-xs text-gray-600 dark:text-gray-400"
+                          >
+                            <span className="font-medium">
+                              {sizeBreakdown.size}
+                            </span>
+                            <span className="ml-2 font-semibold text-purple-600">
+                              {sizeBreakdown.quantity}
+                            </span>
+                          </div>
+                        ))}
+                      </td>
+                    </tr>
+                  </React.Fragment>
                 ))}
               </tbody>
             </table>

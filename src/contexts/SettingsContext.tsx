@@ -43,7 +43,7 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
   const [settings, setSettings] = useState<SettingsData>({
     currency: 'BDT', // Better default for LPG distributors in Bangladesh
     timezone: 'Asia/Dhaka', // Better default timezone
-    language: 'en',
+    language: 'en', // Use English as default to prevent hydration mismatch
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -217,7 +217,7 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
   };
 
   const t = (key: keyof Translations): string => {
-    return getTranslation(settings.language, key);
+    return getTranslation(settings.language, key, 'SettingsContext');
   };
 
   useEffect(() => {

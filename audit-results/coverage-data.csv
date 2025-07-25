@@ -1,0 +1,15 @@
+Page,Priority,Coverage,Files,Hardcoded Strings,Translation Calls,Issues
+"Dashboard",high,61.08,21,411,645,21
+"Sales",high,100,1,0,48,1
+"Analytics",medium,100,1,0,75,0
+"Daily Sales Report",high,38.46,2,96,60,2
+"Inventory",high,100,1,0,79,1
+"Shipments",high,100,1,0,140,5
+"Drivers",high,40.24,2,49,33,0
+"Users",medium,75.9,1,20,63,0
+"Receivables",medium,36.92,1,41,24,3
+"Assets",medium,4.35,1,66,3,0
+"Expenses",medium,100,1,0,5,1
+"Reports",medium,38.46,2,96,60,2
+"Product Management",low,10.2,1,44,5,0
+"Settings",low,80,1,4,16,0

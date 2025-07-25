@@ -2,7 +2,7 @@
 // Generate comprehensive balance sheet with real-time calculations
 
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
+import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import { AssetCategory, LiabilityCategory } from '@prisma/client';
 import { z } from 'zod';

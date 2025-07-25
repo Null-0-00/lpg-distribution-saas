@@ -169,19 +169,19 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
     async redirect({ url, baseUrl }) {
       console.log('🔄 NextAuth redirect:', { url, baseUrl });
-      
+
       // For relative URLs, make them absolute
       if (url.startsWith('/')) {
         const fullUrl = new URL(url, baseUrl).toString();
         console.log('📍 Converting relative to absolute:', fullUrl);
         return fullUrl;
       }
-      
+
       // If it's the same origin, allow it
       try {
         const urlObj = new URL(url);
         const baseObj = new URL(baseUrl);
-        
+
         if (urlObj.origin === baseObj.origin) {
           console.log('✅ Same origin redirect allowed:', url);
           return url;
@@ -189,7 +189,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       } catch (error) {
         console.warn('⚠️ Invalid URL in redirect:', url);
       }
-      
+
       // Default fallback
       const defaultUrl = `${baseUrl}/dashboard`;
       console.log('🛡️ Fallback redirect:', defaultUrl);

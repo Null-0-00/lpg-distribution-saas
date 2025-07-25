@@ -1,0 +1,174 @@
+[
+  {
+    "page": "dashboard",
+    "exists": false,
+    "coverage": 0,
+    "issues": ["Page directory not found"]
+  },
+  {
+    "page": "sales",
+    "exists": true,
+    "totalFiles": 1,
+    "totalElements": 53,
+    "translatedElements": 48,
+    "hardcodedCount": 5,
+    "coverage": 90.57,
+    "issues": [
+      "page.tsx: 5 hardcoded strings",
+      "page.tsx: 1 missing translation keys"
+    ],
+    "status": "partial"
+  },
+  {
+    "page": "analytics",
+    "exists": true,
+    "totalFiles": 1,
+    "totalElements": 78,
+    "translatedElements": 75,
+    "hardcodedCount": 3,
+    "coverage": 96.15,
+    "issues": ["page.tsx: 3 hardcoded strings"],
+    "status": "complete"
+  },
+  {
+    "page": "reports/daily-sales",
+    "exists": true,
+    "totalFiles": 1,
+    "totalElements": 66,
+    "translatedElements": 59,
+    "hardcodedCount": 7,
+    "coverage": 89.39,
+    "issues": [
+      "page.tsx: 7 hardcoded strings",
+      "page.tsx: 1 missing translation keys"
+    ],
+    "status": "partial"
+  },
+  {
+    "page": "inventory",
+    "exists": true,
+    "totalFiles": 1,
+    "totalElements": 80,
+    "translatedElements": 79,
+    "hardcodedCount": 1,
+    "coverage": 98.75,
+    "issues": [
+      "page.tsx: 1 hardcoded strings",
+      "page.tsx: 1 missing translation keys"
+    ],
+    "status": "complete"
+  },
+  {
+    "page": "shipments",
+    "exists": true,
+    "totalFiles": 1,
+    "totalElements": 145,
+    "translatedElements": 140,
+    "hardcodedCount": 5,
+    "coverage": 96.55,
+    "issues": [
+      "page.tsx: 5 hardcoded strings",
+      "page.tsx: 5 missing translation keys"
+    ],
+    "status": "complete"
+  },
+  {
+    "page": "drivers",
+    "exists": true,
+    "totalFiles": 2,
+    "totalElements": 87,
+    "translatedElements": 33,
+    "hardcodedCount": 54,
+    "coverage": 37.93,
+    "issues": [
+      "analytics\\page.tsx: 25 hardcoded strings",
+      "page.tsx: 29 hardcoded strings"
+    ],
+    "status": "missing"
+  },
+  {
+    "page": "users",
+    "exists": true,
+    "totalFiles": 1,
+    "totalElements": 94,
+    "translatedElements": 63,
+    "hardcodedCount": 31,
+    "coverage": 67.02,
+    "issues": ["page.tsx: 31 hardcoded strings"],
+    "status": "missing"
+  },
+  {
+    "page": "receivables",
+    "exists": true,
+    "totalFiles": 1,
+    "totalElements": 73,
+    "translatedElements": 24,
+    "hardcodedCount": 49,
+    "coverage": 32.88,
+    "issues": [
+      "page.tsx: 49 hardcoded strings",
+      "page.tsx: 3 missing translation keys"
+    ],
+    "status": "missing"
+  },
+  {
+    "page": "assets",
+    "exists": true,
+    "totalFiles": 1,
+    "totalElements": 71,
+    "translatedElements": 3,
+    "hardcodedCount": 68,
+    "coverage": 4.23,
+    "issues": ["page.tsx: 68 hardcoded strings"],
+    "status": "missing"
+  },
+  {
+    "page": "expenses",
+    "exists": true,
+    "totalFiles": 1,
+    "totalElements": 5,
+    "translatedElements": 5,
+    "hardcodedCount": 0,
+    "coverage": 100,
+    "issues": ["page.tsx: 1 missing translation keys"],
+    "status": "complete"
+  },
+  {
+    "page": "reports",
+    "exists": true,
+    "totalFiles": 2,
+    "totalElements": 170,
+    "translatedElements": 60,
+    "hardcodedCount": 110,
+    "coverage": 35.29,
+    "issues": [
+      "daily-sales\\page.tsx: 7 hardcoded strings",
+      "daily-sales\\page.tsx: 1 missing translation keys",
+      "page.tsx: 103 hardcoded strings",
+      "page.tsx: 1 missing translation keys"
+    ],
+    "status": "missing"
+  },
+  {
+    "page": "product-management",
+    "exists": true,
+    "totalFiles": 1,
+    "totalElements": 50,
+    "translatedElements": 5,
+    "hardcodedCount": 45,
+    "coverage": 10,
+    "issues": ["page.tsx: 45 hardcoded strings"],
+    "status": "missing"
+  },
+  {
+    "page": "settings",
+    "exists": true,
+    "totalFiles": 1,
+    "totalElements": 21,
+    "translatedElements": 16,
+    "hardcodedCount": 5,
+    "coverage": 76.19,
+    "issues": ["page.tsx: 5 hardcoded strings"],
+    "status": "partial"
+  }
+]

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Search, Filter, X } from 'lucide-react';
 import { ExpenseCategory } from '@/hooks/useCategories';
+import { useSettings } from '@/contexts/SettingsContext';
 
 interface ExpenseFiltersProps {
   filters: {
@@ -23,6 +24,7 @@ export const ExpenseFilters: React.FC<ExpenseFiltersProps> = ({
   onClearFilters,
   hasActiveFilters,
 }) => {
+  const { t } = useSettings();
   const activeCategories = categories.filter((cat) => cat.isActive);
 
   return (
@@ -33,7 +35,7 @@ export const ExpenseFilters: React.FC<ExpenseFiltersProps> = ({
           <Search className="text-muted-foreground absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform" />
           <input
             type="text"
-            placeholder="Search expenses..."
+            placeholder={t('searchExpenses')}
             value={filters.search}
             onChange={(e) => onFilterChange('search', e.target.value)}
             className="border-border bg-input text-foreground w-full rounded-md border py-2 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -55,9 +57,9 @@ export const ExpenseFilters: React.FC<ExpenseFiltersProps> = ({
             onChange={(e) => onFilterChange('status', e.target.value)}
             className="border-border bg-input text-foreground w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
-            <option value="all">All Status</option>
-            <option value="pending">Pending</option>
-            <option value="approved">Approved</option>
+            <option value="all">{t('allStatus')}</option>
+            <option value="pending">{t('pending')}</option>
+            <option value="approved">{t('approved')}</option>
           </select>
         </div>
 
@@ -68,7 +70,7 @@ export const ExpenseFilters: React.FC<ExpenseFiltersProps> = ({
             onChange={(e) => onFilterChange('categoryId', e.target.value)}
             className="border-border bg-input text-foreground w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
-            <option value="">All Categories</option>
+            <option value="">{t('allCategories')}</option>
             {activeCategories.map((category) => (
               <option key={category.id} value={category.id}>
                 {category.name}
@@ -81,14 +83,14 @@ export const ExpenseFilters: React.FC<ExpenseFiltersProps> = ({
         <div className="flex gap-2">
           <input
             type="date"
-            placeholder="From"
+            placeholder={t('from')}
             value={filters.dateFrom}
             onChange={(e) => onFilterChange('dateFrom', e.target.value)}
             className="border-border bg-input text-foreground rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           <input
             type="date"
-            placeholder="To"
+            placeholder={t('to')}
             value={filters.dateTo}
             onChange={(e) => onFilterChange('dateTo', e.target.value)}
             className="border-border bg-input text-foreground rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -102,7 +104,7 @@ export const ExpenseFilters: React.FC<ExpenseFiltersProps> = ({
             className="text-muted-foreground border-border hover:bg-muted/50 flex items-center rounded-md border px-4 py-2 text-sm transition-colors"
           >
             <X className="mr-1 h-4 w-4" />
-            Clear
+            {t('clear')}
           </button>
         )}
       </div>
@@ -113,7 +115,7 @@ export const ExpenseFilters: React.FC<ExpenseFiltersProps> = ({
           <div className="flex flex-wrap gap-2">
             {filters.status !== 'all' && (
               <span className="inline-flex items-center rounded-full bg-blue-100 px-2 py-1 text-xs font-medium text-blue-800 dark:bg-blue-900/50 dark:text-blue-200">
-                Status: {filters.status}
+                {t('status')}: {filters.status}
                 <button
                   onClick={() => onFilterChange('status', 'all')}
                   className="ml-1 text-blue-600 hover:text-blue-800"
@@ -124,9 +126,9 @@ export const ExpenseFilters: React.FC<ExpenseFiltersProps> = ({
             )}
             {filters.categoryId && (
               <span className="inline-flex items-center rounded-full bg-green-100 px-2 py-1 text-xs font-medium text-green-800 dark:bg-green-900/50 dark:text-green-200">
-                Category:{' '}
+                {t('category')}:
                 {activeCategories.find((c) => c.id === filters.categoryId)
-                  ?.name || 'Unknown'}
+                  ?.name || t('unknown')}
                 <button
                   onClick={() => onFilterChange('categoryId', '')}
                   className="ml-1 text-green-600 hover:text-green-800"
@@ -137,7 +139,7 @@ export const ExpenseFilters: React.FC<ExpenseFiltersProps> = ({
             )}
             {filters.dateFrom && filters.dateTo && (
               <span className="inline-flex items-center rounded-full bg-purple-100 px-2 py-1 text-xs font-medium text-purple-800 dark:bg-purple-900/50 dark:text-purple-200">
-                Date: {filters.dateFrom} to {filters.dateTo}
+                {t('date')}: {filters.dateFrom} {t('to')} {filters.dateTo}
                 <button
                   onClick={() => {
                     onFilterChange('dateFrom', '');

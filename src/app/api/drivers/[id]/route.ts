@@ -2,7 +2,7 @@
 // Handle single driver operations (view, update, deactivate)
 
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
+import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import { UserRole, DriverStatus } from '@prisma/client';
 import { z } from 'zod';

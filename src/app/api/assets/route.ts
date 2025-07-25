@@ -2,7 +2,7 @@
 // Handle both manual assets and auto-calculated current assets
 
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
+import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import { UserRole, AssetCategory } from '@prisma/client';
 import { z } from 'zod';

@@ -28,6 +28,7 @@ import {
   DrawerTrigger,
 } from '@/components/ui/drawer';
 import { formatCurrency } from '@/lib/utils/formatters';
+import { useSettings } from '@/contexts/SettingsContext';
 import {
   DollarSign,
   Package,
@@ -52,6 +53,7 @@ interface MobileDashboardProps {
 }
 
 export function MobileDashboard({ data, liveMetrics }: MobileDashboardProps) {
+  const { t } = useSettings();
   const [refreshing, setRefreshing] = useState(false);
   const [selectedMetric, setSelectedMetric] = useState<any>(null);
 
@@ -77,7 +79,7 @@ export function MobileDashboard({ data, liveMetrics }: MobileDashboardProps) {
 
   const quickStats = [
     {
-      title: "Today's Revenue",
+      title: `${t('revenue')} ${t('today')}`,
       value: liveMetrics?.today?.revenue || 0,
       growth: liveMetrics?.growth?.revenue || 0,
       icon: <DollarSign className="h-5 w-5" />,
@@ -85,7 +87,7 @@ export function MobileDashboard({ data, liveMetrics }: MobileDashboardProps) {
       bgColor: 'bg-green-50',
     },
     {
-      title: 'Orders',
+      title: t('orders'),
       value: liveMetrics?.today?.orderCount || 0,
       growth: liveMetrics?.growth?.orders || 0,
       icon: <Package className="h-5 w-5" />,
@@ -93,7 +95,7 @@ export function MobileDashboard({ data, liveMetrics }: MobileDashboardProps) {
       bgColor: 'bg-blue-50',
     },
     {
-      title: 'Active Drivers',
+      title: t('activeDrivers'),
       value: liveMetrics?.drivers?.activeToday || 0,
       total: liveMetrics?.drivers?.total || 0,
       icon: <Users className="h-5 w-5" />,
@@ -101,7 +103,7 @@ export function MobileDashboard({ data, liveMetrics }: MobileDashboardProps) {
       bgColor: 'bg-purple-50',
     },
     {
-      title: 'Stock Level',
+      title: t('stockLevel'),
       value: liveMetrics?.realTime?.inventory?.fullCylinders || 0,
       icon: <Package className="h-5 w-5" />,
       color: 'text-orange-600',
@@ -114,8 +116,8 @@ export function MobileDashboard({ data, liveMetrics }: MobileDashboardProps) {
       <div className="sticky top-0 z-10 border-b bg-white">
         <div className="flex items-center justify-between p-4">
           <div>
-            <h1 className="text-lg font-semibold">Dashboard</h1>
-            <p className="text-sm text-gray-500">Real-time overview</p>
+            <h1 className="text-lg font-semibold">{t('dashboard')}</h1>
+            <p className="text-sm text-gray-500">{t('realTimeOverview')}</p>
           </div>
           <div className="flex items-center space-x-2">
             <Button
@@ -156,7 +158,7 @@ export function MobileDashboard({ data, liveMetrics }: MobileDashboardProps) {
                     </p>
                     <div className="flex items-center justify-between">
                       <span className="text-lg font-bold">
-                        {stat.title.includes('Revenue')
+                        {stat.title.includes(t('revenue'))
                           ? formatCurrencyCompact(stat.value)
                           : stat.value}
                       </span>
@@ -167,7 +169,9 @@ export function MobileDashboard({ data, liveMetrics }: MobileDashboardProps) {
                       </div>
                     </div>
                     {stat.total && (
-                      <p className="text-xs text-gray-500">of {stat.total}</p>
+                      <p className="text-xs text-gray-500">
+                        {t('of')} {stat.total}
+                      </p>
                     )}
                     {stat.growth !== undefined && (
                       <p
@@ -187,14 +191,14 @@ export function MobileDashboard({ data, liveMetrics }: MobileDashboardProps) {
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center space-x-2 text-base">
                 <Activity className="h-4 w-4" />
-                <span>Live Activity</span>
+                <span>{t('liveActivity')}</span>
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="flex items-center justify-between rounded bg-green-50 p-2">
                 <div className="flex items-center space-x-2">
                   <CheckCircle className="h-4 w-4 text-green-600" />
-                  <span className="text-sm">Last 15 minutes</span>
+                  <span className="text-sm">{t('last15Minutes')}</span>
                 </div>
                 <div className="text-right">
                   <p className="text-sm font-medium">
@@ -211,7 +215,7 @@ export function MobileDashboard({ data, liveMetrics }: MobileDashboardProps) {
               <div className="flex items-center justify-between rounded bg-blue-50 p-2">
                 <div className="flex items-center space-x-2">
                   <Target className="h-4 w-4 text-blue-600" />
-                  <span className="text-sm">Target Progress</span>
+                  <span className="text-sm">{t('targetProgress')}</span>
                 </div>
                 <div className="text-right">
                   <CircularProgress
@@ -229,13 +233,13 @@ export function MobileDashboard({ data, liveMetrics }: MobileDashboardProps) {
           <Card>
             <CardHeader className="pb-3">
               <CardTitle className="text-base">
-                Performance Indicators
+                {t('performanceIndicators')}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm">Inventory Health</span>
+                  <span className="text-sm">{t('inventoryHealth')}</span>
                   <Badge
                     variant={
                       data?.metrics?.inventory?.lowStockProducts > 0
@@ -244,13 +248,13 @@ export function MobileDashboard({ data, liveMetrics }: MobileDashboardProps) {
                     }
                   >
                     {data?.metrics?.inventory?.lowStockProducts > 0
-                      ? 'Attention Needed'
-                      : 'Good'}
+                      ? t('attentionNeeded')
+                      : t('good')}
                   </Badge>
                 </div>
 
                 <div className="flex items-center justify-between">
-                  <span className="text-sm">Collection Rate</span>
+                  <span className="text-sm">{t('collectionRate')}</span>
                   <Badge
                     variant={
                       data?.metrics?.receivables?.collectionRate > 90
@@ -265,7 +269,7 @@ export function MobileDashboard({ data, liveMetrics }: MobileDashboardProps) {
                 </div>
 
                 <div className="flex items-center justify-between">
-                  <span className="text-sm">Profit Margin</span>
+                  <span className="text-sm">{t('profitMargin')}</span>
                   <Badge
                     variant={
                       data?.metrics?.financial?.profitMargin > 0
@@ -287,9 +291,9 @@ export function MobileDashboard({ data, liveMetrics }: MobileDashboardProps) {
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between">
                       <div>
-                        <h3 className="font-medium">Sales Details</h3>
+                        <h3 className="font-medium">{t('salesDetails')}</h3>
                         <p className="text-sm text-gray-600">
-                          View detailed sales breakdown
+                          {t('viewDetailedSalesBreakdown')}
                         </p>
                       </div>
                       <ChevronRight className="h-5 w-5 text-gray-400" />
@@ -299,9 +303,9 @@ export function MobileDashboard({ data, liveMetrics }: MobileDashboardProps) {
               </DrawerTrigger>
               <DrawerContent>
                 <DrawerHeader>
-                  <DrawerTitle>Sales Breakdown</DrawerTitle>
+                  <DrawerTitle>{t('salesBreakdown')}</DrawerTitle>
                   <DrawerDescription>
-                    Detailed sales analytics
+                    {t('detailedSalesAnalytics')}
                   </DrawerDescription>
                 </DrawerHeader>
                 <div className="space-y-4 p-4">
@@ -310,18 +314,22 @@ export function MobileDashboard({ data, liveMetrics }: MobileDashboardProps) {
                       <p className="text-2xl font-bold text-green-600">
                         {data?.metrics?.sales?.packageSales || 0}
                       </p>
-                      <p className="text-sm text-gray-600">Package Sales</p>
+                      <p className="text-sm text-gray-600">
+                        {t('packageSales')}
+                      </p>
                     </div>
                     <div className="rounded bg-blue-50 p-3 text-center">
                       <p className="text-2xl font-bold text-blue-600">
                         {data?.metrics?.sales?.refillSales || 0}
                       </p>
-                      <p className="text-sm text-gray-600">Refill Sales</p>
+                      <p className="text-sm text-gray-600">
+                        {t('refillSales')}
+                      </p>
                     </div>
                   </div>
                   <div className="space-y-2">
                     <div className="flex justify-between">
-                      <span>Average Order Value</span>
+                      <span>{t('averageOrderValue')}</span>
                       <span className="font-medium">
                         {formatCurrencyCompact(
                           data?.metrics?.sales?.averageOrderValue || 0
@@ -329,7 +337,7 @@ export function MobileDashboard({ data, liveMetrics }: MobileDashboardProps) {
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span>Total Quantity</span>
+                      <span>{t('totalQuantity')}</span>
                       <span className="font-medium">
                         {data?.metrics?.sales?.totalQuantity || 0}
                       </span>
@@ -345,9 +353,11 @@ export function MobileDashboard({ data, liveMetrics }: MobileDashboardProps) {
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between">
                       <div>
-                        <h3 className="font-medium">Driver Performance</h3>
+                        <h3 className="font-medium">
+                          {t('driverPerformance')}
+                        </h3>
                         <p className="text-sm text-gray-600">
-                          Top performers and rankings
+                          {t('topPerformersAndRankings')}
                         </p>
                       </div>
                       <ChevronRight className="h-5 w-5 text-gray-400" />
@@ -357,8 +367,10 @@ export function MobileDashboard({ data, liveMetrics }: MobileDashboardProps) {
               </DrawerTrigger>
               <DrawerContent>
                 <DrawerHeader>
-                  <DrawerTitle>Driver Rankings</DrawerTitle>
-                  <DrawerDescription>Performance leaderboard</DrawerDescription>
+                  <DrawerTitle>{t('driverRankings')}</DrawerTitle>
+                  <DrawerDescription>
+                    {t('performanceLeaderboard')}
+                  </DrawerDescription>
                 </DrawerHeader>
                 <div className="p-4">
                   <ScrollArea className="h-64">
@@ -380,7 +392,7 @@ export function MobileDashboard({ data, liveMetrics }: MobileDashboardProps) {
                                 {driver.name}
                               </p>
                               <p className="text-xs text-gray-600">
-                                {driver.totalSales} sales •{' '}
+                                {driver.totalSales} {t('sales')} •{' '}
                                 {formatCurrencyCompact(driver.totalRevenue)}
                               </p>
                             </div>
@@ -405,7 +417,7 @@ export function MobileDashboard({ data, liveMetrics }: MobileDashboardProps) {
           <SheetContent side="bottom" className="h-[80vh]">
             <SheetHeader>
               <SheetTitle>{selectedMetric.title}</SheetTitle>
-              <SheetDescription>Detailed view and trends</SheetDescription>
+              <SheetDescription>{t('detailedViewAndTrends')}</SheetDescription>
             </SheetHeader>
             <div className="mt-6 space-y-4">
               <div className="text-center">
@@ -417,7 +429,7 @@ export function MobileDashboard({ data, liveMetrics }: MobileDashboardProps) {
                   </div>
                 </div>
                 <p className="text-3xl font-bold">
-                  {selectedMetric.title.includes('Revenue')
+                  {selectedMetric.title.includes(t('revenue'))
                     ? formatCurrencyCompact(selectedMetric.value)
                     : selectedMetric.value}
                 </p>
@@ -432,7 +444,7 @@ export function MobileDashboard({ data, liveMetrics }: MobileDashboardProps) {
                       }`}
                     >
                       {selectedMetric.growth >= 0 ? '+' : ''}
-                      {selectedMetric.growth.toFixed(1)}% vs yesterday
+                      {selectedMetric.growth.toFixed(1)}% {t('vsYesterday')}
                     </span>
                   </div>
                 )}

@@ -16,57 +16,76 @@ import {
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Loader2, User, Phone, MapPin, Mail } from 'lucide-react';
+import { useSettings } from '@/contexts/SettingsContext';
 
-const driverFormSchema = z.object({
-  name: z
-    .string()
-    .min(2, 'Name must be at least 2 characters')
-    .max(50, 'Name too long'),
-  phone: z
-    .string()
-    .min(10, 'Phone number must be at least 10 digits')
-    .max(15, 'Phone number too long'),
-  email: z.string().email('Invalid email address').optional().or(z.literal('')),
-  licenseNumber: z
-    .string()
-    .min(5, 'License number must be at least 5 characters')
-    .max(20, 'License number too long')
-    .optional()
-    .or(z.literal('')),
-  address: z
-    .string()
-    .min(10, 'Address must be at least 10 characters')
-    .max(200, 'Address too long')
-    .optional()
-    .or(z.literal('')),
-  area: z
-    .string()
-    .min(2, 'Area must be at least 2 characters')
-    .max(50, 'Area too long')
-    .optional()
-    .or(z.literal('')),
-  emergencyContact: z
-    .string()
-    .min(10, 'Emergency contact must be at least 10 digits')
-    .max(15, 'Emergency contact too long')
-    .optional()
-    .or(z.literal('')),
-  emergencyContactName: z
-    .string()
-    .min(2, 'Emergency contact name must be at least 2 characters')
-    .max(50, 'Name too long')
-    .optional()
-    .or(z.literal('')),
-  status: z.enum(['ACTIVE', 'INACTIVE'], {
-    message: 'Status is required',
-  }),
-  driverType: z.enum(['RETAIL', 'SHIPMENT'], {
-    message: 'Driver type is required',
-  }),
-  notes: z.string().optional(),
-});
+// Create a function to generate schema with translations
+const createDriverFormSchema = (t: (key: any) => string) =>
+  z.object({
+    name: z
+      .string()
+      .min(2, t('nameMustBeAtLeast2Characters'))
+      .max(50, t('nameTooLong')),
+    phone: z
+      .string()
+      .min(10, t('phoneNumberMustBeAtLeast10Digits'))
+      .max(15, t('phoneNumberTooLong')),
+    email: z
+      .string()
+      .email(t('invalidEmailAddress'))
+      .optional()
+      .or(z.literal('')),
+    licenseNumber: z
+      .string()
+      .min(5, t('licenseNumberMustBeAtLeast5Characters'))
+      .max(20, t('licenseNumberTooLong'))
+      .optional()
+      .or(z.literal('')),
+    address: z
+      .string()
+      .min(10, t('addressMustBeAtLeast10Characters'))
+      .max(200, t('addressTooLong'))
+      .optional()
+      .or(z.literal('')),
+    area: z
+      .string()
+      .min(2, t('areaMustBeAtLeast2Characters'))
+      .max(50, t('areaTooLong'))
+      .optional()
+      .or(z.literal('')),
+    emergencyContact: z
+      .string()
+      .min(10, t('emergencyContactMustBeAtLeast10Digits'))
+      .max(15, t('emergencyContactTooLong'))
+      .optional()
+      .or(z.literal('')),
+    emergencyContactName: z
+      .string()
+      .min(2, t('emergencyContactNameMustBeAtLeast2Characters'))
+      .max(50, t('nameTooLong'))
+      .optional()
+      .or(z.literal('')),
+    status: z.enum(['ACTIVE', 'INACTIVE'], {
+      message: t('statusIsRequired'),
+    }),
+    driverType: z.enum(['RETAIL', 'SHIPMENT'], {
+      message: t('driverTypeIsRequired'),
+    }),
+    notes: z.string().optional(),
+  });
 
-type DriverFormData = z.infer<typeof driverFormSchema>;
+type DriverFormData = {
+  name: string;
+  phone: string;
+  email?: string;
+  licenseNumber?: string;
+  address?: string;
+  area?: string;
+  emergencyContact?: string;
+  emergencyContactName?: string;
+  status: 'ACTIVE' | 'INACTIVE';
+  driverType: 'RETAIL' | 'SHIPMENT';
+  notes?: string;
+};
 
 interface AddDriverFormProps {
   onSubmit: (data: DriverFormData) => Promise<void>;
@@ -81,6 +100,7 @@ export function AddDriverForm({
   loading = false,
   initialData,
 }: AddDriverFormProps) {
+  const { t } = useSettings();
   const {
     register,
     handleSubmit,
@@ -89,7 +109,7 @@ export function AddDriverForm({
     reset,
     formState: { errors },
   } = useForm<DriverFormData>({
-    resolver: zodResolver(driverFormSchema),
+    resolver: zodResolver(createDriverFormSchema(t)),
     defaultValues: {
       status: 'ACTIVE',
       driverType: 'RETAIL',
@@ -116,17 +136,17 @@ export function AddDriverForm({
       {/* Personal Information */}
       <div className="space-y-4">
         <h3 className="border-b border-gray-200 pb-2 text-lg font-semibold text-gray-900 dark:border-gray-700 dark:text-white">
-          Personal Information
+          {t('personalInformation')}
         </h3>
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <div className="space-y-2">
-            <Label htmlFor="name">Full Name *</Label>
+            <Label htmlFor="name">{t('fullName')} *</Label>
             <div className="relative">
               <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-gray-400 dark:text-gray-500" />
               <Input
                 id="name"
-                placeholder="Enter full name"
+                placeholder={t('enterFullName')}
                 className="pl-10"
                 {...register('name')}
               />
@@ -139,12 +159,12 @@ export function AddDriverForm({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="phone">Phone Number *</Label>
+            <Label htmlFor="phone">{t('phoneNumber')} *</Label>
             <div className="relative">
               <Phone className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-gray-400 dark:text-gray-500" />
               <Input
                 id="phone"
-                placeholder="Enter phone number"
+                placeholder={t('enterPhoneNumber')}
                 className="pl-10"
                 {...register('phone')}
               />
@@ -159,13 +179,13 @@ export function AddDriverForm({
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <div className="space-y-2">
-            <Label htmlFor="email">Email Address</Label>
+            <Label htmlFor="email">{t('emailAddress')}</Label>
             <div className="relative">
               <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-gray-400 dark:text-gray-500" />
               <Input
                 id="email"
                 type="email"
-                placeholder="Enter email address (optional)"
+                placeholder={t('enterEmailAddress')}
                 className="pl-10"
                 {...register('email')}
               />
@@ -178,10 +198,10 @@ export function AddDriverForm({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="licenseNumber">License Number</Label>
+            <Label htmlFor="licenseNumber">{t('licenseNumber')}</Label>
             <Input
               id="licenseNumber"
-              placeholder="Enter license number"
+              placeholder={t('enterLicenseNumber')}
               {...register('licenseNumber')}
             />
             {errors.licenseNumber && (
@@ -196,11 +216,11 @@ export function AddDriverForm({
       {/* Driver Type */}
       <div className="space-y-4">
         <h3 className="border-b border-gray-200 pb-2 text-lg font-semibold text-gray-900 dark:border-gray-700 dark:text-white">
-          Driver Type
+          {t('driverType')}
         </h3>
 
         <div className="space-y-2">
-          <Label htmlFor="driverType">Driver Type *</Label>
+          <Label htmlFor="driverType">{t('driverType')} *</Label>
           <Select
             value={watchedValues.driverType || 'RETAIL'}
             onValueChange={(value) =>
@@ -208,11 +228,11 @@ export function AddDriverForm({
             }
           >
             <SelectTrigger>
-              <SelectValue placeholder="Select driver type" />
+              <SelectValue placeholder={t('selectDriverType')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="RETAIL">Retail Driver</SelectItem>
-              <SelectItem value="SHIPMENT">Shipment Driver</SelectItem>
+              <SelectItem value="RETAIL">{t('retailDriver')}</SelectItem>
+              <SelectItem value="SHIPMENT">{t('shipmentDrivers')}</SelectItem>
             </SelectContent>
           </Select>
           {errors.driverType && (
@@ -222,8 +242,8 @@ export function AddDriverForm({
           )}
           <p className="text-sm text-gray-600 dark:text-gray-400">
             {watchedValues.driverType === 'RETAIL'
-              ? 'Retail drivers handle direct customer sales and deliveries'
-              : 'Shipment drivers handle bulk transfers and warehouse operations'}
+              ? t('retailDriverDescription')
+              : t('shipmentDriverDescription')}
           </p>
         </div>
       </div>
@@ -231,16 +251,16 @@ export function AddDriverForm({
       {/* Location Information */}
       <div className="space-y-4">
         <h3 className="border-b border-gray-200 pb-2 text-lg font-semibold text-gray-900 dark:border-gray-700 dark:text-white">
-          Location Information
+          {t('locationInformation')}
         </h3>
 
         <div className="space-y-2">
-          <Label htmlFor="address">Address</Label>
+          <Label htmlFor="address">{t('address')}</Label>
           <div className="relative">
             <MapPin className="absolute left-3 top-3 h-4 w-4 text-gray-400 dark:text-gray-500" />
             <Textarea
               id="address"
-              placeholder="Enter full address"
+              placeholder={t('enterFullAddress')}
               className="resize-none pl-10"
               rows={3}
               {...register('address')}
@@ -254,10 +274,10 @@ export function AddDriverForm({
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="area">Assigned Area</Label>
+          <Label htmlFor="area">{t('assignedArea')}</Label>
           <Input
             id="area"
-            placeholder="Enter assigned area/route"
+            placeholder={t('enterAssignedAreaRoute')}
             {...register('area')}
           />
           {errors.area && (
@@ -271,17 +291,17 @@ export function AddDriverForm({
       {/* Emergency Contact */}
       <div className="space-y-4">
         <h3 className="border-b border-gray-200 pb-2 text-lg font-semibold text-gray-900 dark:border-gray-700 dark:text-white">
-          Emergency Contact
+          {t('emergencyContact')}
         </h3>
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <div className="space-y-2">
-            <Label htmlFor="emergencyContactName">Contact Name</Label>
+            <Label htmlFor="emergencyContactName">{t('contactName')}</Label>
             <div className="relative">
               <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-gray-400 dark:text-gray-500" />
               <Input
                 id="emergencyContactName"
-                placeholder="Enter emergency contact name"
+                placeholder={t('enterEmergencyContactName')}
                 className="pl-10"
                 {...register('emergencyContactName')}
               />
@@ -294,12 +314,12 @@ export function AddDriverForm({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="emergencyContact">Contact Number</Label>
+            <Label htmlFor="emergencyContact">{t('contactNumber')}</Label>
             <div className="relative">
               <Phone className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-gray-400 dark:text-gray-500" />
               <Input
                 id="emergencyContact"
-                placeholder="Enter emergency contact number"
+                placeholder={t('enterEmergencyContactNumber')}
                 className="pl-10"
                 {...register('emergencyContact')}
               />
@@ -316,11 +336,11 @@ export function AddDriverForm({
       {/* Status and Notes */}
       <div className="space-y-4">
         <h3 className="border-b border-gray-200 pb-2 text-lg font-semibold text-gray-900 dark:border-gray-700 dark:text-white">
-          Status & Notes
+          {t('statusAndNotes')}
         </h3>
 
         <div className="space-y-2">
-          <Label htmlFor="status">Status *</Label>
+          <Label htmlFor="status">{t('status')} *</Label>
           <Select
             value={watchedValues.status || 'ACTIVE'}
             onValueChange={(value) =>
@@ -328,11 +348,11 @@ export function AddDriverForm({
             }
           >
             <SelectTrigger>
-              <SelectValue placeholder="Select status" />
+              <SelectValue placeholder={t('selectStatus')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="ACTIVE">Active</SelectItem>
-              <SelectItem value="INACTIVE">Inactive</SelectItem>
+              <SelectItem value="ACTIVE">{t('active')}</SelectItem>
+              <SelectItem value="INACTIVE">{t('inactive')}</SelectItem>
             </SelectContent>
           </Select>
           {errors.status && (
@@ -343,10 +363,10 @@ export function AddDriverForm({
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="notes">Notes</Label>
+          <Label htmlFor="notes">{t('notes')}</Label>
           <Textarea
             id="notes"
-            placeholder="Additional notes or comments..."
+            placeholder={t('additionalNotesComments')}
             rows={3}
             {...register('notes')}
           />
@@ -356,11 +376,11 @@ export function AddDriverForm({
       {/* Form Actions */}
       <div className="flex justify-end space-x-4 border-t border-gray-200 pt-4 dark:border-gray-700">
         <Button type="button" variant="outline" onClick={onCancel}>
-          Cancel
+          {t('cancel')}
         </Button>
         <Button type="submit" disabled={loading}>
           {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          {initialData ? 'Update Driver' : 'Add Driver'}
+          {initialData ? t('updateDriver') : t('addDriver')}
         </Button>
       </div>
     </form>

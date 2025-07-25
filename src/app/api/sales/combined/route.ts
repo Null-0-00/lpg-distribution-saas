@@ -2,7 +2,7 @@
 // Handles combined sales entries with multiple items for a single driver
 
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
+import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import { InventoryCalculator, BusinessValidator } from '@/lib/business';
 import { ReceivablesCalculator } from '@/lib/business/receivables';

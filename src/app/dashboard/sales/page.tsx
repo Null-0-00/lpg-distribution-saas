@@ -127,8 +127,8 @@ export default function SalesPage() {
     } catch (error) {
       console.error('Failed to load daily sales:', error);
       toast({
-        title: 'Error',
-        description: 'Failed to load daily sales data. Please try again.',
+        title: t('error'),
+        description: `${t('failedToLoadDailySalesData')}. ${t('tryAgain')}.`,
         variant: 'destructive',
       });
     } finally {
@@ -161,8 +161,9 @@ export default function SalesPage() {
       if (response.ok) {
         const result = await response.json();
         toast({
-          title: 'Success',
-          description: result.message || 'Combined sale created successfully!',
+          title: t('success'),
+          description:
+            result.message || `${t('combinedSaleCreatedSuccessfully')}!`,
         });
         setShowNewSaleForm(false);
         await loadSalesData(); // Reload data
@@ -173,9 +174,9 @@ export default function SalesPage() {
     } catch (error) {
       console.error('Failed to create sale:', error);
       toast({
-        title: 'Error',
+        title: t('error'),
         description:
-          error instanceof Error ? error.message : 'Failed to create sale',
+          error instanceof Error ? error.message : t('failedToCreateSale'),
         variant: 'destructive',
       });
       throw error;
@@ -256,8 +257,8 @@ export default function SalesPage() {
     } catch (error) {
       console.error('Failed to load entry data:', error);
       toast({
-        title: 'Error',
-        description: 'Failed to load entry data for editing',
+        title: t('error'),
+        description: t('failedToLoadEntryDataForEditing'),
         variant: 'destructive',
       });
     } finally {
@@ -296,8 +297,8 @@ export default function SalesPage() {
       if (createResponse.ok) {
         const result = await createResponse.json();
         toast({
-          title: 'Success',
-          description: 'Sales entry updated successfully!',
+          title: t('success'),
+          description: `${t('salesEntryUpdatedSuccessfully')}!`,
         });
         setEditingEntry(null);
         setEditingEntryData(null);
@@ -309,11 +310,11 @@ export default function SalesPage() {
     } catch (error) {
       console.error('Failed to update sales entry:', error);
       toast({
-        title: 'Error',
+        title: t('error'),
         description:
           error instanceof Error
             ? error.message
-            : 'Failed to update sales entry',
+            : t('failedToUpdateSalesEntry'),
         variant: 'destructive',
       });
       throw error;
@@ -326,7 +327,7 @@ export default function SalesPage() {
   const handleDeleteDailyEntry = async (entry: DailySalesEntry) => {
     if (
       !confirm(
-        `Are you sure you want to delete all sales for ${entry.driverName} on ${entry.date}? This will delete ${entry.salesIds.length} sales entries and cannot be undone.`
+        `${t('areYouSure')} ${t('deleteConfirmation')} ${entry.driverName} ${t('on')} ${entry.date}? ${t('thisWillDelete')} ${entry.salesIds.length} ${t('salesEntries')} ${t('cannotBeUndone')}.`
       )
     ) {
       return;
@@ -347,8 +348,8 @@ export default function SalesPage() {
       if (response.ok) {
         const result = await response.json();
         toast({
-          title: 'Success',
-          description: `Successfully deleted ${result.deletedCount} sales entries for ${entry.driverName}`,
+          title: t('success'),
+          description: `${t('successfullyDeleted')} ${result.deletedCount} ${t('salesEntries')} ${t('for')} ${entry.driverName}`,
         });
         await loadSalesData();
       } else {
@@ -358,9 +359,9 @@ export default function SalesPage() {
     } catch (error) {
       console.error('Failed to delete daily sales:', error);
       toast({
-        title: 'Error',
+        title: t('error'),
         description:
-          error instanceof Error ? error.message : 'Failed to delete sales',
+          error instanceof Error ? error.message : t('failedToDeleteSales'),
         variant: 'destructive',
       });
     }
@@ -371,7 +372,7 @@ export default function SalesPage() {
       <div className="p-6">
         <div className="flex h-64 items-center justify-center">
           <div className="h-12 w-12 animate-spin rounded-full border-b-2 border-blue-600"></div>
-          <span className="ml-3">Loading sales data...</span>
+          <span className="ml-3">{t('loadingData')}...</span>
         </div>
       </div>
     );
@@ -396,7 +397,7 @@ export default function SalesPage() {
             {t('salesManagement')}
           </h1>
           <p className="text-muted-foreground">
-            Record and track daily sales performance
+            {t('recordDailySales')} {t('trackPerformance')}
           </p>
         </div>
         <div className="flex items-center space-x-2">
@@ -409,7 +410,7 @@ export default function SalesPage() {
             <RefreshCw
               className={`mr-2 h-4 w-4 ${refreshing ? 'animate-spin' : ''}`}
             />
-            Refresh
+            {t('refresh')}
           </Button>
           <Button
             onClick={() => setShowNewSaleForm(true)}
@@ -433,7 +434,9 @@ export default function SalesPage() {
               <p className="text-foreground text-2xl font-bold">
                 {summary.totalPackageSales}
               </p>
-              <p className="text-muted-foreground text-xs">Cylinders sold</p>
+              <p className="text-muted-foreground text-xs">
+                {t('cylindersSold')}
+              </p>
             </div>
           </div>
         </div>
@@ -446,7 +449,7 @@ export default function SalesPage() {
                 {summary.totalRefillSales}
               </p>
               <p className="text-muted-foreground text-xs">
-                Cylinders refilled
+                {t('refillSalesQty')}
               </p>
             </div>
           </div>
@@ -455,11 +458,13 @@ export default function SalesPage() {
           <div className="flex items-center">
             <TrendingUp className="h-8 w-8 text-purple-500" />
             <div className="ml-4">
-              <p className="text-muted-foreground text-sm">Total Revenue</p>
+              <p className="text-muted-foreground text-sm">
+                {t('totalRevenue')}
+              </p>
               <p className="text-foreground text-2xl font-bold">
                 {formatCurrency(summary.totalSalesValue)}
               </p>
-              <p className="text-muted-foreground text-xs">Sales value</p>
+              <p className="text-muted-foreground text-xs">{t('totalSales')}</p>
             </div>
           </div>
         </div>
@@ -467,11 +472,15 @@ export default function SalesPage() {
           <div className="flex items-center">
             <TrendingUp className="h-8 w-8 text-orange-500" />
             <div className="ml-4">
-              <p className="text-muted-foreground text-sm">Cash Collected</p>
+              <p className="text-muted-foreground text-sm">
+                {t('cash')} {t('deposits')}
+              </p>
               <p className="text-foreground text-2xl font-bold">
                 {formatCurrency(summary.totalCashDeposited)}
               </p>
-              <p className="text-muted-foreground text-xs">Cash deposited</p>
+              <p className="text-muted-foreground text-xs">
+                {t('cash')} {t('deposits')}
+              </p>
             </div>
           </div>
         </div>
@@ -482,28 +491,28 @@ export default function SalesPage() {
         <div className="border-border flex items-center justify-between border-b px-6 py-4">
           <div className="flex items-center space-x-4">
             <h2 className="text-foreground text-lg font-semibold">
-              Today's Sales
+              {t('todaysSales')}
             </h2>
             {refreshing && (
               <div className="text-muted-foreground flex items-center text-sm">
                 <RefreshCw className="mr-1 h-4 w-4 animate-spin" />
-                Refreshing...
+                {t('loading')}...
               </div>
             )}
             {lastUpdated && !refreshing && (
               <div className="text-muted-foreground text-sm">
-                Last updated: {lastUpdated.toLocaleTimeString()}
+                {t('lastUpdated')}: {lastUpdated.toLocaleTimeString()}
               </div>
             )}
           </div>
           <div className="flex space-x-2">
             <Button variant="outline" size="sm">
               <Filter className="mr-2 h-4 w-4" />
-              Filter
+              {t('filter')}
             </Button>
             <Button variant="outline" size="sm">
               <Download className="mr-2 h-4 w-4" />
-              Export
+              {t('export')}
             </Button>
           </div>
         </div>
@@ -530,10 +539,10 @@ export default function SalesPage() {
                   {t('discount')}
                 </th>
                 <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase">
-                  Total Cash Deposited
+                  {t('cash')} {t('deposits')}
                 </th>
                 <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase">
-                  Total Cylinder Deposited
+                  {t('cylinders')} {t('deposits')}
                 </th>
                 <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase">
                   {t('actions')}
@@ -547,7 +556,7 @@ export default function SalesPage() {
                     colSpan={9}
                     className="text-muted-foreground px-6 py-8 text-center"
                   >
-                    {t('noDataFound')}. {t('create')} {t('sales')} {t('add')}.
+                    {t('noDataFound')}. {t('create')} {t('newSale')}.
                   </td>
                 </tr>
               ) : (
@@ -611,7 +620,7 @@ export default function SalesPage() {
                         </div>
                       ) : (
                         <span className="text-muted-foreground text-xs">
-                          Read only
+                          {t('readOnly')}
                         </span>
                       )}
                     </td>
@@ -650,13 +659,13 @@ export default function SalesPage() {
         <DialogContent className="max-h-[90vh] max-w-4xl overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
-              Edit Sales Entry - {editingEntry?.driverName}
+              {t('edit')} {t('sales')} - {editingEntry?.driverName}
             </DialogTitle>
           </DialogHeader>
           {loadingEditData ? (
             <div className="flex items-center justify-center p-8">
               <RefreshCw className="h-8 w-8 animate-spin" />
-              <span className="ml-2">Loading entry data...</span>
+              <span className="ml-2">{t('loadingData')}...</span>
             </div>
           ) : editingEntryData ? (
             <CombinedSaleForm
@@ -671,14 +680,14 @@ export default function SalesPage() {
           ) : editingEntry ? (
             <div className="p-4 text-center">
               <p className="mb-4 text-gray-600">
-                Failed to load entry data for editing.
+                {t('operationFailed')} {t('loadingData')}.
               </p>
               <Button
                 variant="outline"
                 onClick={() => setEditingEntry(null)}
                 className="mt-4"
               >
-                Close
+                {t('close')}
               </Button>
             </div>
           ) : null}

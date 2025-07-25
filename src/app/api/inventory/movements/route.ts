@@ -2,7 +2,7 @@
 // Track and analyze inventory movements with detailed audit trail
 
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
+import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import { InventoryCalculator } from '@/lib/business';
 import { MovementType, UserRole } from '@prisma/client';

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
+import { auth } from '@/auth';
 import { ReportGenerator } from '@/lib/email/report-generator';
 import { EmailService, getEmailConfig } from '@/lib/email/email-service';
 import { PrismaClient } from '@prisma/client';

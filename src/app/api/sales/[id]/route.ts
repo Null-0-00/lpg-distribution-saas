@@ -2,7 +2,7 @@
 // Handles single sale operations with business validation
 
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
+import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import { InventoryCalculator, BusinessValidator } from '@/lib/business';
 import { SaleType, PaymentType } from '@prisma/client';

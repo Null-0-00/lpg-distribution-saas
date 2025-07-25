@@ -1,5 +1,6 @@
 import React from 'react';
 import { Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
+import { useSettings } from '@/contexts/SettingsContext';
 
 interface MonthNavigationProps {
   currentMonth: { month: number; year: number };
@@ -10,6 +11,7 @@ export const MonthNavigation: React.FC<MonthNavigationProps> = ({
   currentMonth,
   onNavigateMonth,
 }) => {
+  const { t } = useSettings();
   const formatMonthYear = (year: number, month: number) => {
     const date = new Date(year, month - 1);
     return date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
@@ -24,7 +26,7 @@ export const MonthNavigation: React.FC<MonthNavigationProps> = ({
             className="border-border hover:bg-muted/50 flex items-center rounded-md border px-3 py-2 text-sm transition-colors"
           >
             <ChevronLeft className="mr-1 h-4 w-4" />
-            Previous
+            {t('previous')}
           </button>
 
           <div className="flex items-center gap-2">
@@ -38,13 +40,13 @@ export const MonthNavigation: React.FC<MonthNavigationProps> = ({
             onClick={() => onNavigateMonth('next')}
             className="border-border hover:bg-muted/50 flex items-center rounded-md border px-3 py-2 text-sm transition-colors"
           >
-            Next
+            {t('next')}
             <ChevronRight className="ml-1 h-4 w-4" />
           </button>
         </div>
 
         <div className="text-sm text-gray-600 dark:text-gray-400">
-          Viewing expenses for{' '}
+          {t('viewingExpensesFor')}{' '}
           {formatMonthYear(currentMonth.year, currentMonth.month)}
         </div>
       </div>

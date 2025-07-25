@@ -14,14 +14,29 @@ const nextConfig = {
   // Server external packages
   serverExternalPackages: ['prisma', '@prisma/client'],
 
-  // Basic experimental features
+  // Enhanced experimental features for performance
   experimental: {
     optimizePackageImports: [
       '@radix-ui/react-icons',
       'lucide-react',
       'date-fns',
+      '@tanstack/react-query',
+      '@tanstack/react-table',
+      'framer-motion',
+      'recharts',
     ],
     webVitalsAttribution: ['CLS', 'LCP'],
+    optimizeCss: true,
+  },
+
+  // Turbopack configuration
+  turbopack: {
+    rules: {
+      '*.svg': {
+        loaders: ['@svgr/webpack'],
+        as: '*.js',
+      },
+    },
   },
 
   // Image optimization
@@ -33,7 +48,7 @@ const nextConfig = {
   // Output optimization
   output: 'standalone',
 
-  // Compiler optimizations
+  // Compiler optimizations (SWC)
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
   },

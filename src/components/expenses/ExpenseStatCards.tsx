@@ -17,11 +17,11 @@ export const ExpenseStatCards: React.FC<ExpenseStatCardsProps> = ({
   summary,
   loading,
 }) => {
-  const { formatCurrency } = useSettings();
+  const { formatCurrency, t } = useSettings();
 
   const cards = [
     {
-      title: 'Total Expenses',
+      title: t('totalExpenses'),
       amount: summary.total.amount,
       count: summary.total.count,
       icon: Receipt,
@@ -29,7 +29,7 @@ export const ExpenseStatCards: React.FC<ExpenseStatCardsProps> = ({
       textColor: 'text-blue-600',
     },
     {
-      title: 'Pending Approval',
+      title: t('pendingApproval'),
       amount: summary.pending.amount,
       count: summary.pending.count,
       icon: AlertCircle,
@@ -37,7 +37,7 @@ export const ExpenseStatCards: React.FC<ExpenseStatCardsProps> = ({
       textColor: 'text-yellow-600',
     },
     {
-      title: 'Approved',
+      title: t('approvedExpenses'),
       amount: summary.approved.amount,
       count: summary.approved.count,
       icon: TrendingUp,
@@ -66,7 +66,8 @@ export const ExpenseStatCards: React.FC<ExpenseStatCardsProps> = ({
                     {formatCurrency(card.amount)}
                   </p>
                   <p className="text-muted-foreground text-sm">
-                    {card.count} expense{card.count !== 1 ? 's' : ''}
+                    {card.count}{' '}
+                    {card.count !== 1 ? t('expenses') : t('expense')}
                   </p>
                 </>
               )}

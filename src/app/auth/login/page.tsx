@@ -28,12 +28,17 @@ function LoginForm() {
 
   // Simple redirect logic - only run once when fully authenticated
   useEffect(() => {
-    if (status === 'authenticated' && session?.user?.email && !redirecting && !loading) {
+    if (
+      status === 'authenticated' &&
+      session?.user?.email &&
+      !redirecting &&
+      !loading
+    ) {
       console.log('🔄 Authenticated user detected, redirecting...');
       setRedirecting(true);
-      
+
       const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
-      
+
       // Immediate redirect without any delays
       window.location.replace(callbackUrl);
     }
@@ -70,7 +75,7 @@ function LoginForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (loading || redirecting) return;
-    
+
     setLoading(true);
     setError('');
 
@@ -102,20 +107,23 @@ function LoginForm() {
 
       if (result?.error) {
         console.error('❌ Sign-in failed:', result.error);
-        setError('Invalid email or password. Please check your credentials and try again.');
+        setError(
+          'Invalid email or password. Please check your credentials and try again.'
+        );
         setLoading(false);
       } else if (result?.ok) {
         console.log('✅ Sign-in successful, verifying session...');
-        
+
         // Wait a moment for the session to be established, then check it
         setTimeout(async () => {
           try {
             const newSession = await getSession();
             console.log('🔍 Session check:', newSession);
-            
+
             if (newSession?.user?.email) {
               console.log('✅ Session confirmed, redirecting...');
-              const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
+              const callbackUrl =
+                searchParams.get('callbackUrl') || '/dashboard';
               window.location.replace(callbackUrl);
             } else {
               console.log('❌ Session not established');

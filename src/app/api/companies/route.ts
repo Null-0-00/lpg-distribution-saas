@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
+import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 
 export async function GET(request: NextRequest) {
@@ -141,8 +141,7 @@ export async function POST(request: NextRequest) {
     const existingCompany = await prisma.company.findFirst({
       where: {
         name: { equals: name, mode: 'insensitive' },
-        // For companies, we might want to allow same name across tenants
-        // or enforce uniqueness globally - adjust as needed
+        tenantId: session.user.tenantId,
       },
     });
 

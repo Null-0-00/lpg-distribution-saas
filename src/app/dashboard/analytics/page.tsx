@@ -112,18 +112,18 @@ export default function AnalyticsPage() {
   const [error, setError] = useState<string | null>(null);
 
   const months = [
-    { value: 1, label: 'January' },
-    { value: 2, label: 'February' },
-    { value: 3, label: 'March' },
-    { value: 4, label: 'April' },
-    { value: 5, label: 'May' },
-    { value: 6, label: 'June' },
-    { value: 7, label: 'July' },
-    { value: 8, label: 'August' },
-    { value: 9, label: 'September' },
-    { value: 10, label: 'October' },
-    { value: 11, label: 'November' },
-    { value: 12, label: 'December' },
+    { value: 1, label: t('january') },
+    { value: 2, label: t('february') },
+    { value: 3, label: t('march') },
+    { value: 4, label: t('april') },
+    { value: 5, label: t('may') },
+    { value: 6, label: t('june') },
+    { value: 7, label: t('july') },
+    { value: 8, label: t('august') },
+    { value: 9, label: t('september') },
+    { value: 10, label: t('october') },
+    { value: 11, label: t('november') },
+    { value: 12, label: t('december') },
   ];
 
   const years = Array.from(
@@ -183,11 +183,11 @@ export default function AnalyticsPage() {
         const data = await response.json();
         setAnalyticsData(data);
       } else {
-        setError('Failed to fetch analytics data');
+        setError(t('failedToLoadData'));
       }
     } catch (error) {
       console.error('Error fetching analytics:', error);
-      setError('Error loading analytics data');
+      setError(t('errorLoadingData'));
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -216,7 +216,7 @@ export default function AnalyticsPage() {
         <div className="flex h-64 items-center justify-center">
           <div className="text-center">
             <RefreshCw className="mx-auto mb-4 h-6 w-6 animate-spin text-blue-600" />
-            <p className="text-muted-foreground">Loading analytics data...</p>
+            <p className="text-muted-foreground">{t('loadingData')}...</p>
           </div>
         </div>
       </div>
@@ -230,14 +230,14 @@ export default function AnalyticsPage() {
           <div className="text-center">
             <AlertCircle className="mx-auto mb-4 h-12 w-12 text-gray-400" />
             <p className="text-muted-foreground mb-4">
-              {error || 'No analytics data available'}
+              {error || t('noDataAvailable')}
             </p>
             <button
               onClick={() => fetchAnalytics()}
               className="mt-2 rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
             >
               <RefreshCw className="mr-2 inline h-4 w-4" />
-              Try Again
+              {t('tryAgain')}
             </button>
           </div>
         </div>
@@ -251,10 +251,10 @@ export default function AnalyticsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-foreground text-2xl font-bold">
-            Analytics Dashboard
+            {t('analytics')} {t('dashboard')}
           </h1>
           <p className="text-muted-foreground">
-            Profitability analysis and performance metrics for{' '}
+            {t('analytics')} {t('performance')} {t('reports')}{' '}
             {getMonthName(selectedMonth)} {selectedYear}
             {selectedDriver !== 'all' && (
               <span className="ml-2">
@@ -272,14 +272,14 @@ export default function AnalyticsPage() {
             <RefreshCw
               className={`mr-2 h-4 w-4 ${refreshing ? 'animate-spin' : ''}`}
             />
-            Refresh
+            {t('refresh')}
           </button>
           <button
             onClick={() => setShowCommissionModal(true)}
             className="flex items-center rounded-lg bg-green-600 px-4 py-2 text-white hover:bg-green-700"
           >
             <Settings className="mr-2 h-4 w-4" />
-            Settings
+            {t('settings')}
           </button>
         </div>
       </div>
@@ -289,7 +289,7 @@ export default function AnalyticsPage() {
         <div className="flex flex-wrap items-center gap-6">
           <div className="flex items-center space-x-2">
             <label className="text-muted-foreground text-sm font-medium">
-              Month:
+              {t('month')}:
             </label>
             <Select
               value={selectedMonth.toString()}
@@ -309,7 +309,7 @@ export default function AnalyticsPage() {
           </div>
           <div className="flex items-center space-x-2">
             <label className="text-muted-foreground text-sm font-medium">
-              Year:
+              {t('year')}:
             </label>
             <Select
               value={selectedYear.toString()}
@@ -329,14 +329,14 @@ export default function AnalyticsPage() {
           </div>
           <div className="flex items-center space-x-2">
             <label className="text-muted-foreground text-sm font-medium">
-              Driver:
+              {t('drivers')}:
             </label>
             <Select value={selectedDriver} onValueChange={setSelectedDriver}>
               <SelectTrigger className="w-40">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Drivers</SelectItem>
+                <SelectItem value="all">{t('allDrivers')}</SelectItem>
                 {drivers.map((driver) => (
                   <SelectItem key={driver.id} value={driver.id}>
                     {driver.name}
@@ -354,11 +354,15 @@ export default function AnalyticsPage() {
           <div className="flex items-center">
             <DollarSign className="h-8 w-8 text-blue-500" />
             <div className="ml-4">
-              <p className="text-muted-foreground text-sm">Total Revenue</p>
+              <p className="text-muted-foreground text-sm">
+                {t('totalRevenue')}
+              </p>
               <p className="text-foreground text-2xl font-bold">
                 {formatCurrency(analyticsData.overview.totalRevenue)}
               </p>
-              <p className="text-muted-foreground text-xs">Monthly revenue</p>
+              <p className="text-muted-foreground text-xs">
+                {t('monthlyRevenue')}
+              </p>
             </div>
           </div>
         </div>
@@ -367,11 +371,15 @@ export default function AnalyticsPage() {
           <div className="flex items-center">
             <TrendingDown className="h-8 w-8 text-red-500" />
             <div className="ml-4">
-              <p className="text-muted-foreground text-sm">Total Expenses</p>
+              <p className="text-muted-foreground text-sm">
+                {t('totalExpenses')}
+              </p>
               <p className="text-foreground text-2xl font-bold">
                 {formatCurrency(analyticsData.overview.totalExpenses)}
               </p>
-              <p className="text-muted-foreground text-xs">All expenses</p>
+              <p className="text-muted-foreground text-xs">
+                {t('allExpenses')}
+              </p>
             </div>
           </div>
         </div>
@@ -380,13 +388,15 @@ export default function AnalyticsPage() {
           <div className="flex items-center">
             <Target className="h-8 w-8 text-green-500" />
             <div className="ml-4">
-              <p className="text-muted-foreground text-sm">Net Profit</p>
+              <p className="text-muted-foreground text-sm">{t('revenue')}</p>
               <p
                 className={`text-2xl font-bold ${getProfitColor(analyticsData.overview.totalProfit)}`}
               >
                 {formatCurrency(analyticsData.overview.totalProfit)}
               </p>
-              <p className="text-muted-foreground text-xs">Total profit</p>
+              <p className="text-muted-foreground text-xs">
+                {t('totalProfit')}
+              </p>
             </div>
           </div>
         </div>
@@ -395,13 +405,13 @@ export default function AnalyticsPage() {
           <div className="flex items-center">
             <Calculator className="h-8 w-8 text-orange-500" />
             <div className="ml-4">
-              <p className="text-muted-foreground text-sm">Profit Margin</p>
+              <p className="text-muted-foreground text-sm">{t('revenue')} %</p>
               <p
                 className={`text-2xl font-bold ${getProfitColor(analyticsData.overview.profitMargin)}`}
               >
                 {analyticsData.overview.profitMargin.toFixed(1)}%
               </p>
-              <p className="text-muted-foreground text-xs">Profitability</p>
+              <p className="text-muted-foreground text-xs">{t('revenue')}</p>
             </div>
           </div>
         </div>
@@ -409,9 +419,13 @@ export default function AnalyticsPage() {
 
       <Tabs defaultValue="products" className="space-y-4">
         <TabsList>
-          <TabsTrigger value="products">Product Analytics</TabsTrigger>
+          <TabsTrigger value="products">
+            {t('products')} {t('analytics')}
+          </TabsTrigger>
           {selectedDriver === 'all' && (
-            <TabsTrigger value="drivers">Driver Analytics</TabsTrigger>
+            <TabsTrigger value="drivers">
+              {t('drivers')} {t('analytics')}
+            </TabsTrigger>
           )}
         </TabsList>
 
@@ -420,12 +434,10 @@ export default function AnalyticsPage() {
           <Card>
             <CardHeader>
               <CardTitle className="text-foreground text-lg font-semibold">
-                Product Profitability Analysis
+                {t('products')} {t('analytics')}
               </CardTitle>
               <CardDescription className="text-muted-foreground text-sm">
-                Comprehensive profitability analysis using the formula:
-                Breakeven Price = Buying Price + Commission + Fixed Cost Per
-                Unit
+                {t('comprehensiveProfitabilityAnalysis')}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -434,31 +446,31 @@ export default function AnalyticsPage() {
                   <thead className="bg-muted">
                     <tr>
                       <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
-                        Product
+                        {t('products')}
                       </th>
                       <th className="text-muted-foreground px-6 py-3 text-right text-xs font-medium uppercase tracking-wider">
-                        Buying Price
+                        {t('buyingPrice')}
                       </th>
                       <th className="text-muted-foreground px-6 py-3 text-right text-xs font-medium uppercase tracking-wider">
-                        Commission
+                        {t('commission')}
                       </th>
                       <th className="text-muted-foreground px-6 py-3 text-right text-xs font-medium uppercase tracking-wider">
-                        Fixed Cost
+                        {t('fixedCost')}
                       </th>
                       <th className="text-muted-foreground px-6 py-3 text-right text-xs font-medium uppercase tracking-wider">
-                        Breakeven Price
+                        {t('breakevenPrice')}
                       </th>
                       <th className="text-muted-foreground px-6 py-3 text-right text-xs font-medium uppercase tracking-wider">
-                        Selling Price
+                        {t('sellingPrice')}
                       </th>
                       <th className="text-muted-foreground px-6 py-3 text-right text-xs font-medium uppercase tracking-wider">
-                        Profit/Unit
+                        {t('revenue')}/{t('unit')}
                       </th>
                       <th className="text-muted-foreground px-6 py-3 text-right text-xs font-medium uppercase tracking-wider">
-                        Quantity
+                        {t('quantity')}
                       </th>
                       <th className="text-muted-foreground px-6 py-3 text-right text-xs font-medium uppercase tracking-wider">
-                        Total Profit
+                        {t('total')} {t('revenue')}
                       </th>
                     </tr>
                   </thead>
@@ -524,11 +536,10 @@ export default function AnalyticsPage() {
           <Card>
             <CardHeader>
               <CardTitle className="text-foreground text-lg font-semibold">
-                Profit by Product
+                {t('revenue')} {t('products')}
               </CardTitle>
               <CardDescription className="text-muted-foreground text-sm">
-                Visual representation of total profit contribution by each
-                product
+                {t('visualRepresentationProfitByProduct')}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -556,9 +567,9 @@ export default function AnalyticsPage() {
                     <Tooltip
                       formatter={(value) => [
                         formatCurrency(Number(value)),
-                        'Total Profit',
+                        t('total') + ' ' + t('revenue'),
                       ]}
-                      labelFormatter={(label) => `Product: ${label}`}
+                      labelFormatter={(label) => `${t('product')}: ${label}`}
                       contentStyle={{
                         backgroundColor: 'hsl(var(--background))',
                         border: '1px solid hsl(var(--border))',
@@ -570,7 +581,7 @@ export default function AnalyticsPage() {
                       dataKey="totalProfit"
                       fill="#3b82f6"
                       radius={[4, 4, 0, 0]}
-                      name="Total Profit"
+                      name={`${t('total')} ${t('revenue')}`}
                     />
                   </BarChart>
                 </ResponsiveContainer>
@@ -585,10 +596,10 @@ export default function AnalyticsPage() {
             <Card>
               <CardHeader>
                 <CardTitle className="text-foreground text-lg font-semibold">
-                  Driver Performance Analysis
+                  {t('drivers')} {t('performance')} {t('analytics')}
                 </CardTitle>
                 <CardDescription className="text-muted-foreground text-sm">
-                  Individual driver performance metrics and cost analysis
+                  {t('individualDriverPerformanceMetrics')}
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -597,16 +608,16 @@ export default function AnalyticsPage() {
                     <thead className="bg-muted">
                       <tr>
                         <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
-                          Driver
+                          {t('drivers')}
                         </th>
                         <th className="text-muted-foreground px-6 py-3 text-right text-xs font-medium uppercase tracking-wider">
-                          Total Quantity
+                          {t('totalQuantity')}
                         </th>
                         <th className="text-muted-foreground px-6 py-3 text-right text-xs font-medium uppercase tracking-wider">
-                          Total Revenue
+                          {t('totalRevenue')}
                         </th>
                         <th className="text-muted-foreground px-6 py-3 text-right text-xs font-medium uppercase tracking-wider">
-                          Cost Per Unit
+                          {t('costPerUnit')}
                         </th>
                       </tr>
                     </thead>
@@ -626,7 +637,7 @@ export default function AnalyticsPage() {
                               {driver.totalQuantity}
                             </span>
                             <span className="text-muted-foreground ml-1 text-sm">
-                              units
+                              {t('units')}
                             </span>
                           </td>
                           <td className="text-foreground whitespace-nowrap px-6 py-4 text-right text-sm font-medium">
@@ -651,10 +662,10 @@ export default function AnalyticsPage() {
             <Card>
               <CardHeader>
                 <CardTitle className="text-foreground text-lg font-semibold">
-                  Revenue by Driver
+                  {t('revenue')} {t('drivers')}
                 </CardTitle>
                 <CardDescription className="text-muted-foreground text-sm">
-                  Comparative analysis of revenue generation by each driver
+                  {t('comparativeAnalysisRevenueByDriver')}
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -682,9 +693,9 @@ export default function AnalyticsPage() {
                       <Tooltip
                         formatter={(value) => [
                           formatCurrency(Number(value)),
-                          'Revenue',
+                          t('revenue'),
                         ]}
-                        labelFormatter={(label) => `Driver: ${label}`}
+                        labelFormatter={(label) => `${t('driver')}: ${label}`}
                         contentStyle={{
                           backgroundColor: 'hsl(var(--background))',
                           border: '1px solid hsl(var(--border))',
@@ -696,7 +707,7 @@ export default function AnalyticsPage() {
                         dataKey="totalRevenue"
                         fill="#10b981"
                         radius={[0, 4, 4, 0]}
-                        name="Revenue"
+                        name={t('revenue')}
                       />
                     </BarChart>
                   </ResponsiveContainer>

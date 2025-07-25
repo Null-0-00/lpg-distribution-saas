@@ -197,6 +197,67 @@ export async function PUT(
   }
 }
 
+export async function PATCH(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const session = await auth();
+    if (!session?.user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const { tenantId } = session.user;
+    const { id } = await params;
+    const data = await request.json();
+
+    // Check if product exists and belongs to tenant
+    const existingProduct = await prisma.product.findFirst({
+      where: {
+        id,
+        tenantId,
+      },
+    });
+
+    if (!existingProduct) {
+      return NextResponse.json({ error: 'Product not found' }, { status: 404 });
+    }
+
+    // Update only the provided fields
+    const product = await prisma.product.update({
+      where: { id },
+      data,
+      include: {
+        company: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        cylinderSize: {
+          select: {
+            id: true,
+            size: true,
+            description: true,
+          },
+        },
+      },
+    });
+
+    return NextResponse.json({
+      success: true,
+      product,
+      message: 'Product updated successfully',
+    });
+  } catch (error) {
+    console.error('Patch product error:', error);
+    return NextResponse.json(
+      { error: 'Failed to update product' },
+      { status: 500 }
+    );
+  }
+}
+
 export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }

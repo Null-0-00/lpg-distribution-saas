@@ -24,9 +24,43 @@ const nextConfig = {
       '@tanstack/react-table',
       'framer-motion',
       'recharts',
+      'zod',
+      'next-auth',
+      '@prisma/client',
     ],
-    webVitalsAttribution: ['CLS', 'LCP'],
+    webVitalsAttribution: ['CLS', 'LCP', 'FID', 'TTFB'],
     optimizeCss: true,
+    serverComponentsExternalPackages: ['prisma', '@prisma/client'],
+    // Enable partial prerendering for faster navigation
+    ppr: 'incremental',
+    // Optimize font loading
+    optimizeServerReact: true,
+  },
+
+  // Enable SWC minification for better performance
+  swcMinify: true,
+  
+  // Optimize chunks
+  webpack: (config, { isServer }) => {
+    if (!isServer) {
+      config.optimization.splitChunks = {
+        chunks: 'all',
+        cacheGroups: {
+          vendor: {
+            test: /[\\/]node_modules[\\/]/,
+            name: 'vendors',
+            chunks: 'all',
+          },
+          common: {
+            name: 'common',
+            minChunks: 2,
+            chunks: 'all',
+            enforce: true,
+          },
+        },
+      };
+    }
+    return config;
   },
 
   // Turbopack configuration

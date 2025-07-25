@@ -19,7 +19,7 @@ const createLiabilitySchema = z.object({
   description: z.string().optional(),
   dueDate: z
     .string()
-    .transform((val) => (val ? new Date(val) : undefined))
+    .transform((val) => (val && val.trim() !== '' ? new Date(val) : undefined))
     .optional(),
 });
 
@@ -142,6 +142,104 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error('Liability creation error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function PUT(request: NextRequest) {
+  try {
+    const session = await auth();
+    if (!session?.user?.tenantId || session.user.role !== UserRole.ADMIN) {
+      return NextResponse.json(
+        { error: 'Unauthorized - Admin access required' },
+        { status: 401 }
+      );
+    }
+
+    const body = await request.json();
+    const { id, ...updateData } = body;
+
+    if (!id) {
+      return NextResponse.json(
+        { error: 'Liability ID is required' },
+        { status: 400 }
+      );
+    }
+
+    const validatedData = createLiabilitySchema.parse(updateData);
+    const tenantId = session.user.tenantId;
+
+    const liability = await prisma.liability.update({
+      where: {
+        id,
+        tenantId,
+      },
+      data: {
+        name: validatedData.name,
+        category: validatedData.category,
+        amount: validatedData.amount,
+        description: validatedData.description,
+        dueDate: validatedData.dueDate,
+        updatedAt: new Date(),
+      },
+    });
+
+    return NextResponse.json({
+      success: true,
+      liability,
+    });
+  } catch (error) {
+    console.error('Liability update error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(request: NextRequest) {
+  try {
+    const session = await auth();
+    if (!session?.user?.tenantId || session.user.role !== UserRole.ADMIN) {
+      return NextResponse.json(
+        { error: 'Unauthorized - Admin access required' },
+        { status: 401 }
+      );
+    }
+
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
+
+    if (!id) {
+      return NextResponse.json(
+        { error: 'Liability ID is required' },
+        { status: 400 }
+      );
+    }
+
+    const tenantId = session.user.tenantId;
+
+    // Soft delete by setting isActive to false
+    await prisma.liability.update({
+      where: {
+        id,
+        tenantId,
+      },
+      data: {
+        isActive: false,
+        updatedAt: new Date(),
+      },
+    });
+
+    return NextResponse.json({
+      success: true,
+      message: 'Liability deleted successfully',
+    });
+  } catch (error) {
+    console.error('Liability deletion error:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

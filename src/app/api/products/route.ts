@@ -31,6 +31,7 @@ export async function GET(request: NextRequest) {
         fullCylinderWeight: true,
         emptyCylinderWeight: true,
         currentPrice: true,
+        costPrice: true,
         lowStockThreshold: true,
         isActive: true, // Force reload
         companyId: true,
@@ -96,6 +97,7 @@ export async function GET(request: NextRequest) {
         cylinderSize: product.cylinderSize,
         fullName: `${product.company.name} ${product.name} (${product.cylinderSize?.size || product.size})`,
         currentPrice: product.currentPrice,
+        costPrice: product.costPrice,
         lowStockThreshold: product.lowStockThreshold,
         isActive: product.isActive,
         company: product.company,

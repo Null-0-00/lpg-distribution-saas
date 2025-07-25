@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import {
   Calendar,
   FileText,
@@ -96,6 +96,10 @@ export default function DailySalesReportPage() {
     // Replace common English patterns with translations
     return text
       .replace(/Cash deposits by driver/g, t('cashDepositsByDriver'))
+      .replace(
+        /\(includes receivable payments\)/g,
+        t('includesReceivablePayments')
+      )
       .replace(/Driver Expense/gi, t('driverExpense'))
       .replace(/Fuel Expense/gi, t('fuelExpense'))
       .replace(/Maintenance Expense/gi, t('maintenanceExpense'))
@@ -114,61 +118,96 @@ export default function DailySalesReportPage() {
   const [refreshing, setRefreshing] = useState(false);
   const { toast } = useToast();
 
-  const fetchReportData = async (date: string, isRefresh = false) => {
-    try {
-      if (isRefresh) {
-        setRefreshing(true);
-      } else {
-        setLoading(true);
-      }
+  const fetchReportData = useCallback(
+    async (date: string, isRefresh = false) => {
+      try {
+        if (isRefresh) {
+          setRefreshing(true);
+        } else {
+          setLoading(true);
+        }
 
-      const response = await fetch(`/api/reports/daily-sales?date=${date}`, {
-        cache: 'no-cache',
-        headers: {
-          'Cache-Control': 'no-cache',
-        },
-      });
+        const response = await fetch(`/api/reports/daily-sales?date=${date}`, {
+          cache: isRefresh ? 'no-cache' : 'default',
+          headers: isRefresh
+            ? {
+                'Cache-Control': 'no-cache',
+              }
+            : {},
+        });
 
-      if (response.ok) {
-        const data = await response.json();
-        setReportData(data);
-      } else {
-        const errorText = await response.text();
-        console.error(
-          'Daily sales report API error:',
-          response.status,
-          errorText
-        );
+        if (response.ok) {
+          const data = await response.json();
+          setReportData(data);
+        } else {
+          const errorText = await response.text();
+          console.error(
+            'Daily sales report API error:',
+            response.status,
+            errorText
+          );
+          toast({
+            title: t('error'),
+            description: t('failedToLoadDailySalesReport'),
+            variant: 'destructive',
+          });
+        }
+      } catch (error) {
+        console.error('Failed to load daily sales report:', error);
         toast({
           title: t('error'),
           description: t('failedToLoadDailySalesReport'),
           variant: 'destructive',
         });
+      } finally {
+        setLoading(false);
+        setRefreshing(false);
       }
-    } catch (error) {
-      console.error('Failed to load daily sales report:', error);
-      toast({
-        title: t('error'),
-        description: t('failedToLoadDailySalesReport'),
-        variant: 'destructive',
-      });
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
-    }
-  };
+    },
+    [toast, t]
+  );
 
   useEffect(() => {
     fetchReportData(selectedDate);
-  }, [selectedDate]);
+  }, [selectedDate, fetchReportData]);
 
-  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSelectedDate(e.target.value);
-  };
+  const handleDateChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setSelectedDate(e.target.value);
+    },
+    []
+  );
 
-  const handleRefresh = () => {
+  const handleRefresh = useCallback(() => {
     fetchReportData(selectedDate, true);
-  };
+  }, [selectedDate, fetchReportData]);
+
+  // Memoize expensive calculations
+  const totalManualDeposits = useMemo(() => {
+    return reportData?.deposits
+      ? reportData.deposits.reduce((sum, deposit) => sum + deposit.amount, 0)
+      : 0;
+  }, [reportData?.deposits]);
+
+  const totalExpensesCalculated = useMemo(() => {
+    return (
+      reportData?.expenses?.reduce((sum, expense) => sum + expense.amount, 0) ||
+      0
+    );
+  }, [reportData?.expenses]);
+
+  const finalAvailableCash = useMemo(() => {
+    if (!reportData) return 0;
+    return (
+      reportData.summary.totalDeposited +
+      totalManualDeposits -
+      totalExpensesCalculated
+    );
+  }, [
+    reportData?.summary.totalDeposited,
+    totalManualDeposits,
+    totalExpensesCalculated,
+  ]);
 
   // All drivers are retail now, so this function is not needed
   // const getDriverTypeColor = (driverType: 'RETAIL' | 'WHOLESALE') => {
@@ -549,14 +588,7 @@ export default function DailySalesReportPage() {
                       {t('totalDepositsCalculated')}
                     </td>
                     <td className="text-foreground px-3 py-2 text-right text-sm font-bold">
-                      {formatCurrency(
-                        reportData.deposits
-                          ? reportData.deposits.reduce(
-                              (sum, deposit) => sum + deposit.amount,
-                              0
-                            )
-                          : 0
-                      )}
+                      {formatCurrency(totalManualDeposits)}
                     </td>
                   </tr>
                 </tfoot>
@@ -620,12 +652,7 @@ export default function DailySalesReportPage() {
                       {t('totalExpensesCalculated')}
                     </td>
                     <td className="text-foreground px-3 py-2 text-right text-sm font-bold">
-                      {formatCurrency(
-                        reportData.expenses.reduce(
-                          (sum, expense) => sum + expense.amount,
-                          0
-                        )
-                      )}
+                      {formatCurrency(totalExpensesCalculated)}
                     </td>
                   </tr>
                 </tfoot>
@@ -647,19 +674,7 @@ export default function DailySalesReportPage() {
                 {t('totalAvailableCash')}:
               </span>
               <span className="text-3xl font-bold text-green-600 dark:text-green-400">
-                {formatCurrency(
-                  reportData.summary.totalDeposited +
-                    (reportData.deposits
-                      ? reportData.deposits.reduce(
-                          (sum, deposit) => sum + deposit.amount,
-                          0
-                        )
-                      : 0) -
-                    reportData.expenses.reduce(
-                      (sum, expense) => sum + expense.amount,
-                      0
-                    )
-                )}
+                {formatCurrency(finalAvailableCash)}
               </span>
             </div>
             <p className="text-muted-foreground mt-2 text-sm">

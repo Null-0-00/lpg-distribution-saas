@@ -3,6 +3,7 @@
 import { useSession, signOut } from 'next-auth/react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useEffect } from 'react';
+import Link from 'next/link';
 import {
   TrendingUp,
   Package,
@@ -118,7 +119,7 @@ export default function DashboardLayout({
               const Icon = item.icon;
               const isActive = pathname === item.href;
               return (
-                <a
+                <Link
                   key={item.name}
                   href={item.href}
                   className={`flex items-center rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
@@ -127,10 +128,11 @@ export default function DashboardLayout({
                       : 'text-card-foreground hover:bg-muted'
                   }`}
                   onClick={() => setSidebarOpen(false)}
+                  prefetch={true}
                 >
                   <Icon className="mr-3 h-5 w-5" />
                   {item.name}
-                </a>
+                </Link>
               );
             })}
           </nav>
@@ -160,7 +162,7 @@ export default function DashboardLayout({
               const Icon = item.icon;
               const isActive = pathname === item.href;
               return (
-                <a
+                <Link
                   key={item.name}
                   href={item.href}
                   className={`flex items-center rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
@@ -168,10 +170,11 @@ export default function DashboardLayout({
                       ? 'bg-primary/10 text-primary'
                       : 'text-card-foreground hover:bg-muted'
                   }`}
+                  prefetch={true}
                 >
                   <Icon className="mr-3 h-5 w-5" />
                   {item.name}
-                </a>
+                </Link>
               );
             })}
           </nav>

@@ -171,7 +171,7 @@ export default function DashboardPage() {
         href: '/dashboard/receivables',
         color: 'text-orange-600',
         bgColor: 'bg-orange-50',
-        stat: `${formatCurrency(stats.pendingReceivables / 1000)}${t('kPending')}`,
+        stat: `${formatCurrency(stats.pendingReceivables)} ${t('pending')}`,
       },
       {
         title: t('assetsLiabilities'),
@@ -192,7 +192,7 @@ export default function DashboardPage() {
         stat:
           stats.pendingApprovals > 0
             ? `${stats.pendingApprovals} ${t('pending')}`
-            : `${formatCurrency(stats.monthlyExpenses / 1000)}K ${t('thisMonth')}`,
+            : `${formatCurrency(stats.monthlyExpenses)} ${t('thisMonth')}`,
         urgent: stats.pendingApprovals > 0,
       },
       {
@@ -287,7 +287,7 @@ export default function DashboardPage() {
                   {t('revenue')} {t('today')}
                 </p>
                 <p className="text-foreground text-2xl font-bold">
-                  {formatCurrency(stats.totalRevenue / 1000)}K
+                  {formatCurrency(stats.totalRevenue)}
                 </p>
               </div>
             </div>

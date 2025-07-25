@@ -196,11 +196,11 @@ export default function InventoryPage() {
       console.log('🔄 Fetching daily inventory data...');
       const startTime = performance.now();
 
-      // Add reduced date range for faster loading - default to 7 days instead of 30
+      // Add reduced date range for faster loading - default to 3 days for optimal performance
       const endDate = new Date().toISOString().split('T')[0];
       const startDate = (() => {
         const date = new Date();
-        date.setDate(date.getDate() - 7); // Reduced from 30 to 7 days
+        date.setDate(date.getDate() - 3); // Reduced to 3 days for optimal performance
         return date.toISOString().split('T')[0];
       })();
 

@@ -45,6 +45,7 @@ model Tenant {
   receivableRecords   ReceivableRecord[]
   customerReceivables CustomerReceivable[]
   assets              Asset[]
+  inventoryAssetValues InventoryAssetValue[]
   liabilities         Liability[]
   expenseParentCategories ExpenseParentCategory[]
   expenseCategories   ExpenseCategory[]
@@ -517,6 +518,22 @@ model Asset {
   @@index([tenantId])
   @@index([category])
   @@map("assets")
+}
+
+model InventoryAssetValue {
+  id          String    @id @default(cuid())
+  tenantId    String
+  assetType   String    // e.g., 'auto-full-cylinders', 'auto-empty-cylinders'
+  unitValue   Float     // Unit value in tenant's currency
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relationships
+  tenant      Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, assetType], name: "tenantId_assetType")
+  @@index([tenantId])
+  @@map("inventory_asset_values")
 }
 
 model Liability {

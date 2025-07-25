@@ -38,7 +38,10 @@ export async function GET(request: NextRequest) {
     const cacheKey = `receivables:${tenantId}:${driverId || 'all'}`;
     const cachedData = receivablesCache.get(cacheKey);
 
-    // Disable cache for immediate data refresh during debugging
+    // Clear cache completely to ensure fresh data
+    receivablesCache.clear();
+
+    // Always fetch fresh data for now to fix stale data issues
     if (
       false &&
       cachedData &&

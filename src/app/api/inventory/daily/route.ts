@@ -8,6 +8,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
+import { InventoryCalculator } from '@/lib/business';
+
+// Simple cache for daily inventory API (2 minute TTL)
+const dailyInventoryCache = new Map<string, { data: any; timestamp: number }>();
+const DAILY_CACHE_TTL = 2 * 60 * 1000; // 2 minutes
 
 interface ProductBreakdown {
   productId: string;
@@ -54,14 +59,22 @@ export async function GET(request: NextRequest) {
     const { tenantId } = session.user;
     const { searchParams } = new URL(request.url);
 
-    // Get date range - default to last 30 days
+    // Check cache first
+    const cacheKey = `${tenantId}-${searchParams.toString()}`;
+    const cached = dailyInventoryCache.get(cacheKey);
+    if (cached && Date.now() - cached.timestamp < DAILY_CACHE_TTL) {
+      console.log(`🚀 Returning cached daily inventory data for ${cacheKey}`);
+      return NextResponse.json(cached.data);
+    }
+
+    // Get date range - default to last 3 days for better performance
     const endDate =
       searchParams.get('endDate') || new Date().toISOString().split('T')[0];
     const startDate =
       searchParams.get('startDate') ||
       (() => {
         const date = new Date();
-        date.setDate(date.getDate() - 30);
+        date.setDate(date.getDate() - 3); // Reduced from 30 to 3 days for performance
         return date.toISOString().split('T')[0];
       })();
 
@@ -80,6 +93,11 @@ export async function GET(request: NextRequest) {
     const rangeEnd = new Date(endDate);
     rangeEnd.setDate(rangeEnd.getDate() + 1);
 
+    console.log(`🔍 Fetching sales data for range: ${startDate} to ${endDate}`);
+    console.log(
+      `📅 Date range SQL: ${rangeStart.toISOString()} to ${rangeEnd.toISOString()}`
+    );
+
     // Batch fetch all sales data for the entire range with product details
     const [
       packageSalesData,
@@ -87,7 +105,7 @@ export async function GET(request: NextRequest) {
       packageSalesWithProducts,
       refillSalesWithProducts,
     ] = await Promise.all([
-      // Aggregated sales data (for totals)
+      // Package sales: Total Packages sales by all the drivers combined for that particular date
       prisma.sale.groupBy({
         by: ['saleDate'],
         where: {
@@ -97,11 +115,13 @@ export async function GET(request: NextRequest) {
             gte: rangeStart,
             lt: rangeEnd,
           },
+          // Include ALL drivers, not just active ones
         },
         _sum: {
           quantity: true,
         },
       }),
+      // Refill sales: Total Refill sales by all the drivers combined for that particular date
       prisma.sale.groupBy({
         by: ['saleDate'],
         where: {
@@ -111,6 +131,7 @@ export async function GET(request: NextRequest) {
             gte: rangeStart,
             lt: rangeEnd,
           },
+          // Include ALL drivers, not just active ones
         },
         _sum: {
           quantity: true,
@@ -147,6 +168,13 @@ export async function GET(request: NextRequest) {
       }),
     ]);
 
+    console.log(`📊 Fetched sales data:`, {
+      packageSalesData: packageSalesData.length,
+      refillSalesData: refillSalesData.length,
+      packageSalesWithProducts: packageSalesWithProducts.length,
+      refillSalesWithProducts: refillSalesWithProducts.length,
+    });
+
     // Batch fetch all shipment data for the entire range with product details
     const [
       packagePurchaseData,
@@ -156,6 +184,7 @@ export async function GET(request: NextRequest) {
       packagePurchaseWithProducts,
       refillPurchaseWithProducts,
     ] = await Promise.all([
+      // Package Purchase: Total packages purchased on that day found on the Completed table on the Shipments page
       prisma.shipment.groupBy({
         by: ['shipmentDate'],
         where: {
@@ -166,12 +195,14 @@ export async function GET(request: NextRequest) {
             gte: rangeStart,
             lt: rangeEnd,
           },
+          // Package shipments - exclude refill shipments (no REFILL in notes)
           OR: [{ notes: { not: { contains: 'REFILL:' } } }, { notes: null }],
         },
         _sum: {
           quantity: true,
         },
       }),
+      // Refill Purchase: Total refill purchased on that day found on the completed table on the Shipments page
       prisma.shipment.groupBy({
         by: ['shipmentDate'],
         where: {
@@ -182,6 +213,7 @@ export async function GET(request: NextRequest) {
             gte: rangeStart,
             lt: rangeEnd,
           },
+          // Refill shipments - must have REFILL in notes
           notes: {
             contains: 'REFILL:',
           },
@@ -190,6 +222,7 @@ export async function GET(request: NextRequest) {
           quantity: true,
         },
       }),
+      // Empty Cylinders Buy: INCOMING_EMPTY from completed shipments
       prisma.shipment.groupBy({
         by: ['shipmentDate'],
         where: {
@@ -205,6 +238,7 @@ export async function GET(request: NextRequest) {
           quantity: true,
         },
       }),
+      // Empty Cylinders Sell: OUTGOING_EMPTY from completed shipments
       prisma.shipment.groupBy({
         by: ['shipmentDate'],
         where: {
@@ -256,6 +290,15 @@ export async function GET(request: NextRequest) {
         },
       }),
     ]);
+
+    console.log(`📦 Fetched shipment data:`, {
+      packagePurchaseData: packagePurchaseData.length,
+      refillPurchaseData: refillPurchaseData.length,
+      emptyBuyData: emptyBuyData.length,
+      emptySellData: emptySellData.length,
+      packagePurchaseWithProducts: packagePurchaseWithProducts.length,
+      refillPurchaseWithProducts: refillPurchaseWithProducts.length,
+    });
 
     // Fetch all product details and cylinder sizes for the tenant
     const [allProducts, allCylinderSizes] = await Promise.all([
@@ -449,7 +492,7 @@ export async function GET(request: NextRequest) {
       availableSizes.forEach((size: string) => {
         const previousFull =
           previousRecord?.fullCylindersBySizes?.find((s) => s.size === size)
-            ?.quantity || 50; // Default baseline
+            ?.quantity || Math.max(availableSizes.size * 10, 50); // Scale with available sizes
         const packageSales =
           packageSalesSizes.find((s) => s.size === size)?.quantity || 0;
         const refillSales =
@@ -472,7 +515,7 @@ export async function GET(request: NextRequest) {
       availableSizes.forEach((size: string) => {
         const previousEmpty =
           previousRecord?.emptyCylindersBySizes?.find((s) => s.size === size)
-            ?.quantity || 25; // Default baseline
+            ?.quantity || Math.max(availableSizes.size * 5, 25); // Scale with available sizes
         const refillSales =
           refillSalesSizes.find((s) => s.size === size)?.quantity || 0;
         // Distribute empty cylinder buy/sell proportionally by size (simplified approach)
@@ -525,19 +568,61 @@ export async function GET(request: NextRequest) {
       };
     };
 
+    // Batch fetch all inventory records for the date range to avoid N+1 queries
+    const allInventoryRecords = await prisma.inventoryRecord.findMany({
+      where: {
+        tenantId,
+        productId: null, // Aggregated records only
+        date: {
+          gte: new Date(dates[dates.length - 1]), // Get from earliest date
+          lte: new Date(dates[0]), // To latest date
+        },
+      },
+      orderBy: { date: 'desc' },
+    });
+
+    // Create a map for quick lookup
+    const inventoryRecordMap = new Map(
+      allInventoryRecords.map((record) => [
+        record.date.toISOString().split('T')[0],
+        record,
+      ])
+    );
+
+    console.log(
+      `📚 Pre-loaded ${allInventoryRecords.length} inventory records for faster lookup`
+    );
+
     // Calculate daily inventory for each date using the cached data
     const dailyRecords: DailyInventoryRecord[] = [];
 
     for (let i = 0; i < dates.length; i++) {
       const date = dates[i];
 
-      // Get quantities from cached maps
-      const packageSalesQty = packageSalesMap.get(date) || 0;
-      const refillSalesQty = refillSalesMap.get(date) || 0;
-      const totalSalesQty = packageSalesQty + refillSalesQty;
+      // Get quantities from cached maps - using exact formulas as specified
+      const packageSalesQty = packageSalesMap.get(date) || 0; // Package sales: Total Packages sales by all the drivers combined for that particular date
+      const refillSalesQty = refillSalesMap.get(date) || 0; // Refill sales: Total Refill sales by all the drivers combined for that particular date
+      const totalSalesQty = packageSalesQty + refillSalesQty; // Total Sales: Package sales + refill sales by all the drivers combined for that particular date
 
-      const packagePurchaseQty = packagePurchaseMap.get(date) || 0;
-      const refillPurchaseQty = refillPurchaseMap.get(date) || 0;
+      const packagePurchaseQty = packagePurchaseMap.get(date) || 0; // Package Purchase: Total packages purchased on that day found on the Completed table on the Shipments page
+      const refillPurchaseQty = refillPurchaseMap.get(date) || 0; // Refill Purchase: Total refill purchased on that day found on the completed table on the Shipments page
+
+      // Log specific date if it's 2025-07-18
+      if (date === '2025-07-18') {
+        console.log(`🎯 SPECIFIC DEBUG for ${date}:`, {
+          'Raw packageSalesMap': Array.from(packageSalesMap.entries()),
+          'Raw refillSalesMap': Array.from(refillSalesMap.entries()),
+          'Raw packagePurchaseMap': Array.from(packagePurchaseMap.entries()),
+          'Raw refillPurchaseMap': Array.from(refillPurchaseMap.entries()),
+          'Date lookup result': {
+            packageSalesQty,
+            refillSalesQty,
+            totalSalesQty,
+            packagePurchaseQty,
+            refillPurchaseQty,
+          },
+        });
+      }
 
       // Get product breakdowns
       const packageSalesProducts = getProductBreakdown(
@@ -578,19 +663,11 @@ export async function GET(request: NextRequest) {
         )
       );
 
+      // Empty Cylinders Buy/Sell: Total Empty Cylinders purchase or sale on that day found on the Completed table on the purchases page
       const emptyCylindersBuySell =
         (emptyBuyMap.get(date) || 0) - (emptySellMap.get(date) || 0);
 
-      // Debug logging for purchases (now from cached data)
-      console.log(`Daily inventory for ${date}:`, {
-        packageSalesQty,
-        refillSalesQty,
-        packagePurchaseQty,
-        refillPurchaseQty,
-        emptyCylindersBuySell,
-      });
-
-      // 6. Calculate Today's Full and Empty Cylinders
+      // 6. Calculate Today's Full and Empty Cylinders using exact formulas
       let previousFullCylinders = 0;
       let previousEmptyCylinders = 0;
 
@@ -600,27 +677,66 @@ export async function GET(request: NextRequest) {
         previousFullCylinders = previousRecord.fullCylinders;
         previousEmptyCylinders = previousRecord.emptyCylinders;
       } else {
-        // For first day, use a simplified baseline calculation to avoid expensive queries
-        // In a production system, you'd ideally have stored daily snapshots
+        // For first day, try to get actual previous day inventory from pre-loaded records
+        const previousDate = new Date(date);
+        previousDate.setDate(previousDate.getDate() - 1);
+        const previousDateStr = previousDate.toISOString().split('T')[0];
 
-        // Use a reasonable baseline - could be made configurable per tenant
-        previousFullCylinders = 100; // Default baseline for full cylinders
-        previousEmptyCylinders = 50; // Default baseline for empty cylinders
+        const previousInventory = inventoryRecordMap.get(previousDateStr);
 
-        console.log(`Using baseline for first day ${date}:`, {
+        if (previousInventory) {
+          previousFullCylinders = previousInventory.fullCylinders;
+          previousEmptyCylinders = previousInventory.emptyCylinders;
+        } else {
+          // If no previous record exists, start from ZERO as baseline
+          // This is correct - if there's no historical data, start from zero
+          // Real inventory should come from actual purchases and sales on specific dates
+          previousFullCylinders = 0;
+          previousEmptyCylinders = 0;
+
+          console.log(
+            `No previous inventory record found for ${previousDateStr}. Starting from zero baseline.`
+          );
+        }
+
+        console.log(`Using previous inventory for first day ${date}:`, {
           previousFullCylinders,
           previousEmptyCylinders,
         });
       }
 
-      // Apply business formulas
+      // Debug logging after calculating previous values
+      console.log(`🔍 Daily inventory debug for ${date}:`, {
+        packageSalesQty,
+        refillSalesQty,
+        totalSalesQty,
+        packagePurchaseQty,
+        refillPurchaseQty,
+        emptyCylindersBuySell,
+        previousFullCylinders,
+        previousEmptyCylinders,
+        calculatedFullCylinders:
+          previousFullCylinders +
+          packagePurchaseQty +
+          refillPurchaseQty -
+          totalSalesQty,
+        calculatedEmptyCylinders:
+          previousEmptyCylinders + refillSalesQty + emptyCylindersBuySell,
+      });
+
+      // Apply EXACT business formulas as specified:
+      // Today's Full Cylinders: Yesterdays full cylinders + Package Purchase + Refill Purchase - Total Sales
       const fullCylinders =
         previousFullCylinders +
         packagePurchaseQty +
         refillPurchaseQty -
         totalSalesQty;
+
+      // Today's Empty Cylinders: Yesterday's Empty Cylinders + Refill sales + Empty Cylinders Buy/Sell
       const emptyCylinders =
         previousEmptyCylinders + refillSalesQty + emptyCylindersBuySell;
+
+      // Total Cylinders = Today's Full Cylinders + Today's Empty Cylinders
       const totalCylinders = fullCylinders + emptyCylinders;
 
       // Calculate cylinder size breakdowns
@@ -634,7 +750,8 @@ export async function GET(request: NextRequest) {
         emptyCylindersBuySell
       );
 
-      dailyRecords.push({
+      // Create the daily record
+      const dailyRecord: DailyInventoryRecord = {
         date,
         packageSalesQty,
         packageSalesProducts,
@@ -655,11 +772,64 @@ export async function GET(request: NextRequest) {
         emptyCylindersBySizes: cylinderSizeBreakdowns.emptyCylindersBySizes,
         totalCylinders,
         totalCylindersBySizes: cylinderSizeBreakdowns.totalCylindersBySizes,
-      });
+      };
+
+      dailyRecords.push(dailyRecord);
+
+      // Save aggregated inventory record to database for future reference
+      try {
+        // Check if record exists first
+        const existingRecord = await prisma.inventoryRecord.findFirst({
+          where: {
+            tenantId,
+            date: new Date(date),
+            productId: null, // Aggregated record
+          },
+        });
+
+        if (existingRecord) {
+          // Update existing record
+          await prisma.inventoryRecord.update({
+            where: { id: existingRecord.id },
+            data: {
+              packageSales: packageSalesQty,
+              refillSales: refillSalesQty,
+              totalSales: totalSalesQty,
+              packagePurchase: packagePurchaseQty,
+              refillPurchase: refillPurchaseQty,
+              emptyCylindersBuySell,
+              fullCylinders,
+              emptyCylinders,
+              totalCylinders,
+            },
+          });
+        } else {
+          // Create new record
+          await prisma.inventoryRecord.create({
+            data: {
+              tenantId,
+              productId: null, // Aggregated record
+              date: new Date(date),
+              packageSales: packageSalesQty,
+              refillSales: refillSalesQty,
+              totalSales: totalSalesQty,
+              packagePurchase: packagePurchaseQty,
+              refillPurchase: refillPurchaseQty,
+              emptyCylindersBuySell,
+              fullCylinders,
+              emptyCylinders,
+              totalCylinders,
+            },
+          });
+        }
+      } catch (error) {
+        // Don't fail the API if inventory record save fails
+        console.warn(`Failed to save inventory record for ${date}:`, error);
+      }
     }
 
     // Return records in descending order (newest first)
-    return NextResponse.json({
+    const responseData = {
       success: true,
       dailyInventory: dailyRecords.reverse(),
       summary: {
@@ -668,11 +838,28 @@ export async function GET(request: NextRequest) {
         currentEmptyCylinders: dailyRecords[0]?.emptyCylinders || 0,
         currentTotalCylinders: dailyRecords[0]?.totalCylinders || 0,
       },
+    };
+
+    // Cache the result
+    dailyInventoryCache.set(cacheKey, {
+      data: responseData,
+      timestamp: Date.now(),
     });
+    console.log(`💾 Cached daily inventory data for ${cacheKey}`);
+
+    return NextResponse.json(responseData);
   } catch (error) {
     console.error('Daily inventory calculation error:', error);
+    console.error(
+      'Error stack:',
+      error instanceof Error ? error.stack : 'No stack trace'
+    );
     return NextResponse.json(
-      { error: 'Internal server error' },
+      {
+        error: 'Internal server error',
+        details: error instanceof Error ? error.message : 'Unknown error',
+        timestamp: new Date().toISOString(),
+      },
       { status: 500 }
     );
   }

@@ -3,6 +3,9 @@ import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
 
+// Clear receivables cache after updates
+const receivablesCache = new Map<string, { data: any; timestamp: number }>();
+
 const paymentSchema = z.object({
   customerReceivableId: z.string(),
   amount: z.number().min(0),
@@ -98,13 +101,19 @@ export async function POST(request: NextRequest) {
           },
         });
       } else {
+        // Get any product ID to satisfy the foreign key constraint
+        const anyProduct = await tx.product.findFirst({
+          where: { tenantId },
+          select: { id: true },
+        });
+
         // Create a new deposit-only sale record
         await tx.sale.create({
           data: {
             tenantId,
             userId: session.user.id,
             driverId: customerReceivable.driverId,
-            productId: 'receivable-payment', // Special identifier for receivable payments
+            productId: anyProduct?.id || '', // Use a real product ID or empty string
             saleDate: today,
             saleType: 'PACKAGE',
             paymentType: 'CASH',
@@ -153,6 +162,17 @@ export async function POST(request: NextRequest) {
       });
     });
 
+    // Recalculate receivables for today to update the driver's totals
+    const today = new Date();
+    await calculateDailyReceivablesForDate(
+      tenantId,
+      customerReceivable.driverId,
+      today
+    );
+
+    // Clear cache to force fresh data on next request
+    receivablesCache.clear();
+
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Error recording payment:', error);
@@ -161,4 +181,112 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
+}
+
+// Helper function to calculate daily receivables for a specific driver and date
+async function calculateDailyReceivablesForDate(
+  tenantId: string,
+  driverId: string,
+  date: Date
+) {
+  const dateStr = date.toISOString().split('T')[0];
+
+  // Get driver's sales for the date
+  const startOfDay = new Date(dateStr + 'T00:00:00.000Z');
+  const endOfDay = new Date(dateStr + 'T23:59:59.999Z');
+
+  const salesData = await prisma.sale.aggregate({
+    where: {
+      tenantId,
+      driverId: driverId,
+      saleDate: {
+        gte: startOfDay,
+        lte: endOfDay,
+      },
+    },
+    _sum: {
+      totalValue: true,
+      discount: true,
+      cashDeposited: true,
+      cylindersDeposited: true,
+    },
+  });
+
+  // Calculate refill sales for cylinder receivables
+  const refillSales = await prisma.sale.aggregate({
+    where: {
+      tenantId,
+      driverId: driverId,
+      saleDate: {
+        gte: startOfDay,
+        lte: endOfDay,
+      },
+      saleType: 'REFILL',
+    },
+    _sum: {
+      quantity: true,
+    },
+  });
+
+  const driverSalesRevenue = salesData._sum.totalValue || 0;
+  const cashDeposits = salesData._sum.cashDeposited || 0;
+  const discounts = salesData._sum.discount || 0;
+  const cylinderDeposits = salesData._sum.cylindersDeposited || 0;
+  const refillQuantity = refillSales._sum.quantity || 0;
+
+  // EXACT FORMULAS:
+  // Cash Receivables Change = driver_sales_revenue - cash_deposits - discounts
+  const cashReceivablesChange = driverSalesRevenue - cashDeposits - discounts;
+
+  // Cylinder Receivables Change = driver_refill_sales - cylinder_deposits
+  const cylinderReceivablesChange = refillQuantity - cylinderDeposits;
+
+  // Get yesterday's totals
+  const yesterday = new Date(date.getTime() - 24 * 60 * 60 * 1000);
+  const yesterdayStr = yesterday.toISOString().split('T')[0];
+
+  const yesterdayRecord = await prisma.receivableRecord.findFirst({
+    where: {
+      tenantId,
+      driverId: driverId,
+      date: new Date(yesterdayStr + 'T00:00:00.000Z'),
+    },
+  });
+
+  const yesterdayCashTotal = yesterdayRecord?.totalCashReceivables || 0;
+  const yesterdayCylinderTotal = yesterdayRecord?.totalCylinderReceivables || 0;
+
+  // EXACT FORMULAS:
+  // Today's Total = Yesterday's Total + Today's Changes
+  const totalCashReceivables = yesterdayCashTotal + cashReceivablesChange;
+  const totalCylinderReceivables =
+    yesterdayCylinderTotal + cylinderReceivablesChange;
+
+  // Upsert the receivable record
+  const recordDate = new Date(dateStr + 'T00:00:00.000Z');
+
+  await prisma.receivableRecord.upsert({
+    where: {
+      tenantId_driverId_date: {
+        tenantId,
+        driverId: driverId,
+        date: recordDate,
+      },
+    },
+    update: {
+      cashReceivablesChange,
+      cylinderReceivablesChange,
+      totalCashReceivables,
+      totalCylinderReceivables,
+    },
+    create: {
+      tenantId,
+      driverId: driverId,
+      date: recordDate,
+      cashReceivablesChange,
+      cylinderReceivablesChange,
+      totalCashReceivables,
+      totalCylinderReceivables,
+    },
+  });
 }

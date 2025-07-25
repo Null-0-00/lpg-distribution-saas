@@ -181,8 +181,8 @@ export async function GET(request: NextRequest) {
       const salesQuantity = productSale?.totalQuantity || 0;
       const revenue = productSale?.totalRevenue || 0;
 
-      // Breakeven Price = Buying Price + Commission + Fixed Cost Per Unit
-      const breakevenPrice = buyingPrice + commission + effectiveFixedCost;
+      // Breakeven Price = Buying Price - Commission + Fixed Cost Per Unit
+      const breakevenPrice = buyingPrice - commission + effectiveFixedCost;
 
       // Profit per unit = Selling Price - Breakeven Price
       const profitPerUnit = sellingPrice - breakevenPrice;

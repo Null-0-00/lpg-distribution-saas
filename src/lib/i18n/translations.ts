@@ -38,6 +38,7 @@ export interface Translations {
   loading: string;
   noData: string;
   refresh: string;
+  recalculate: string;
   export: string;
   view: string;
   print: string;
@@ -82,6 +83,7 @@ export interface Translations {
 
   // Dashboard and reports
   cashDepositsByDriver: string;
+  includesReceivablePayments: string;
   driverExpense: string;
   loadingData: string;
   noDataAvailable: string;
@@ -92,6 +94,82 @@ export interface Translations {
   allDrivers: string;
   totalRevenue: string;
   revenue: string;
+
+  // Receivables page specific
+  comingSoon: string;
+  exportReport: string;
+  exportReportFunctionality: string;
+  current: string;
+  dueSoon: string;
+  overdue: string;
+  paid: string;
+  noDate: string;
+  invalidDate: string;
+  noTimestamp: string;
+  invalidTimestamp: string;
+  failedToFetchReceivables: string;
+  receivablesRecalculatedSuccessfully: string;
+  failedToRecalculateReceivables: string;
+  failedToFetchReceivablesChanges: string;
+  customerReceivableUpdatedSuccessfully: string;
+  customerReceivableAddedSuccessfully: string;
+  failedToSaveCustomerReceivable: string;
+  customerReceivableDeletedSuccessfully: string;
+  failedToDeleteCustomerReceivable: string;
+  paymentRecordedSuccessfully: string;
+  failedToRecordPayment: string;
+  cylinderReturnRecordedSuccessfully: string;
+  failedToRecordCylinderReturn: string;
+  editCustomerReceivable: string;
+  addCustomerReceivable: string;
+  cashReceivable: string;
+  cylinderReceivable: string;
+  enterNumberOfCylinders: string;
+  recordPayment: string;
+  recordCylinderReturn: string;
+  paymentAmount: string;
+  enterPaymentAmount: string;
+  paymentMethod: string;
+  cylindersReturned: string;
+  recordReturn: string;
+  validationError: string;
+  customerReceivablesDontMatch: string;
+  driverTotalReceivablesFromSales: string;
+  customerReceivableTotalsMustEqual: string;
+  cashMismatch: string;
+  customerTotal: string;
+  salesTotal: string;
+  difference: string;
+  cylinderMismatch: string;
+  customersWithOverduePayments: string;
+  requireImmediate: string;
+  receivablesManagementSystemRules: string;
+  driverTotalReceivables: string;
+  automaticallyCalculatedFromSales: string;
+  customerReceivablesManuallyManaged: string;
+  validation: string;
+  customerTotalsMustEqualDriverSales: string;
+  payments: string;
+  paymentsAutomaticallyAdded: string;
+  changesLogAllReceivableActions: string;
+  managerAccess: string;
+  youCanRecordPayments: string;
+  salesCashReceivables: string;
+  fromSalesData: string;
+  salesCylinderReceivables: string;
+  noReceivablesFound: string;
+  noChangesRecorded: string;
+  receivablesChangesLog: string;
+
+  // Expense form specific
+  amountPlaceholder: string;
+  enterExpenseDescription: string;
+  selectParentCategory: string;
+  selectCategory: string;
+  expenseDate: string;
+  receiptUrl: string;
+  receiptUrlPlaceholder: string;
+  submitting: string;
 
   // Common UI elements
   activeDrivers: string;
@@ -583,6 +661,7 @@ export interface Translations {
   breakevenPrice: string;
   sellingPrice: string;
   costPerUnit: string;
+  avgCostPerUnit: string;
   failedToLoadData: string;
   errorLoadingData: string;
   january: string;
@@ -786,6 +865,7 @@ const englishTranslations: Translations = {
   loading: 'Loading',
   noData: 'No Data',
   refresh: 'Refresh',
+  recalculate: 'Recalculate',
   export: 'Export',
   view: 'View',
   print: 'Print',
@@ -840,6 +920,83 @@ const englishTranslations: Translations = {
   totalSales: 'Total Sales',
   totalRevenue: 'Total Revenue',
   revenue: 'Revenue',
+
+  // Receivables page specific
+  comingSoon: 'Coming Soon',
+  exportReport: 'Export Report',
+  exportReportFunctionality: 'Export Report functionality is under development',
+  current: 'Current',
+  dueSoon: 'Due Soon',
+  overdue: 'Overdue',
+  paid: 'Paid',
+  noDate: 'No date',
+  invalidDate: 'Invalid date',
+  noTimestamp: 'No timestamp',
+  invalidTimestamp: 'Invalid timestamp',
+  failedToFetchReceivables: 'Failed to fetch receivables',
+  receivablesRecalculatedSuccessfully: 'Receivables recalculated successfully',
+  failedToRecalculateReceivables: 'Failed to recalculate receivables',
+  failedToFetchReceivablesChanges: 'Failed to fetch receivables changes',
+  customerReceivableUpdatedSuccessfully: 'Customer receivable updated successfully',
+  customerReceivableAddedSuccessfully: 'Customer receivable added successfully',
+  failedToSaveCustomerReceivable: 'Failed to save customer receivable',
+  customerReceivableDeletedSuccessfully: 'Customer receivable deleted successfully',
+  failedToDeleteCustomerReceivable: 'Failed to delete customer receivable',
+  paymentRecordedSuccessfully: 'Payment recorded successfully',
+  failedToRecordPayment: 'Failed to record payment',
+  cylinderReturnRecordedSuccessfully: 'Cylinder return recorded successfully',
+  failedToRecordCylinderReturn: 'Failed to record cylinder return',
+  editCustomerReceivable: 'Edit Customer Receivable',
+  addCustomerReceivable: 'Add Customer Receivable',
+  cashReceivable: 'Cash Receivable',
+  cylinderReceivable: 'Cylinder Receivable',
+  enterNumberOfCylinders: 'Enter number of cylinders',
+  recordPayment: 'Record Payment',
+  recordCylinderReturn: 'Record Cylinder Return',
+  paymentAmount: 'Payment Amount',
+  enterPaymentAmount: 'Enter payment amount',
+  paymentMethod: 'Payment Method',
+  cylindersReturned: 'Cylinders Returned',
+  recordReturn: 'Record Return',
+  validationError: 'Validation Error',
+  customerReceivablesDontMatch: "Customer receivables don't match",
+  driverTotalReceivablesFromSales: 'Driver total receivables come from sales data and cannot be edited',
+  customerReceivableTotalsMustEqual: 'Customer receivable totals must equal the sales totals for each driver',
+  cashMismatch: 'Cash Mismatch',
+  customerTotal: 'Customer Total',
+  salesTotal: 'Sales Total',
+  difference: 'Difference',
+  cylinderMismatch: 'Cylinder Mismatch',
+  customersWithOverduePayments: 'customer(s) with overdue payments',
+  requireImmediate: 'require immediate',
+  receivablesManagementSystemRules: 'Receivables Management System Rules',
+  driverTotalReceivables: 'Driver Total Receivables',
+  automaticallyCalculatedFromSales: 'Automatically calculated from sales data (non-editable)',
+  customerReceivablesManuallyManaged: 'Manually managed by administrators under each driver',
+  validation: 'Validation',
+  customerTotalsMustEqualDriverSales: 'Customer totals must equal driver sales totals',
+  payments: 'Payments',
+  paymentsAutomaticallyAdded: 'Automatically added to daily deposits when recorded',
+  changesLogAllReceivableActions: 'All receivable actions are tracked in the Changes tab',
+  managerAccess: 'Manager Access',
+  youCanRecordPayments: 'You can record payments and',
+  salesCashReceivables: 'Sales Cash Receivables',
+  fromSalesData: 'From Sales Data',
+  salesCylinderReceivables: 'Sales Cylinder Receivables',
+  noReceivablesFound: 'No receivables found',
+  noChangesRecorded: 'No changes recorded',
+  receivablesChangesLog: 'Receivables Changes Log',
+
+  // Expense form specific
+  amountPlaceholder: '0.00',
+  enterExpenseDescription: 'Enter expense description',
+  selectParentCategory: 'Select a parent category',
+  selectCategory: 'Select a category',
+  expenseDate: 'Expense Date',
+  receiptUrl: 'Receipt URL',
+  receiptUrlPlaceholder: 'https://example.com/receipt.pdf',
+  submitting: 'Submitting...',
+
   loadingData: 'Loading data...',
   noDataAvailable: 'No data available',
   tryAgain: 'Try again',
@@ -1120,6 +1277,7 @@ const englishTranslations: Translations = {
 
   // Missing properties from interface
   cashDepositsByDriver: 'Cash Deposits by Driver',
+  includesReceivablePayments: '(includes receivable payments)',
   driverExpense: 'Driver Expense',
   return: 'Return',
   fuelExpense: 'Fuel Expense',
@@ -1409,6 +1567,7 @@ const englishTranslations: Translations = {
   breakevenPrice: 'Breakeven Price',
   sellingPrice: 'Selling Price',
   costPerUnit: 'Cost per Unit',
+  avgCostPerUnit: 'Average Cost per Unit',
   failedToLoadData: 'Failed to Load Data',
   errorLoadingData: 'Error Loading Data',
 
@@ -1496,11 +1655,11 @@ const bengaliTranslations: Translations = {
   sales: 'বিক্রয়',
   drivers: 'চালক',
   shipments: 'চালান',
-  receivables: 'প্রাপ্য',
+  receivables: 'বাকি',
   assets: 'সম্পদ',
   expenses: 'খরচ',
   settings: 'সেটিংস',
-  inventory: 'তালিকা',
+  inventory: 'মজুদ',
   users: 'ব্যবহারকারী',
   reports: 'রিপোর্ট',
   productManagement: 'পণ্য ব্যবস্থাপনা',
@@ -1520,6 +1679,7 @@ const bengaliTranslations: Translations = {
   loading: 'লোড হচ্ছে',
   noData: 'কোন তথ্য নেই',
   refresh: 'রিফ্রেশ',
+  recalculate: 'পুনর্গণনা',
   export: 'এক্সপোর্ট',
   view: 'দেখুন',
   print: 'প্রিন্ট',
@@ -1574,12 +1734,89 @@ const bengaliTranslations: Translations = {
   totalSales: 'মোট বিক্রয়',
   totalRevenue: 'মোট আয়',
   revenue: 'আয়',
+
+  // Receivables page specific
+  comingSoon: 'শীঘ্রই আসছে',
+  exportReport: 'রিপোর্ট এক্সপোর্ট',
+  exportReportFunctionality: 'রিপোর্ট এক্সপোর্ট কার্যকারিতা উন্নয়নাধীন',
+  current: 'বর্তমান',
+  dueSoon: 'শীঘ্রই প্রদেয়',
+  overdue: 'মেয়াদোত্তীর্ণ',
+  paid: 'পরিশোধিত',
+  noDate: 'কোন তারিখ নেই',
+  invalidDate: 'অবৈধ তারিখ',
+  noTimestamp: 'কোন টাইমস্ট্যাম্প নেই',
+  invalidTimestamp: 'অবৈধ টাইমস্ট্যাম্প',
+  failedToFetchReceivables: 'বাকি আনতে ব্যর্থ',
+  receivablesRecalculatedSuccessfully: 'বাকি সফলভাবে পুনর্গণনা করা হয়েছে',
+  failedToRecalculateReceivables: 'বাকি পুনর্গণনা করতে ব্যর্থ',
+  failedToFetchReceivablesChanges: 'বাকি পরিবর্তন আনতে ব্যর্থ',
+  customerReceivableUpdatedSuccessfully: 'গ্রাহক বাকি সফলভাবে আপডেট করা হয়েছে',
+  customerReceivableAddedSuccessfully: 'গ্রাহক বাকি সফলভাবে যোগ করা হয়েছে',
+  failedToSaveCustomerReceivable: 'গ্রাহক বাকি সংরক্ষণ করতে ব্যর্থ',
+  customerReceivableDeletedSuccessfully: 'গ্রাহক বাকি সফলভাবে মুছে ফেলা হয়েছে',
+  failedToDeleteCustomerReceivable: 'গ্রাহক বাকি মুছতে ব্যর্থ',
+  paymentRecordedSuccessfully: 'পেমেন্ট সফলভাবে রেকর্ড করা হয়েছে',
+  failedToRecordPayment: 'পেমেন্ট রেকর্ড করতে ব্যর্থ',
+  cylinderReturnRecordedSuccessfully: 'সিলিন্ডার ফেরত সফলভাবে রেকর্ড করা হয়েছে',
+  failedToRecordCylinderReturn: 'সিলিন্ডার ফেরত রেকর্ড করতে ব্যর্থ',
+  editCustomerReceivable: 'গ্রাহক বাকি সম্পাদনা',
+  addCustomerReceivable: 'গ্রাহক বাকি যোগ করুন',
+  cashReceivable: 'নগদ বাকি',
+  cylinderReceivable: 'সিলিন্ডার বাকি',
+  enterNumberOfCylinders: 'সিলিন্ডারের সংখ্যা লিখুন',
+  recordPayment: 'পেমেন্ট রেকর্ড করুন',
+  recordCylinderReturn: 'সিলিন্ডার ফেরত রেকর্ড করুন',
+  paymentAmount: 'পেমেন্টের পরিমাণ',
+  enterPaymentAmount: 'পেমেন্টের পরিমাণ লিখুন',
+  paymentMethod: 'পেমেন্ট পদ্ধতি',
+  cylindersReturned: 'সিলিন্ডার ফেরত',
+  recordReturn: 'ফেরত রেকর্ড করুন',
+  validationError: 'বৈধতা ত্রুটি',
+  customerReceivablesDontMatch: 'গ্রাহক বাকি মিলছে না',
+  driverTotalReceivablesFromSales: 'চালকের মোট বাকি বিক্রয় তথ্য থেকে আসে এবং সম্পাদনা করা যায় না',
+  customerReceivableTotalsMustEqual: 'গ্রাহক বাকির মোট প্রতিটি চালকের বিক্রয় মোটের সমান হতে হবে',
+  cashMismatch: 'নগদ অমিল',
+  customerTotal: 'গ্রাহক মোট',
+  salesTotal: 'বিক্রয় মোট',
+  difference: 'পার্থক্য',
+  cylinderMismatch: 'সিলিন্ডার অমিল',
+  customersWithOverduePayments: 'গ্রাহক(গণ) এর মেয়াদোত্তীর্ণ পেমেন্ট',
+  requireImmediate: 'তাৎক্ষণিক প্রয়োজন',
+  receivablesManagementSystemRules: 'বাকি ব্যবস্থাপনা সিস্টেম নিয়ম',
+  driverTotalReceivables: 'চালকের মোট বাকি',
+  automaticallyCalculatedFromSales: 'বিক্রয় তথ্য থেকে স্বয়ংক্রিয়ভাবে গণনা (সম্পাদনাযোগ্য নয়)',
+  customerReceivablesManuallyManaged: 'প্রতিটি চালকের অধীনে প্রশাসকদের দ্বারা ম্যানুয়ালি পরিচালিত',
+  validation: 'বৈধতা',
+  customerTotalsMustEqualDriverSales: 'গ্রাহক মোট চালকের বিক্রয় মোটের সমান হতে হবে',
+  payments: 'পেমেন্ট',
+  paymentsAutomaticallyAdded: 'রেকর্ড করার সময় স্বয়ংক্রিয়ভাবে দৈনিক আমানতে যোগ',
+  changesLogAllReceivableActions: 'সমস্ত বাকি কার্যক্রম পরিবর্তনের ট্যাবে ট্র্যাক করা হয়',
+  managerAccess: 'ম্যানেজার অ্যাক্সেস',
+  youCanRecordPayments: 'আপনি পেমেন্ট রেকর্ড করতে পারেন এবং',
+  salesCashReceivables: 'বিক্রয় নগদ বাকি',
+  fromSalesData: 'বিক্রয় তথ্য থেকে',
+  salesCylinderReceivables: 'বিক্রয় সিলিন্ডার বাকি',
+  noReceivablesFound: 'কোনো বাকি পাওয়া যায়নি',
+  noChangesRecorded: 'কোনো পরিবর্তন রেকর্ড করা হয়নি',
+  receivablesChangesLog: 'বাকি পরিবর্তনের লগ',
+
+  // Expense form specific
+  amountPlaceholder: '০.০০',
+  enterExpenseDescription: 'খরচের বিবরণ লিখুন',
+  selectParentCategory: 'একটি প্যারেন্ট বিভাগ নির্বাচন করুন',
+  selectCategory: 'একটি বিভাগ নির্বাচন করুন',
+  expenseDate: 'খরচের তারিখ',
+  receiptUrl: 'রসিদ URL',
+  receiptUrlPlaceholder: 'https://example.com/receipt.pdf',
+  submitting: 'জমা দেওয়া হচ্ছে...',
+
   loadingData: 'ডেটা লোড হচ্ছে...',
   noDataAvailable: 'কোনো ডেটা উপলব্ধ নেই',
   tryAgain: 'আবার চেষ্টা করুন',
   performance: 'কর্মক্ষমতা',
   allDrivers: 'সব চালক',
-  totalReceivables: 'মোট প্রাপ্য',
+  totalReceivables: 'মোট বাকি',
   thisMonth: 'এই মাস',
   lastMonth: 'গত মাস',
   today: 'আজ',
@@ -1655,8 +1892,8 @@ const bengaliTranslations: Translations = {
   activeDrivers: 'সক্রিয় চালক',
   driver: 'চালক',
   area: 'এলাকা',
-  cashReceivables: 'নগদ প্রাপ্য',
-  cylinderReceivables: 'সিলিন্ডার প্রাপ্য',
+  cashReceivables: 'নগদ বাকি',
+  cylinderReceivables: 'সিলিন্ডার বাকি',
   retail: 'খুচরা',
   shipment: 'চালান',
   noDataFound: 'কোন তথ্য পাওয়া যায়নি',
@@ -1692,8 +1929,8 @@ const bengaliTranslations: Translations = {
   emptyCylindersInHand: 'হাতে খালি সিলিন্ডার',
   noEmptyCylindersInInventory: 'ইনভেন্টরিতে কোন খালি সিলিন্ডার নেই',
   note: 'নোট',
-  totalCylinderReceivables: 'মোট সিলিন্ডার প্রাপ্য',
-  totalCylindersReceivables: 'মোট সিলিন্ডার প্রাপ্য',
+  totalCylinderReceivables: 'মোট সিলিন্ডার বাকি',
+  totalCylindersReceivables: 'মোট সিলিন্ডার বাকি',
   dailyInventoryTracking: 'দৈনিক ইনভেন্টরি ট্র্যাকিং',
   automatedCalculationsExactFormulas:
     'সঠিক ব্যবসায়িক সূত্র ব্যবহার করে স্বয়ংক্রিয় গণনা',
@@ -1723,6 +1960,7 @@ const bengaliTranslations: Translations = {
 
   // Dashboard and reports
   cashDepositsByDriver: 'চালক অনুযায়ী নগদ জমা',
+  includesReceivablePayments: '(বাকি পেমেন্ট সহ)',
   driverExpense: 'চালক খরচ',
   fuelExpense: 'জ্বালানি খরচ',
   maintenanceExpense: 'রক্ষণাবেক্ষণ খরচ',
@@ -1739,8 +1977,8 @@ const bengaliTranslations: Translations = {
   totalDeposited: 'মোট জমা',
   totalExpenses: 'মোট খরচ',
   availableCash: 'উপলব্ধ নগদ',
-  totalCashReceivables: 'মোট নগদ প্রাপ্য',
-  changeInReceivablesCashCylinders: 'প্রাপ্যে পরিবর্তন (নগদ ও সিলিন্ডার)',
+  totalCashReceivables: 'মোট নগদ বাকি',
+  changeInReceivablesCashCylinders: 'বাকিতে পরিবর্তন (নগদ ও সিলিন্ডার)',
   dailyDepositsExpenses: 'দৈনিক জমা ও খরচ',
   detailedBreakdownDepositsExpenses: 'জমা ও খরচের বিস্তারিত বিভাজন',
   deposits: 'জমা',
@@ -1758,7 +1996,7 @@ const bengaliTranslations: Translations = {
   // Sales form specific translations
   selectADriver: 'একজন চালক নির্বাচন করুন',
   enterCustomerName: 'গ্রাহকের নাম লিখুন',
-  customerNamePlaceholder: 'গ্রাহকের নাম লিখুন (প্রাপ্য ট্র্যাকিংয়ের জন্য)',
+  customerNamePlaceholder: 'গ্রাহকের নাম লিখুন (বাকি ট্র্যাকিংয়ের জন্য)',
   saleItems: 'বিক্রয় আইটেম',
   itemNumber: 'আইটেম',
   selectAProduct: 'একটি পণ্য নির্বাচন করুন',
@@ -1784,9 +2022,9 @@ const bengaliTranslations: Translations = {
   totalValueLabel: 'মোট মূল্য',
   totalDiscountLabel: 'মোট ছাড়',
   netValueLabel: 'নেট মূল্য',
-  cashReceivableWarning: 'এই বিক্রয়ে নগদ প্রাপ্য তৈরি হবে',
+  cashReceivableWarning: 'এই বিক্রয়ে নগদ বাকি তৈরি হবে',
   customerNameRecommended: 'ট্র্যাকিংয়ের জন্য গ্রাহকের নাম সুপারিশ করা হয়',
-  cylinderReceivableWarning: 'এই বিক্রয়ে সিলিন্ডার প্রাপ্য তৈরি হবে:',
+  cylinderReceivableWarning: 'এই বিক্রয়ে সিলিন্ডার বাকি তৈরি হবে:',
   cylindersRemaining: 'সিলিন্ডার বাকি',
   lowStockAlert: 'কম স্টক!',
   loadingFormData: 'ফর্ম ডেটা লোড হচ্ছে...',
@@ -1942,6 +2180,7 @@ const bengaliTranslations: Translations = {
   breakevenPrice: 'সমতা মূল্য',
   sellingPrice: 'বিক্রয় মূল্য',
   costPerUnit: 'প্রতি ইউনিট খরচ',
+  avgCostPerUnit: 'গড় প্রতি ইউনিট খরচ',
   failedToLoadData: 'ডেটা লোড করতে ব্যর্থ',
   errorLoadingData: 'ডেটা লোড করতে ত্রুটি',
   january: 'জানুয়ারি',
@@ -2195,8 +2434,8 @@ const bengaliTranslations: Translations = {
   operations: 'অপারেশনসমূহ',
   pleaseLogInToAccessUserManagement:
     'ব্যবহারকারী ব্যবস্থাপনা অ্যাক্সেস করতে লগইন করুন',
-  receivableManagement: 'প্রাপ্য ব্যবস্থাপনা',
-  receivableRecords: 'প্রাপ্য রেকর্ডসমূহ',
+  receivableManagement: 'বাকি ব্যবস্থাপনা',
+  receivableRecords: 'বাকি রেকর্ডসমূহ',
   rejectExpense: 'খরচ প্রত্যাখ্যান করুন',
   rolePermissions: 'ভূমিকার অনুমতি',
   salesInventoryAndDriverManagement: 'বিক্রয়, ইনভেন্টরি এবং চালক ব্যবস্থাপনা',

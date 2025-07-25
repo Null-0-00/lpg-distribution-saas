@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
 import {
   Building2,
   TrendingUp,
@@ -9,6 +10,10 @@ import {
   Package,
   X,
   RefreshCw,
+  Edit,
+  Trash2,
+  Save,
+  XCircle,
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useSettings } from '@/contexts/SettingsContext';
@@ -25,6 +30,11 @@ interface Asset {
   depreciationRate?: number;
   isAutoCalculated: boolean;
   totalDepreciation?: number;
+  details?: {
+    quantity?: number;
+    unitPrice?: number;
+    isEditable?: boolean;
+  };
 }
 
 interface Liability {
@@ -70,6 +80,7 @@ interface LiabilitiesData {
 export default function AssetsPage() {
   const { toast } = useToast();
   const { formatCurrency, t } = useSettings();
+  const { data: session } = useSession();
   const [assets, setAssets] = useState<Asset[]>([]);
   const [liabilities, setLiabilities] = useState<Liability[]>([]);
   const [assetsData, setAssetsData] = useState<AssetsData | null>(null);
@@ -77,6 +88,12 @@ export default function AssetsPage() {
     useState<LiabilitiesData | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [editingAsset, setEditingAsset] = useState<string | null>(null);
+  const [editingUnitValue, setEditingUnitValue] = useState<number>(0);
+  const [editingLiability, setEditingLiability] = useState<string | null>(null);
+  const [editingItem, setEditingItem] = useState<Asset | Liability | null>(
+    null
+  );
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalType, setModalType] = useState<'asset' | 'liability'>('asset');
@@ -138,10 +155,32 @@ export default function AssetsPage() {
   const totalAssets = assetsData?.totals.TOTAL || 0;
   const totalLiabilities = liabilitiesData?.totals.TOTAL || 0;
   const netWorth = liabilitiesData?.ownerEquity.ownerEquity || 0;
-  const totalDepreciation = assets.reduce(
-    (sum, asset) => sum + (asset.totalDepreciation || 0),
-    0
-  );
+  const totalDepreciation = assets
+    .filter(
+      (asset) =>
+        !asset.isAutoCalculated &&
+        asset.depreciationRate &&
+        asset.depreciationRate > 0
+    )
+    .reduce((sum, asset) => {
+      const purchaseDate = asset.purchaseDate
+        ? new Date(asset.purchaseDate)
+        : null;
+      const currentDate = new Date();
+      const yearsOwned = purchaseDate
+        ? Math.max(
+            0,
+            (currentDate.getTime() - purchaseDate.getTime()) /
+              (1000 * 60 * 60 * 24 * 365)
+          )
+        : 0;
+      const originalValue = asset.originalValue || asset.currentValue;
+      return (
+        sum + originalValue * ((asset.depreciationRate || 0) / 100) * yearsOwned
+      );
+    }, 0);
+
+  const isAdmin = session?.user?.role === 'ADMIN';
 
   const getCategoryColor = (category: string) => {
     const colors: { [key: string]: string } = {
@@ -196,6 +235,7 @@ export default function AssetsPage() {
 
   const closeModal = () => {
     setIsModalOpen(false);
+    setEditingItem(null);
     setFormData({
       name: '',
       category: '',
@@ -215,9 +255,13 @@ export default function AssetsPage() {
     try {
       const endpoint =
         modalType === 'asset' ? '/api/assets' : '/api/liabilities';
+      const isEditing = editingItem !== null;
+      const method = isEditing ? 'PUT' : 'POST';
+
       const requestData =
         modalType === 'asset'
           ? {
+              ...(isEditing && { id: editingItem.id }),
               name: formData.name,
               category: formData.category,
               subCategory: formData.subCategory,
@@ -227,6 +271,7 @@ export default function AssetsPage() {
               depreciationRate: formData.depreciationRate,
             }
           : {
+              ...(isEditing && { id: editingItem.id }),
               name: formData.name,
               category: formData.category,
               amount: formData.amount,
@@ -235,7 +280,7 @@ export default function AssetsPage() {
             };
 
       const response = await fetch(endpoint, {
-        method: 'POST',
+        method,
         headers: {
           'Content-Type': 'application/json',
         },
@@ -245,19 +290,160 @@ export default function AssetsPage() {
       if (response.ok) {
         toast({
           title: 'Success',
-          description: `${modalType === 'asset' ? 'Asset' : 'Liability'} created successfully!`,
+          description: `${modalType === 'asset' ? 'Asset' : 'Liability'} ${isEditing ? 'updated' : 'created'} successfully!`,
         });
         closeModal();
         fetchData(); // Refresh the data
       } else {
         const error = await response.json();
-        throw new Error(error.message || 'Failed to create entry');
+        throw new Error(
+          error.message || `Failed to ${isEditing ? 'update' : 'create'} entry`
+        );
       }
     } catch (error) {
-      console.error('Error creating entry:', error);
+      console.error(
+        `Error ${editingItem ? 'updating' : 'creating'} entry:`,
+        error
+      );
       toast({
         title: 'Error',
-        description: `Failed to create ${modalType}. Please try again.`,
+        description: `Failed to ${editingItem ? 'update' : 'create'} ${modalType}. Please try again.`,
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const handleDeleteAsset = async (assetId: string) => {
+    if (!confirm('Are you sure you want to delete this asset?')) return;
+
+    try {
+      const response = await fetch(`/api/assets?id=${assetId}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        toast({
+          title: 'Success',
+          description: 'Asset deleted successfully!',
+        });
+        fetchData();
+      } else {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to delete asset');
+      }
+    } catch (error) {
+      console.error('Error deleting asset:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to delete asset. Please try again.',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const handleStartEditUnitValue = (asset: Asset) => {
+    setEditingAsset(asset.id);
+    setEditingUnitValue(asset.details?.unitPrice || 0);
+  };
+
+  const handleSaveUnitValue = async (assetId: string) => {
+    try {
+      const response = await fetch('/api/assets', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          id: assetId,
+          unitValue: editingUnitValue,
+        }),
+      });
+
+      if (response.ok) {
+        toast({
+          title: 'Success',
+          description: 'Unit value updated successfully!',
+        });
+        setEditingAsset(null);
+        fetchData();
+      } else {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to update unit value');
+      }
+    } catch (error) {
+      console.error('Error updating unit value:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to update unit value. Please try again.',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setEditingAsset(null);
+    setEditingUnitValue(0);
+    setEditingLiability(null);
+    setEditingItem(null);
+  };
+
+  const handleEditAsset = (asset: Asset) => {
+    setEditingItem(asset);
+    setModalType('asset');
+    setFormData({
+      name: asset.name,
+      category: asset.category,
+      subCategory: asset.subCategory || '',
+      value: asset.originalValue || asset.currentValue,
+      amount: 0,
+      dueDate: '',
+      purchaseDate: asset.purchaseDate || '',
+      depreciationRate: asset.depreciationRate || 0,
+      description: asset.description || '',
+    });
+    setIsModalOpen(true);
+  };
+
+  const handleEditLiability = (liability: Liability) => {
+    setEditingItem(liability);
+    setModalType('liability');
+    setFormData({
+      name: liability.name,
+      category: liability.category,
+      subCategory: '',
+      value: 0,
+      amount: liability.amount,
+      dueDate: liability.dueDate || '',
+      purchaseDate: '',
+      depreciationRate: 0,
+      description: liability.description || '',
+    });
+    setIsModalOpen(true);
+  };
+
+  const handleDeleteLiability = async (liabilityId: string) => {
+    if (!confirm('Are you sure you want to delete this liability?')) return;
+
+    try {
+      const response = await fetch(`/api/liabilities?id=${liabilityId}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        toast({
+          title: 'Success',
+          description: 'Liability deleted successfully!',
+        });
+        fetchData();
+      } else {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to delete liability');
+      }
+    } catch (error) {
+      console.error('Error deleting liability:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to delete liability. Please try again.',
         variant: 'destructive',
       });
     }
@@ -315,7 +501,7 @@ export default function AssetsPage() {
             <div className="ml-4">
               <p className="text-muted-foreground text-sm">{t('assets')}</p>
               <p className="text-foreground text-2xl font-bold">
-                {formatCurrency(totalAssets / 1000000)}M
+                {formatCurrency(totalAssets)}
               </p>
             </div>
           </div>
@@ -326,7 +512,7 @@ export default function AssetsPage() {
             <div className="ml-4">
               <p className="text-muted-foreground text-sm">{t('pending')}</p>
               <p className="text-foreground text-2xl font-bold">
-                {formatCurrency(totalLiabilities / 1000000)}M
+                {formatCurrency(totalLiabilities)}
               </p>
             </div>
           </div>
@@ -337,7 +523,7 @@ export default function AssetsPage() {
             <div className="ml-4">
               <p className="text-muted-foreground text-sm">Net Worth</p>
               <p className="text-foreground text-2xl font-bold">
-                {formatCurrency(netWorth / 1000000)}M
+                {formatCurrency(netWorth)}
               </p>
             </div>
           </div>
@@ -348,7 +534,7 @@ export default function AssetsPage() {
             <div className="ml-4">
               <p className="text-muted-foreground text-sm">Depreciation</p>
               <p className="text-foreground text-2xl font-bold">
-                {formatCurrency(totalDepreciation / 1000)}K
+                {formatCurrency(totalDepreciation)}
               </p>
             </div>
           </div>
@@ -387,54 +573,166 @@ export default function AssetsPage() {
                 <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase">
                   Net Value
                 </th>
+                {isAdmin && (
+                  <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase">
+                    Actions
+                  </th>
+                )}
               </tr>
             </thead>
             <tbody className="divide-border divide-y">
-              {assets.map((asset) => (
-                <tr key={asset.id} className="hover:bg-muted/50">
-                  <td className="whitespace-nowrap px-6 py-4">
-                    <div className="text-foreground text-sm font-medium">
-                      {asset.name}
-                    </div>
-                    {asset.description && (
-                      <div className="text-muted-foreground text-xs">
-                        {asset.description}
+              {assets.map((asset) => {
+                // Calculate depreciation for each asset
+                const purchaseDate = asset.purchaseDate
+                  ? new Date(asset.purchaseDate)
+                  : null;
+                const currentDate = new Date();
+                const yearsOwned = purchaseDate
+                  ? Math.max(
+                      0,
+                      (currentDate.getTime() - purchaseDate.getTime()) /
+                        (1000 * 60 * 60 * 24 * 365)
+                    )
+                  : 0;
+                const originalValue = asset.originalValue || asset.currentValue;
+                const accumulatedDepreciation =
+                  asset.depreciationRate &&
+                  asset.depreciationRate > 0 &&
+                  !asset.isAutoCalculated
+                    ? originalValue *
+                      ((asset.depreciationRate || 0) / 100) *
+                      yearsOwned
+                    : 0;
+                const depreciatedCurrentValue =
+                  asset.depreciationRate &&
+                  asset.depreciationRate > 0 &&
+                  !asset.isAutoCalculated
+                    ? Math.max(0, originalValue - accumulatedDepreciation)
+                    : asset.currentValue;
+
+                return (
+                  <tr key={asset.id} className="hover:bg-muted/50">
+                    <td className="whitespace-nowrap px-6 py-4">
+                      <div className="text-foreground text-sm font-medium">
+                        {asset.name}
                       </div>
+                      {asset.description && (
+                        <div className="text-muted-foreground text-xs">
+                          {asset.description}
+                        </div>
+                      )}
+                    </td>
+                    <td className="whitespace-nowrap px-6 py-4">
+                      <span
+                        className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${getCategoryColor(asset.category)}`}
+                      >
+                        {getCategoryDisplayName(asset.category)}
+                      </span>
+                      {asset.subCategory && (
+                        <div className="text-muted-foreground mt-1 text-xs">
+                          {asset.subCategory}
+                        </div>
+                      )}
+                    </td>
+                    <td className="text-foreground whitespace-nowrap px-6 py-4 text-sm">
+                      {asset.isAutoCalculated
+                        ? asset.details?.quantity || 'Auto'
+                        : '1'}
+                    </td>
+                    <td className="text-foreground whitespace-nowrap px-6 py-4 text-sm">
+                      {asset.isAutoCalculated &&
+                      asset.details?.isEditable &&
+                      isAdmin ? (
+                        editingAsset === asset.id ? (
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="number"
+                              value={editingUnitValue}
+                              onChange={(e) =>
+                                setEditingUnitValue(
+                                  parseFloat(e.target.value) || 0
+                                )
+                              }
+                              className="w-24 rounded border px-2 py-1 text-sm"
+                              step="0.01"
+                            />
+                            <button
+                              onClick={() => handleSaveUnitValue(asset.id)}
+                              className="text-green-600 hover:text-green-800"
+                            >
+                              <Save className="h-4 w-4" />
+                            </button>
+                            <button
+                              onClick={handleCancelEdit}
+                              className="text-red-600 hover:text-red-800"
+                            >
+                              <XCircle className="h-4 w-4" />
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="flex items-center space-x-2">
+                            <span>
+                              {formatCurrency(asset.details?.unitPrice || 0)}
+                            </span>
+                            <button
+                              onClick={() => handleStartEditUnitValue(asset)}
+                              className="text-blue-600 hover:text-blue-800"
+                            >
+                              <Edit className="h-4 w-4" />
+                            </button>
+                          </div>
+                        )
+                      ) : (
+                        formatCurrency(
+                          asset.originalValue || asset.currentValue
+                        )
+                      )}
+                    </td>
+                    <td className="text-foreground whitespace-nowrap px-6 py-4 text-sm font-medium">
+                      {formatCurrency(
+                        asset.originalValue || asset.currentValue
+                      )}
+                    </td>
+                    <td className="whitespace-nowrap px-6 py-4 text-sm text-red-600">
+                      {formatCurrency(accumulatedDepreciation)}
+                    </td>
+                    <td className="whitespace-nowrap px-6 py-4 text-sm font-bold text-green-600">
+                      {formatCurrency(depreciatedCurrentValue)}
+                    </td>
+                    {isAdmin && (
+                      <td className="whitespace-nowrap px-6 py-4 text-sm">
+                        {!asset.isAutoCalculated && (
+                          <div className="flex items-center space-x-2">
+                            <button
+                              onClick={() => handleEditAsset(asset)}
+                              className="text-blue-600 hover:text-blue-800"
+                              title="Edit Asset"
+                            >
+                              <Edit className="h-4 w-4" />
+                            </button>
+                            <button
+                              onClick={() => handleDeleteAsset(asset.id)}
+                              className="text-red-600 hover:text-red-800"
+                              title="Delete Asset"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </button>
+                          </div>
+                        )}
+                        {asset.isAutoCalculated && (
+                          <span className="text-xs text-gray-500">
+                            Auto-calculated
+                          </span>
+                        )}
+                      </td>
                     )}
-                  </td>
-                  <td className="whitespace-nowrap px-6 py-4">
-                    <span
-                      className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${getCategoryColor(asset.category)}`}
-                    >
-                      {getCategoryDisplayName(asset.category)}
-                    </span>
-                    {asset.subCategory && (
-                      <div className="text-muted-foreground mt-1 text-xs">
-                        {asset.subCategory}
-                      </div>
-                    )}
-                  </td>
-                  <td className="text-foreground whitespace-nowrap px-6 py-4 text-sm">
-                    {asset.isAutoCalculated ? 'Auto' : '1'}
-                  </td>
-                  <td className="text-foreground whitespace-nowrap px-6 py-4 text-sm">
-                    {formatCurrency(asset.originalValue || asset.currentValue)}
-                  </td>
-                  <td className="text-foreground whitespace-nowrap px-6 py-4 text-sm font-medium">
-                    {formatCurrency(asset.originalValue || asset.currentValue)}
-                  </td>
-                  <td className="whitespace-nowrap px-6 py-4 text-sm text-red-600">
-                    {formatCurrency(asset.totalDepreciation || 0)}
-                  </td>
-                  <td className="whitespace-nowrap px-6 py-4 text-sm font-bold text-green-600">
-                    {formatCurrency(asset.currentValue)}
-                  </td>
-                </tr>
-              ))}
+                  </tr>
+                );
+              })}
               {assets.length === 0 && (
                 <tr>
                   <td
-                    colSpan={7}
+                    colSpan={isAdmin ? 8 : 7}
                     className="text-muted-foreground px-6 py-4 text-center"
                   >
                     No assets found. Click "Add Assets/Liabilities" to get
@@ -476,9 +774,11 @@ export default function AssetsPage() {
                 <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase">
                   Status
                 </th>
-                <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase">
-                  Actions
-                </th>
+                {isAdmin && (
+                  <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase">
+                    Actions
+                  </th>
+                )}
               </tr>
             </thead>
             <tbody className="divide-border divide-y">
@@ -517,26 +817,32 @@ export default function AssetsPage() {
                       ACTIVE
                     </span>
                   </td>
-                  <td className="whitespace-nowrap px-6 py-4 text-sm font-medium">
-                    <button
-                      className="mr-3 text-blue-600 hover:text-blue-900"
-                      onClick={() => alert('Make Payment coming soon!')}
-                    >
-                      Pay
-                    </button>
-                    <button
-                      className="text-green-600 hover:text-green-900"
-                      onClick={() => alert('View Details coming soon!')}
-                    >
-                      Details
-                    </button>
-                  </td>
+                  {isAdmin && (
+                    <td className="whitespace-nowrap px-6 py-4 text-sm font-medium">
+                      <div className="flex items-center space-x-2">
+                        <button
+                          onClick={() => handleEditLiability(liability)}
+                          className="text-blue-600 hover:text-blue-800"
+                          title="Edit Liability"
+                        >
+                          <Edit className="h-4 w-4" />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteLiability(liability.id)}
+                          className="text-red-600 hover:text-red-800"
+                          title="Delete Liability"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      </div>
+                    </td>
+                  )}
                 </tr>
               ))}
               {liabilities.length === 0 && (
                 <tr>
                   <td
-                    colSpan={7}
+                    colSpan={isAdmin ? 7 : 6}
                     className="text-muted-foreground px-6 py-4 text-center"
                   >
                     No liabilities found. Click "Add Assets/Liabilities" to get
@@ -560,7 +866,7 @@ export default function AssetsPage() {
               Total Assets
             </h4>
             <p className="text-2xl font-bold text-green-600">
-              {formatCurrency(totalAssets / 1000000)}M
+              {formatCurrency(totalAssets)}
             </p>
           </div>
           <div className="rounded-lg bg-red-50 p-4 text-center dark:bg-red-900/20">
@@ -568,7 +874,7 @@ export default function AssetsPage() {
               Total Liabilities
             </h4>
             <p className="text-2xl font-bold text-red-600">
-              {formatCurrency(totalLiabilities / 1000000)}M
+              {formatCurrency(totalLiabilities)}
             </p>
           </div>
           <div className="rounded-lg bg-blue-50 p-4 text-center dark:bg-blue-900/20">
@@ -576,7 +882,7 @@ export default function AssetsPage() {
               Net Equity
             </h4>
             <p className="text-2xl font-bold text-blue-600">
-              {formatCurrency(netWorth / 1000000)}M
+              {formatCurrency(netWorth)}
             </p>
           </div>
         </div>
@@ -677,6 +983,9 @@ export default function AssetsPage() {
           <h3 className="text-foreground text-lg font-semibold">
             Asset Depreciation Schedule
           </h3>
+          <p className="text-muted-foreground text-sm">
+            Assets with depreciation rates and accumulated depreciation
+          </p>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full">
@@ -689,10 +998,16 @@ export default function AssetsPage() {
                   Original Cost
                 </th>
                 <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase">
+                  Purchase Date
+                </th>
+                <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase">
                   Depreciation Method
                 </th>
                 <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase">
                   Annual Rate
+                </th>
+                <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase">
+                  Years Owned
                 </th>
                 <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase">
                   Accumulated
@@ -700,71 +1015,246 @@ export default function AssetsPage() {
                 <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase">
                   Current Value
                 </th>
-                <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase">
-                  Actions
-                </th>
+                {isAdmin && (
+                  <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase">
+                    Actions
+                  </th>
+                )}
               </tr>
             </thead>
             <tbody className="divide-border divide-y">
-              <tr className="hover:bg-muted/50">
-                <td className="text-foreground whitespace-nowrap px-6 py-4 text-sm font-medium">
-                  Delivery Trucks
-                </td>
-                <td className="text-foreground whitespace-nowrap px-6 py-4 text-sm">
-                  {formatCurrency(2400000)}
-                </td>
-                <td className="text-foreground whitespace-nowrap px-6 py-4 text-sm">
-                  Straight Line
-                </td>
-                <td className="text-foreground whitespace-nowrap px-6 py-4 text-sm">
-                  10%
-                </td>
-                <td className="whitespace-nowrap px-6 py-4 text-sm text-red-600">
-                  {formatCurrency(240000)}
-                </td>
-                <td className="whitespace-nowrap px-6 py-4 text-sm font-medium text-green-600">
-                  {formatCurrency(2160000)}
-                </td>
-                <td className="whitespace-nowrap px-6 py-4 text-sm font-medium">
-                  <button
-                    className="mr-3 text-blue-600 hover:text-blue-900"
-                    onClick={() => alert('Update Depreciation coming soon!')}
+              {assets
+                .filter(
+                  (asset) =>
+                    !asset.isAutoCalculated &&
+                    asset.depreciationRate &&
+                    asset.depreciationRate > 0
+                )
+                .map((asset) => {
+                  const purchaseDate = asset.purchaseDate
+                    ? new Date(asset.purchaseDate)
+                    : null;
+                  const currentDate = new Date();
+                  const yearsOwned = purchaseDate
+                    ? Math.max(
+                        0,
+                        (currentDate.getTime() - purchaseDate.getTime()) /
+                          (1000 * 60 * 60 * 24 * 365)
+                      )
+                    : 0;
+                  const originalValue =
+                    asset.originalValue || asset.currentValue;
+                  const accumulatedDepreciation =
+                    originalValue *
+                    ((asset.depreciationRate || 0) / 100) *
+                    yearsOwned;
+                  const currentValue = Math.max(
+                    0,
+                    originalValue - accumulatedDepreciation
+                  );
+
+                  return (
+                    <tr key={asset.id} className="hover:bg-muted/50">
+                      <td className="whitespace-nowrap px-6 py-4">
+                        <div className="text-foreground text-sm font-medium">
+                          {asset.name}
+                        </div>
+                        {asset.subCategory && (
+                          <div className="text-muted-foreground text-xs">
+                            {asset.subCategory}
+                          </div>
+                        )}
+                        {asset.description && (
+                          <div className="text-muted-foreground mt-1 text-xs">
+                            {asset.description}
+                          </div>
+                        )}
+                      </td>
+                      <td className="text-foreground whitespace-nowrap px-6 py-4 text-sm font-medium">
+                        {formatCurrency(originalValue)}
+                      </td>
+                      <td className="text-foreground whitespace-nowrap px-6 py-4 text-sm">
+                        {purchaseDate
+                          ? purchaseDate.toLocaleDateString()
+                          : 'N/A'}
+                      </td>
+                      <td className="text-foreground whitespace-nowrap px-6 py-4 text-sm">
+                        Straight Line
+                      </td>
+                      <td className="text-foreground whitespace-nowrap px-6 py-4 text-sm">
+                        {asset.depreciationRate}%
+                      </td>
+                      <td className="text-foreground whitespace-nowrap px-6 py-4 text-sm">
+                        {yearsOwned.toFixed(1)} years
+                      </td>
+                      <td className="whitespace-nowrap px-6 py-4 text-sm font-medium text-red-600">
+                        {formatCurrency(accumulatedDepreciation)}
+                      </td>
+                      <td className="whitespace-nowrap px-6 py-4 text-sm font-bold text-green-600">
+                        {formatCurrency(currentValue)}
+                      </td>
+                      {isAdmin && (
+                        <td className="whitespace-nowrap px-6 py-4 text-sm">
+                          <div className="flex items-center space-x-2">
+                            <button
+                              onClick={() => handleEditAsset(asset)}
+                              className="text-blue-600 hover:text-blue-800"
+                              title="Edit Depreciation Settings"
+                            >
+                              <Edit className="h-4 w-4" />
+                            </button>
+                            <button
+                              onClick={() => handleDeleteAsset(asset.id)}
+                              className="text-red-600 hover:text-red-800"
+                              title="Delete Asset"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </button>
+                          </div>
+                        </td>
+                      )}
+                    </tr>
+                  );
+                })}
+              {assets.filter(
+                (asset) =>
+                  !asset.isAutoCalculated &&
+                  asset.depreciationRate &&
+                  asset.depreciationRate > 0
+              ).length === 0 && (
+                <tr>
+                  <td
+                    colSpan={isAdmin ? 9 : 8}
+                    className="text-muted-foreground px-6 py-8 text-center"
                   >
-                    Update
-                  </button>
-                </td>
-              </tr>
-              <tr className="hover:bg-muted/50">
-                <td className="text-foreground whitespace-nowrap px-6 py-4 text-sm font-medium">
-                  Office Equipment
-                </td>
-                <td className="text-foreground whitespace-nowrap px-6 py-4 text-sm">
-                  {formatCurrency(150000)}
-                </td>
-                <td className="text-foreground whitespace-nowrap px-6 py-4 text-sm">
-                  Straight Line
-                </td>
-                <td className="text-foreground whitespace-nowrap px-6 py-4 text-sm">
-                  20%
-                </td>
-                <td className="whitespace-nowrap px-6 py-4 text-sm text-red-600">
-                  {formatCurrency(30000)}
-                </td>
-                <td className="whitespace-nowrap px-6 py-4 text-sm font-medium text-green-600">
-                  {formatCurrency(120000)}
-                </td>
-                <td className="whitespace-nowrap px-6 py-4 text-sm font-medium">
-                  <button
-                    className="mr-3 text-blue-600 hover:text-blue-900"
-                    onClick={() => alert('Update Depreciation coming soon!')}
-                  >
-                    Update
-                  </button>
-                </td>
-              </tr>
+                    <div className="flex flex-col items-center space-y-2">
+                      <Package className="h-12 w-12 text-gray-300" />
+                      <p>No assets with depreciation found.</p>
+                      <p className="text-sm">
+                        Add assets with purchase dates and depreciation rates to
+                        see their depreciation schedule.
+                      </p>
+                      {isAdmin && (
+                        <button
+                          onClick={() => openModal('asset')}
+                          className="mt-2 rounded-md bg-blue-600 px-4 py-2 text-sm text-white hover:bg-blue-700"
+                        >
+                          Add Depreciable Asset
+                        </button>
+                      )}
+                    </div>
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
+        {assets.filter(
+          (asset) =>
+            !asset.isAutoCalculated &&
+            asset.depreciationRate &&
+            asset.depreciationRate > 0
+        ).length > 0 && (
+          <div className="bg-muted/30 px-6 py-4">
+            <div className="grid grid-cols-1 gap-4 text-sm md:grid-cols-3">
+              <div className="text-center">
+                <span className="text-muted-foreground">
+                  Total Original Cost:
+                </span>
+                <div className="text-foreground font-semibold">
+                  {formatCurrency(
+                    assets
+                      .filter(
+                        (asset) =>
+                          !asset.isAutoCalculated &&
+                          asset.depreciationRate &&
+                          asset.depreciationRate > 0
+                      )
+                      .reduce(
+                        (sum, asset) =>
+                          sum + (asset.originalValue || asset.currentValue),
+                        0
+                      )
+                  )}
+                </div>
+              </div>
+              <div className="text-center">
+                <span className="text-muted-foreground">
+                  Total Depreciation:
+                </span>
+                <div className="font-semibold text-red-600">
+                  {formatCurrency(
+                    assets
+                      .filter(
+                        (asset) =>
+                          !asset.isAutoCalculated &&
+                          asset.depreciationRate &&
+                          asset.depreciationRate > 0
+                      )
+                      .reduce((sum, asset) => {
+                        const purchaseDate = asset.purchaseDate
+                          ? new Date(asset.purchaseDate)
+                          : null;
+                        const currentDate = new Date();
+                        const yearsOwned = purchaseDate
+                          ? Math.max(
+                              0,
+                              (currentDate.getTime() - purchaseDate.getTime()) /
+                                (1000 * 60 * 60 * 24 * 365)
+                            )
+                          : 0;
+                        const originalValue =
+                          asset.originalValue || asset.currentValue;
+                        return (
+                          sum +
+                          originalValue *
+                            ((asset.depreciationRate || 0) / 100) *
+                            yearsOwned
+                        );
+                      }, 0)
+                  )}
+                </div>
+              </div>
+              <div className="text-center">
+                <span className="text-muted-foreground">Net Book Value:</span>
+                <div className="font-semibold text-green-600">
+                  {formatCurrency(
+                    assets
+                      .filter(
+                        (asset) =>
+                          !asset.isAutoCalculated &&
+                          asset.depreciationRate &&
+                          asset.depreciationRate > 0
+                      )
+                      .reduce((sum, asset) => {
+                        const purchaseDate = asset.purchaseDate
+                          ? new Date(asset.purchaseDate)
+                          : null;
+                        const currentDate = new Date();
+                        const yearsOwned = purchaseDate
+                          ? Math.max(
+                              0,
+                              (currentDate.getTime() - purchaseDate.getTime()) /
+                                (1000 * 60 * 60 * 24 * 365)
+                            )
+                          : 0;
+                        const originalValue =
+                          asset.originalValue || asset.currentValue;
+                        const accumulatedDepreciation =
+                          originalValue *
+                          ((asset.depreciationRate || 0) / 100) *
+                          yearsOwned;
+                        return (
+                          sum +
+                          Math.max(0, originalValue - accumulatedDepreciation)
+                        );
+                      }, 0)
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Add Asset/Liability Modal */}
@@ -773,7 +1263,8 @@ export default function AssetsPage() {
           <div className="bg-card w-full max-w-md rounded-lg p-6">
             <div className="mb-4 flex items-center justify-between">
               <h3 className="text-foreground text-lg font-semibold">
-                Add New {modalType === 'asset' ? 'Asset' : 'Liability'}
+                {editingItem ? 'Edit' : 'Add New'}{' '}
+                {modalType === 'asset' ? 'Asset' : 'Liability'}
               </h3>
               <button
                 onClick={closeModal}
@@ -786,7 +1277,13 @@ export default function AssetsPage() {
             <div className="mb-4">
               <div className="flex space-x-2">
                 <button
-                  onClick={() => setModalType('asset')}
+                  onClick={() => {
+                    setModalType('asset');
+                    setFormData((prev) => ({
+                      ...prev,
+                      category: 'FIXED_ASSET',
+                    }));
+                  }}
                   className={`rounded-md px-3 py-1 text-sm ${
                     modalType === 'asset'
                       ? 'bg-blue-600 text-white'
@@ -796,7 +1293,13 @@ export default function AssetsPage() {
                   Asset
                 </button>
                 <button
-                  onClick={() => setModalType('liability')}
+                  onClick={() => {
+                    setModalType('liability');
+                    setFormData((prev) => ({
+                      ...prev,
+                      category: 'CURRENT_LIABILITY',
+                    }));
+                  }}
                   className={`rounded-md px-3 py-1 text-sm ${
                     modalType === 'liability'
                       ? 'bg-red-600 text-white'
@@ -1016,7 +1519,8 @@ export default function AssetsPage() {
                   modalType === 'asset' ? 'bg-blue-600' : 'bg-red-600'
                 }`}
               >
-                Add {modalType === 'asset' ? 'Asset' : 'Liability'}
+                {editingItem ? 'Update' : 'Add'}{' '}
+                {modalType === 'asset' ? 'Asset' : 'Liability'}
               </button>
             </div>
           </div>

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { X, Upload } from 'lucide-react';
 import { ExpenseParentCategory, ExpenseCategory } from '@/hooks/useCategories';
 import { expenseSchema, ExpenseFormData } from '@/lib/validations/expense';
+import { useSettings } from '@/contexts/SettingsContext';
 import { z } from 'zod';
 
 interface ExpenseFormProps {
@@ -25,6 +26,7 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
   submitLabel,
   isSubmitting,
 }) => {
+  const { t } = useSettings();
   const [formData, setFormData] = useState<
     ExpenseFormData & { parentCategoryId: string }
   >({
@@ -147,7 +149,7 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
           {/* Amount */}
           <div>
             <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Amount *
+              {t('amount')} *
             </label>
             <input
               type="number"
@@ -162,7 +164,7 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
                   ? 'border-red-500'
                   : 'border-gray-300 dark:border-gray-600'
               }`}
-              placeholder="0.00"
+              placeholder={t('amountPlaceholder')}
             />
             {errors.amount && (
               <p className="mt-1 text-sm text-red-600 dark:text-red-400">
@@ -174,7 +176,7 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
           {/* Description */}
           <div>
             <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Description
+              {t('description')}
             </label>
             <input
               type="text"
@@ -185,7 +187,7 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
                   ? 'border-red-500'
                   : 'border-gray-300 dark:border-gray-600'
               }`}
-              placeholder="Enter expense description"
+              placeholder={t('enterExpenseDescription')}
             />
             {errors.description && (
               <p className="mt-1 text-sm text-red-600 dark:text-red-400">
@@ -197,7 +199,7 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
           {/* Parent Category */}
           <div>
             <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Parent Category *
+              {t('parentCategory')} *
             </label>
             <select
               value={formData.parentCategoryId}
@@ -213,7 +215,7 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
                   : 'border-gray-300 dark:border-gray-600'
               }`}
             >
-              <option value="">Select a parent category</option>
+              <option value="">{t('selectParentCategory')}</option>
               {parentCategories.map((category) => (
                 <option key={category.id} value={category.id}>
                   {category.name}
@@ -230,7 +232,7 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
           {/* Category */}
           <div>
             <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Category *
+              {t('category')} *
             </label>
             <select
               value={formData.categoryId}
@@ -242,7 +244,7 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
                   : 'border-gray-300 dark:border-gray-600'
               }`}
             >
-              <option value="">Select a category</option>
+              <option value="">{t('selectCategory')}</option>
               {subCategories.map((category) => (
                 <option key={category.id} value={category.id}>
                   {category.name}
@@ -259,7 +261,7 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
           {/* Expense Date */}
           <div>
             <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Expense Date *
+              {t('expenseDate')} *
             </label>
             <input
               type="date"
@@ -281,7 +283,7 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
           {/* Receipt URL */}
           <div>
             <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Receipt URL
+              {t('receiptUrl')}
             </label>
             <input
               type="url"
@@ -292,7 +294,7 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
                   ? 'border-red-500'
                   : 'border-gray-300 dark:border-gray-600'
               }`}
-              placeholder="https://example.com/receipt.pdf"
+              placeholder={t('receiptUrlPlaceholder')}
             />
             {errors.receiptUrl && (
               <p className="mt-1 text-sm text-red-600 dark:text-red-400">
@@ -304,7 +306,7 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
           {/* Notes */}
           <div>
             <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Notes
+              {t('notes')}
             </label>
             <textarea
               value={formData.notes || ''}
@@ -315,7 +317,7 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
                   ? 'border-red-500'
                   : 'border-gray-300 dark:border-gray-600'
               }`}
-              placeholder="Additional notes..."
+              placeholder={t('additionalNotesComments')}
             />
             {errors.notes && (
               <p className="mt-1 text-sm text-red-600 dark:text-red-400">
@@ -331,7 +333,7 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
               onClick={handleClose}
               className="text-muted-foreground border-border hover:bg-muted/50 rounded-md border px-4 py-2 transition-colors"
             >
-              Cancel
+              {t('cancel')}
             </button>
             <button
               type="submit"
@@ -341,7 +343,7 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
               {isSubmitting ? (
                 <>
                   <div className="mr-2 h-4 w-4 animate-spin rounded-full border-b-2 border-white"></div>
-                  Submitting...
+                  {t('submitting')}
                 </>
               ) : (
                 submitLabel

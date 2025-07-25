@@ -90,7 +90,7 @@ export default function ReceivablesPage() {
 
   // Helper function to format dates using global settings
   const formatDate = (dateString: string | null | undefined) => {
-    if (!dateString) return 'No date';
+    if (!dateString) return t('noDate');
     try {
       // Debug logging (only during development)
       if (process.env.NODE_ENV === 'development') {
@@ -128,7 +128,7 @@ export default function ReceivablesPage() {
       // Check if the date is valid
       if (isNaN(date.getTime())) {
         console.warn('Invalid date string:', dateString);
-        return 'Invalid date';
+        return t('invalidDate');
       }
 
       // Use global settings formatDate function with additional debugging
@@ -139,19 +139,19 @@ export default function ReceivablesPage() {
       return formatted;
     } catch (error) {
       console.error('Date formatting error:', error, 'for date:', dateString);
-      return 'Invalid date';
+      return t('invalidDate');
     }
   };
 
   // Helper function to format timestamps with date and time using global settings
   const formatTimestamp = (timestamp: string | Date) => {
-    if (!timestamp) return 'No timestamp';
+    if (!timestamp) return t('noTimestamp');
     try {
       const date = new Date(timestamp);
       // Use global settings formatDateTime function
       return formatDateTime(date);
     } catch (error) {
-      return 'Invalid timestamp';
+      return t('invalidTimestamp');
     }
   };
 
@@ -236,16 +236,16 @@ export default function ReceivablesPage() {
         setValidationErrors(data.validationErrors || []);
       } else {
         toast({
-          title: 'Error',
-          description: 'Failed to fetch receivables',
+          title: t('error'),
+          description: t('failedToFetchReceivables'),
           variant: 'destructive',
         });
       }
     } catch (error) {
       console.error('Error fetching receivables:', error);
       toast({
-        title: 'Error',
-        description: 'Failed to fetch receivables',
+        title: t('error'),
+        description: t('failedToFetchReceivables'),
         variant: 'destructive',
       });
     } finally {
@@ -254,15 +254,6 @@ export default function ReceivablesPage() {
   };
 
   const recalculateReceivables = async () => {
-    if (currentUserRole !== 'ADMIN') {
-      toast({
-        title: 'Access Denied',
-        description: 'Only administrators can recalculate receivables.',
-        variant: 'destructive',
-      });
-      return;
-    }
-
     try {
       setSubmitting(true);
       const response = await fetch('/api/receivables/recalculate', {
@@ -272,25 +263,25 @@ export default function ReceivablesPage() {
       if (response.ok) {
         const result = await response.json();
         toast({
-          title: 'Success',
+          title: t('success'),
           description:
-            result.message || 'Receivables recalculated successfully',
+            result.message || t('receivablesRecalculatedSuccessfully'),
         });
         // Refresh the receivables data
         await fetchReceivables();
       } else {
         const errorData = await response.json();
         toast({
-          title: 'Error',
-          description: errorData.error || 'Failed to recalculate receivables',
+          title: t('error'),
+          description: errorData.error || t('failedToRecalculateReceivables'),
           variant: 'destructive',
         });
       }
     } catch (error) {
       console.error('Error recalculating receivables:', error);
       toast({
-        title: 'Error',
-        description: 'Failed to recalculate receivables',
+        title: t('error'),
+        description: t('failedToRecalculateReceivables'),
         variant: 'destructive',
       });
     } finally {
@@ -357,6 +348,21 @@ export default function ReceivablesPage() {
     }
   };
 
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case 'CURRENT':
+        return t('current');
+      case 'DUE_SOON':
+        return t('dueSoon');
+      case 'OVERDUE':
+        return t('overdue');
+      case 'PAID':
+        return t('paid');
+      default:
+        return status;
+    }
+  };
+
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'CURRENT':
@@ -374,16 +380,6 @@ export default function ReceivablesPage() {
     driverId: string,
     customer?: CustomerReceivable
   ) => {
-    if (currentUserRole !== 'ADMIN') {
-      toast({
-        title: 'Access Denied',
-        description:
-          'Only administrators can add or edit customer receivables.',
-        variant: 'destructive',
-      });
-      return;
-    }
-
     setSelectedDriver(driverId);
     if (customer) {
       setEditingCustomer(customer);
@@ -458,10 +454,10 @@ export default function ReceivablesPage() {
 
       if (response.ok) {
         toast({
-          title: 'Success',
+          title: t('success'),
           description: editingCustomer
-            ? 'Customer receivable updated successfully'
-            : 'Customer receivable added successfully',
+            ? t('customerReceivableUpdatedSuccessfully')
+            : t('customerReceivableAddedSuccessfully'),
         });
 
         // Refresh the receivables list
@@ -479,8 +475,8 @@ export default function ReceivablesPage() {
       } else {
         const errorData = await response.json();
         toast({
-          title: 'Error',
-          description: errorData.error || 'Failed to save customer receivable',
+          title: t('error'),
+          description: errorData.error || t('failedToSaveCustomerReceivable'),
           variant: 'destructive',
         });
       }
@@ -497,15 +493,6 @@ export default function ReceivablesPage() {
   };
 
   const handleDeleteCustomer = async (driverId: string, customerId: string) => {
-    if (currentUserRole !== 'ADMIN') {
-      toast({
-        title: 'Access Denied',
-        description: 'Only administrators can delete customer receivables.',
-        variant: 'destructive',
-      });
-      return;
-    }
-
     if (!confirm('Are you sure you want to delete this customer receivable?'))
       return;
 
@@ -682,32 +669,30 @@ export default function ReceivablesPage() {
               {currentUserRole}
             </span>
           </div>
-          {currentUserRole === 'ADMIN' && (
-            <button
-              className="flex items-center rounded-lg bg-green-600 px-4 py-2 text-white hover:bg-green-700 disabled:opacity-50"
-              onClick={recalculateReceivables}
-              disabled={submitting}
-            >
-              {submitting ? (
-                <div className="mr-2 h-4 w-4 animate-spin rounded-full border-b-2 border-white"></div>
-              ) : (
-                <TrendingUp className="mr-2 h-4 w-4" />
-              )}
-              {t('refresh')}
-            </button>
-          )}
+          <button
+            className="flex items-center rounded-lg bg-green-600 px-4 py-2 text-white hover:bg-green-700 disabled:opacity-50"
+            onClick={recalculateReceivables}
+            disabled={submitting}
+          >
+            {submitting ? (
+              <div className="mr-2 h-4 w-4 animate-spin rounded-full border-b-2 border-white"></div>
+            ) : (
+              <TrendingUp className="mr-2 h-4 w-4" />
+            )}
+            {t('recalculate')} {t('receivables')}
+          </button>
           <button
             className="flex items-center rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
             onClick={() =>
               toast({
-                title: 'Coming Soon',
-                description: 'Export Report functionality is under development',
+                title: t('comingSoon'),
+                description: t('exportReportFunctionality'),
                 variant: 'default',
               })
             }
           >
             <Download className="mr-2 h-4 w-4" />
-            Export Report
+            {t('exportReport')}
           </button>
         </div>
       </div>
@@ -718,15 +703,13 @@ export default function ReceivablesPage() {
           <div className="mb-2 flex items-center">
             <AlertCircle className="mr-2 h-5 w-5 text-red-500" />
             <span className="font-medium text-red-800 dark:text-red-200">
-              ⚠️ Receivables Validation Error: Customer receivables don't match
+              ⚠️ {t('validationError')}: {t('customerReceivablesDontMatch')}
               sales-based totals
             </span>
           </div>
           <div className="ml-7 space-y-2">
             <p className="mb-2 text-xs text-red-600 dark:text-red-400">
-              Driver total receivables come from sales data and cannot be
-              edited. Customer receivable totals must equal the sales totals for
-              each driver.
+              {t('driverTotalReceivablesFromSales')}. {t('customerReceivableTotalsMustEqual')}.
             </p>
             {validationErrors.map((error) => (
               <div
@@ -739,12 +722,12 @@ export default function ReceivablesPage() {
                 {error.cashMismatch && (
                   <div className="ml-2 mt-1">
                     <span className="text-red-700 dark:text-red-300">
-                      💰 Cash Mismatch: Customer Total{' '}
-                      {formatCurrency(error.cashMismatch.customer)} ≠ Sales
-                      Total {formatCurrency(error.cashMismatch.sales)}
+                      💰 {t('cashMismatch')}: {t('customerTotal')}{' '}
+                      {formatCurrency(error.cashMismatch.customer)} ≠ {t('salesTotal')}{' '}
+                      {formatCurrency(error.cashMismatch.sales)}
                       <span className="font-bold">
                         {' '}
-                        (Difference:{' '}
+                        ({t('difference')}:{' '}
                         {formatCurrency(
                           Math.abs(error.cashMismatch.difference)
                         )}
@@ -756,12 +739,12 @@ export default function ReceivablesPage() {
                 {error.cylinderMismatch && (
                   <div className="ml-2 mt-1">
                     <span className="text-red-700 dark:text-red-300">
-                      🛢️ Cylinder Mismatch: Customer Total{' '}
-                      {error.cylinderMismatch.customer} ≠ Sales Total{' '}
+                      🛢️ {t('cylinderMismatch')}: {t('customerTotal')}{' '}
+                      {error.cylinderMismatch.customer} ≠ {t('salesTotal')}{' '}
                       {error.cylinderMismatch.sales}
                       <span className="font-bold">
                         {' '}
-                        (Difference:{' '}
+                        ({t('difference')}:{' '}
                         {Math.abs(error.cylinderMismatch.difference)})
                       </span>
                     </span>
@@ -779,8 +762,8 @@ export default function ReceivablesPage() {
           <div className="flex items-center">
             <AlertCircle className="mr-2 h-5 w-5 text-red-500" />
             <span className="font-medium text-red-800 dark:text-red-200">
-              {overdueCustomers.length} customer(s) with overdue payments
-              totaling {formatCurrency(overdueAmount)} require immediate
+              {overdueCustomers.length} {t('customersWithOverduePayments')}
+              totaling {formatCurrency(overdueAmount)} {t('requireImmediate')}
               attention
             </span>
           </div>
@@ -793,33 +776,28 @@ export default function ReceivablesPage() {
           <AlertCircle className="mr-2 mt-0.5 h-5 w-5 text-blue-500" />
           <div className="text-blue-800 dark:text-blue-200">
             <div className="mb-2 font-medium">
-              📋 Receivables Management System Rules:
+              📋 {t('receivablesManagementSystemRules')}:
             </div>
             <ul className="ml-4 space-y-1 text-sm">
               <li>
-                • <strong>Driver Total Receivables:</strong> Automatically
-                calculated from sales data (non-editable)
+                • <strong>{t('driverTotalReceivables')}:</strong> {t('automaticallyCalculatedFromSales')}
               </li>
               <li>
-                • <strong>Customer Receivables:</strong> Manually managed by
-                administrators under each driver
+                • <strong>{t('customers')} {t('receivables')}:</strong> {t('customerReceivablesManuallyManaged')}
               </li>
               <li>
-                • <strong>Validation:</strong> Customer totals must equal driver
-                sales totals
+                • <strong>{t('validation')}:</strong> {t('customerTotalsMustEqualDriverSales')}
               </li>
               <li>
-                • <strong>Payments:</strong> Automatically added to daily
-                deposits when recorded
+                • <strong>{t('payments')}:</strong> {t('paymentsAutomaticallyAdded')}
               </li>
               <li>
-                • <strong>Changes Log:</strong> All receivable actions are
-                tracked in the Changes tab
+                • <strong>{t('changesLog')}:</strong> {t('changesLogAllReceivableActions')}
               </li>
             </ul>
             {currentUserRole === 'MANAGER' && (
               <div className="mt-2 text-sm">
-                <strong>Manager Access:</strong> You can record payments and
+                <strong>{t('managerAccess')}:</strong> {t('youCanRecordPayments')}
                 returns, but only admins can add/edit customers.
               </div>
             )}
@@ -834,13 +812,13 @@ export default function ReceivablesPage() {
             <CreditCard className="h-8 w-8 text-blue-500" />
             <div className="ml-4">
               <p className="text-muted-foreground text-sm">
-                Sales Cash Receivables
+                {t('salesCashReceivables')}
               </p>
               <p className="text-foreground text-2xl font-bold">
                 {formatCurrency(totalCashReceivables)}
               </p>
               <p className="text-xs text-blue-600 dark:text-blue-400">
-                From Sales Data
+                {t('fromSalesData')}
               </p>
             </div>
           </div>
@@ -861,13 +839,13 @@ export default function ReceivablesPage() {
             <Clock className="h-8 w-8 text-purple-500" />
             <div className="ml-4">
               <p className="text-muted-foreground text-sm">
-                Sales Cylinder Receivables
+                {t('salesCylinderReceivables')}
               </p>
               <p className="text-foreground text-2xl font-bold">
                 {totalCylinderReceivables}
               </p>
               <p className="text-xs text-purple-600 dark:text-purple-400">
-                From Sales Data
+                {t('fromSalesData')}
               </p>
             </div>
           </div>
@@ -876,7 +854,7 @@ export default function ReceivablesPage() {
           <div className="flex items-center">
             <Users className="h-8 w-8 text-green-500" />
             <div className="ml-4">
-              <p className="text-muted-foreground text-sm">Active Drivers</p>
+              <p className="text-muted-foreground text-sm">{t('activeDrivers')}</p>
               <p className="text-foreground text-2xl font-bold">
                 {driverReceivables.length}
               </p>
@@ -929,7 +907,7 @@ export default function ReceivablesPage() {
             <div className="bg-card rounded-lg p-8 shadow">
               <div className="text-center text-gray-500 dark:text-gray-400">
                 <Users className="mx-auto mb-4 h-12 w-12 text-gray-300" />
-                <p className="mb-2 text-lg font-medium">No receivables found</p>
+                <p className="mb-2 text-lg font-medium">{t('noReceivablesFound')}</p>
                 <p className="text-sm">
                   Customer receivables will appear here once they are created.
                 </p>
@@ -976,15 +954,13 @@ export default function ReceivablesPage() {
                           ).length || 0}
                         </span>
                       </div>
-                      {currentUserRole === 'ADMIN' && (
-                        <button
-                          onClick={() => openCustomerModal(driver.id)}
-                          className="flex items-center rounded-md bg-green-600 px-3 py-1 text-sm text-white hover:bg-green-700"
-                        >
-                          <Plus className="mr-1 h-4 w-4" />
-                          Add Customer
-                        </button>
-                      )}
+                      <button
+                        onClick={() => openCustomerModal(driver.id)}
+                        className="flex items-center rounded-md bg-green-600 px-3 py-1 text-sm text-white hover:bg-green-700"
+                      >
+                        <Plus className="mr-1 h-4 w-4" />
+                        {t('add')} {t('customers')}
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -1103,32 +1079,25 @@ export default function ReceivablesPage() {
                                       >
                                         {t('pay')}
                                       </button>
-                                      {currentUserRole === 'ADMIN' && (
-                                        <>
-                                          <button
-                                            onClick={() =>
-                                              openCustomerModal(
-                                                driver.id,
-                                                customer
-                                              )
-                                            }
-                                            className="text-blue-600 hover:text-blue-900 dark:text-blue-400"
-                                          >
-                                            <Edit2 className="h-4 w-4" />
-                                          </button>
-                                          <button
-                                            onClick={() =>
-                                              handleDeleteCustomer(
-                                                driver.id,
-                                                customer.id
-                                              )
-                                            }
-                                            className="text-red-600 hover:text-red-900 dark:text-red-400"
-                                          >
-                                            <Trash2 className="h-4 w-4" />
-                                          </button>
-                                        </>
-                                      )}
+                                      <button
+                                        onClick={() =>
+                                          openCustomerModal(driver.id, customer)
+                                        }
+                                        className="text-blue-600 hover:text-blue-900 dark:text-blue-400"
+                                      >
+                                        <Edit2 className="h-4 w-4" />
+                                      </button>
+                                      <button
+                                        onClick={() =>
+                                          handleDeleteCustomer(
+                                            driver.id,
+                                            customer.id
+                                          )
+                                        }
+                                        className="text-red-600 hover:text-red-900 dark:text-red-400"
+                                      >
+                                        <Trash2 className="h-4 w-4" />
+                                      </button>
                                     </div>
                                   </td>
                                 </tr>
@@ -1245,32 +1214,25 @@ export default function ReceivablesPage() {
                                       >
                                         {t('return')}
                                       </button>
-                                      {currentUserRole === 'ADMIN' && (
-                                        <>
-                                          <button
-                                            onClick={() =>
-                                              openCustomerModal(
-                                                driver.id,
-                                                customer
-                                              )
-                                            }
-                                            className="text-blue-600 hover:text-blue-900 dark:text-blue-400"
-                                          >
-                                            <Edit2 className="h-4 w-4" />
-                                          </button>
-                                          <button
-                                            onClick={() =>
-                                              handleDeleteCustomer(
-                                                driver.id,
-                                                customer.id
-                                              )
-                                            }
-                                            className="text-red-600 hover:text-red-900 dark:text-red-400"
-                                          >
-                                            <Trash2 className="h-4 w-4" />
-                                          </button>
-                                        </>
-                                      )}
+                                      <button
+                                        onClick={() =>
+                                          openCustomerModal(driver.id, customer)
+                                        }
+                                        className="text-blue-600 hover:text-blue-900 dark:text-blue-400"
+                                      >
+                                        <Edit2 className="h-4 w-4" />
+                                      </button>
+                                      <button
+                                        onClick={() =>
+                                          handleDeleteCustomer(
+                                            driver.id,
+                                            customer.id
+                                          )
+                                        }
+                                        className="text-red-600 hover:text-red-900 dark:text-red-400"
+                                      >
+                                        <Trash2 className="h-4 w-4" />
+                                      </button>
                                     </div>
                                   </td>
                                 </tr>
@@ -1320,7 +1282,7 @@ export default function ReceivablesPage() {
         <div className="bg-card rounded-lg shadow">
           <div className="border-border border-b px-6 py-4">
             <h2 className="text-foreground text-lg font-semibold">
-              Receivables Changes Log
+              {t('receivablesChangesLog')}
             </h2>
             <p className="text-muted-foreground text-sm">
               Recent changes to customer receivables
@@ -1339,7 +1301,7 @@ export default function ReceivablesPage() {
           ) : receivablesChanges.length === 0 ? (
             <div className="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
               <FileText className="mx-auto mb-4 h-12 w-12 text-gray-300" />
-              <p className="mb-2 text-lg font-medium">No changes recorded</p>
+              <p className="mb-2 text-lg font-medium">{t('noChangesRecorded')}</p>
               <p className="text-sm">
                 Receivables changes will appear here once actions are taken.
               </p>
@@ -1441,8 +1403,8 @@ export default function ReceivablesPage() {
             <div className="mb-4 flex items-center justify-between">
               <h3 className="text-foreground text-lg font-semibold">
                 {editingCustomer
-                  ? 'Edit Customer Receivable'
-                  : 'Add Customer Receivable'}
+                  ? t('editCustomerReceivable')
+                  : t('addCustomerReceivable')}
               </h3>
               <button
                 onClick={() => setIsCustomerModalOpen(false)}
@@ -1455,7 +1417,7 @@ export default function ReceivablesPage() {
             <div className="space-y-4">
               <div>
                 <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Customer Name *
+                  {t('customers')} {t('name')} *
                 </label>
                 <input
                   type="text"
@@ -1467,7 +1429,7 @@ export default function ReceivablesPage() {
                     })
                   }
                   className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-                  placeholder="Enter customer name"
+                  placeholder={t('customerNamePlaceholder')}
                 />
               </div>
 
@@ -1485,8 +1447,8 @@ export default function ReceivablesPage() {
                   }
                   className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
                 >
-                  <option value="CASH">Cash Receivable</option>
-                  <option value="CYLINDER">Cylinder Receivable</option>
+                  <option value="CASH">{t('cashReceivable')}</option>
+                  <option value="CYLINDER">{t('cylinderReceivable')}</option>
                 </select>
               </div>
 
@@ -1505,7 +1467,7 @@ export default function ReceivablesPage() {
                       })
                     }
                     className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-                    placeholder="Enter amount"
+                    placeholder={t('enterPaymentAmount')}
                   />
                 </div>
               )}
@@ -1525,7 +1487,7 @@ export default function ReceivablesPage() {
                       })
                     }
                     className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-                    placeholder="Enter quantity"
+                    placeholder={t('enterNumberOfCylinders')}
                   />
                 </div>
               )}
@@ -1588,7 +1550,7 @@ export default function ReceivablesPage() {
                 {submitting && (
                   <div className="mr-2 h-4 w-4 animate-spin rounded-full border-b-2 border-white"></div>
                 )}
-                {editingCustomer ? 'Update' : 'Add'} Customer
+                {editingCustomer ? t('updatePayment') : t('add')} {t('customers')}
               </button>
             </div>
           </div>
@@ -1601,7 +1563,7 @@ export default function ReceivablesPage() {
           <div className="bg-card w-full max-w-md rounded-lg p-6">
             <div className="mb-4 flex items-center justify-between">
               <h3 className="text-foreground text-lg font-semibold">
-                Record Payment
+                {t('recordPayment')}
               </h3>
               <button
                 onClick={() => setIsPaymentModalOpen(false)}
@@ -1637,7 +1599,7 @@ export default function ReceivablesPage() {
                   }
                   max={selectedCustomer.amount}
                   className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-                  placeholder="Enter payment amount"
+                  placeholder={t('enterPaymentAmount')}
                 />
               </div>
 
@@ -1655,8 +1617,8 @@ export default function ReceivablesPage() {
                   }
                   className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
                 >
-                  <option value="cash">Cash</option>
-                  <option value="bank_transfer">Bank Transfer</option>
+                  <option value="cash">{t('cash')}</option>
+                  <option value="bank_transfer">{t('bankTransfer')}</option>
                   <option value="cheque">Cheque</option>
                   <option value="digital_payment">Digital Payment</option>
                 </select>
@@ -1697,7 +1659,7 @@ export default function ReceivablesPage() {
                 {submitting && (
                   <div className="mr-2 h-4 w-4 animate-spin rounded-full border-b-2 border-white"></div>
                 )}
-                Record Payment
+                {t('recordPayment')}
               </button>
             </div>
           </div>
@@ -1710,7 +1672,7 @@ export default function ReceivablesPage() {
           <div className="bg-card w-full max-w-md rounded-lg p-6">
             <div className="mb-4 flex items-center justify-between">
               <h3 className="text-foreground text-lg font-semibold">
-                Record Cylinder Return
+                {t('recordCylinderReturn')}
               </h3>
               <button
                 onClick={() => setIsCylinderReturnModalOpen(false)}
@@ -1747,7 +1709,7 @@ export default function ReceivablesPage() {
                   min="1"
                   max={selectedCustomer.quantity}
                   className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-                  placeholder="Enter number of cylinders"
+                  placeholder={t('enterNumberOfCylinders')}
                 />
               </div>
 
@@ -1789,7 +1751,7 @@ export default function ReceivablesPage() {
                 {submitting && (
                   <div className="mr-2 h-4 w-4 animate-spin rounded-full border-b-2 border-white"></div>
                 )}
-                Record Return
+                {t('recordReturn')}
               </button>
             </div>
           </div>

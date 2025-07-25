@@ -40,7 +40,7 @@ const createAssetSchema = z.object({
   description: z.string().optional(),
   purchaseDate: z
     .string()
-    .transform((val) => (val ? new Date(val) : undefined))
+    .transform((val) => (val && val.trim() !== '' ? new Date(val) : undefined))
     .optional(),
   depreciationRate: z.number().min(0).max(100).optional(),
 });
@@ -155,6 +155,143 @@ export async function GET(request: NextRequest) {
   }
 }
 
+export async function PUT(request: NextRequest) {
+  try {
+    const session = await auth();
+    if (!session?.user?.tenantId || session.user.role !== UserRole.ADMIN) {
+      return NextResponse.json(
+        { error: 'Unauthorized - Admin access required' },
+        { status: 401 }
+      );
+    }
+
+    const body = await request.json();
+    const { id, unitValue, ...updateData } = body;
+
+    if (!id) {
+      return NextResponse.json(
+        { error: 'Asset ID is required' },
+        { status: 400 }
+      );
+    }
+
+    const tenantId = session.user.tenantId;
+
+    // Handle inventory asset unit value updates
+    if (id.startsWith('auto-') && unitValue !== undefined) {
+      // For auto-calculated assets, we store unit values in a separate table
+      await prisma.inventoryAssetValue.upsert({
+        where: {
+          tenantId_assetType: {
+            tenantId,
+            assetType: id,
+          },
+        },
+        update: {
+          unitValue,
+          updatedAt: new Date(),
+        },
+        create: {
+          tenantId,
+          assetType: id,
+          unitValue,
+        },
+      });
+
+      return NextResponse.json({
+        success: true,
+        message: 'Unit value updated successfully',
+      });
+    }
+
+    // Handle regular asset updates
+    const validatedData = createAssetSchema.parse(updateData);
+
+    const asset = await prisma.asset.update({
+      where: {
+        id,
+        tenantId,
+      },
+      data: {
+        name: validatedData.name,
+        category: validatedData.category,
+        subCategory: validatedData.subCategory ?? null,
+        value: validatedData.value,
+        description: validatedData.description ?? null,
+        purchaseDate: validatedData.purchaseDate ?? null,
+        depreciationRate: validatedData.depreciationRate ?? null,
+        updatedAt: new Date(),
+      },
+    });
+
+    return NextResponse.json({
+      success: true,
+      asset,
+    });
+  } catch (error) {
+    console.error('Asset update error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(request: NextRequest) {
+  try {
+    const session = await auth();
+    if (!session?.user?.tenantId || session.user.role !== UserRole.ADMIN) {
+      return NextResponse.json(
+        { error: 'Unauthorized - Admin access required' },
+        { status: 401 }
+      );
+    }
+
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
+
+    if (!id) {
+      return NextResponse.json(
+        { error: 'Asset ID is required' },
+        { status: 400 }
+      );
+    }
+
+    const tenantId = session.user.tenantId;
+
+    // Cannot delete auto-calculated assets
+    if (id.startsWith('auto-')) {
+      return NextResponse.json(
+        { error: 'Cannot delete auto-calculated assets' },
+        { status: 400 }
+      );
+    }
+
+    // Soft delete by setting isActive to false
+    await prisma.asset.update({
+      where: {
+        id,
+        tenantId,
+      },
+      data: {
+        isActive: false,
+        updatedAt: new Date(),
+      },
+    });
+
+    return NextResponse.json({
+      success: true,
+      message: 'Asset deleted successfully',
+    });
+  } catch (error) {
+    console.error('Asset deletion error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+
 export async function POST(request: NextRequest) {
   try {
     const session = await auth();
@@ -214,63 +351,77 @@ async function calculateCurrentAssets(
   const assets: AssetResponse[] = [];
 
   try {
-    // 1. Get latest inventory and product information
-    const latestInventory = await prisma.inventoryRecord.findFirst({
-      where: {
-        tenantId,
-        date: { lte: asOfDate },
-      },
-      orderBy: { date: 'desc' },
+    // Get custom unit values for inventory assets
+    const customUnitValues = await prisma.inventoryAssetValue.findMany({
+      where: { tenantId },
     });
 
-    if (latestInventory && latestInventory.productId) {
-      const product = await prisma.product.findUnique({
-        where: { id: latestInventory.productId },
-        select: { currentPrice: true, name: true },
+    const getCustomUnitValue = (assetType: string, defaultValue: number) => {
+      const custom = customUnitValues.find((v) => v.assetType === assetType);
+      return custom ? custom.unitValue : defaultValue;
+    };
+
+    // 1. Get real-time inventory quantities from daily inventory API
+    const currentInventory = await calculateRealTimeInventory(
+      tenantId,
+      asOfDate
+    );
+
+    if (currentInventory.fullCylinders > 0) {
+      const fullCylinderUnitValue = getCustomUnitValue(
+        'auto-full-cylinders',
+        500
+      ); // Default 500 BDT
+      const fullCylindersValue =
+        currentInventory.fullCylinders * fullCylinderUnitValue;
+
+      assets.push({
+        id: 'auto-full-cylinders',
+        name: 'Full Cylinders',
+        category: AssetCategory.CURRENT_ASSET,
+        subCategory: 'Inventory',
+        originalValue: fullCylindersValue,
+        currentValue: fullCylindersValue,
+        description: `${currentInventory.fullCylinders} cylinders @ ${fullCylinderUnitValue} each`,
+        isAutoCalculated: true,
+        details: {
+          quantity: currentInventory.fullCylinders,
+          unitPrice: fullCylinderUnitValue,
+          date: asOfDate,
+          isEditable: true,
+        },
+        createdAt: asOfDate,
+        updatedAt: asOfDate,
       });
+    }
 
-      if (product) {
-        const fullCylindersValue =
-          latestInventory.fullCylinders * product.currentPrice;
-        assets.push({
-          id: 'auto-full-cylinders',
-          name: `Full Cylinders (${product.name})`,
-          category: AssetCategory.CURRENT_ASSET,
-          subCategory: 'Inventory',
-          originalValue: fullCylindersValue,
-          currentValue: fullCylindersValue,
-          description: `${latestInventory.fullCylinders} cylinders @ ${product.currentPrice} each`,
-          isAutoCalculated: true,
-          details: {
-            quantity: latestInventory.fullCylinders,
-            unitPrice: product.currentPrice,
-            date: latestInventory.date,
-          },
-          createdAt: latestInventory.date,
-          updatedAt: latestInventory.date,
-        });
+    // 2. Empty Cylinders (auto from inventory)
+    if (currentInventory.emptyCylinders > 0) {
+      const emptyCylinderUnitValue = getCustomUnitValue(
+        'auto-empty-cylinders',
+        100
+      ); // Default 100 BDT
+      const emptyCylindersValue =
+        currentInventory.emptyCylinders * emptyCylinderUnitValue;
 
-        // 2. Empty Cylinders (auto from inventory) - Assuming 20% of full cylinder value
-        const emptyCylindersValue =
-          latestInventory.emptyCylinders * (product.currentPrice * 0.2);
-        assets.push({
-          id: 'auto-empty-cylinders',
-          name: `Empty Cylinders (${product.name})`,
-          category: AssetCategory.CURRENT_ASSET,
-          subCategory: 'Inventory',
-          originalValue: emptyCylindersValue,
-          currentValue: emptyCylindersValue,
-          description: `${latestInventory.emptyCylinders} empty cylinders @ 20% of full price`,
-          isAutoCalculated: true,
-          details: {
-            quantity: latestInventory.emptyCylinders,
-            unitPrice: product.currentPrice * 0.2,
-            date: latestInventory.date,
-          },
-          createdAt: latestInventory.date,
-          updatedAt: latestInventory.date,
-        });
-      }
+      assets.push({
+        id: 'auto-empty-cylinders',
+        name: 'Empty Cylinders',
+        category: AssetCategory.CURRENT_ASSET,
+        subCategory: 'Inventory',
+        originalValue: emptyCylindersValue,
+        currentValue: emptyCylindersValue,
+        description: `${currentInventory.emptyCylinders} empty cylinders @ ${emptyCylinderUnitValue} each`,
+        isAutoCalculated: true,
+        details: {
+          quantity: currentInventory.emptyCylinders,
+          unitPrice: emptyCylinderUnitValue,
+          date: asOfDate,
+          isEditable: true,
+        },
+        createdAt: asOfDate,
+        updatedAt: asOfDate,
+      });
     }
 
     // 3. Cash Receivables (auto from receivables)
@@ -326,9 +477,14 @@ async function calculateCurrentAssets(
       });
 
       if (recentProduct) {
-        // Assume cylinder receivables are valued at current product price
+        // Use custom unit value or default to current product price
+        const cylinderReceivableUnitValue = getCustomUnitValue(
+          'auto-cylinder-receivables',
+          recentProduct.currentPrice
+        );
         const cylinderReceivablesValue =
-          totalCylinderReceivables * recentProduct.currentPrice;
+          totalCylinderReceivables * cylinderReceivableUnitValue;
+
         assets.push({
           id: 'auto-cylinder-receivables',
           name: 'Cylinder Receivables',
@@ -336,12 +492,13 @@ async function calculateCurrentAssets(
           subCategory: 'Receivables',
           originalValue: cylinderReceivablesValue,
           currentValue: cylinderReceivablesValue,
-          description: `${totalCylinderReceivables} cylinders receivable @ current price`,
+          description: `${totalCylinderReceivables} cylinders receivable @ ${cylinderReceivableUnitValue} each`,
           isAutoCalculated: true,
           details: {
             quantity: totalCylinderReceivables,
-            unitPrice: recentProduct.currentPrice,
+            unitPrice: cylinderReceivableUnitValue,
             date: asOfDate,
+            isEditable: true,
           },
           createdAt: asOfDate,
           updatedAt: asOfDate,
@@ -402,4 +559,95 @@ async function calculateCurrentAssets(
   }
 
   return assets;
+}
+
+// Calculate real-time inventory using business logic
+async function calculateRealTimeInventory(tenantId: string, asOfDate: Date) {
+  try {
+    // Get all sales up to the date
+    const sales = await prisma.sale.findMany({
+      where: {
+        tenantId,
+        saleDate: { lte: asOfDate },
+      },
+      select: {
+        saleType: true,
+        quantity: true,
+      },
+    });
+
+    // Get all completed shipments up to the date
+    const shipments = await prisma.shipment.findMany({
+      where: {
+        tenantId,
+        status: 'COMPLETED',
+        shipmentDate: { lte: asOfDate },
+      },
+      select: {
+        shipmentType: true,
+        quantity: true,
+        notes: true,
+      },
+    });
+
+    // Calculate package and refill sales
+    const packageSales = sales
+      .filter((s) => s.saleType === 'PACKAGE')
+      .reduce((sum, s) => sum + s.quantity, 0);
+
+    const refillSales = sales
+      .filter((s) => s.saleType === 'REFILL')
+      .reduce((sum, s) => sum + s.quantity, 0);
+
+    // Calculate purchases
+    const packagePurchases = shipments
+      .filter(
+        (s) =>
+          s.shipmentType === 'INCOMING_FULL' &&
+          (!s.notes || !s.notes.includes('REFILL:'))
+      )
+      .reduce((sum, s) => sum + s.quantity, 0);
+
+    const refillPurchases = shipments
+      .filter(
+        (s) =>
+          s.shipmentType === 'INCOMING_FULL' &&
+          s.notes &&
+          s.notes.includes('REFILL:')
+      )
+      .reduce((sum, s) => sum + s.quantity, 0);
+
+    // Calculate empty cylinder transactions
+    const emptyBuys = shipments
+      .filter((s) => s.shipmentType === 'INCOMING_EMPTY')
+      .reduce((sum, s) => sum + s.quantity, 0);
+
+    const emptySells = shipments
+      .filter((s) => s.shipmentType === 'OUTGOING_EMPTY')
+      .reduce((sum, s) => sum + s.quantity, 0);
+
+    // Apply business formulas
+    const totalSales = packageSales + refillSales;
+    const totalPurchases = packagePurchases + refillPurchases;
+    const emptyCylindersBuySell = emptyBuys - emptySells;
+
+    // Full Cylinders = Total Purchases - Total Sales
+    const fullCylinders = Math.max(0, totalPurchases - totalSales);
+
+    // Empty Cylinders = Refill Sales + Empty Cylinders Buy/Sell
+    const emptyCylinders = Math.max(0, refillSales + emptyCylindersBuySell);
+
+    return {
+      fullCylinders,
+      emptyCylinders,
+      totalCylinders: fullCylinders + emptyCylinders,
+    };
+  } catch (error) {
+    console.error('Real-time inventory calculation error:', error);
+    return {
+      fullCylinders: 0,
+      emptyCylinders: 0,
+      totalCylinders: 0,
+    };
+  }
 }

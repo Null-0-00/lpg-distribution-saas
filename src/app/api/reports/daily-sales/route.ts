@@ -5,6 +5,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 
+// Simple in-memory cache for daily reports (5 minute TTL)
+const reportCache = new Map<string, { data: any; timestamp: number }>();
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
 export async function GET(request: NextRequest) {
   try {
     const session = await auth();
@@ -16,6 +20,17 @@ export async function GET(request: NextRequest) {
     const date =
       searchParams.get('date') || new Date().toISOString().split('T')[0];
     const tenantId = session.user.tenantId;
+
+    // Check cache first
+    const cacheKey = `${tenantId}-${date}`;
+    const cached = reportCache.get(cacheKey);
+
+    // Clear cache to ensure fresh data for debugging
+    reportCache.clear();
+
+    if (false && cached && Date.now() - cached!.timestamp < CACHE_TTL) {
+      return NextResponse.json(cached!.data);
+    }
 
     // Get all active retail drivers
     const allDrivers = await prisma.driver.findMany({
@@ -32,10 +47,14 @@ export async function GET(request: NextRequest) {
       orderBy: { name: 'asc' },
     });
 
-    // Get all sales for retail drivers only
-    const allSalesForTenant = await prisma.sale.findMany({
+    // Get sales for the specific date only
+    const sales = await prisma.sale.findMany({
       where: {
         tenantId,
+        saleDate: {
+          gte: new Date(date + 'T00:00:00.000Z'),
+          lte: new Date(date + 'T23:59:59.999Z'),
+        },
         driver: {
           status: 'ACTIVE',
           driverType: 'RETAIL',
@@ -60,12 +79,6 @@ export async function GET(request: NextRequest) {
       orderBy: [{ driver: { name: 'asc' } }, { saleDate: 'desc' }],
     });
 
-    // Filter sales by date
-    const sales = allSalesForTenant.filter((sale) => {
-      const saleDate = sale.saleDate.toISOString().split('T')[0];
-      return saleDate === date;
-    });
-
     // We don't need to fetch current receivables data as we're calculating them from scratch using the formulas
 
     // Get previous day's receivables for change calculation
@@ -73,24 +86,12 @@ export async function GET(request: NextRequest) {
     previousDay.setDate(previousDay.getDate() - 1);
     const previousDayStr = previousDay.toISOString().split('T')[0];
 
-    // First ensure receivables are calculated for the previous day and current day
-    await calculateDailyReceivablesForDate(tenantId, previousDay);
-    await calculateDailyReceivablesForDate(tenantId, new Date(date));
-
-    // Then get the calculated receivables
-    const previousReceivables = await prisma.receivableRecord.findMany({
-      where: {
-        tenantId,
-        date: {
-          gte: new Date(previousDayStr + 'T00:00:00.000Z'),
-          lte: new Date(previousDayStr + 'T23:59:59.999Z'),
-        },
-        driver: {
-          status: 'ACTIVE',
-          driverType: 'RETAIL',
-        },
-      },
-    });
+    // Get previous day's receivables (calculate if not exists)
+    const previousReceivables = await getOrCalculateReceivables(
+      tenantId,
+      previousDayStr,
+      allDrivers
+    );
 
     // Create map for quick lookup of previous day's receivables
     const previousReceivablesMap = new Map(
@@ -280,7 +281,7 @@ export async function GET(request: NextRequest) {
       orderBy: { depositDate: 'desc' },
     });
 
-    // Get driver cash deposits from sales (these are also considered deposits)
+    // Get driver cash deposits from sales (including receivable payments)
     const driverCashDeposits = await prisma.sale.groupBy({
       by: ['driverId'],
       where: {
@@ -293,6 +294,7 @@ export async function GET(request: NextRequest) {
           status: 'ACTIVE',
           driverType: 'RETAIL',
         },
+        // Include all sales (regular sales and receivable payments/returns)
       },
       _sum: {
         cashDeposited: true,
@@ -327,10 +329,24 @@ export async function GET(request: NextRequest) {
       0
     );
 
+    // Debug: Log what we found for debugging
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Debug - Daily Sales API:', {
+        date,
+        salesCount: sales.length,
+        driverCashDepositsCount: driverCashDeposits.length,
+        totalDriverCashDeposits,
+        salesWithCashDeposited: sales.filter((s) => s.cashDeposited > 0).length,
+        receivablePayments: sales.filter((s) =>
+          s.notes?.includes('Receivable payment')
+        ).length,
+      });
+    }
+
     // Calculate available cash
     const availableCash = totals.totalDeposited + totalDeposits - totalExpenses;
 
-    return NextResponse.json({
+    const reportData = {
       success: true,
       date,
       driverReports,
@@ -356,12 +372,12 @@ export async function GET(request: NextRequest) {
           depositDate: d.depositDate,
           isApproved: d.isApproved,
         })),
-        // Driver cash deposits from sales
+        // Driver cash deposits from sales (including receivable payments)
         ...driverCashDeposits.map((d) => ({
           id: `driver-${d.driverId}`,
           amount: d._sum.cashDeposited || 0,
           description: `Daily cash deposit`,
-          particulars: `Cash deposits by driver - ${driverMap.get(d.driverId) || 'Unknown'}`,
+          particulars: `Cash deposits by driver - ${driverMap.get(d.driverId) || 'Unknown'} (includes receivable payments)`,
           user: driverMap.get(d.driverId) || 'Unknown Driver',
           depositDate: date,
           isApproved: true,
@@ -374,7 +390,12 @@ export async function GET(request: NextRequest) {
         totalDriverCashDeposits,
         availableCash: totals.totalDeposited + totalDeposits - totalExpenses,
       },
-    });
+    };
+
+    // Cache the result
+    reportCache.set(cacheKey, { data: reportData, timestamp: Date.now() });
+
+    return NextResponse.json(reportData);
   } catch (error) {
     console.error('Daily sales report error:', error);
     return NextResponse.json(
@@ -384,122 +405,137 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// Helper function to calculate daily receivables for a specific date
-async function calculateDailyReceivablesForDate(tenantId: string, date: Date) {
-  const dateStr = date.toISOString().split('T')[0];
-
-  // Get all active retail drivers
-  const drivers = await prisma.driver.findMany({
-    where: { tenantId, status: 'ACTIVE', driverType: 'RETAIL' },
-    select: { id: true },
+// Optimized helper function to get or calculate receivables for a specific date
+async function getOrCalculateReceivables(
+  tenantId: string,
+  dateStr: string,
+  drivers: any[]
+) {
+  // First try to get existing receivables
+  const existingReceivables = await prisma.receivableRecord.findMany({
+    where: {
+      tenantId,
+      date: {
+        gte: new Date(dateStr + 'T00:00:00.000Z'),
+        lte: new Date(dateStr + 'T23:59:59.999Z'),
+      },
+      driver: {
+        status: 'ACTIVE',
+        driverType: 'RETAIL',
+      },
+    },
   });
 
-  for (const driver of drivers) {
-    // Get driver's sales for the date
-    const salesData = await prisma.sale.aggregate({
-      where: {
-        tenantId,
-        driverId: driver.id,
-        saleDate: {
-          gte: new Date(dateStr + 'T00:00:00.000Z'),
-          lt: new Date(
-            new Date(date.getTime() + 24 * 60 * 60 * 1000)
-              .toISOString()
-              .split('T')[0] + 'T00:00:00.000Z'
-          ),
-        },
-      },
-      _sum: {
-        totalValue: true,
-        discount: true,
-        cashDeposited: true,
-        cylindersDeposited: true,
-      },
-    });
+  // If we have all receivables, return them
+  const existingDriverIds = new Set(existingReceivables.map((r) => r.driverId));
+  const missingDrivers = drivers.filter((d) => !existingDriverIds.has(d.id));
 
-    // Calculate refill sales for cylinder receivables
-    const refillSales = await prisma.sale.aggregate({
-      where: {
-        tenantId,
-        driverId: driver.id,
-        saleDate: {
-          gte: new Date(dateStr + 'T00:00:00.000Z'),
-          lt: new Date(
-            new Date(date.getTime() + 24 * 60 * 60 * 1000)
-              .toISOString()
-              .split('T')[0] + 'T00:00:00.000Z'
-          ),
-        },
-        saleType: 'REFILL',
-      },
-      _sum: {
-        quantity: true,
-      },
-    });
+  if (missingDrivers.length === 0) {
+    return existingReceivables;
+  }
 
-    const driverSalesRevenue = salesData._sum.totalValue || 0;
-    const cashDeposits = salesData._sum.cashDeposited || 0;
-    const discounts = salesData._sum.discount || 0;
-    const cylinderDeposits = salesData._sum.cylindersDeposited || 0;
-    const refillQuantity = refillSales._sum.quantity || 0;
+  // Calculate missing receivables in batch
+  const date = new Date(dateStr);
+
+  // Get all sales for missing drivers on this date in one query
+  const salesByDriver = await prisma.sale.groupBy({
+    by: ['driverId'],
+    where: {
+      tenantId,
+      driverId: { in: missingDrivers.map((d) => d.id) },
+      saleDate: {
+        gte: new Date(dateStr + 'T00:00:00.000Z'),
+        lte: new Date(dateStr + 'T23:59:59.999Z'),
+      },
+    },
+    _sum: {
+      totalValue: true,
+      discount: true,
+      cashDeposited: true,
+      cylindersDeposited: true,
+    },
+  });
+
+  // Get refill sales for cylinder receivables in one query
+  const refillSalesByDriver = await prisma.sale.groupBy({
+    by: ['driverId'],
+    where: {
+      tenantId,
+      driverId: { in: missingDrivers.map((d) => d.id) },
+      saleDate: {
+        gte: new Date(dateStr + 'T00:00:00.000Z'),
+        lte: new Date(dateStr + 'T23:59:59.999Z'),
+      },
+      saleType: 'REFILL',
+    },
+    _sum: {
+      quantity: true,
+    },
+  });
+
+  // Get previous day's receivables in one query
+  const yesterday = new Date(date.getTime() - 24 * 60 * 60 * 1000);
+  const yesterdayStr = yesterday.toISOString().split('T')[0];
+  const previousReceivables = await prisma.receivableRecord.findMany({
+    where: {
+      tenantId,
+      driverId: { in: missingDrivers.map((d) => d.id) },
+      date: {
+        gte: new Date(yesterdayStr + 'T00:00:00.000Z'),
+        lte: new Date(yesterdayStr + 'T23:59:59.999Z'),
+      },
+    },
+  });
+
+  // Create maps for quick lookup
+  const salesMap = new Map(salesByDriver.map((s) => [s.driverId, s._sum]));
+  const refillMap = new Map(
+    refillSalesByDriver.map((r) => [r.driverId, r._sum.quantity || 0])
+  );
+  const previousMap = new Map(previousReceivables.map((p) => [p.driverId, p]));
+
+  // Calculate receivables for missing drivers
+  const newReceivables = [];
+  for (const driver of missingDrivers) {
+    const salesData = salesMap.get(driver.id);
+    const refillQuantity = refillMap.get(driver.id) || 0;
+    const previousRec = previousMap.get(driver.id);
+
+    const driverSalesRevenue = salesData?.totalValue || 0;
+    const cashDeposits = salesData?.cashDeposited || 0;
+    const discounts = salesData?.discount || 0;
+    const cylinderDeposits = salesData?.cylindersDeposited || 0;
 
     // EXACT FORMULAS:
-    // Cash Receivables Change = driver_sales_revenue - cash_deposits - discounts
     const cashReceivablesChange = driverSalesRevenue - cashDeposits - discounts;
-
-    // Cylinder Receivables Change = driver_refill_sales - cylinder_deposits
     const cylinderReceivablesChange = refillQuantity - cylinderDeposits;
 
-    // Get yesterday's totals
-    const yesterday = new Date(date.getTime() - 24 * 60 * 60 * 1000);
-    const yesterdayRecord = await prisma.receivableRecord.findFirst({
-      where: {
-        tenantId,
-        driverId: driver.id,
-        date: {
-          gte: new Date(
-            yesterday.toISOString().split('T')[0] + 'T00:00:00.000Z'
-          ),
-          lt: new Date(dateStr + 'T00:00:00.000Z'),
-        },
-      },
-      orderBy: { date: 'desc' },
-    });
+    const yesterdayCashTotal = previousRec?.totalCashReceivables || 0;
+    const yesterdayCylinderTotal = previousRec?.totalCylinderReceivables || 0;
 
-    const yesterdayCashTotal = yesterdayRecord?.totalCashReceivables || 0;
-    const yesterdayCylinderTotal =
-      yesterdayRecord?.totalCylinderReceivables || 0;
-
-    // EXACT FORMULAS:
-    // Today's Total = Yesterday's Total + Today's Changes
     const totalCashReceivables = yesterdayCashTotal + cashReceivablesChange;
     const totalCylinderReceivables =
       yesterdayCylinderTotal + cylinderReceivablesChange;
 
-    // Upsert the receivable record
-    await prisma.receivableRecord.upsert({
-      where: {
-        tenantId_driverId_date: {
-          tenantId,
-          driverId: driver.id,
-          date: new Date(dateStr),
-        },
-      },
-      update: {
-        cashReceivablesChange,
-        cylinderReceivablesChange,
-        totalCashReceivables,
-        totalCylinderReceivables,
-      },
-      create: {
-        tenantId,
-        driverId: driver.id,
-        date: new Date(dateStr),
-        cashReceivablesChange,
-        cylinderReceivablesChange,
-        totalCashReceivables,
-        totalCylinderReceivables,
-      },
+    newReceivables.push({
+      tenantId,
+      driverId: driver.id,
+      date: new Date(dateStr),
+      cashReceivablesChange,
+      cylinderReceivablesChange,
+      totalCashReceivables,
+      totalCylinderReceivables,
     });
   }
+
+  // Batch insert new receivables
+  if (newReceivables.length > 0) {
+    await prisma.receivableRecord.createMany({
+      data: newReceivables,
+      skipDuplicates: true,
+    });
+  }
+
+  // Return all receivables (existing + new)
+  return [...existingReceivables, ...newReceivables];
 }

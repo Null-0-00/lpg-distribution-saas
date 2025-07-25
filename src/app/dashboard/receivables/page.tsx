@@ -709,7 +709,8 @@ export default function ReceivablesPage() {
           </div>
           <div className="ml-7 space-y-2">
             <p className="mb-2 text-xs text-red-600 dark:text-red-400">
-              {t('driverTotalReceivablesFromSales')}. {t('customerReceivableTotalsMustEqual')}.
+              {t('driverTotalReceivablesFromSales')}.{' '}
+              {t('customerReceivableTotalsMustEqual')}.
             </p>
             {validationErrors.map((error) => (
               <div
@@ -723,7 +724,8 @@ export default function ReceivablesPage() {
                   <div className="ml-2 mt-1">
                     <span className="text-red-700 dark:text-red-300">
                       💰 {t('cashMismatch')}: {t('customerTotal')}{' '}
-                      {formatCurrency(error.cashMismatch.customer)} ≠ {t('salesTotal')}{' '}
+                      {formatCurrency(error.cashMismatch.customer)} ≠{' '}
+                      {t('salesTotal')}{' '}
                       {formatCurrency(error.cashMismatch.sales)}
                       <span className="font-bold">
                         {' '}
@@ -780,24 +782,33 @@ export default function ReceivablesPage() {
             </div>
             <ul className="ml-4 space-y-1 text-sm">
               <li>
-                • <strong>{t('driverTotalReceivables')}:</strong> {t('automaticallyCalculatedFromSales')}
+                • <strong>{t('driverTotalReceivables')}:</strong>{' '}
+                {t('automaticallyCalculatedFromSales')}
               </li>
               <li>
-                • <strong>{t('customers')} {t('receivables')}:</strong> {t('customerReceivablesManuallyManaged')}
+                •{' '}
+                <strong>
+                  {t('customers')} {t('receivables')}:
+                </strong>{' '}
+                {t('customerReceivablesManuallyManaged')}
               </li>
               <li>
-                • <strong>{t('validation')}:</strong> {t('customerTotalsMustEqualDriverSales')}
+                • <strong>{t('validation')}:</strong>{' '}
+                {t('customerTotalsMustEqualDriverSales')}
               </li>
               <li>
-                • <strong>{t('payments')}:</strong> {t('paymentsAutomaticallyAdded')}
+                • <strong>{t('payments')}:</strong>{' '}
+                {t('paymentsAutomaticallyAdded')}
               </li>
               <li>
-                • <strong>{t('changesLog')}:</strong> {t('changesLogAllReceivableActions')}
+                • <strong>{t('changesLog')}:</strong>{' '}
+                {t('changesLogAllReceivableActions')}
               </li>
             </ul>
             {currentUserRole === 'MANAGER' && (
               <div className="mt-2 text-sm">
-                <strong>{t('managerAccess')}:</strong> {t('youCanRecordPayments')}
+                <strong>{t('managerAccess')}:</strong>{' '}
+                {t('youCanRecordPayments')}
                 returns, but only admins can add/edit customers.
               </div>
             )}
@@ -854,7 +865,9 @@ export default function ReceivablesPage() {
           <div className="flex items-center">
             <Users className="h-8 w-8 text-green-500" />
             <div className="ml-4">
-              <p className="text-muted-foreground text-sm">{t('activeDrivers')}</p>
+              <p className="text-muted-foreground text-sm">
+                {t('activeDrivers')}
+              </p>
               <p className="text-foreground text-2xl font-bold">
                 {driverReceivables.length}
               </p>
@@ -907,7 +920,9 @@ export default function ReceivablesPage() {
             <div className="bg-card rounded-lg p-8 shadow">
               <div className="text-center text-gray-500 dark:text-gray-400">
                 <Users className="mx-auto mb-4 h-12 w-12 text-gray-300" />
-                <p className="mb-2 text-lg font-medium">{t('noReceivablesFound')}</p>
+                <p className="mb-2 text-lg font-medium">
+                  {t('noReceivablesFound')}
+                </p>
                 <p className="text-sm">
                   Customer receivables will appear here once they are created.
                 </p>
@@ -1301,7 +1316,9 @@ export default function ReceivablesPage() {
           ) : receivablesChanges.length === 0 ? (
             <div className="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
               <FileText className="mx-auto mb-4 h-12 w-12 text-gray-300" />
-              <p className="mb-2 text-lg font-medium">{t('noChangesRecorded')}</p>
+              <p className="mb-2 text-lg font-medium">
+                {t('noChangesRecorded')}
+              </p>
               <p className="text-sm">
                 Receivables changes will appear here once actions are taken.
               </p>
@@ -1550,7 +1567,8 @@ export default function ReceivablesPage() {
                 {submitting && (
                   <div className="mr-2 h-4 w-4 animate-spin rounded-full border-b-2 border-white"></div>
                 )}
-                {editingCustomer ? t('updatePayment') : t('add')} {t('customers')}
+                {editingCustomer ? t('updatePayment') : t('add')}{' '}
+                {t('customers')}
               </button>
             </div>
           </div>

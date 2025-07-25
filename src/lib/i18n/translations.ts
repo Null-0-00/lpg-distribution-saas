@@ -937,10 +937,12 @@ const englishTranslations: Translations = {
   receivablesRecalculatedSuccessfully: 'Receivables recalculated successfully',
   failedToRecalculateReceivables: 'Failed to recalculate receivables',
   failedToFetchReceivablesChanges: 'Failed to fetch receivables changes',
-  customerReceivableUpdatedSuccessfully: 'Customer receivable updated successfully',
+  customerReceivableUpdatedSuccessfully:
+    'Customer receivable updated successfully',
   customerReceivableAddedSuccessfully: 'Customer receivable added successfully',
   failedToSaveCustomerReceivable: 'Failed to save customer receivable',
-  customerReceivableDeletedSuccessfully: 'Customer receivable deleted successfully',
+  customerReceivableDeletedSuccessfully:
+    'Customer receivable deleted successfully',
   failedToDeleteCustomerReceivable: 'Failed to delete customer receivable',
   paymentRecordedSuccessfully: 'Payment recorded successfully',
   failedToRecordPayment: 'Failed to record payment',
@@ -960,8 +962,10 @@ const englishTranslations: Translations = {
   recordReturn: 'Record Return',
   validationError: 'Validation Error',
   customerReceivablesDontMatch: "Customer receivables don't match",
-  driverTotalReceivablesFromSales: 'Driver total receivables come from sales data and cannot be edited',
-  customerReceivableTotalsMustEqual: 'Customer receivable totals must equal the sales totals for each driver',
+  driverTotalReceivablesFromSales:
+    'Driver total receivables come from sales data and cannot be edited',
+  customerReceivableTotalsMustEqual:
+    'Customer receivable totals must equal the sales totals for each driver',
   cashMismatch: 'Cash Mismatch',
   customerTotal: 'Customer Total',
   salesTotal: 'Sales Total',
@@ -971,13 +975,18 @@ const englishTranslations: Translations = {
   requireImmediate: 'require immediate',
   receivablesManagementSystemRules: 'Receivables Management System Rules',
   driverTotalReceivables: 'Driver Total Receivables',
-  automaticallyCalculatedFromSales: 'Automatically calculated from sales data (non-editable)',
-  customerReceivablesManuallyManaged: 'Manually managed by administrators under each driver',
+  automaticallyCalculatedFromSales:
+    'Automatically calculated from sales data (non-editable)',
+  customerReceivablesManuallyManaged:
+    'Manually managed by administrators under each driver',
   validation: 'Validation',
-  customerTotalsMustEqualDriverSales: 'Customer totals must equal driver sales totals',
+  customerTotalsMustEqualDriverSales:
+    'Customer totals must equal driver sales totals',
   payments: 'Payments',
-  paymentsAutomaticallyAdded: 'Automatically added to daily deposits when recorded',
-  changesLogAllReceivableActions: 'All receivable actions are tracked in the Changes tab',
+  paymentsAutomaticallyAdded:
+    'Automatically added to daily deposits when recorded',
+  changesLogAllReceivableActions:
+    'All receivable actions are tracked in the Changes tab',
   managerAccess: 'Manager Access',
   youCanRecordPayments: 'You can record payments and',
   salesCashReceivables: 'Sales Cash Receivables',
@@ -1758,7 +1767,8 @@ const bengaliTranslations: Translations = {
   failedToDeleteCustomerReceivable: 'গ্রাহক বাকি মুছতে ব্যর্থ',
   paymentRecordedSuccessfully: 'পেমেন্ট সফলভাবে রেকর্ড করা হয়েছে',
   failedToRecordPayment: 'পেমেন্ট রেকর্ড করতে ব্যর্থ',
-  cylinderReturnRecordedSuccessfully: 'সিলিন্ডার ফেরত সফলভাবে রেকর্ড করা হয়েছে',
+  cylinderReturnRecordedSuccessfully:
+    'সিলিন্ডার ফেরত সফলভাবে রেকর্ড করা হয়েছে',
   failedToRecordCylinderReturn: 'সিলিন্ডার ফেরত রেকর্ড করতে ব্যর্থ',
   editCustomerReceivable: 'গ্রাহক বাকি সম্পাদনা',
   addCustomerReceivable: 'গ্রাহক বাকি যোগ করুন',
@@ -1774,8 +1784,10 @@ const bengaliTranslations: Translations = {
   recordReturn: 'ফেরত রেকর্ড করুন',
   validationError: 'বৈধতা ত্রুটি',
   customerReceivablesDontMatch: 'গ্রাহক বাকি মিলছে না',
-  driverTotalReceivablesFromSales: 'চালকের মোট বাকি বিক্রয় তথ্য থেকে আসে এবং সম্পাদনা করা যায় না',
-  customerReceivableTotalsMustEqual: 'গ্রাহক বাকির মোট প্রতিটি চালকের বিক্রয় মোটের সমান হতে হবে',
+  driverTotalReceivablesFromSales:
+    'চালকের মোট বাকি বিক্রয় তথ্য থেকে আসে এবং সম্পাদনা করা যায় না',
+  customerReceivableTotalsMustEqual:
+    'গ্রাহক বাকির মোট প্রতিটি চালকের বিক্রয় মোটের সমান হতে হবে',
   cashMismatch: 'নগদ অমিল',
   customerTotal: 'গ্রাহক মোট',
   salesTotal: 'বিক্রয় মোট',
@@ -1785,13 +1797,18 @@ const bengaliTranslations: Translations = {
   requireImmediate: 'তাৎক্ষণিক প্রয়োজন',
   receivablesManagementSystemRules: 'বাকি ব্যবস্থাপনা সিস্টেম নিয়ম',
   driverTotalReceivables: 'চালকের মোট বাকি',
-  automaticallyCalculatedFromSales: 'বিক্রয় তথ্য থেকে স্বয়ংক্রিয়ভাবে গণনা (সম্পাদনাযোগ্য নয়)',
-  customerReceivablesManuallyManaged: 'প্রতিটি চালকের অধীনে প্রশাসকদের দ্বারা ম্যানুয়ালি পরিচালিত',
+  automaticallyCalculatedFromSales:
+    'বিক্রয় তথ্য থেকে স্বয়ংক্রিয়ভাবে গণনা (সম্পাদনাযোগ্য নয়)',
+  customerReceivablesManuallyManaged:
+    'প্রতিটি চালকের অধীনে প্রশাসকদের দ্বারা ম্যানুয়ালি পরিচালিত',
   validation: 'বৈধতা',
-  customerTotalsMustEqualDriverSales: 'গ্রাহক মোট চালকের বিক্রয় মোটের সমান হতে হবে',
+  customerTotalsMustEqualDriverSales:
+    'গ্রাহক মোট চালকের বিক্রয় মোটের সমান হতে হবে',
   payments: 'পেমেন্ট',
-  paymentsAutomaticallyAdded: 'রেকর্ড করার সময় স্বয়ংক্রিয়ভাবে দৈনিক আমানতে যোগ',
-  changesLogAllReceivableActions: 'সমস্ত বাকি কার্যক্রম পরিবর্তনের ট্যাবে ট্র্যাক করা হয়',
+  paymentsAutomaticallyAdded:
+    'রেকর্ড করার সময় স্বয়ংক্রিয়ভাবে দৈনিক আমানতে যোগ',
+  changesLogAllReceivableActions:
+    'সমস্ত বাকি কার্যক্রম পরিবর্তনের ট্যাবে ট্র্যাক করা হয়',
   managerAccess: 'ম্যানেজার অ্যাক্সেস',
   youCanRecordPayments: 'আপনি পেমেন্ট রেকর্ড করতে পারেন এবং',
   salesCashReceivables: 'বিক্রয় নগদ বাকি',

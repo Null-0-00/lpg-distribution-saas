@@ -28,7 +28,7 @@ const assetQuerySchema = z.object({
   includeAutoCalculated: z
     .string()
     .transform((val) => val === 'true')
-    .default(false),
+    .default('false'),
   asOfDate: z.string().optional(),
 });
 

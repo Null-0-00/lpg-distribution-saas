@@ -4,7 +4,6 @@ import { APP_CONFIG } from '@/lib/utils/constants';
 import { SessionProvider } from '@/components/providers/SessionProvider';
 import { ThemeProvider } from '@/providers/ThemeProvider';
 import { SettingsProvider } from '@/contexts/SettingsContext';
-import { QueryProvider } from '@/components/providers/QueryProvider';
 
 export const metadata: Metadata = {
   title: {
@@ -112,13 +111,11 @@ export default function RootLayout({
             `,
           }}
         />
-        <QueryProvider>
-          <SessionProvider>
-            <SettingsProvider>
-              <ThemeProvider>{children}</ThemeProvider>
-            </SettingsProvider>
-          </SessionProvider>
-        </QueryProvider>
+        <SessionProvider>
+          <SettingsProvider>
+            <ThemeProvider>{children}</ThemeProvider>
+          </SettingsProvider>
+        </SessionProvider>
         <script
           dangerouslySetInnerHTML={{
             __html: `

@@ -22,7 +22,7 @@ const reportQuerySchema = z.object({
     .string()
     .transform((val) => val === 'true')
     .optional()
-    .default(false),
+    .default('false'),
 });
 
 export async function GET(request: NextRequest) {

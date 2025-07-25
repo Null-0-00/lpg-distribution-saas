@@ -2,11 +2,8 @@
 
 import React from 'react';
 import { useTheme } from '@/providers/ThemeProvider';
-import { useSettings } from '@/contexts/SettingsContext';
-
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme();
-  const { t } = useSettings();
 
   const toggleTheme = () => {
     if (theme === 'light') {
@@ -75,12 +72,12 @@ export function ThemeToggle() {
   const getLabel = () => {
     switch (theme) {
       case 'light':
-        return t('lightMode') || 'Light mode';
+        return 'Light mode';
       case 'dark':
-        return t('darkMode') || 'Dark mode';
+        return 'Dark mode';
       case 'system':
       default:
-        return t('systemTheme') || 'System theme';
+        return 'System theme';
     }
   };
 

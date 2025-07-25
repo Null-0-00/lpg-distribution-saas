@@ -25,32 +25,30 @@ import {
 } from 'lucide-react';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
 import { useState } from 'react';
-import { useSettings } from '@/contexts/SettingsContext';
-import { Translations } from '@/lib/i18n/translations';
 
-const getNavigation = (t: (key: keyof Translations) => string) => [
-  { name: t('dashboard'), href: '/dashboard', icon: Home },
-  { name: t('sales'), href: '/dashboard/sales', icon: TrendingUp },
-  { name: t('analytics'), href: '/dashboard/analytics', icon: Calculator },
+const getNavigation = () => [
+  { name: 'Dashboard', href: '/dashboard', icon: Home },
+  { name: 'Sales', href: '/dashboard/sales', icon: TrendingUp },
+  { name: 'Analytics', href: '/dashboard/analytics', icon: Calculator },
   {
-    name: t('dailySalesReport'),
+    name: 'Daily Sales Report',
     href: '/dashboard/reports/daily-sales',
     icon: BarChart3,
   },
-  { name: t('inventory'), href: '/dashboard/inventory', icon: Package },
-  { name: t('shipments'), href: '/dashboard/shipments', icon: Ship },
-  { name: t('drivers'), href: '/dashboard/drivers', icon: Truck },
-  { name: t('users'), href: '/dashboard/users', icon: Users },
-  { name: t('receivables'), href: '/dashboard/receivables', icon: CreditCard },
-  { name: t('assets'), href: '/dashboard/assets', icon: Building2 },
-  { name: t('expenses'), href: '/dashboard/expenses', icon: Receipt },
-  { name: t('reports'), href: '/dashboard/reports', icon: FileText },
+  { name: 'Inventory', href: '/dashboard/inventory', icon: Package },
+  { name: 'Shipments', href: '/dashboard/shipments', icon: Ship },
+  { name: 'Drivers', href: '/dashboard/drivers', icon: Truck },
+  { name: 'Users', href: '/dashboard/users', icon: Users },
+  { name: 'Receivables', href: '/dashboard/receivables', icon: CreditCard },
+  { name: 'Assets', href: '/dashboard/assets', icon: Building2 },
+  { name: 'Expenses', href: '/dashboard/expenses', icon: Receipt },
+  { name: 'Reports', href: '/dashboard/reports', icon: FileText },
   {
-    name: t('productManagement'),
+    name: 'Product Management',
     href: '/dashboard/product-management',
     icon: Package,
   },
-  { name: t('settings'), href: '/dashboard/settings', icon: Settings },
+  { name: 'Settings', href: '/dashboard/settings', icon: Settings },
 ];
 
 export default function DashboardLayout({
@@ -62,8 +60,7 @@ export default function DashboardLayout({
   const router = useRouter();
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const { t } = useSettings();
-  const navigation = getNavigation(t);
+  const navigation = getNavigation();
 
   const handleLogout = async () => {
     await signOut({ callbackUrl: '/auth/login' });
@@ -82,7 +79,7 @@ export default function DashboardLayout({
       <div className="bg-background flex min-h-screen items-center justify-center">
         <div className="text-center">
           <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-b-2 border-blue-500"></div>
-          <p className="text-muted-foreground">{t('loadingDashboard')}</p>
+          <p className="text-muted-foreground">Loading Dashboard...</p>
         </div>
       </div>
     );
@@ -105,7 +102,7 @@ export default function DashboardLayout({
         <div className="bg-card fixed inset-y-0 left-0 flex w-64 flex-col shadow-xl">
           <div className="border-border flex items-center justify-between border-b px-4 py-4">
             <h1 className="text-card-foreground text-lg font-semibold">
-              {t('lpgDistributor')}
+              LPG Distributor
             </h1>
             <button
               onClick={() => setSidebarOpen(false)}
@@ -143,7 +140,7 @@ export default function DashboardLayout({
               className="flex w-full items-center rounded-lg px-3 py-2 text-sm font-medium text-red-600 transition-colors hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20"
             >
               <LogOut className="mr-3 h-5 w-5" />
-              {t('logout')}
+              Logout
             </button>
           </div>
         </div>
@@ -154,7 +151,7 @@ export default function DashboardLayout({
         <div className="bg-card border-border flex min-h-0 flex-1 flex-col border-r">
           <div className="border-border flex items-center justify-between border-b px-4 py-4">
             <h1 className="text-card-foreground text-lg font-semibold">
-              {t('lpgDistributor')}
+              LPG Distributor
             </h1>
           </div>
           <nav className="flex-1 space-y-2 px-4 py-4">
@@ -185,7 +182,7 @@ export default function DashboardLayout({
               className="flex w-full items-center rounded-lg px-3 py-2 text-sm font-medium text-red-600 transition-colors hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20"
             >
               <LogOut className="mr-3 h-5 w-5" />
-              {t('logout')}
+              Logout
             </button>
           </div>
         </div>
@@ -206,13 +203,13 @@ export default function DashboardLayout({
                 </button>
                 <div className="ml-4 lg:ml-0">
                   <p className="text-muted-foreground text-sm">
-                    {t('welcomeBack')}, {session?.user?.name}
+                    Welcome back, {session?.user?.name}
                   </p>
                 </div>
               </div>
               <div className="flex items-center space-x-4">
                 <span className="text-muted-foreground text-sm">
-                  {t('role')}: {session?.user?.role}
+                  Role: {session?.user?.role}
                 </span>
                 <ThemeToggle />
                 <button

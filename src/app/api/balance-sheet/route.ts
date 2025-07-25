@@ -13,7 +13,7 @@ const balanceSheetQuerySchema = z.object({
     .string()
     .transform((val) => val === 'true')
     .optional()
-    .default(false),
+    .default('false'),
   comparisonDate: z.string().optional(),
 });
 

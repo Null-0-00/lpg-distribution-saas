@@ -19,7 +19,7 @@ export const positiveNumberSchema = z
 
 export const quantitySchema = z
   .number()
-  .int('Quantity must be a whole number')
+  .int()
   .positive('Quantity must be positive');
 
 export const currencySchema = z

@@ -5,12 +5,12 @@ interface LoadingSkeletonProps {
   variant?: 'page' | 'card' | 'table' | 'form';
 }
 
-export const LoadingSkeleton: React.FC<LoadingSkeletonProps> = ({ 
-  className = '', 
-  variant = 'page' 
+export const LoadingSkeleton: React.FC<LoadingSkeletonProps> = ({
+  className = '',
+  variant = 'page',
 }) => {
   const baseClasses = 'animate-pulse bg-gray-200 dark:bg-gray-700 rounded';
-  
+
   switch (variant) {
     case 'page':
       return (
@@ -27,10 +27,10 @@ export const LoadingSkeleton: React.FC<LoadingSkeletonProps> = ({
           <div className={`h-96 ${baseClasses}`} />
         </div>
       );
-      
+
     case 'card':
       return <div className={`h-24 ${baseClasses} ${className}`} />;
-      
+
     case 'table':
       return (
         <div className={`space-y-3 ${className}`}>
@@ -40,7 +40,7 @@ export const LoadingSkeleton: React.FC<LoadingSkeletonProps> = ({
           ))}
         </div>
       );
-      
+
     case 'form':
       return (
         <div className={`space-y-4 ${className}`}>
@@ -52,7 +52,7 @@ export const LoadingSkeleton: React.FC<LoadingSkeletonProps> = ({
           ))}
         </div>
       );
-      
+
     default:
       return <div className={`h-20 ${baseClasses} ${className}`} />;
   }

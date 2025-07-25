@@ -8,16 +8,22 @@ import { LoadingSkeleton } from '@/components/ui/LoadingSkeleton';
 const LazyDashboardHome = lazy(() => import('@/app/dashboard/page'));
 const LazySalesPage = lazy(() => import('@/app/dashboard/sales/page'));
 const LazyInventoryPage = lazy(() => import('@/app/dashboard/inventory/page'));
-const LazyReceivablesPage = lazy(() => import('@/app/dashboard/receivables/page'));
+const LazyReceivablesPage = lazy(
+  () => import('@/app/dashboard/receivables/page')
+);
 const LazyExpensesPage = lazy(() => import('@/app/dashboard/expenses/page'));
 const LazyAnalyticsPage = lazy(() => import('@/app/dashboard/analytics/page'));
 const LazyDriversPage = lazy(() => import('@/app/dashboard/drivers/page'));
 const LazyUsersPage = lazy(() => import('@/app/dashboard/users/page'));
 const LazyAssetsPage = lazy(() => import('@/app/dashboard/assets/page'));
 const LazyReportsPage = lazy(() => import('@/app/dashboard/reports/page'));
-const LazyDailySalesPage = lazy(() => import('@/app/dashboard/reports/daily-sales/page'));
+const LazyDailySalesPage = lazy(
+  () => import('@/app/dashboard/reports/daily-sales/page')
+);
 const LazyShipmentsPage = lazy(() => import('@/app/dashboard/shipments/page'));
-const LazyProductManagementPage = lazy(() => import('@/app/dashboard/product-management/page'));
+const LazyProductManagementPage = lazy(
+  () => import('@/app/dashboard/product-management/page')
+);
 const LazySettingsPage = lazy(() => import('@/app/dashboard/settings/page'));
 
 interface DynamicPageProps {
@@ -25,7 +31,10 @@ interface DynamicPageProps {
   children?: React.ReactNode;
 }
 
-export const DynamicPage: React.FC<DynamicPageProps> = ({ pathname, children }) => {
+export const DynamicPage: React.FC<DynamicPageProps> = ({
+  pathname,
+  children,
+}) => {
   const getPageComponent = () => {
     switch (pathname) {
       case '/dashboard':

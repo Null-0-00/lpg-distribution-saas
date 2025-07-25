@@ -16,6 +16,8 @@ address
 addressMustBeAtLeast10Characters
 addressTooLong
 adminPanel
+adminDashboardTitle=অ্যাডমিন ড্যাশবোর্ড
+adminDashboardDescription=সিস্টেমের ওভারভিউ এবং মেট্রিক্স
 advancePayment
 alerts
 all
@@ -45,6 +47,8 @@ atLeastOneSaleItemRequired
 attentionNeeded
 august
 automatedCalculationsExactFormulas
+auditLogsTitle=অডিট লগ
+auditLogsDescription=সিস্টেমের কার্যকলাপ এবং পরিবর্তনগুলি দেখুন
 available
 availableCash
 averageOrderValue
@@ -76,6 +80,8 @@ combinedSaleCreatedSuccessfully
 commission
 company
 companyRequired
+companyManagementTitle=কোম্পানি ব্যবস্থাপনা
+companyManagementDescription=এলপিজি কোম্পানি এবং সরবরাহকারীদের পরিচালনা করুন
 comparativeAnalysisRevenueByDriver
 completedOrders
 completedSale
@@ -143,6 +149,8 @@ detailedViewAndTrends
 details
 discount
 discountCannotBeNegative
+distributorAssignmentsTitle=পরিবেশক নিয়োগ
+distributorAssignmentsDescription=পরিবেশকদের কাছে কোম্পানি/পণ্য বরাদ্দ করুন
 download
 driver
 driverAddedSuccessfully
@@ -382,11 +390,15 @@ phoneNumber
 phoneNumberMustBeAtLeast10Digits
 phoneNumberTooLong
 previous
+pricingManagementTitle=মূল্য নির্ধারণ ব্যবস্থাপনা
+pricingManagementDescription=মূল্য স্তর এবং নিয়োগ পরিচালনা করুন
 print
 priority
 producentsWithLowStockWarning
 product
 productManagement
+productManagementTitle=পণ্য ব্যবস্থাপনা
+productManagementDescription=পণ্যের প্রকার এবং মূল্য নির্ধারণ পরিচালনা করুন
 productRequired
 products
 productsBelowMinimumThreshold
@@ -491,7 +503,11 @@ sumCompletedEmptyCylinderShipments
 sumCompletedShipmentsFromShipmentsPage
 sun
 systemAdministration
+systemAnalyticsTitle=সিস্টেম অ্যানালিটিক্স
+systemAnalyticsDescription=প্ল্যাটফর্ম ব্যবহার এবং কর্মক্ষমতা মেট্রিক্স
 systemNotification
+systemSettingsTitle=সিস্টেম সেটিংস
+systemSettingsDescription=গ্লোবাল সিস্টেম সেটিংস কনফিগার করুন
 systemTheme
 targetAchieved
 targetProgress
@@ -558,6 +574,8 @@ updatePurchaseOrder
 upload
 urgent
 users
+userManagementTitle=ব্যবহারকারী ব্যবস্থাপনা
+userManagementDescription=সিস্টেম ব্যবহারকারী এবং অনুমতি পরিচালনা করুন
 vehicle
 vehicleNumber
 view
@@ -575,5 +593,6 @@ weeklyPerformance
 welcomeBack
 year
 yesterday
+yes
 yesterdaysEmpty
 yesterdaysFull

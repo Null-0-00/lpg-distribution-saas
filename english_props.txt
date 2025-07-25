@@ -6,6 +6,8 @@ add
 addDriver
 addExpense
 additionalNotesComments
+adminDashboardTitle=Admin Dashboard
+adminDashboardDescription=System overview and metrics
 addNewDriver
 address
 addUser
@@ -31,6 +33,8 @@ assets
 assetsLiabilities
 assignedArea
 automatedCalculationsExactFormulas
+auditLogsTitle=Audit Logs
+auditLogsDescription=View system activity and changes
 back
 balanceSheet
 businessFormulaImplementation
@@ -43,6 +47,8 @@ checkStock
 clear
 close
 company
+companyManagementTitle=Company Management
+companyManagementDescription=Manage LPG companies and suppliers
 completeSystemAccessAndUserManagement
 confirm
 confirmDeleteUser
@@ -79,6 +85,8 @@ deleting
 description
 details
 discount
+distributorAssignmentsTitle=Distributor Assignments
+distributorAssignmentsDescription=Assign companies/products to distributors
 download
 driver
 driverAddedSuccessfully
@@ -217,10 +225,14 @@ phone
 phoneNumber
 pleaseLogInToAccessUserManagement
 previous
+pricingManagementTitle=Pricing Management
+pricingManagementDescription=Manage pricing tiers and assignments
 print
 producentsWithLowStockWarning
 product
 productManagement
+productManagementTitle=Product Management
+productManagementDescription=Manage product variants and pricing
 products
 productsBelowMinimumThreshold
 productsInCriticalStock
@@ -283,6 +295,10 @@ sumAllDriversSalesForDate
 sumCompletedEmptyCylinderShipments
 sumCompletedShipmentsFromShipmentsPage
 sun
+systemAnalyticsTitle=System Analytics
+systemAnalyticsDescription=Platform usage and performance metrics
+systemSettingsTitle=System Settings
+systemSettingsDescription=Configure global system settings
 systemUsers
 tasks
 teamAccess
@@ -328,6 +344,8 @@ urgent
 user
 userDetails
 userManagement
+userManagementTitle=User Management
+userManagementDescription=Manage system users and permissions
 users
 view
 viewComprehensiveReports
@@ -340,5 +358,6 @@ wed
 week
 year
 yesterday
+yes
 yesterdaysEmpty
 yesterdaysFull

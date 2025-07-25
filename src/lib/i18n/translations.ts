@@ -24,6 +24,24 @@ export interface Translations {
   productManagement: string;
   dailySalesReport: string;
   analytics: string;
+  adminDashboardDescription: string;
+  adminDashboardTitle: string;
+  auditLogsDescription: string;
+  auditLogsTitle: string;
+  companyManagementDescription: string;
+  companyManagementTitle: string;
+  distributorAssignmentsDescription: string;
+  distributorAssignmentsTitle: string;
+  pricingManagementDescription: string;
+  pricingManagementTitle: string;
+  productManagementDescription: string;
+  productManagementTitle: string;
+  systemAnalyticsDescription: string;
+  systemAnalyticsTitle: string;
+  systemSettingsDescription: string;
+  systemSettingsTitle: string;
+  userManagementDescription: string;
+  userManagementTitle: string;
 
   // Common Actions
   save: string;
@@ -852,6 +870,25 @@ const englishTranslations: Translations = {
   dailySalesReport: 'Daily Sales Report',
   analytics: 'Analytics',
 
+  adminDashboardTitle: 'Admin Dashboard',
+  adminDashboardDescription: 'System overview and metrics',
+  companyManagementTitle: 'Company Management',
+  companyManagementDescription: 'Manage LPG companies and suppliers',
+  productManagementTitle: 'Product Management',
+  productManagementDescription: 'Manage product variants and pricing',
+  distributorAssignmentsTitle: 'Distributor Assignments',
+  distributorAssignmentsDescription: 'Assign companies/products to distributors',
+  pricingManagementTitle: 'Pricing Management',
+  pricingManagementDescription: 'Manage pricing tiers and assignments',
+  userManagementTitle: 'User Management',
+  userManagementDescription: 'Manage system users and permissions',
+  systemAnalyticsTitle: 'System Analytics',
+  systemAnalyticsDescription: 'Platform usage and performance metrics',
+  auditLogsTitle: 'Audit Logs',
+  auditLogsDescription: 'View system activity and changes',
+  systemSettingsTitle: 'System Settings',
+  systemSettingsDescription: 'Configure global system settings',
+
   // Common Actions
   save: 'Save',
   cancel: 'Cancel',
@@ -1674,6 +1711,25 @@ const bengaliTranslations: Translations = {
   productManagement: 'পণ্য ব্যবস্থাপনা',
   dailySalesReport: 'দৈনিক বিক্রয় রিপোর্ট',
   analytics: 'বিশ্লেষণ',
+
+  adminDashboardTitle: 'অ্যাডমিন ড্যাশবোর্ড',
+  adminDashboardDescription: 'সিস্টেমের ওভারভিউ এবং মেট্রিক্স',
+  companyManagementTitle: 'কোম্পানি ব্যবস্থাপনা',
+  companyManagementDescription: 'এলপিজি কোম্পানি এবং সরবরাহকারীদের পরিচালনা করুন',
+  productManagementTitle: 'পণ্য ব্যবস্থাপনা',
+  productManagementDescription: 'পণ্যের প্রকার এবং মূল্য নির্ধারণ পরিচালনা করুন',
+  distributorAssignmentsTitle: 'পরিবেশক নিয়োগ',
+  distributorAssignmentsDescription: 'পরিবেশকদের কাছে কোম্পানি/পণ্য বরাদ্দ করুন',
+  pricingManagementTitle: 'মূল্য নির্ধারণ ব্যবস্থাপনা',
+  pricingManagementDescription: 'মূল্য স্তর এবং নিয়োগ পরিচালনা করুন',
+  userManagementTitle: 'ব্যবহারকারী ব্যবস্থাপনা',
+  userManagementDescription: 'সিস্টেম ব্যবহারকারী এবং অনুমতি পরিচালনা করুন',
+  systemAnalyticsTitle: 'সিস্টেম অ্যানালিটিক্স',
+  systemAnalyticsDescription: 'প্ল্যাটফর্ম ব্যবহার এবং কর্মক্ষমতা মেট্রিক্স',
+  auditLogsTitle: 'অডিট লগ',
+  auditLogsDescription: 'সিস্টেমের কার্যকলাপ এবং পরিবর্তনগুলি দেখুন',
+  systemSettingsTitle: 'সিস্টেম সেটিংস',
+  systemSettingsDescription: 'গ্লোবাল সিস্টেম সেটিংস কনফিগার করুন',
 
   // Common Actions
   save: 'সংরক্ষণ',

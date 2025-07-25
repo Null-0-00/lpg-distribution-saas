@@ -41,63 +41,6 @@ interface NavigationItem {
   description?: string;
 }
 
-const navigationItems: NavigationItem[] = [
-  {
-    title: 'Admin Dashboard',
-    href: '/admin',
-    icon: Home,
-    description: 'System overview and metrics',
-  },
-  {
-    title: 'Company Management',
-    href: '/admin/companies',
-    icon: Building2,
-    description: 'Manage LPG companies and suppliers',
-  },
-  {
-    title: 'Product Management',
-    href: '/admin/products',
-    icon: Package,
-    description: 'Manage product variants and pricing',
-  },
-  {
-    title: 'Distributor Assignments',
-    href: '/admin/distributor-assignments',
-    icon: MapPin,
-    description: 'Assign companies/products to distributors',
-  },
-  {
-    title: 'Pricing Management',
-    href: '/admin/pricing-assignments',
-    icon: DollarSign,
-    description: 'Manage pricing tiers and assignments',
-  },
-  {
-    title: 'User Management',
-    href: '/admin/users',
-    icon: UserCog,
-    description: 'Manage system users and permissions',
-  },
-  {
-    title: 'System Analytics',
-    href: '/admin/analytics',
-    icon: TrendingUp,
-    description: 'Platform usage and performance metrics',
-  },
-  {
-    title: 'Audit Logs',
-    href: '/admin/audit-logs',
-    icon: FileText,
-    description: 'View system activity and changes',
-  },
-  {
-    title: 'System Settings',
-    href: '/dashboard/settings',
-    icon: Settings,
-    description: 'Configure global system settings',
-  },
-];
-
 interface AdminNavigationProps {
   user: User;
 }
@@ -107,6 +50,63 @@ export default function AdminNavigation({ user }: AdminNavigationProps) {
   const router = useRouter();
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const { t } = useSettings();
+
+  const navigationItems: NavigationItem[] = [
+    {
+      title: t('adminDashboardTitle') || 'Admin Dashboard',
+      href: '/admin',
+      icon: Home,
+      description: t('adminDashboardDescription') || 'System overview and metrics',
+    },
+    {
+      title: t('companyManagementTitle') || 'Company Management',
+      href: '/admin/companies',
+      icon: Building2,
+      description: t('companyManagementDescription') || 'Manage LPG companies and suppliers',
+    },
+    {
+      title: t('productManagementTitle') || 'Product Management',
+      href: '/admin/products',
+      icon: Package,
+      description: t('productManagementDescription') || 'Manage product variants and pricing',
+    },
+    {
+      title: t('distributorAssignmentsTitle') || 'Distributor Assignments',
+      href: '/admin/distributor-assignments',
+      icon: MapPin,
+      description: t('distributorAssignmentsDescription') || 'Assign companies/products to distributors',
+    },
+    {
+      title: t('pricingManagementTitle') || 'Pricing Management',
+      href: '/admin/pricing-assignments',
+      icon: DollarSign,
+      description: t('pricingManagementDescription') || 'Manage pricing tiers and assignments',
+    },
+    {
+      title: t('userManagementTitle') || 'User Management',
+      href: '/admin/users',
+      icon: UserCog,
+      description: t('userManagementDescription') || 'Manage system users and permissions',
+    },
+    {
+      title: t('systemAnalyticsTitle') || 'System Analytics',
+      href: '/admin/analytics',
+      icon: TrendingUp,
+      description: t('systemAnalyticsDescription') || 'Platform usage and performance metrics',
+    },
+    {
+      title: t('auditLogsTitle') || 'Audit Logs',
+      href: '/admin/audit-logs',
+      icon: FileText,
+      description: t('auditLogsDescription') || 'View system activity and changes',
+    },
+    {
+      title: t('systemSettingsTitle') || 'System Settings',
+      href: '/dashboard/settings',
+      icon: Settings,
+      description: t('systemSettingsDescription') || 'Configure global system settings',
+    },
+  ];
 
   const handleSignOut = async () => {
     await signOut({ redirect: false });

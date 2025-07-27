@@ -846,7 +846,7 @@ model EmptyCylinder {
   product             Product      @relation(fields: [productId], references: [id], onDelete: Cascade)
   tenant              Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
-  @@unique([tenantId, cylinderSizeId, date])
+  @@unique([tenantId, productId, date])
   @@index([tenantId])
   @@index([date])
   @@index([productId])

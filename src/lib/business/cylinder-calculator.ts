@@ -174,12 +174,28 @@ export class CylinderCalculator {
     const dateOnly = new Date(date);
     dateOnly.setHours(0, 0, 0, 0);
 
-    // Get all cylinder sizes
-    const cylinderSizes = await this.prisma.cylinderSize.findMany({
+    // Get all products with cylinder sizes
+    const products = await this.prisma.product.findMany({
       where: {
         tenantId,
         isActive: true,
+        cylinderSizeId: { not: null },
       },
+      include: {
+        cylinderSize: true,
+      },
+    });
+
+    // Group products by cylinder size for aggregate calculations
+    const productsByCylinderSize = new Map<string, typeof products>();
+    products.forEach((product) => {
+      if (product.cylinderSize) {
+        const sizeId = product.cylinderSize.id;
+        if (!productsByCylinderSize.has(sizeId)) {
+          productsByCylinderSize.set(sizeId, []);
+        }
+        productsByCylinderSize.get(sizeId)!.push(product);
+      }
     });
 
     // Get cylinder receivables from drivers
@@ -210,8 +226,9 @@ export class CylinderCalculator {
       latestReceivablesByDriver.values()
     ).reduce((sum, amount) => sum + amount, 0);
 
-    // Calculate empty cylinders for each size using real-time business formulas
-    for (const cylinderSize of cylinderSizes) {
+    // Calculate empty cylinders for each cylinder size
+    for (const [cylinderSizeId, sizeProducts] of productsByCylinderSize) {
+      const cylinderSize = sizeProducts[0].cylinderSize!;
       // Get previous day's empty cylinders
       const previousDate = new Date(dateOnly);
       previousDate.setDate(previousDate.getDate() - 1);
@@ -400,30 +417,42 @@ export class CylinderCalculator {
       );
       const quantityWithDrivers = proportionalReceivables;
 
-      // Upsert empty cylinder record
-      await this.prisma.emptyCylinder.upsert({
-        where: {
-          tenantId_cylinderSizeId_date: {
+      // Create empty cylinder records for each product in this size
+      for (const product of sizeProducts) {
+        // Calculate per-product distribution based on product share
+        const productShare = 1 / sizeProducts.length; // Equal distribution among products of same size
+        const productQuantity = Math.round(totalEmptyCylinders * productShare);
+        const productQuantityInHand = Math.round(quantityInHand * productShare);
+        const productQuantityWithDrivers = Math.round(
+          quantityWithDrivers * productShare
+        );
+
+        await this.prisma.emptyCylinder.upsert({
+          where: {
+            tenantId_productId_date: {
+              tenantId,
+              productId: product.id,
+              date: dateOnly,
+            },
+          },
+          update: {
+            quantity: productQuantity,
+            quantityInHand: productQuantityInHand,
+            quantityWithDrivers: productQuantityWithDrivers,
+            calculatedAt: new Date(),
+          },
+          create: {
             tenantId,
+            productId: product.id,
+            companyId: product.companyId,
             cylinderSizeId: cylinderSize.id,
+            quantity: productQuantity,
+            quantityInHand: productQuantityInHand,
+            quantityWithDrivers: productQuantityWithDrivers,
             date: dateOnly,
           },
-        },
-        update: {
-          quantity: totalEmptyCylinders,
-          quantityInHand,
-          quantityWithDrivers,
-          calculatedAt: new Date(),
-        },
-        create: {
-          tenantId,
-          cylinderSizeId: cylinderSize.id,
-          quantity: totalEmptyCylinders,
-          quantityInHand,
-          quantityWithDrivers,
-          date: dateOnly,
-        },
-      });
+        });
+      }
     }
   }
 

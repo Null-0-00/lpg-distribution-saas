@@ -74,7 +74,7 @@ export async function POST(request: NextRequest) {
       onboardingCompleted: user.onboardingCompleted,
     });
 
-    // Use transaction to ensure data consistency
+    // Use transaction to ensure data consistency (with extended timeout for complex onboarding)
     await prisma.$transaction(async (tx) => {
       // 1. Create companies
       const createdCompanies = await Promise.all(
@@ -446,6 +446,8 @@ export async function POST(request: NextRequest) {
           onboardingCompletedAt: new Date(),
         },
       });
+    }, {
+      timeout: 15000, // 15 second timeout for complex onboarding transaction
     });
 
     return NextResponse.json({

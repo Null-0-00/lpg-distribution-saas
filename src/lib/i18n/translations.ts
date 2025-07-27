@@ -959,6 +959,7 @@ export interface Translations {
   addCylinderSizesFirst: string;
   totalSizes: string;
   totalEmptyCylinders: string;
+  emptyCylinderNote: string;
 
   // Drivers step
   addYourDrivers: string;
@@ -1349,6 +1350,7 @@ const englishTranslations: Translations = {
   addCylinderSizesFirst: 'Add cylinder sizes first',
   totalSizes: 'Total Sizes',
   totalEmptyCylinders: 'Total Empty Cylinders',
+  emptyCylinderNote: 'Note: Include both empty cylinders in your warehouse and cylinder receivables in this quantity.',
 
   // Drivers step
   addYourDrivers: 'Add Your Drivers',
@@ -3053,13 +3055,14 @@ const bengaliTranslations: Translations = {
   totalProducts: 'মোট পণ্য',
   totalFullCylinders: 'মোট পূর্ণ সিলিন্ডার',
   setEmptyCylinderInventory: 'খালি সিলিন্ডার ইনভেন্টরি সেট করুন',
-  enterCurrentEmptyCylinderQuantities: 'বর্তমান খালি সিলিন্ডারের পরিমাণ লিখুন',
+  enterCurrentEmptyCylinderQuantities: 'বর্তমান খালি সিলিন্ডারের পরিমাণ লিখুন (সিলিন্ডার পাওনা সহ)',
   emptyCylinderInventory: 'খালি সিলিন্ডার ইনভেন্টরি',
-  enterQuantityForEachSize: 'প্রতিটি আকারের জন্য পরিমাণ লিখুন',
+  enterQuantityForEachSize: 'বর্তমান খালি সিলিন্ডারের পরিমাণ লিখুন (সিলিন্ডার পাওনা সহ)',
   noCylinderSizesAvailable: 'কোনো সিলিন্ডারের আকার উপলব্ধ নেই',
   addCylinderSizesFirst: 'প্রথমে সিলিন্ডারের আকার যোগ করুন',
   totalSizes: 'মোট আকার',
   totalEmptyCylinders: 'মোট খালি সিলিন্ডার',
+  emptyCylinderNote: 'নোট: এই পরিমাণে আপনার গুদামে থাকা খালি সিলিন্ডার এবং পাওনা সিলিন্ডার উভয়ই অন্তর্ভুক্ত করুন।',
   addYourDrivers: 'আপনার চালক যোগ করুন',
   addDriversWhoWillSellProducts: 'যে চালকরা পণ্য বিক্রি করবেন তাদের যোগ করুন',
   enterDriverInformation: 'চালকের তথ্য লিখুন',

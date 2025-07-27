@@ -504,7 +504,9 @@ export default function ShipmentsPage() {
         fetchShipments();
       } else {
         const errorData = await response.json();
-        alert(`Error deleting shipment: ${errorData.error || 'Unknown error'}`);
+        alert(
+          `Error deleting shipment: ${errorData.error || t('unknownError')}`
+        );
       }
     } catch (error) {
       console.error('Error deleting shipment:', error);
@@ -752,13 +754,13 @@ export default function ShipmentsPage() {
           date: '',
           company: {
             id: '',
-            name: 'Unknown Company',
+            name: t('unknownCompany'),
             contactPerson: '',
             phone: '',
           },
           totalItems: 0,
           totalCost: 0,
-          driverName: 'Unknown',
+          driverName: t('unknownDriver'),
         };
       }
 
@@ -776,8 +778,12 @@ export default function ShipmentsPage() {
         company: firstShipment.company || {
           id: '',
           name: isEmptyCylinderTransaction
-            ? 'Empty Cylinder Transaction'
-            : 'Direct Transaction',
+            ? `${t('emptyCylinderTransaction')} - ${
+                firstShipment.shipmentType === 'INCOMING_EMPTY'
+                  ? t('cylinderBuyTransaction')
+                  : t('cylinderSellTransaction')
+              }`
+            : t('directTransaction'),
           contactPerson: '',
           phone: '',
         },
@@ -785,7 +791,7 @@ export default function ShipmentsPage() {
         totalCost: shipments.reduce((sum, s) => sum + (s.totalCost || 0), 0),
         driverName:
           firstShipment.notes?.match(/Driver: ([^|]+)/)?.[1]?.trim() ||
-          'Unknown',
+          t('unknownDriver'),
       };
     });
   };

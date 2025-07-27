@@ -13,14 +13,12 @@ import {
   Truck,
   CreditCard,
   Building2,
-  Settings,
 } from 'lucide-react';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
 import { ClientTime } from '@/components/ui/ClientTime';
 import { useSettings } from '@/contexts/SettingsContext';
 import { useOnboarding } from '@/hooks/useOnboarding';
 import { OnboardingModal } from '@/components/onboarding/OnboardingModal';
-import { Button } from '@/components/ui/button';
 // Removed FallbackDataService import to use only real database data
 
 interface DashboardStats {
@@ -148,10 +146,6 @@ export default function DashboardPage() {
     setShowOnboarding(false);
   };
 
-  const handleOpenOnboarding = () => {
-    setShowOnboarding(true);
-  };
-
   const navigationCards = useMemo(
     () => [
       {
@@ -269,17 +263,6 @@ export default function DashboardPage() {
             </p>
           </div>
           <div className="flex items-center gap-3">
-            {onboardingCompleted && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleOpenOnboarding}
-                className="flex items-center gap-2"
-              >
-                <Settings className="h-4 w-4" />
-                {t('setupBusiness')}
-              </Button>
-            )}
             <ThemeToggle />
           </div>
         </div>

@@ -17,13 +17,16 @@ CREATE TYPE "DriverType" AS ENUM ('RETAIL', 'SHIPMENT');
 CREATE TYPE "SaleType" AS ENUM ('PACKAGE', 'REFILL');
 
 -- CreateEnum
-CREATE TYPE "PaymentType" AS ENUM ('CASH', 'CREDIT', 'CYLINDER_CREDIT');
+CREATE TYPE "PaymentType" AS ENUM ('CASH', 'BANK_TRANSFER', 'MFS', 'CREDIT', 'CYLINDER_CREDIT');
 
 -- CreateEnum
 CREATE TYPE "PurchaseType" AS ENUM ('PACKAGE', 'REFILL', 'EMPTY_CYLINDER');
 
 -- CreateEnum
 CREATE TYPE "ShipmentType" AS ENUM ('INCOMING_FULL', 'INCOMING_EMPTY', 'OUTGOING_FULL', 'OUTGOING_EMPTY', 'EMPTY_CYLINDER_DELIVERY', 'EMPTY_CYLINDER_PICKUP');
+
+-- CreateEnum
+CREATE TYPE "ShipmentStatus" AS ENUM ('PENDING', 'IN_TRANSIT', 'DELIVERED', 'COMPLETED');
 
 -- CreateEnum
 CREATE TYPE "MovementType" AS ENUM ('SALE_PACKAGE', 'SALE_REFILL', 'PURCHASE_PACKAGE', 'PURCHASE_REFILL', 'EMPTY_CYLINDER_BUY', 'EMPTY_CYLINDER_SELL', 'ADJUSTMENT_POSITIVE', 'ADJUSTMENT_NEGATIVE', 'TRANSFER_IN', 'TRANSFER_OUT');
@@ -41,13 +44,16 @@ CREATE TYPE "PurchaseOrderStatus" AS ENUM ('PENDING', 'APPROVED', 'ORDERED', 'PA
 CREATE TYPE "PurchaseOrderPriority" AS ENUM ('LOW', 'NORMAL', 'HIGH', 'URGENT');
 
 -- CreateEnum
-CREATE TYPE "AuditAction" AS ENUM ('CREATE', 'UPDATE', 'DELETE', 'VIEW', 'ASSIGN', 'UNASSIGN', 'APPROVE', 'REJECT', 'ACTIVATE', 'DEACTIVATE');
+CREATE TYPE "AuditAction" AS ENUM ('CREATE', 'UPDATE', 'DELETE', 'VIEW', 'ASSIGN', 'UNASSIGN', 'APPROVE', 'REJECT', 'ACTIVATE', 'DEACTIVATE', 'USER_SIGN_IN', 'USER_SIGN_OUT', 'PAYMENT', 'RETURN', 'PAID', 'MONTHLY_REPORT_SENT');
 
 -- CreateEnum
 CREATE TYPE "ReceivableType" AS ENUM ('CASH', 'CYLINDER');
 
 -- CreateEnum
 CREATE TYPE "ReceivableStatus" AS ENUM ('CURRENT', 'DUE_SOON', 'OVERDUE', 'PAID');
+
+-- CreateEnum
+CREATE TYPE "FixedCostType" AS ENUM ('MANUAL', 'CALCULATED');
 
 -- CreateTable
 CREATE TABLE "tenants" (
@@ -58,6 +64,9 @@ CREATE TABLE "tenants" (
     "subscriptionPlan" "SubscriptionPlan" NOT NULL,
     "isActive" BOOLEAN NOT NULL DEFAULT true,
     "settings" JSONB,
+    "currency" TEXT NOT NULL DEFAULT 'USD',
+    "timezone" TEXT NOT NULL DEFAULT 'UTC',
+    "language" TEXT NOT NULL DEFAULT 'en',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -91,6 +100,19 @@ CREATE TABLE "permissions" (
 );
 
 -- CreateTable
+CREATE TABLE "cylinder_sizes" (
+    "id" TEXT NOT NULL,
+    "tenantId" TEXT NOT NULL,
+    "size" TEXT NOT NULL,
+    "description" TEXT,
+    "isActive" BOOLEAN NOT NULL DEFAULT true,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "cylinder_sizes_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "companies" (
     "id" TEXT NOT NULL,
     "tenantId" TEXT NOT NULL,
@@ -116,6 +138,7 @@ CREATE TABLE "products" (
     "id" TEXT NOT NULL,
     "tenantId" TEXT NOT NULL,
     "companyId" TEXT NOT NULL,
+    "cylinderSizeId" TEXT,
     "name" TEXT NOT NULL,
     "size" TEXT NOT NULL,
     "fullCylinderWeight" DOUBLE PRECISION,
@@ -227,7 +250,7 @@ CREATE TABLE "purchases" (
 CREATE TABLE "shipments" (
     "id" TEXT NOT NULL,
     "tenantId" TEXT NOT NULL,
-    "companyId" TEXT NOT NULL,
+    "companyId" TEXT,
     "productId" TEXT NOT NULL,
     "shipmentType" "ShipmentType" NOT NULL,
     "quantity" INTEGER NOT NULL,
@@ -237,6 +260,7 @@ CREATE TABLE "shipments" (
     "invoiceNumber" TEXT,
     "vehicleNumber" TEXT,
     "notes" TEXT,
+    "status" "ShipmentStatus" NOT NULL DEFAULT 'PENDING',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -308,6 +332,7 @@ CREATE TABLE "customer_receivables" (
     "receivableType" "ReceivableType" NOT NULL,
     "amount" DOUBLE PRECISION NOT NULL DEFAULT 0,
     "quantity" INTEGER NOT NULL DEFAULT 0,
+    "size" TEXT,
     "dueDate" TIMESTAMP(3),
     "status" "ReceivableStatus" NOT NULL DEFAULT 'CURRENT',
     "notes" TEXT,
@@ -352,9 +377,23 @@ CREATE TABLE "liabilities" (
 );
 
 -- CreateTable
+CREATE TABLE "expense_parent_categories" (
+    "id" TEXT NOT NULL,
+    "tenantId" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "description" TEXT,
+    "isActive" BOOLEAN NOT NULL DEFAULT true,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "expense_parent_categories_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "expense_categories" (
     "id" TEXT NOT NULL,
     "tenantId" TEXT NOT NULL,
+    "parentId" TEXT,
     "name" TEXT NOT NULL,
     "description" TEXT,
     "budget" DOUBLE PRECISION,
@@ -373,6 +412,7 @@ CREATE TABLE "expenses" (
     "userId" TEXT NOT NULL,
     "amount" DOUBLE PRECISION NOT NULL,
     "description" TEXT NOT NULL,
+    "particulars" TEXT,
     "expenseDate" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "receiptUrl" TEXT,
     "isApproved" BOOLEAN NOT NULL DEFAULT false,
@@ -383,6 +423,26 @@ CREATE TABLE "expenses" (
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "expenses_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "deposits" (
+    "id" TEXT NOT NULL,
+    "tenantId" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "amount" DOUBLE PRECISION NOT NULL,
+    "description" TEXT NOT NULL,
+    "particulars" TEXT NOT NULL,
+    "depositDate" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "receiptUrl" TEXT,
+    "isApproved" BOOLEAN NOT NULL DEFAULT false,
+    "approvedBy" TEXT,
+    "approvedAt" TIMESTAMP(3),
+    "notes" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "deposits_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -525,6 +585,39 @@ CREATE TABLE "distributor_pricing_assignments" (
 );
 
 -- CreateTable
+CREATE TABLE "commission_structures" (
+    "id" TEXT NOT NULL,
+    "tenantId" TEXT NOT NULL,
+    "productId" TEXT NOT NULL,
+    "month" INTEGER NOT NULL,
+    "year" INTEGER NOT NULL,
+    "commission" DOUBLE PRECISION NOT NULL,
+    "description" TEXT,
+    "isActive" BOOLEAN NOT NULL DEFAULT true,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "commission_structures_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "fixed_cost_structures" (
+    "id" TEXT NOT NULL,
+    "tenantId" TEXT NOT NULL,
+    "productId" TEXT,
+    "month" INTEGER NOT NULL,
+    "year" INTEGER NOT NULL,
+    "costPerUnit" DOUBLE PRECISION NOT NULL,
+    "costType" "FixedCostType" NOT NULL,
+    "description" TEXT,
+    "isActive" BOOLEAN NOT NULL DEFAULT true,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "fixed_cost_structures_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "_PermissionToUser" (
     "A" TEXT NOT NULL,
     "B" TEXT NOT NULL,
@@ -546,6 +639,12 @@ CREATE UNIQUE INDEX "users_tenantId_email_key" ON "users"("tenantId", "email");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "permissions_name_key" ON "permissions"("name");
+
+-- CreateIndex
+CREATE INDEX "cylinder_sizes_tenantId_idx" ON "cylinder_sizes"("tenantId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "cylinder_sizes_tenantId_size_key" ON "cylinder_sizes"("tenantId", "size");
 
 -- CreateIndex
 CREATE INDEX "companies_tenantId_idx" ON "companies"("tenantId");
@@ -579,6 +678,18 @@ CREATE INDEX "sales_tenantId_idx" ON "sales"("tenantId");
 
 -- CreateIndex
 CREATE INDEX "sales_saleDate_idx" ON "sales"("saleDate");
+
+-- CreateIndex
+CREATE INDEX "sales_tenantId_saleDate_idx" ON "sales"("tenantId", "saleDate");
+
+-- CreateIndex
+CREATE INDEX "sales_tenantId_driverId_idx" ON "sales"("tenantId", "driverId");
+
+-- CreateIndex
+CREATE INDEX "sales_saleType_idx" ON "sales"("saleType");
+
+-- CreateIndex
+CREATE INDEX "sales_paymentType_idx" ON "sales"("paymentType");
 
 -- CreateIndex
 CREATE INDEX "sales_driverId_idx" ON "sales"("driverId");
@@ -674,7 +785,16 @@ CREATE INDEX "liabilities_tenantId_idx" ON "liabilities"("tenantId");
 CREATE INDEX "liabilities_category_idx" ON "liabilities"("category");
 
 -- CreateIndex
+CREATE INDEX "expense_parent_categories_tenantId_idx" ON "expense_parent_categories"("tenantId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "expense_parent_categories_tenantId_name_key" ON "expense_parent_categories"("tenantId", "name");
+
+-- CreateIndex
 CREATE INDEX "expense_categories_tenantId_idx" ON "expense_categories"("tenantId");
+
+-- CreateIndex
+CREATE INDEX "expense_categories_parentId_idx" ON "expense_categories"("parentId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "expense_categories_tenantId_name_key" ON "expense_categories"("tenantId", "name");
@@ -687,6 +807,12 @@ CREATE INDEX "expenses_expenseDate_idx" ON "expenses"("expenseDate");
 
 -- CreateIndex
 CREATE INDEX "expenses_categoryId_idx" ON "expenses"("categoryId");
+
+-- CreateIndex
+CREATE INDEX "deposits_tenantId_idx" ON "deposits"("tenantId");
+
+-- CreateIndex
+CREATE INDEX "deposits_depositDate_idx" ON "deposits"("depositDate");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "purchase_orders_poNumber_key" ON "purchase_orders"("poNumber");
@@ -773,25 +899,52 @@ CREATE INDEX "distributor_pricing_assignments_companyTierId_idx" ON "distributor
 CREATE INDEX "distributor_pricing_assignments_productTierId_idx" ON "distributor_pricing_assignments"("productTierId");
 
 -- CreateIndex
+CREATE INDEX "commission_structures_tenantId_idx" ON "commission_structures"("tenantId");
+
+-- CreateIndex
+CREATE INDEX "commission_structures_productId_idx" ON "commission_structures"("productId");
+
+-- CreateIndex
+CREATE INDEX "commission_structures_year_month_idx" ON "commission_structures"("year", "month");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "commission_structures_tenantId_productId_month_year_key" ON "commission_structures"("tenantId", "productId", "month", "year");
+
+-- CreateIndex
+CREATE INDEX "fixed_cost_structures_tenantId_idx" ON "fixed_cost_structures"("tenantId");
+
+-- CreateIndex
+CREATE INDEX "fixed_cost_structures_productId_idx" ON "fixed_cost_structures"("productId");
+
+-- CreateIndex
+CREATE INDEX "fixed_cost_structures_year_month_idx" ON "fixed_cost_structures"("year", "month");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "fixed_cost_structures_tenantId_productId_month_year_costTyp_key" ON "fixed_cost_structures"("tenantId", "productId", "month", "year", "costType");
+
+-- CreateIndex
 CREATE INDEX "_PermissionToUser_B_index" ON "_PermissionToUser"("B");
 
 -- AddForeignKey
 ALTER TABLE "users" ADD CONSTRAINT "users_tenantId_fkey" FOREIGN KEY ("tenantId") REFERENCES "tenants"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "companies" ADD CONSTRAINT "companies_tenantId_fkey" FOREIGN KEY ("tenantId") REFERENCES "tenants"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "cylinder_sizes" ADD CONSTRAINT "cylinder_sizes_tenantId_fkey" FOREIGN KEY ("tenantId") REFERENCES "tenants"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "products" ADD CONSTRAINT "products_tenantId_fkey" FOREIGN KEY ("tenantId") REFERENCES "tenants"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "companies" ADD CONSTRAINT "companies_tenantId_fkey" FOREIGN KEY ("tenantId") REFERENCES "tenants"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "products" ADD CONSTRAINT "products_companyId_fkey" FOREIGN KEY ("companyId") REFERENCES "companies"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "drivers" ADD CONSTRAINT "drivers_tenantId_fkey" FOREIGN KEY ("tenantId") REFERENCES "tenants"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "products" ADD CONSTRAINT "products_cylinderSizeId_fkey" FOREIGN KEY ("cylinderSizeId") REFERENCES "cylinder_sizes"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "sales" ADD CONSTRAINT "sales_tenantId_fkey" FOREIGN KEY ("tenantId") REFERENCES "tenants"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "products" ADD CONSTRAINT "products_tenantId_fkey" FOREIGN KEY ("tenantId") REFERENCES "tenants"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "drivers" ADD CONSTRAINT "drivers_tenantId_fkey" FOREIGN KEY ("tenantId") REFERENCES "tenants"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "sales" ADD CONSTRAINT "sales_driverId_fkey" FOREIGN KEY ("driverId") REFERENCES "drivers"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -800,10 +953,10 @@ ALTER TABLE "sales" ADD CONSTRAINT "sales_driverId_fkey" FOREIGN KEY ("driverId"
 ALTER TABLE "sales" ADD CONSTRAINT "sales_productId_fkey" FOREIGN KEY ("productId") REFERENCES "products"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "sales" ADD CONSTRAINT "sales_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "sales" ADD CONSTRAINT "sales_tenantId_fkey" FOREIGN KEY ("tenantId") REFERENCES "tenants"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "daily_sales" ADD CONSTRAINT "daily_sales_tenantId_fkey" FOREIGN KEY ("tenantId") REFERENCES "tenants"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "sales" ADD CONSTRAINT "sales_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "daily_sales" ADD CONSTRAINT "daily_sales_driverId_fkey" FOREIGN KEY ("driverId") REFERENCES "drivers"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -812,7 +965,7 @@ ALTER TABLE "daily_sales" ADD CONSTRAINT "daily_sales_driverId_fkey" FOREIGN KEY
 ALTER TABLE "daily_sales" ADD CONSTRAINT "daily_sales_productId_fkey" FOREIGN KEY ("productId") REFERENCES "products"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "purchases" ADD CONSTRAINT "purchases_tenantId_fkey" FOREIGN KEY ("tenantId") REFERENCES "tenants"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "daily_sales" ADD CONSTRAINT "daily_sales_tenantId_fkey" FOREIGN KEY ("tenantId") REFERENCES "tenants"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "purchases" ADD CONSTRAINT "purchases_companyId_fkey" FOREIGN KEY ("companyId") REFERENCES "companies"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -821,7 +974,7 @@ ALTER TABLE "purchases" ADD CONSTRAINT "purchases_companyId_fkey" FOREIGN KEY ("
 ALTER TABLE "purchases" ADD CONSTRAINT "purchases_productId_fkey" FOREIGN KEY ("productId") REFERENCES "products"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "shipments" ADD CONSTRAINT "shipments_tenantId_fkey" FOREIGN KEY ("tenantId") REFERENCES "tenants"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "purchases" ADD CONSTRAINT "purchases_tenantId_fkey" FOREIGN KEY ("tenantId") REFERENCES "tenants"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "shipments" ADD CONSTRAINT "shipments_companyId_fkey" FOREIGN KEY ("companyId") REFERENCES "companies"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -830,25 +983,25 @@ ALTER TABLE "shipments" ADD CONSTRAINT "shipments_companyId_fkey" FOREIGN KEY ("
 ALTER TABLE "shipments" ADD CONSTRAINT "shipments_productId_fkey" FOREIGN KEY ("productId") REFERENCES "products"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "shipments" ADD CONSTRAINT "shipments_tenantId_fkey" FOREIGN KEY ("tenantId") REFERENCES "tenants"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "inventory_records" ADD CONSTRAINT "inventory_records_tenantId_fkey" FOREIGN KEY ("tenantId") REFERENCES "tenants"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "inventory_movements" ADD CONSTRAINT "inventory_movements_tenantId_fkey" FOREIGN KEY ("tenantId") REFERENCES "tenants"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "inventory_movements" ADD CONSTRAINT "inventory_movements_productId_fkey" FOREIGN KEY ("productId") REFERENCES "products"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "inventory_movements" ADD CONSTRAINT "inventory_movements_driverId_fkey" FOREIGN KEY ("driverId") REFERENCES "drivers"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "receivable_records" ADD CONSTRAINT "receivable_records_tenantId_fkey" FOREIGN KEY ("tenantId") REFERENCES "tenants"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "inventory_movements" ADD CONSTRAINT "inventory_movements_productId_fkey" FOREIGN KEY ("productId") REFERENCES "products"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "inventory_movements" ADD CONSTRAINT "inventory_movements_tenantId_fkey" FOREIGN KEY ("tenantId") REFERENCES "tenants"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "receivable_records" ADD CONSTRAINT "receivable_records_driverId_fkey" FOREIGN KEY ("driverId") REFERENCES "drivers"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "customer_receivables" ADD CONSTRAINT "customer_receivables_tenantId_fkey" FOREIGN KEY ("tenantId") REFERENCES "tenants"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "receivable_records" ADD CONSTRAINT "receivable_records_tenantId_fkey" FOREIGN KEY ("tenantId") REFERENCES "tenants"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "customer_receivables" ADD CONSTRAINT "customer_receivables_driverId_fkey" FOREIGN KEY ("driverId") REFERENCES "drivers"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -857,43 +1010,58 @@ ALTER TABLE "customer_receivables" ADD CONSTRAINT "customer_receivables_driverId
 ALTER TABLE "customer_receivables" ADD CONSTRAINT "customer_receivables_receivableRecordId_fkey" FOREIGN KEY ("receivableRecordId") REFERENCES "receivable_records"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "customer_receivables" ADD CONSTRAINT "customer_receivables_tenantId_fkey" FOREIGN KEY ("tenantId") REFERENCES "tenants"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "assets" ADD CONSTRAINT "assets_tenantId_fkey" FOREIGN KEY ("tenantId") REFERENCES "tenants"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "liabilities" ADD CONSTRAINT "liabilities_tenantId_fkey" FOREIGN KEY ("tenantId") REFERENCES "tenants"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "expense_categories" ADD CONSTRAINT "expense_categories_tenantId_fkey" FOREIGN KEY ("tenantId") REFERENCES "tenants"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "expense_parent_categories" ADD CONSTRAINT "expense_parent_categories_tenantId_fkey" FOREIGN KEY ("tenantId") REFERENCES "tenants"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "expenses" ADD CONSTRAINT "expenses_tenantId_fkey" FOREIGN KEY ("tenantId") REFERENCES "tenants"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "expense_categories" ADD CONSTRAINT "expense_categories_parentId_fkey" FOREIGN KEY ("parentId") REFERENCES "expense_parent_categories"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "expense_categories" ADD CONSTRAINT "expense_categories_tenantId_fkey" FOREIGN KEY ("tenantId") REFERENCES "tenants"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "expenses" ADD CONSTRAINT "expenses_categoryId_fkey" FOREIGN KEY ("categoryId") REFERENCES "expense_categories"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "expenses" ADD CONSTRAINT "expenses_tenantId_fkey" FOREIGN KEY ("tenantId") REFERENCES "tenants"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "expenses" ADD CONSTRAINT "expenses_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "purchase_orders" ADD CONSTRAINT "purchase_orders_tenantId_fkey" FOREIGN KEY ("tenantId") REFERENCES "tenants"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "deposits" ADD CONSTRAINT "deposits_tenantId_fkey" FOREIGN KEY ("tenantId") REFERENCES "tenants"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "purchase_orders" ADD CONSTRAINT "purchase_orders_companyId_fkey" FOREIGN KEY ("companyId") REFERENCES "companies"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "purchase_orders" ADD CONSTRAINT "purchase_orders_driverId_fkey" FOREIGN KEY ("driverId") REFERENCES "drivers"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "purchase_orders" ADD CONSTRAINT "purchase_orders_createdBy_fkey" FOREIGN KEY ("createdBy") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "deposits" ADD CONSTRAINT "deposits_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "purchase_orders" ADD CONSTRAINT "purchase_orders_approvedBy_fkey" FOREIGN KEY ("approvedBy") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "purchase_order_items" ADD CONSTRAINT "purchase_order_items_purchaseOrderId_fkey" FOREIGN KEY ("purchaseOrderId") REFERENCES "purchase_orders"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "purchase_orders" ADD CONSTRAINT "purchase_orders_companyId_fkey" FOREIGN KEY ("companyId") REFERENCES "companies"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "purchase_orders" ADD CONSTRAINT "purchase_orders_createdBy_fkey" FOREIGN KEY ("createdBy") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "purchase_orders" ADD CONSTRAINT "purchase_orders_driverId_fkey" FOREIGN KEY ("driverId") REFERENCES "drivers"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "purchase_orders" ADD CONSTRAINT "purchase_orders_tenantId_fkey" FOREIGN KEY ("tenantId") REFERENCES "tenants"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "purchase_order_items" ADD CONSTRAINT "purchase_order_items_productId_fkey" FOREIGN KEY ("productId") REFERENCES "products"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "purchase_order_items" ADD CONSTRAINT "purchase_order_items_purchaseOrderId_fkey" FOREIGN KEY ("purchaseOrderId") REFERENCES "purchase_orders"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "audit_logs" ADD CONSTRAINT "audit_logs_tenantId_fkey" FOREIGN KEY ("tenantId") REFERENCES "tenants"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -908,7 +1076,7 @@ ALTER TABLE "security_audit_logs" ADD CONSTRAINT "security_audit_logs_tenantId_f
 ALTER TABLE "security_audit_logs" ADD CONSTRAINT "security_audit_logs_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "distributor_assignments" ADD CONSTRAINT "distributor_assignments_tenantId_fkey" FOREIGN KEY ("tenantId") REFERENCES "tenants"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "distributor_assignments" ADD CONSTRAINT "distributor_assignments_assignedBy_fkey" FOREIGN KEY ("assignedBy") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "distributor_assignments" ADD CONSTRAINT "distributor_assignments_companyId_fkey" FOREIGN KEY ("companyId") REFERENCES "companies"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -917,7 +1085,7 @@ ALTER TABLE "distributor_assignments" ADD CONSTRAINT "distributor_assignments_co
 ALTER TABLE "distributor_assignments" ADD CONSTRAINT "distributor_assignments_productId_fkey" FOREIGN KEY ("productId") REFERENCES "products"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "distributor_assignments" ADD CONSTRAINT "distributor_assignments_assignedBy_fkey" FOREIGN KEY ("assignedBy") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "distributor_assignments" ADD CONSTRAINT "distributor_assignments_tenantId_fkey" FOREIGN KEY ("tenantId") REFERENCES "tenants"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "company_pricing_tiers" ADD CONSTRAINT "company_pricing_tiers_companyId_fkey" FOREIGN KEY ("companyId") REFERENCES "companies"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -926,7 +1094,7 @@ ALTER TABLE "company_pricing_tiers" ADD CONSTRAINT "company_pricing_tiers_compan
 ALTER TABLE "product_pricing_tiers" ADD CONSTRAINT "product_pricing_tiers_productId_fkey" FOREIGN KEY ("productId") REFERENCES "products"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "distributor_pricing_assignments" ADD CONSTRAINT "distributor_pricing_assignments_tenantId_fkey" FOREIGN KEY ("tenantId") REFERENCES "tenants"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "distributor_pricing_assignments" ADD CONSTRAINT "distributor_pricing_assignments_assignedBy_fkey" FOREIGN KEY ("assignedBy") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "distributor_pricing_assignments" ADD CONSTRAINT "distributor_pricing_assignments_companyTierId_fkey" FOREIGN KEY ("companyTierId") REFERENCES "company_pricing_tiers"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -935,10 +1103,23 @@ ALTER TABLE "distributor_pricing_assignments" ADD CONSTRAINT "distributor_pricin
 ALTER TABLE "distributor_pricing_assignments" ADD CONSTRAINT "distributor_pricing_assignments_productTierId_fkey" FOREIGN KEY ("productTierId") REFERENCES "product_pricing_tiers"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "distributor_pricing_assignments" ADD CONSTRAINT "distributor_pricing_assignments_assignedBy_fkey" FOREIGN KEY ("assignedBy") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "distributor_pricing_assignments" ADD CONSTRAINT "distributor_pricing_assignments_tenantId_fkey" FOREIGN KEY ("tenantId") REFERENCES "tenants"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "commission_structures" ADD CONSTRAINT "commission_structures_productId_fkey" FOREIGN KEY ("productId") REFERENCES "products"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "commission_structures" ADD CONSTRAINT "commission_structures_tenantId_fkey" FOREIGN KEY ("tenantId") REFERENCES "tenants"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "fixed_cost_structures" ADD CONSTRAINT "fixed_cost_structures_productId_fkey" FOREIGN KEY ("productId") REFERENCES "products"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "fixed_cost_structures" ADD CONSTRAINT "fixed_cost_structures_tenantId_fkey" FOREIGN KEY ("tenantId") REFERENCES "tenants"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "_PermissionToUser" ADD CONSTRAINT "_PermissionToUser_A_fkey" FOREIGN KEY ("A") REFERENCES "permissions"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "_PermissionToUser" ADD CONSTRAINT "_PermissionToUser_B_fkey" FOREIGN KEY ("B") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+

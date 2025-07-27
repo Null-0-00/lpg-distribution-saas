@@ -46,12 +46,10 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json();
     const data: OnboardingData = body;
-    const forceReset = body.forceReset || false; // Allow bypassing onboarding completed check
     const userId = session.user.id;
     const tenantId = session.user.tenantId;
 
     console.log('Onboarding data received:', JSON.stringify(data, null, 2));
-    console.log('Force reset:', forceReset);
 
     // Check if user has already completed onboarding
     const user = await prisma.user.findUnique({
@@ -63,18 +61,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-    if (user.onboardingCompleted && !forceReset) {
+    if (user.onboardingCompleted) {
       console.log('User has already completed onboarding:', userId);
       return NextResponse.json(
-        { error: 'Onboarding already completed' },
+        { error: 'Onboarding already completed. Cannot run onboarding again.' },
         { status: 400 }
-      );
-    }
-
-    if (forceReset) {
-      console.log(
-        'Force reset enabled, allowing onboarding re-run for user:',
-        userId
       );
     }
 

@@ -71,6 +71,10 @@ export function OnboardingModal({
 }: OnboardingModalProps) {
   const { t } = useSettings();
   const [currentStep, setCurrentStep] = useState<Step>('companies');
+  const [onboardingStatus, setOnboardingStatus] = useState<{
+    completed: boolean;
+    loading: boolean;
+  }>({ completed: false, loading: true });
   const [onboardingData, setOnboardingData] = useState<OnboardingData>({
     companies: [],
     cylinderSizes: [],
@@ -81,6 +85,36 @@ export function OnboardingModal({
     receivables: [],
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Check onboarding status when modal opens
+  useEffect(() => {
+    if (isOpen) {
+      checkOnboardingStatus();
+    }
+  }, [isOpen]);
+
+  const checkOnboardingStatus = async () => {
+    try {
+      const response = await fetch('/api/onboarding/status');
+      if (response.ok) {
+        const data = await response.json();
+        setOnboardingStatus({
+          completed: data.completed,
+          loading: false,
+        });
+
+        // If onboarding is already completed, close the modal
+        if (data.completed) {
+          onClose();
+        }
+      } else {
+        setOnboardingStatus({ completed: false, loading: false });
+      }
+    } catch (error) {
+      console.error('Error checking onboarding status:', error);
+      setOnboardingStatus({ completed: false, loading: false });
+    }
+  };
 
   const currentStepIndex = STEPS.indexOf(currentStep);
   const progress = ((currentStepIndex + 1) / STEPS.length) * 100;
@@ -162,10 +196,7 @@ export function OnboardingModal({
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          ...onboardingData,
-          forceReset: true, // Allow re-running onboarding for testing
-        }),
+        body: JSON.stringify(onboardingData),
       });
 
       if (response.ok) {
@@ -252,6 +283,11 @@ export function OnboardingModal({
   };
 
   const isLastStep = currentStepIndex === STEPS.length - 1;
+
+  // Don't render modal if onboarding is already completed
+  if (onboardingStatus.completed) {
+    return null;
+  }
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>

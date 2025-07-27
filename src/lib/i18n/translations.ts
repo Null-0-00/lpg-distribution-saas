@@ -694,6 +694,10 @@ export interface Translations {
   enterTransactionDetails: string;
   buy: string;
   sell: string;
+  emptyCylinderTransaction: string;
+  directTransaction: string;
+  cylinderBuyTransaction: string;
+  cylinderSellTransaction: string;
 
   // Analytics page specific translations
   comprehensiveProfitabilityAnalysis: string;
@@ -793,6 +797,8 @@ export interface Translations {
 
   // Dashboard API and activity messages
   unknownDriver: string;
+  unknownCompany: string;
+  unknownError: string;
   completedSale: string;
   driverCompletedSale: string;
   salesTrendUp: string;
@@ -1930,6 +1936,10 @@ const englishTranslations: Translations = {
   enterTransactionDetails: 'Enter Transaction Details',
   buy: 'Buy',
   sell: 'Sell',
+  emptyCylinderTransaction: 'Empty Cylinder Transaction',
+  directTransaction: 'Direct Transaction',
+  cylinderBuyTransaction: 'Cylinder Buy Transaction',
+  cylinderSellTransaction: 'Cylinder Sell Transaction',
 
   // Analytics and performance
   comprehensiveProfitabilityAnalysis: 'Comprehensive Profitability Analysis',
@@ -2023,6 +2033,8 @@ const englishTranslations: Translations = {
   monthlyTarget: 'Monthly Target',
   quarterlyGrowth: 'Quarterly Growth',
   unknownDriver: 'Unknown Driver',
+  unknownCompany: 'Unknown Company',
+  unknownError: 'Unknown error',
   completedSale: 'Completed Sale',
   driverCompletedSale: 'Driver completed sale',
   salesTrendUp: 'Sales trend up',
@@ -2650,6 +2662,10 @@ const bengaliTranslations: Translations = {
   enterTransactionDetails: 'লেনদেনের বিবরণ লিখুন',
   buy: 'কিনুন',
   sell: 'বিক্রি করুন',
+  emptyCylinderTransaction: 'খালি সিলিন্ডার লেনদেন',
+  directTransaction: 'সরাসরি লেনদেন',
+  cylinderBuyTransaction: 'সিলিন্ডার ক্রয় লেনদেন',
+  cylinderSellTransaction: 'সিলিন্ডার বিক্রয় লেনদেন',
 
   // Analytics page specific translations
   comprehensiveProfitabilityAnalysis: 'ব্যাপক লাভজনকতা বিশ্লেষণ',
@@ -2738,6 +2754,8 @@ const bengaliTranslations: Translations = {
 
   // Dashboard API and activity messages
   unknownDriver: 'অজানা চালক',
+  unknownCompany: 'অজানা কোম্পানি',
+  unknownError: 'অজানা ত্রুটি',
   completedSale: 'বিক্রয় সম্পন্ন',
   driverCompletedSale: 'চালক বিক্রয় সম্পন্ন করেছেন',
   salesTrendUp: 'বৃদ্ধি',
@@ -2979,83 +2997,86 @@ const bengaliTranslations: Translations = {
   isComplete: 'সম্পূর্ণ',
   missingKeys: 'অনুপস্থিত কী',
   totalKeys: 'মোট কী',
-  welcomeToOnboarding: 'welcomeToOnboarding', // TODO: Add Bengali translation
-  setupYourBusinessData: 'setupYourBusinessData', // TODO: Add Bengali translation
-  companyNames: 'companyNames', // TODO: Add Bengali translation
-  productSetup: 'productSetup', // TODO: Add Bengali translation
-  inventoryQuantities: 'inventoryQuantities', // TODO: Add Bengali translation
-  driversSetup: 'driversSetup', // TODO: Add Bengali translation
-  receivablesSetup: 'receivablesSetup', // TODO: Add Bengali translation
-  skipOnboarding: 'skipOnboarding', // TODO: Add Bengali translation
-  completing: 'completing', // TODO: Add Bengali translation
-  completeSetup: 'completeSetup', // TODO: Add Bengali translation
-  setupBusiness: 'setupBusiness', // TODO: Add Bengali translation
-  addCompanyNames: 'addCompanyNames', // TODO: Add Bengali translation
-  addCompaniesYouDistributeFor: 'addCompaniesYouDistributeFor', // TODO: Add Bengali translation
-  addNewCompany: 'addNewCompany', // TODO: Add Bengali translation
-  enterCompanyNamesLikeAygaz: 'enterCompanyNamesLikeAygaz', // TODO: Add Bengali translation
-  companyName: 'companyName', // TODO: Add Bengali translation
-  enterCompanyName: 'enterCompanyName', // TODO: Add Bengali translation
-  companyNameRequired: 'companyNameRequired', // TODO: Add Bengali translation
-  companyAlreadyExists: 'companyAlreadyExists', // TODO: Add Bengali translation
-  addedCompanies: 'addedCompanies', // TODO: Add Bengali translation
-  companiesYouDistributeFor: 'companiesYouDistributeFor', // TODO: Add Bengali translation
-  noCompaniesAdded: 'noCompaniesAdded', // TODO: Add Bengali translation
-  addAtLeastOneCompany: 'addAtLeastOneCompany', // TODO: Add Bengali translation
-  setupProductsAndSizes: 'setupProductsAndSizes', // TODO: Add Bengali translation
-  configureCylinderSizesAndProducts: 'configureCylinderSizesAndProducts', // TODO: Add Bengali translation
-  cylinderSizes: 'cylinderSizes', // TODO: Add Bengali translation
-  addCylinderSize: 'addCylinderSize', // TODO: Add Bengali translation
-  addSizesLike12L20L: 'addSizesLike12L20L', // TODO: Add Bengali translation
-  enterSizeLike12L: 'enterSizeLike12L', // TODO: Add Bengali translation
-  enterDescription: 'enterDescription', // TODO: Add Bengali translation
-  addSize: 'addSize', // TODO: Add Bengali translation
-  cylinderSizeRequired: 'cylinderSizeRequired', // TODO: Add Bengali translation
-  cylinderSizeAlreadyExists: 'cylinderSizeAlreadyExists', // TODO: Add Bengali translation
-  addProduct: 'addProduct', // TODO: Add Bengali translation
-  addProductsForEachCompany: 'addProductsForEachCompany', // TODO: Add Bengali translation
-  productName: 'productName', // TODO: Add Bengali translation
-  enterProductName: 'enterProductName', // TODO: Add Bengali translation
-  currentPrice: 'currentPrice', // TODO: Add Bengali translation
-  enterPrice: 'enterPrice', // TODO: Add Bengali translation
-  productNameRequired: 'productNameRequired', // TODO: Add Bengali translation
-  validPriceRequired: 'validPriceRequired', // TODO: Add Bengali translation
-  productAlreadyExists: 'productAlreadyExists', // TODO: Add Bengali translation
-  addedProducts: 'addedProducts', // TODO: Add Bengali translation
-  addCylinderSizesAndProducts: 'addCylinderSizesAndProducts', // TODO: Add Bengali translation
-  bothRequiredToProceed: 'bothRequiredToProceed', // TODO: Add Bengali translation
-  setInitialInventory: 'setInitialInventory', // TODO: Add Bengali translation
-  enterCurrentFullCylinderQuantities: 'enterCurrentFullCylinderQuantities', // TODO: Add Bengali translation
-  fullCylinderInventory: 'fullCylinderInventory', // TODO: Add Bengali translation
-  enterQuantityForEachProduct: 'enterQuantityForEachProduct', // TODO: Add Bengali translation
-  noProductsAvailable: 'noProductsAvailable', // TODO: Add Bengali translation
-  addProductsFirst: 'addProductsFirst', // TODO: Add Bengali translation
-  totalProducts: 'totalProducts', // TODO: Add Bengali translation
-  totalFullCylinders: 'totalFullCylinders', // TODO: Add Bengali translation
-  setEmptyCylinderInventory: 'setEmptyCylinderInventory', // TODO: Add Bengali translation
-  enterCurrentEmptyCylinderQuantities: 'enterCurrentEmptyCylinderQuantities', // TODO: Add Bengali translation
-  emptyCylinderInventory: 'emptyCylinderInventory', // TODO: Add Bengali translation
-  enterQuantityForEachSize: 'enterQuantityForEachSize', // TODO: Add Bengali translation
-  noCylinderSizesAvailable: 'noCylinderSizesAvailable', // TODO: Add Bengali translation
-  addCylinderSizesFirst: 'addCylinderSizesFirst', // TODO: Add Bengali translation
-  totalSizes: 'totalSizes', // TODO: Add Bengali translation
-  totalEmptyCylinders: 'totalEmptyCylinders', // TODO: Add Bengali translation
-  addYourDrivers: 'addYourDrivers', // TODO: Add Bengali translation
-  addDriversWhoWillSellProducts: 'addDriversWhoWillSellProducts', // TODO: Add Bengali translation
-  enterDriverInformation: 'enterDriverInformation', // TODO: Add Bengali translation
-  enterDriverName: 'enterDriverName', // TODO: Add Bengali translation
-  shipmentDriver: 'shipmentDriver', // TODO: Add Bengali translation
-  driverNameRequired: 'driverNameRequired', // TODO: Add Bengali translation
-  driverAlreadyExists: 'driverAlreadyExists', // TODO: Add Bengali translation
-  addedDrivers: 'addedDrivers', // TODO: Add Bengali translation
-  driversInYourTeam: 'driversInYourTeam', // TODO: Add Bengali translation
-  noContactInfo: 'noContactInfo', // TODO: Add Bengali translation
-  noDriversAdded: 'noDriversAdded', // TODO: Add Bengali translation
-  addAtLeastOneDriver: 'addAtLeastOneDriver', // TODO: Add Bengali translation
-  setupReceivables: 'setupReceivables', // TODO: Add Bengali translation
-  enterCurrentReceivablesForEachDriver: 'enterCurrentReceivablesForEachDriver', // TODO: Add Bengali translation
-  driverReceivables: 'driverReceivables', // TODO: Add Bengali translation
-  enterCashAndCylinderReceivables: 'enterCashAndCylinderReceivables', // TODO: Add Bengali translation
+  welcomeToOnboarding: 'সেটআপে স্বাগতম',
+  setupYourBusinessData: 'শুরু করতে আপনার ব্যবসায়িক তথ্য সেটআপ করুন',
+  companyNames: 'কোম্পানির নাম',
+  productSetup: 'পণ্য সেটআপ',
+  inventoryQuantities: 'ইনভেন্টরি পরিমাণ',
+  driversSetup: 'চালক সেটআপ',
+  receivablesSetup: 'বাকি সেটআপ',
+  skipOnboarding: 'সেটআপ এড়িয়ে যান',
+  completing: 'সম্পন্ন করা হচ্ছে...',
+  completeSetup: 'সেটআপ সম্পন্ন করুন',
+  setupBusiness: 'ব্যবসা সেটআপ',
+  addCompanyNames: 'কোম্পানির নাম যোগ করুন',
+  addCompaniesYouDistributeFor:
+    'আপনি যে কোম্পানিগুলির জন্য বিতরণ করেন তা যোগ করুন',
+  addNewCompany: 'নতুন কোম্পানি যোগ করুন',
+  enterCompanyNamesLikeAygaz:
+    'আয়গাজ, বাশুন্ধরা গ্যাসের মতো কোম্পানির নাম লিখুন',
+  companyName: 'কোম্পানির নাম',
+  enterCompanyName: 'কোম্পানির নাম লিখুন',
+  companyNameRequired: 'কোম্পানির নাম প্রয়োজন',
+  companyAlreadyExists: 'কোম্পানি ইতিমধ্যে বিদ্যমান',
+  addedCompanies: 'যোগ করা কোম্পানি',
+  companiesYouDistributeFor: 'আপনি যে কোম্পানিগুলির জন্য বিতরণ করেন',
+  noCompaniesAdded: 'কোনো কোম্পানি যোগ করা হয়নি',
+  addAtLeastOneCompany: 'অন্তত একটি কোম্পানি যোগ করুন',
+  setupProductsAndSizes: 'পণ্য এবং আকার সেটআপ করুন',
+  configureCylinderSizesAndProducts: 'সিলিন্ডারের আকার এবং পণ্য কনফিগার করুন',
+  cylinderSizes: 'সিলিন্ডারের আকার',
+  addCylinderSize: 'সিলিন্ডারের আকার যোগ করুন',
+  addSizesLike12L20L: '১২ লিটার, ২০ লিটারের মতো আকার যোগ করুন',
+  enterSizeLike12L: '১২ লিটার এর মতো আকার লিখুন',
+  enterDescription: 'বিবরণ লিখুন',
+  addSize: 'আকার যোগ করুন',
+  cylinderSizeRequired: 'সিলিন্ডারের আকার প্রয়োজন',
+  cylinderSizeAlreadyExists: 'সিলিন্ডারের আকার ইতিমধ্যে বিদ্যমান',
+  addProduct: 'পণ্য যোগ করুন',
+  addProductsForEachCompany: 'প্রতিটি কোম্পানির জন্য পণ্য যোগ করুন',
+  productName: 'পণ্যের নাম',
+  enterProductName: 'পণ্যের নাম লিখুন',
+  currentPrice: 'বর্তমান দাম',
+  enterPrice: 'দাম লিখুন',
+  productNameRequired: 'পণ্যের নাম প্রয়োজন',
+  validPriceRequired: 'বৈধ দাম প্রয়োজন',
+  productAlreadyExists: 'পণ্য ইতিমধ্যে বিদ্যমান',
+  addedProducts: 'যোগ করা পণ্য',
+  addCylinderSizesAndProducts: 'সিলিন্ডারের আকার এবং পণ্য যোগ করুন',
+  bothRequiredToProceed: 'এগিয়ে যেতে উভয়ই প্রয়োজন',
+  setInitialInventory: 'প্রাথমিক ইনভেন্টরি সেট করুন',
+  enterCurrentFullCylinderQuantities: 'বর্তমান পূর্ণ সিলিন্ডারের পরিমাণ লিখুন',
+  fullCylinderInventory: 'পূর্ণ সিলিন্ডার ইনভেন্টরি',
+  enterQuantityForEachProduct: 'প্রতিটি পণ্যের জন্য পরিমাণ লিখুন',
+  noProductsAvailable: 'কোনো পণ্য উপলব্ধ নেই',
+  addProductsFirst: 'প্রথমে পণ্য যোগ করুন',
+  totalProducts: 'মোট পণ্য',
+  totalFullCylinders: 'মোট পূর্ণ সিলিন্ডার',
+  setEmptyCylinderInventory: 'খালি সিলিন্ডার ইনভেন্টরি সেট করুন',
+  enterCurrentEmptyCylinderQuantities: 'বর্তমান খালি সিলিন্ডারের পরিমাণ লিখুন',
+  emptyCylinderInventory: 'খালি সিলিন্ডার ইনভেন্টরি',
+  enterQuantityForEachSize: 'প্রতিটি আকারের জন্য পরিমাণ লিখুন',
+  noCylinderSizesAvailable: 'কোনো সিলিন্ডারের আকার উপলব্ধ নেই',
+  addCylinderSizesFirst: 'প্রথমে সিলিন্ডারের আকার যোগ করুন',
+  totalSizes: 'মোট আকার',
+  totalEmptyCylinders: 'মোট খালি সিলিন্ডার',
+  addYourDrivers: 'আপনার চালক যোগ করুন',
+  addDriversWhoWillSellProducts: 'যে চালকরা পণ্য বিক্রি করবেন তাদের যোগ করুন',
+  enterDriverInformation: 'চালকের তথ্য লিখুন',
+  enterDriverName: 'চালকের নাম লিখুন',
+  shipmentDriver: 'শিপমেন্ট চালক',
+  driverNameRequired: 'চালকের নাম প্রয়োজন',
+  driverAlreadyExists: 'চালক ইতিমধ্যে বিদ্যমান',
+  addedDrivers: 'যোগ করা চালক',
+  driversInYourTeam: 'আপনার দলের চালকরা',
+  noContactInfo: 'কোনো যোগাযোগের তথ্য নেই',
+  noDriversAdded: 'কোনো চালক যোগ করা হয়নি',
+  addAtLeastOneDriver: 'অন্তত একজন চালক যোগ করুন',
+  setupReceivables: 'বাকি সেটআপ করুন',
+  enterCurrentReceivablesForEachDriver:
+    'প্রতিটি চালকের জন্য বর্তমান বাকি লিখুন',
+  driverReceivables: 'চালকের বাকি',
+  enterCashAndCylinderReceivables: 'নগদ এবং সিলিন্ডার বাকি লিখুন',
 };
 
 const translationMap: Record<string, Translations> = {

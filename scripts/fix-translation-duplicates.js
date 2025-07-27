@@ -20,7 +20,7 @@ let braceLevel = 0;
 for (let i = 0; i < lines.length; i++) {
   const line = lines[i];
   const trimmedLine = line.trim();
-  
+
   // Track if we're in the interface definition
   if (trimmedLine.includes('export interface Translations')) {
     inInterface = true;
@@ -28,7 +28,7 @@ for (let i = 0; i < lines.length; i++) {
     fixedLines.push(line);
     continue;
   }
-  
+
   // Track if we're in the English translations object
   if (trimmedLine.includes('const englishTranslations: Translations = {')) {
     inInterface = false;
@@ -38,7 +38,7 @@ for (let i = 0; i < lines.length; i++) {
     fixedLines.push(line);
     continue;
   }
-  
+
   // Track if we're in the Bengali translations object
   if (trimmedLine.includes('const bengaliTranslations: Translations = {')) {
     inEnglishObject = false;
@@ -48,12 +48,12 @@ for (let i = 0; i < lines.length; i++) {
     fixedLines.push(line);
     continue;
   }
-  
+
   // Track brace levels to know when objects end
   if (inEnglishObject || inBengaliObject) {
     braceLevel += (line.match(/{/g) || []).length;
     braceLevel -= (line.match(/}/g) || []).length;
-    
+
     if (braceLevel <= 0) {
       inEnglishObject = false;
       inBengaliObject = false;
@@ -61,14 +61,14 @@ for (let i = 0; i < lines.length; i++) {
       continue;
     }
   }
-  
+
   // Check for duplicate keys in interface or objects
   if (inInterface || inEnglishObject || inBengaliObject) {
     // Extract key name from lines like "  keyName: string;" or "  keyName: 'value',"
     const keyMatch = trimmedLine.match(/^(\w+):/);
     if (keyMatch) {
       const keyName = keyMatch[1];
-      
+
       if (seenKeys.has(keyName)) {
         console.log(`Removing duplicate key: ${keyName} at line ${i + 1}`);
         continue; // Skip this duplicate line
@@ -77,12 +77,12 @@ for (let i = 0; i < lines.length; i++) {
       }
     }
   }
-  
+
   // End of interface
   if (inInterface && trimmedLine === '}') {
     inInterface = false;
   }
-  
+
   fixedLines.push(line);
 }
 

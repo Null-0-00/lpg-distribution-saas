@@ -33,7 +33,8 @@
       "Bash(npm run prettier:*)",
       "Bash(npm run:*)",
       "Bash(node:*)",
-      "Bash(del migrate-cylinder-baselines.js test-cylinder-breakdown.js)"
+      "Bash(del migrate-cylinder-baselines.js test-cylinder-breakdown.js)",
+      "Bash(timeout 5 npx prisma generate --force-overwrite)"
     ],
     "deny": []
   }

@@ -166,11 +166,12 @@ export async function POST(request: NextRequest) {
       const today = new Date();
       today.setHours(0, 0, 0, 0);
 
-      // Get previous receivables for this driver
+      // Get previous day's receivables for this driver (not current day)
       const previousReceivables =
-        await receivablesCalculator.getCurrentReceivablesBalances(
+        await receivablesCalculator.getPreviousReceivables(
           tenantId,
-          validatedData.driverId
+          validatedData.driverId,
+          today
         );
 
       // Calculate receivables using exact formulas
@@ -184,11 +185,25 @@ export async function POST(request: NextRequest) {
         });
 
       // Store the calculated receivables in the database
+      console.log(
+        `💰 Saving receivables for driver ${validatedData.driverId} on ${today.toISOString().split('T')[0]}:`,
+        {
+          receivablesData,
+          tenantId,
+          driverId: validatedData.driverId,
+          date: today.toISOString().split('T')[0],
+        }
+      );
+
       await receivablesCalculator.updateReceivablesRecord(
         tenantId,
         validatedData.driverId,
         today,
         receivablesData
+      );
+
+      console.log(
+        `✅ Receivables saved successfully for driver ${validatedData.driverId}`
       );
 
       return newSale;

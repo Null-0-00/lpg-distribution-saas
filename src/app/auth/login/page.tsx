@@ -5,8 +5,18 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { signIn, useSession, getSession } from 'next-auth/react';
 import Link from 'next/link';
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
+import { useTranslation } from '@/hooks/useTranslation';
+import { AuthTopToggles } from '@/components/ui/AuthTopToggles';
 
 function LoginForm() {
+  const { t, currentLanguage } = useTranslation({ component: 'LoginPage' });
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  console.log('LoginForm - Current language:', currentLanguage);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -81,13 +91,13 @@ function LoginForm() {
 
     // Basic validation
     if (!email || !password) {
-      setError('Please enter email and password');
+      setError('Please enter ' + t('email') + ' and password');
       setLoading(false);
       return;
     }
 
     if (!email.includes('@')) {
-      setError('Please enter a valid email address');
+      setError('Please enter a valid ' + t('email') + ' address');
       setLoading(false);
       return;
     }
@@ -148,12 +158,26 @@ function LoginForm() {
     }
   };
 
+  // Render loading state until mounted to prevent hydration mismatch
+  if (!mounted) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12 transition-colors sm:px-6 lg:px-8 dark:bg-gray-900">
+        <div className="text-center">
+          <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-b-2 border-blue-500"></div>
+          <p className="text-gray-600 dark:text-gray-400">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12 transition-colors sm:px-6 lg:px-8 dark:bg-gray-900">
+      <AuthTopToggles />
+
       <div className="w-full max-w-md space-y-8">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-white">
-            Sign in to your account
+            {t('signInToYourAccount')}
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
             Or{' '}
@@ -161,7 +185,7 @@ function LoginForm() {
               href="/auth/register"
               className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300"
             >
-              create a new account
+              {t('createYourAccount')}
             </Link>
           </p>
         </div>
@@ -178,7 +202,7 @@ function LoginForm() {
           <div className="-space-y-px rounded-md shadow-sm">
             <div>
               <label htmlFor="email" className="sr-only">
-                Email address
+                {t('emailAddress')}
               </label>
               <input
                 id="email"
@@ -187,7 +211,7 @@ function LoginForm() {
                 autoComplete="email"
                 required
                 className="relative block w-full appearance-none rounded-none rounded-t-md border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder-gray-500 transition-colors focus:z-10 focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
-                placeholder="Email address"
+                placeholder={t('emailAddress')}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 disabled={loading}
@@ -195,7 +219,7 @@ function LoginForm() {
             </div>
             <div className="relative">
               <label htmlFor="password" className="sr-only">
-                Password
+                {t('password')}
               </label>
               <input
                 id="password"
@@ -204,7 +228,7 @@ function LoginForm() {
                 autoComplete="current-password"
                 required
                 className="relative block w-full appearance-none rounded-none rounded-b-md border border-gray-300 bg-white px-3 py-2 pr-10 text-gray-900 placeholder-gray-500 transition-colors focus:z-10 focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
-                placeholder="Password"
+                placeholder={t('password')}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 disabled={loading}
@@ -245,7 +269,7 @@ function LoginForm() {
                 htmlFor="remember-me"
                 className="ml-2 block text-sm text-gray-900 dark:text-white"
               >
-                Remember me
+                {t('rememberMe')}
               </label>
             </div>
 
@@ -254,7 +278,7 @@ function LoginForm() {
                 href="/auth/forgot-password"
                 className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300"
               >
-                Forgot your password?
+                {t('forgotPassword')}
               </Link>
             </div>
           </div>
@@ -266,7 +290,7 @@ function LoginForm() {
               className="group relative flex w-full justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-blue-600 dark:hover:bg-blue-700"
             >
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {loading ? 'Signing in...' : 'Sign in'}
+              {loading ? t('signingIn') : t('login')}
             </button>
           </div>
         </form>
@@ -275,7 +299,7 @@ function LoginForm() {
         {process.env.NODE_ENV === 'development' && (
           <div className="mt-4 rounded-md bg-blue-50 p-4 dark:bg-blue-900/50">
             <p className="text-xs text-blue-600 dark:text-blue-400">
-              Test credentials: admin@demo.com / admin123
+              {t('testCredentials')}: admin@demo.com / admin123
             </p>
           </div>
         )}

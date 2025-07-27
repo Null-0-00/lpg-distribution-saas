@@ -24,6 +24,40 @@ export interface Translations {
   productManagement: string;
   dailySalesReport: string;
   analytics: string;
+
+  // Auth Pages
+  signInToYourAccount: string;
+  createYourAccount: string;
+  signInToExistingAccount: string;
+  password: string;
+  confirmPassword: string;
+  rememberMe: string;
+  forgotPassword: string;
+  signingIn: string;
+  createAccount: string;
+  termsOfService: string;
+  privacyPolicy: string;
+  agreeToTerms: string;
+  passwordsDontMatch: string;
+  passwordMinLength: string;
+  registrationFailed: string;
+  anErrorOccurred: string;
+  accountCreatedSuccessfully: string;
+
+  // Placeholders
+  fullNamePlaceholder: string;
+  companyNamePlaceholder: string;
+  passwordPlaceholder: string;
+  confirmPasswordPlaceholder: string;
+
+  // Home Page
+  manageLpgDistributionBusiness: string;
+  salesManagement: string;
+  inventoryControl: string;
+  financialReports: string;
+  dailySalesRetailDrivers: string;
+  automatedCalculationsExactFormulas: string;
+  viewComprehensiveReports: string;
   adminDashboardDescription: string;
   adminDashboardTitle: string;
   auditLogsDescription: string;
@@ -206,7 +240,6 @@ export interface Translations {
   allCylinders: string;
   allGood: string;
   allStatus: string;
-  anErrorOccurred: string;
   approved: string;
   approvedExpenses: string;
   approveExpense: string;
@@ -214,7 +247,6 @@ export interface Translations {
   areYouSureDeleteDriver: string;
   assetsLiabilities: string;
   assignedArea: string;
-  automatedCalculationsExactFormulas: string;
   balanceSheet: string;
   businessFormulaImplementation: string;
   cashReceivables: string;
@@ -241,7 +273,6 @@ export interface Translations {
   cylindersSummaryResponseStatus: string;
   dailyCalculations: string;
   dailyInventoryTracking: string;
-  dailySalesRetailDrivers: string;
   dataSources: string;
   day: string;
   days: string;
@@ -266,6 +297,10 @@ export interface Translations {
   emptyCylinders: string;
   emptyCylindersBuySell: string;
   emptyCylindersInHand: string;
+  emptyCylinderReceivables: string;
+  emptyCylindersInStock: string;
+  outstandingShipments: string;
+  noOutstandingOrders: string;
   enterAssignedAreaRoute: string;
   enterEmailAddress: string;
   enterEmergencyContactName: string;
@@ -290,7 +325,6 @@ export interface Translations {
   failedToUpdateUser: string;
   fetchingCylindersSummaryData: string;
   filterByDriverType: string;
-  financialReports: string;
   fri: string;
   from: string;
   fullAccess: string;
@@ -302,7 +336,6 @@ export interface Translations {
   hours: string;
   individualDailySalesData: string;
   info: string;
-  inventoryControl: string;
   inventoryManagement: string;
   joiningDate: string;
   justNow: string;
@@ -326,7 +359,6 @@ export interface Translations {
   manageCompanyAssets: string;
   manageDriversAndAssignments: string;
   manageLiabilities: string;
-  manageLpgDistributionBusiness: string;
   manager: string;
   managers: string;
   manageSystemRoles: string;
@@ -392,7 +424,6 @@ export interface Translations {
   rolePermissions: string;
   routeArea: string;
   salesInventoryAndDriverManagement: string;
-  salesManagement: string;
   salesTrend: string;
   salesValue: string;
   sat: string;
@@ -452,7 +483,6 @@ export interface Translations {
   user: string;
   userDetails: string;
   userManagement: string;
-  viewComprehensiveReports: string;
   viewDetails: string;
   viewingExpensesFor: string;
   viewReceipt: string;
@@ -829,6 +859,7 @@ export interface Translations {
   optional: string;
   recentSaleActivity: string;
   totalKeys: string;
+  testCredentials: string;
   translatedKeys: string;
 
   // Inventory and stock statuses
@@ -851,6 +882,137 @@ export interface Translations {
   failedToLoadInventoryAlerts: string;
   movementAnomaly: string;
   operationSuccessful: string;
+
+  // Onboarding translations
+  welcomeToOnboarding: string;
+  setupYourBusinessData: string;
+  companyNames: string;
+  productSetup: string;
+  inventoryQuantities: string;
+  driversSetup: string;
+  receivablesSetup: string;
+  skipOnboarding: string;
+  completing: string;
+  completeSetup: string;
+  setupBusiness: string;
+
+  // Company step
+  addCompanyNames: string;
+  addCompaniesYouDistributeFor: string;
+  addNewCompany: string;
+  enterCompanyNamesLikeAygaz: string;
+  companyName: string;
+  enterCompanyName: string;
+  companyNameRequired: string;
+  companyAlreadyExists: string;
+  addedCompanies: string;
+  companiesYouDistributeFor: string;
+  noCompaniesAdded: string;
+  addAtLeastOneCompany: string;
+
+  // Product step
+  setupProductsAndSizes: string;
+  configureCylinderSizesAndProducts: string;
+  cylinderSizes: string;
+  addCylinderSize: string;
+  addSizesLike12L20L: string;
+  enterSizeLike12L: string;
+  addSize: string;
+  cylinderSizeRequired: string;
+  cylinderSizeAlreadyExists: string;
+  enterDescription: string;
+  addProduct: string;
+  addProductsForEachCompany: string;
+  productName: string;
+  enterProductName: string;
+  currentPrice: string;
+  enterPrice: string;
+  productNameRequired: string;
+  validPriceRequired: string;
+  productAlreadyExists: string;
+  addedProducts: string;
+  addCylinderSizesAndProducts: string;
+  bothRequiredToProceed: string;
+
+  // Inventory step
+  setInitialInventory: string;
+  enterCurrentFullCylinderQuantities: string;
+  fullCylinderInventory: string;
+  enterQuantityForEachProduct: string;
+  noProductsAvailable: string;
+  addProductsFirst: string;
+  totalProducts: string;
+  totalFullCylinders: string;
+
+  // Empty cylinders step
+  setEmptyCylinderInventory: string;
+  enterCurrentEmptyCylinderQuantities: string;
+  emptyCylinderInventory: string;
+  enterQuantityForEachSize: string;
+  noCylinderSizesAvailable: string;
+  addCylinderSizesFirst: string;
+  totalSizes: string;
+  totalEmptyCylinders: string;
+
+  // Drivers step
+  addYourDrivers: string;
+  addDriversWhoWillSellProducts: string;
+  enterDriverInformation: string;
+  enterDriverName: string;
+  shipmentDriver: string;
+  driverNameRequired: string;
+  driverAlreadyExists: string;
+  addedDrivers: string;
+  driversInYourTeam: string;
+  noContactInfo: string;
+  noDriversAdded: string;
+  addAtLeastOneDriver: string;
+
+  // Receivables step
+  setupReceivables: string;
+  enterCurrentReceivablesForEachDriver: string;
+  driverReceivables: string;
+  enterCashAndCylinderReceivables: string;
+  amountOwedByCustomers: string;
+  cylindersOwedByCustomers: string;
+  cylindersOwedByCustomersBySize: string;
+  noDriversAvailable: string;
+  addDriversFirst: string;
+  noRetailDriversAvailable: string;
+  addRetailDriversFirst: string;
+  receivablesSummary: string;
+
+  // Admin onboarding
+  manualBusinessOnboarding: string;
+  businessInformation: string;
+  businessName: string;
+  businessNamePlaceholder: string;
+  subdomain: string;
+  subdomainPlaceholder: string;
+  plan: string;
+  freemium: string;
+  professional: string;
+  enterprise: string;
+  adminUser: string;
+  adminName: string;
+  adminNamePlaceholder: string;
+  adminEmail: string;
+  adminEmailPlaceholder: string;
+  adminPassword: string;
+  strongPassword: string;
+  creatingBusiness: string;
+  onboardBusiness: string;
+  businessOnboardedSuccessfully: string;
+  businessCreatedWithAdmin: string;
+  failedToOnboardBusiness: string;
+  networkErrorOccurred: string;
+
+  // API errors
+  unauthorized: string;
+  userNotFound: string;
+  onboardingAlreadyCompleted: string;
+  failedToCompleteOnboarding: string;
+  failedToCheckOnboardingStatus: string;
 }
 
 const englishTranslations: Translations = {
@@ -870,6 +1032,44 @@ const englishTranslations: Translations = {
   dailySalesReport: 'Daily Sales Report',
   analytics: 'Analytics',
 
+  // Auth Pages
+  signInToYourAccount: 'Sign in to your account',
+  createYourAccount: 'Create your account',
+  signInToExistingAccount: 'sign in to your existing account',
+  password: 'Password',
+  confirmPassword: 'Confirm Password',
+  rememberMe: 'Remember me',
+  forgotPassword: 'Forgot your password?',
+  signingIn: 'Signing in...',
+  createAccount: 'Create Account',
+  termsOfService: 'Terms of Service',
+  privacyPolicy: 'Privacy Policy',
+  agreeToTerms: 'I agree to the',
+  passwordsDontMatch: "Passwords don't match",
+  passwordMinLength: 'Password must be at least 8 characters long',
+  registrationFailed: 'Registration failed',
+  anErrorOccurred: 'An error occurred',
+  accountCreatedSuccessfully: 'Account created successfully! Please sign in.',
+
+  // Placeholders
+  fullNamePlaceholder: 'e.g., John Doe',
+  companyNamePlaceholder: 'e.g., Dhaka Gas Distributors Ltd.',
+  passwordPlaceholder: 'At least 8 characters',
+  confirmPasswordPlaceholder: 'Confirm your password',
+
+  // Home Page
+  manageLpgDistributionBusiness:
+    'Manage LPG distribution business with comprehensive tools and analytics',
+  salesManagement: 'Sales Management',
+  inventoryControl: 'Inventory Control',
+  financialReports: 'Financial Reports',
+  dailySalesRetailDrivers:
+    'Track daily sales, manage drivers, and monitor performance with real-time updates.',
+  automatedCalculationsExactFormulas:
+    'Automated inventory calculations for full and empty cylinders with exact formulas.',
+  viewComprehensiveReports:
+    'Comprehensive financial reporting with income statements and balance sheets.',
+
   adminDashboardTitle: 'Admin Dashboard',
   adminDashboardDescription: 'System overview and metrics',
   companyManagementTitle: 'Company Management',
@@ -877,7 +1077,8 @@ const englishTranslations: Translations = {
   productManagementTitle: 'Product Management',
   productManagementDescription: 'Manage product variants and pricing',
   distributorAssignmentsTitle: 'Distributor Assignments',
-  distributorAssignmentsDescription: 'Assign companies/products to distributors',
+  distributorAssignmentsDescription:
+    'Assign companies/products to distributors',
   pricingManagementTitle: 'Pricing Management',
   pricingManagementDescription: 'Manage pricing tiers and assignments',
   userManagementTitle: 'User Management',
@@ -1062,13 +1263,164 @@ const englishTranslations: Translations = {
   success: 'Success',
   warning: 'Warning',
 
+  // Onboarding translations
+  welcomeToOnboarding: 'Welcome to Setup',
+  setupYourBusinessData: 'Set up your business data to get started',
+  companyNames: 'Company Names',
+  productSetup: 'Product Setup',
+  inventoryQuantities: 'Inventory Quantities',
+  driversSetup: 'Drivers Setup',
+  receivablesSetup: 'Receivables Setup',
+  of: 'of',
+  skipOnboarding: 'Skip Setup',
+  completing: 'Completing...',
+  completeSetup: 'Complete Setup',
+  setupBusiness: 'Setup Business',
+
+  // Company step
+  addCompanyNames: 'Add Company Names',
+  addCompaniesYouDistributeFor: 'Add the companies you distribute products for',
+  addNewCompany: 'Add New Company',
+  enterCompanyNamesLikeAygaz: 'Enter company names like Aygaz, Jamuna, etc.',
+  companyName: 'Company Name',
+  enterCompanyName: 'Enter company name',
+  companyNameRequired: 'Company name is required',
+  companyAlreadyExists: 'Company already exists',
+  addedCompanies: 'Added Companies',
+  companiesYouDistributeFor: 'Companies you distribute for',
+  noCompaniesAdded: 'No companies added yet',
+  addAtLeastOneCompany: 'Add at least one company to continue',
+
+  // Product step
+  setupProductsAndSizes: 'Setup Products & Sizes',
+  configureCylinderSizesAndProducts:
+    'Configure cylinder sizes and products for each company',
+  cylinderSizes: 'Cylinder Sizes',
+  addCylinderSize: 'Add Cylinder Size',
+  addSizesLike12L20L: 'Add sizes like 12L, 20L, 5kg, etc.',
+  size: 'Size',
+  optional: 'Optional',
+  enterSizeLike12L: 'Enter size like 12L',
+  enterDescription: 'Enter description',
+  addSize: 'Add Size',
+  cylinderSizeRequired: 'Cylinder size is required',
+  cylinderSizeAlreadyExists: 'Cylinder size already exists',
+  addProduct: 'Add Product',
+  addProductsForEachCompany: 'Add products for each company and cylinder size',
+  productName: 'Product Name',
+  enterProductName: 'Enter product name',
+  selectCompany: 'Select company',
+  selectCylinderSize: 'Select cylinder size',
+  currentPrice: 'Current Price',
+  enterPrice: 'Enter price',
+  productNameRequired: 'Product name is required',
+  companyRequired: 'Company is required',
+  validPriceRequired: 'Valid price is required',
+  productAlreadyExists: 'Product already exists',
+  addedProducts: 'Added Products',
+  addCylinderSizesAndProducts: 'Add cylinder sizes and products to continue',
+  bothRequiredToProceed: 'Both are required to proceed',
+
+  // Inventory step
+  setInitialInventory: 'Set Initial Inventory',
+  enterCurrentFullCylinderQuantities:
+    'Enter your current full cylinder quantities',
+  fullCylinderInventory: 'Full Cylinder Inventory',
+  enterQuantityForEachProduct: 'Enter quantity for each product',
+  noProductsAvailable: 'No products available',
+  addProductsFirst: 'Add products first',
+  totalProducts: 'Total Products',
+  totalFullCylinders: 'Total Full Cylinders',
+
+  // Empty cylinders step
+  setEmptyCylinderInventory: 'Set Empty Cylinder Inventory',
+  enterCurrentEmptyCylinderQuantities:
+    'Enter your current empty cylinder quantities (including receivables)',
+  emptyCylinderInventory: 'Empty Cylinder Inventory',
+  enterQuantityForEachSize:
+    'Enter total quantity for each cylinder size (including those from receivables)',
+  noCylinderSizesAvailable: 'No cylinder sizes available',
+  addCylinderSizesFirst: 'Add cylinder sizes first',
+  totalSizes: 'Total Sizes',
+  totalEmptyCylinders: 'Total Empty Cylinders',
+
+  // Drivers step
+  addYourDrivers: 'Add Your Drivers',
+  addDriversWhoWillSellProducts: 'Add drivers who will sell your products',
+  addNewDriver: 'Add New Driver',
+  enterDriverInformation: 'Enter driver information',
+  driverName: 'Driver Name',
+  enterDriverName: 'Enter driver name',
+  enterPhoneNumber: 'Enter phone number',
+  driverType: 'Driver Type',
+  selectDriverType: 'Select driver type',
+  shipmentDriver: 'Shipment Driver',
+  driverNameRequired: 'Driver name is required',
+  driverAlreadyExists: 'Driver already exists',
+  addedDrivers: 'Added Drivers',
+  driversInYourTeam: 'Drivers in your team',
+  noContactInfo: 'No contact info',
+  noDriversAdded: 'No drivers added yet',
+  addAtLeastOneDriver: 'Add at least one driver to continue',
+
+  // Receivables step
+  setupReceivables: 'Setup Receivables',
+  enterCurrentReceivablesForEachDriver:
+    'Enter current receivables for each driver',
+  driverReceivables: 'Driver Receivables',
+  enterCashAndCylinderReceivables: 'Enter cash and cylinder receivables',
+  currency: 'Currency',
+  amountOwedByCustomers: 'Amount owed by customers',
+  cylindersOwedByCustomers: 'Cylinders owed by customers',
+  cylindersOwedByCustomersBySize: 'Cylinders owed by customers (by size)',
+  noDriversAvailable: 'No drivers available',
+  addDriversFirst: 'Please add drivers first',
+  noRetailDriversAvailable: 'No retail drivers available',
+  addRetailDriversFirst: 'Please add retail drivers first',
+  receivablesSummary: 'Receivables Summary',
+  totalCashReceivables: 'Total Cash Receivables',
+  totalCylinderReceivables: 'Total Cylinder Receivables',
+
+  // Admin onboarding
+  manualBusinessOnboarding: 'Manual Business Onboarding',
+  businessInformation: 'Business Information',
+  businessName: 'Business Name',
+  businessNamePlaceholder: 'ABC LPG Distributors',
+  subdomain: 'Subdomain',
+  subdomainPlaceholder: 'abc-lpg',
+  timezone: 'Timezone',
+  plan: 'Plan',
+  freemium: 'Freemium',
+  professional: 'Professional',
+  enterprise: 'Enterprise',
+  adminUser: 'Admin User',
+  adminName: 'Admin Name',
+  adminNamePlaceholder: 'John Doe',
+  adminEmail: 'Admin Email',
+  adminEmailPlaceholder: 'admin@abclpg.com',
+  adminPassword: 'Admin Password',
+  strongPassword: 'Strong password',
+  creatingBusiness: 'Creating Business...',
+  onboardBusiness: 'Onboard Business',
+  businessOnboardedSuccessfully: 'Business Onboarded Successfully',
+  businessCreatedWithAdmin:
+    '{tenantName} has been created with admin user {userEmail}',
+  failedToOnboardBusiness: 'Failed to onboard business',
+  networkErrorOccurred: 'Network error occurred',
+
+  // API errors
+  unauthorized: 'Unauthorized',
+  userNotFound: 'User not found',
+  onboardingAlreadyCompleted: 'Onboarding already completed',
+  failedToCompleteOnboarding: 'Failed to complete onboarding',
+  failedToCheckOnboardingStatus: 'Failed to check onboarding status',
+
   // All missing translation keys - English
   activeDrivers: 'Active Drivers',
   activeUsers: 'Active Users',
   addDriver: 'Add Driver',
   addExpense: 'Add Expense',
   additionalNotesComments: 'Additional Notes/Comments',
-  addNewDriver: 'Add New Driver',
   addUser: 'Add User',
   administrator: 'Administrator',
   administrators: 'Administrators',
@@ -1079,7 +1431,6 @@ const englishTranslations: Translations = {
   allCylinders: 'All Cylinders',
   allGood: 'All Good',
   allStatus: 'All Status',
-  anErrorOccurred: 'An error occurred',
   approved: 'Approved',
   approvedExpenses: 'Approved Expenses',
   approveExpense: 'Approve Expense',
@@ -1087,8 +1438,6 @@ const englishTranslations: Translations = {
   areYouSureDeleteDriver: 'Are you sure you want to delete this driver?',
   assetsLiabilities: 'Assets & Liabilities',
   assignedArea: 'Assigned Area',
-  automatedCalculationsExactFormulas:
-    'Automated calculations with exact formulas',
   balanceSheet: 'Balance Sheet',
   businessFormulaImplementation: 'Business formula implementation',
   cashReceivables: 'Cash Receivables',
@@ -1103,7 +1452,6 @@ const englishTranslations: Translations = {
   contactNumber: 'Contact Number',
   create: 'Create',
   criticalAlert: 'Critical Alert',
-  currency: 'Currency',
   currentFullCylinderInventory: 'Current Full Cylinder Inventory',
   currentStock: 'Current Stock',
   currentStockHealth: 'Current Stock Health',
@@ -1116,7 +1464,6 @@ const englishTranslations: Translations = {
   cylindersSummaryResponseStatus: 'Cylinders summary response status',
   dailyCalculations: 'Daily Calculations',
   dailyInventoryTracking: 'Daily Inventory Tracking',
-  dailySalesRetailDrivers: 'Daily Sales - Retail Drivers',
   dataSources: 'Data Sources',
   day: 'Day',
   days: 'Days',
@@ -1129,8 +1476,6 @@ const englishTranslations: Translations = {
   driverDeletedSuccessfully: 'Driver deleted successfully',
   driverDetails: 'Driver Details',
   driverManagement: 'Driver Management',
-  driverName: 'Driver Name',
-  driverType: 'Driver Type',
   driverUpdatedSuccessfully: 'Driver updated successfully',
   editDriver: 'Edit Driver',
   editExpense: 'Edit Expense',
@@ -1140,6 +1485,10 @@ const englishTranslations: Translations = {
   emptyCylinderInventoryAvailability: 'Empty Cylinder Inventory Availability',
   emptyCylindersBuySell: 'Empty Cylinders Buy/Sell',
   emptyCylindersInHand: 'Empty Cylinders in Hand',
+  emptyCylinderReceivables: 'Empty Cylinder Receivables',
+  emptyCylindersInStock: 'Empty Cylinders in Stock',
+  outstandingShipments: 'Outstanding Shipments',
+  noOutstandingOrders: 'No outstanding orders',
   enterAssignedAreaRoute: 'Enter assigned area/route',
   enterEmailAddress: 'Enter email address',
   enterEmergencyContactName: 'Enter emergency contact name',
@@ -1147,7 +1496,6 @@ const englishTranslations: Translations = {
   enterFullAddress: 'Enter full address',
   enterFullName: 'Enter full name',
   enterLicenseNumber: 'Enter license number',
-  enterPhoneNumber: 'Enter phone number',
   errorFetchingCylindersSummaryData: 'Error fetching cylinders summary data',
   errorFetchingDailyInventoryData: 'Error fetching daily inventory data',
   errorFetchingInventoryData: 'Error fetching inventory data',
@@ -1163,7 +1511,6 @@ const englishTranslations: Translations = {
   failedToUpdateUser: 'Failed to update user',
   fetchingCylindersSummaryData: 'Fetching cylinders summary data',
   filterByDriverType: 'Filter by driver type',
-  financialReports: 'Financial Reports',
   fri: 'Fri',
   from: 'From',
   fullAccess: 'Full Access',
@@ -1173,7 +1520,6 @@ const englishTranslations: Translations = {
   hour: 'Hour',
   hours: 'Hours',
   individualDailySalesData: 'Individual daily sales data',
-  inventoryControl: 'Inventory Control',
   inventoryManagement: 'Inventory Management',
   joiningDate: 'Joining Date',
   justNow: 'Just now',
@@ -1190,13 +1536,13 @@ const englishTranslations: Translations = {
   loadingText: 'Loading...',
   locationInformation: 'Location Information',
   login: 'Login',
+  testCredentials: 'Test Credentials',
   lpgDistributorManagementSystem: 'LPG Distributor Management System',
   manageBudgets: 'Manage Budgets',
   manageCategories: 'Manage Categories',
   manageCompanyAssets: 'Manage Company Assets',
   manageDriversAndAssignments: 'Manage Drivers and Assignments',
   manageLiabilities: 'Manage Liabilities',
-  manageLpgDistributionBusiness: 'Manage LPG distribution business',
   manager: 'Manager',
   managers: 'Managers',
   manageSystemRoles: 'Manage System Roles',
@@ -1257,18 +1603,15 @@ const englishTranslations: Translations = {
   rolePermissions: 'Role & Permissions',
   routeArea: 'Route/Area',
   salesInventoryAndDriverManagement: 'Sales, inventory, and driver management',
-  salesManagement: 'Sales Management',
   salesTrend: 'Sales Trend',
   salesValue: 'Sales Value',
   sat: 'Sat',
   saveError: 'Save Error',
   saveSuccess: 'Save Success',
   searchExpenses: 'Search expenses',
-  selectDriverType: 'Select driver type',
   selectStatus: 'Select status',
   shipment: 'Shipment',
   shipmentDriverDescription: 'Handles bulk deliveries and transfers',
-  size: 'Size',
   statusAndNotes: 'Status and Notes',
   stockReplenished: 'Stock replenished',
   submittedBy: 'Submitted by',
@@ -1282,14 +1625,12 @@ const englishTranslations: Translations = {
   teamAccess: 'Team Access',
   thisActionCannotBeUndone: 'This action cannot be undone',
   thu: 'Thu',
-  timezone: 'Timezone',
   to: 'To',
   todaysEmptyCylinders: "Today's Empty Cylinders",
   todaysFullCylinders: "Today's Full Cylinders",
   todaysPurchases: "Today's Purchases",
   todaysSales: "Today's Sales",
   topDriverPerformance: 'Top Driver Performance',
-  totalCylinderReceivables: 'Total Cylinder Receivables',
   totalCylinders: 'Total Cylinders',
   totalCylindersReceivables: 'Total Cylinders Receivables',
   totalSalesQty: 'Total Sales Qty',
@@ -1311,7 +1652,6 @@ const englishTranslations: Translations = {
   user: 'User',
   userDetails: 'User Details',
   userManagement: 'User Management',
-  viewComprehensiveReports: 'View comprehensive reports',
   viewDetails: 'View Details',
   viewingExpensesFor: 'Viewing expenses for',
   viewReceipt: 'View Receipt',
@@ -1382,7 +1722,6 @@ const englishTranslations: Translations = {
   metricsLastUpdated: 'Metrics Last Updated',
   missingKeys: 'Missing Keys',
   newSalesActivity: 'New Sales Activity',
-  optional: 'Optional',
   recentSaleActivity: 'Recent Sale Activity',
   totalKeys: 'Total Keys',
   translatedKeys: 'Translated Keys',
@@ -1418,7 +1757,6 @@ const englishTranslations: Translations = {
   totalDeposited: 'Total Deposited',
   totalExpenses: 'Total Expenses',
   availableCash: 'Available Cash',
-  totalCashReceivables: 'Total Cash Receivables',
   changeInReceivablesCashCylinders: 'Change in Receivables (Cash & Cylinders)',
   dailyDepositsExpenses: 'Daily Deposits & Expenses',
   detailedBreakdownDepositsExpenses: 'Detailed Breakdown - Deposits & Expenses',
@@ -1535,9 +1873,7 @@ const englishTranslations: Translations = {
   editPurchaseOrder: 'Edit Purchase Order',
   createNewPurchaseOrder: 'Create New Purchase Order',
   step: 'Step',
-  of: 'of',
   orderInformation: 'Order Information',
-  selectCompany: 'Select Company',
   selectDriver: 'Select Driver',
   shipmentDate: 'Shipment Date',
   expectedDeliveryDate: 'Expected Delivery Date',
@@ -1578,7 +1914,6 @@ const englishTranslations: Translations = {
   orderPreview: 'Order Preview',
   orderSummary: 'Order Summary',
   totalQuantity: 'Total Quantity',
-  companyRequired: 'Company is required',
   shipmentDateRequired: 'Shipment date is required',
   atLeastOneLineItemRequired: 'At least one line item is required',
   creating: 'Creating',
@@ -1590,7 +1925,6 @@ const englishTranslations: Translations = {
   addEmptyCylindersToInventory: 'Add Empty Cylinders to Inventory',
   removeEmptyCylindersFromInventory: 'Remove Empty Cylinders from Inventory',
   cylinderSize: 'Cylinder Size',
-  selectCylinderSize: 'Select Cylinder Size',
   emptyCylindersNote: 'Empty Cylinders Note',
   transactionDate: 'Transaction Date',
   enterTransactionDetails: 'Enter Transaction Details',
@@ -1712,14 +2046,56 @@ const bengaliTranslations: Translations = {
   dailySalesReport: 'দৈনিক বিক্রয় রিপোর্ট',
   analytics: 'বিশ্লেষণ',
 
+  // Auth Pages
+  signInToYourAccount: 'আপনার অ্যাকাউন্টে সাইন ইন করুন',
+  createYourAccount: 'আপনার অ্যাকাউন্ট তৈরি করুন',
+  signInToExistingAccount: 'আপনার বিদ্যমান অ্যাকাউন্টে সাইন ইন করুন',
+  password: 'পাসওয়ার্ড',
+  confirmPassword: 'পাসওয়ার্ড নিশ্চিত করুন',
+  rememberMe: 'আমাকে মনে রাখুন',
+  forgotPassword: 'পাসওয়ার্ড ভুলে গেছেন?',
+  signingIn: 'সাইন ইন হচ্ছে...',
+  createAccount: 'অ্যাকাউন্ট তৈরি করুন',
+  termsOfService: 'সেবার শর্তাবলী',
+  privacyPolicy: 'গোপনীয়তা নীতি',
+  agreeToTerms: 'আমি সম্মত',
+  passwordsDontMatch: 'পাসওয়ার্ড মিল নেই',
+  passwordMinLength: 'পাসওয়ার্ড কমপক্ষে ৮টি অক্ষর হতে হবে',
+  registrationFailed: 'নিবন্ধন ব্যর্থ হয়েছে',
+  anErrorOccurred: 'একটি ত্রুটি ঘটেছে',
+  accountCreatedSuccessfully:
+    'অ্যাকাউন্ট সফলভাবে তৈরি হয়েছে! অনুগ্রহ করে সাইন ইন করুন।',
+
+  // Placeholders
+  fullNamePlaceholder: 'যেমন: মোহাম্মদ রহিম উদ্দিন',
+  companyNamePlaceholder: 'যেমন: ঢাকা গ্যাস ডিস্ট্রিবিউটর্স লিমিটেড',
+  passwordPlaceholder: 'কমপক্ষে ৮টি অক্ষর',
+  confirmPasswordPlaceholder: 'আপনার পাসওয়ার্ড নিশ্চিত করুন',
+
+  // Home Page
+  manageLpgDistributionBusiness:
+    'বিস্তৃত টুল এবং বিশ্লেষণ সহ এলপিজি বিতরণ ব্যবসা পরিচালনা করুন',
+  salesManagement: 'বিক্রয় ব্যবস্থাপনা',
+  inventoryControl: 'মজুদ নিয়ন্ত্রণ',
+  financialReports: 'আর্থিক প্রতিবেদন',
+  dailySalesRetailDrivers:
+    'দৈনিক বিক্রয় ট্র্যাক করুন, চালক পরিচালনা করুন এবং রিয়েল-টাইম আপডেটের সাথে কর্মক্ষমতা পর্যবেক্ষণ করুন।',
+  automatedCalculationsExactFormulas:
+    'সঠিক সূত্র সহ পূর্ণ এবং খালি সিলিন্ডারের জন্য স্বয়ংক্রিয় মজুদ গণনা।',
+  viewComprehensiveReports:
+    'আয়ের বিবৃতি এবং ব্যালেন্স শীট সহ বিস্তৃত আর্থিক প্রতিবেদন।',
+
   adminDashboardTitle: 'অ্যাডমিন ড্যাশবোর্ড',
   adminDashboardDescription: 'সিস্টেমের ওভারভিউ এবং মেট্রিক্স',
   companyManagementTitle: 'কোম্পানি ব্যবস্থাপনা',
-  companyManagementDescription: 'এলপিজি কোম্পানি এবং সরবরাহকারীদের পরিচালনা করুন',
+  companyManagementDescription:
+    'এলপিজি কোম্পানি এবং সরবরাহকারীদের পরিচালনা করুন',
   productManagementTitle: 'পণ্য ব্যবস্থাপনা',
-  productManagementDescription: 'পণ্যের প্রকার এবং মূল্য নির্ধারণ পরিচালনা করুন',
+  productManagementDescription:
+    'পণ্যের প্রকার এবং মূল্য নির্ধারণ পরিচালনা করুন',
   distributorAssignmentsTitle: 'পরিবেশক নিয়োগ',
-  distributorAssignmentsDescription: 'পরিবেশকদের কাছে কোম্পানি/পণ্য বরাদ্দ করুন',
+  distributorAssignmentsDescription:
+    'পরিবেশকদের কাছে কোম্পানি/পণ্য বরাদ্দ করুন',
   pricingManagementTitle: 'মূল্য নির্ধারণ ব্যবস্থাপনা',
   pricingManagementDescription: 'মূল্য স্তর এবং নিয়োগ পরিচালনা করুন',
   userManagementTitle: 'ব্যবহারকারী ব্যবস্থাপনা',
@@ -1910,10 +2286,8 @@ const bengaliTranslations: Translations = {
   urgent: 'জরুরি',
 
   // Dashboard specific
-  salesManagement: 'বিক্রয় ব্যবস্থাপনা',
   recordDailySales: 'দৈনিক বিক্রয় রেকর্ড করুন',
   trackPerformance: 'এবং পারফরম্যান্স ট্র্যাক করুন',
-  inventoryControl: 'ইনভেন্টরি নিয়ন্ত্রণ',
   monitorCylinderStock: 'সিলিন্ডার স্টক পর্যবেক্ষণ করুন',
   alerts: 'সতর্কতা',
   allGood: 'সব ঠিক আছে',
@@ -1932,12 +2306,8 @@ const bengaliTranslations: Translations = {
   trackExpenses: 'খরচ ট্র্যাক করুন',
   manageBudgets: 'এবং বাজেট',
   pending: 'বাকি',
-  financialReports: 'আর্থিক রিপোর্ট',
-  viewComprehensiveReports: 'বিস্তৃত আর্থিক রিপোর্ট দেখুন',
   reportsAnalytics: 'রিপোর্ট ও বিশ্লেষণ',
   loadingText: 'ড্যাশবোর্ড ডেটা লোড হচ্ছে...',
-  manageLpgDistributionBusiness:
-    'আপনার এলপিজি বিতরণ ব্যবসা দক্ষতার সাথে পরিচালনা করুন',
   retry: 'আবার চেষ্টা করুন',
   newSale: 'নতুন বিক্রয়',
   checkStock: 'স্টক চেক করুন',
@@ -1967,6 +2337,10 @@ const bengaliTranslations: Translations = {
   area: 'এলাকা',
   cashReceivables: 'নগদ বাকি',
   cylinderReceivables: 'সিলিন্ডার বাকি',
+  cylindersOwedByCustomers: 'গ্রাহকদের কাছে সিলিন্ডার বাকি',
+  cylindersOwedByCustomersBySize:
+    'গ্রাহকদের কাছে সিলিন্ডার বাকি (সাইজ অনুযায়ী)',
+  amountOwedByCustomers: 'গ্রাহকদের কাছে অর্থ বাকি',
   retail: 'খুচরা',
   shipment: 'চালান',
   noDataFound: 'কোন তথ্য পাওয়া যায়নি',
@@ -2005,8 +2379,6 @@ const bengaliTranslations: Translations = {
   totalCylinderReceivables: 'মোট সিলিন্ডার বাকি',
   totalCylindersReceivables: 'মোট সিলিন্ডার বাকি',
   dailyInventoryTracking: 'দৈনিক ইনভেন্টরি ট্র্যাকিং',
-  automatedCalculationsExactFormulas:
-    'সঠিক ব্যবসায়িক সূত্র ব্যবহার করে স্বয়ংক্রিয় গণনা',
   packagePurchase: 'প্যাকেজ ক্রয়',
   refillPurchase: 'রিফিল ক্রয়',
   emptyCylindersBuySell: 'খালি সিলিন্ডার কেনাবেচা',
@@ -2051,6 +2423,47 @@ const bengaliTranslations: Translations = {
   totalExpenses: 'মোট খরচ',
   availableCash: 'উপলব্ধ নগদ',
   totalCashReceivables: 'মোট নগদ বাকি',
+
+  // Missing onboarding receivables translations
+  noDriversAvailable: 'কোন চালক উপলব্ধ নেই',
+  addDriversFirst: 'অনুগ্রহ করে প্রথমে চালক যোগ করুন',
+  noRetailDriversAvailable: 'কোন খুচরা চালক উপলব্ধ নেই',
+  addRetailDriversFirst: 'অনুগ্রহ করে প্রথমে খুচরা চালক যোগ করুন',
+  receivablesSummary: 'বাকি সারসংক্ষেপ',
+
+  // Admin onboarding
+  manualBusinessOnboarding: 'ম্যানুয়াল ব্যবসায়িক অনবোর্ডিং',
+  businessInformation: 'ব্যবসায়িক তথ্য',
+  businessName: 'ব্যবসার নাম',
+  businessNamePlaceholder: 'এবিসি এলপিজি ডিস্ট্রিবিউটর্স',
+  subdomain: 'সাবডোমেইন',
+  subdomainPlaceholder: 'abc-lpg',
+  plan: 'পরিকল্পনা',
+  freemium: 'ফ্রিমিয়াম',
+  professional: 'পেশাদার',
+  enterprise: 'এন্টারপ্রাইজ',
+  adminUser: 'প্রশাসক ব্যবহারকারী',
+  adminName: 'প্রশাসকের নাম',
+  adminNamePlaceholder: 'জন ডো',
+  adminEmail: 'প্রশাসকের ইমেইল',
+  adminEmailPlaceholder: 'admin@abclpg.com',
+  adminPassword: 'প্রশাসকের পাসওয়ার্ড',
+  strongPassword: 'শক্তিশালী পাসওয়ার্ড',
+  creatingBusiness: 'ব্যবসা তৈরি করা হচ্ছে...',
+  onboardBusiness: 'ব্যবসা অনবোর্ড করুন',
+  businessOnboardedSuccessfully: 'ব্যবসা সফলভাবে অনবোর্ড হয়েছে',
+  businessCreatedWithAdmin:
+    '{tenantName} প্রশাসক ব্যবহারকারী {userEmail} সহ তৈরি হয়েছে',
+  failedToOnboardBusiness: 'ব্যবসা অনবোর্ড করতে ব্যর্থ',
+  networkErrorOccurred: 'নেটওয়ার্ক ত্রুটি ঘটেছে',
+
+  // API errors
+  unauthorized: 'অননুমোদিত',
+  userNotFound: 'ব্যবহারকারী পাওয়া যায়নি',
+  onboardingAlreadyCompleted: 'অনবোর্ডিং ইতিমধ্যে সম্পন্ন',
+  failedToCompleteOnboarding: 'অনবোর্ডিং সম্পন্ন করতে ব্যর্থ',
+  failedToCheckOnboardingStatus: 'অনবোর্ডিং স্থিতি যাচাই করতে ব্যর্থ',
+
   changeInReceivablesCashCylinders: 'বাকিতে পরিবর্তন (নগদ ও সিলিন্ডার)',
   dailyDepositsExpenses: 'দৈনিক জমা ও খরচ',
   detailedBreakdownDepositsExpenses: 'জমা ও খরচের বিস্তারিত বিভাজন',
@@ -2464,7 +2877,6 @@ const bengaliTranslations: Translations = {
   ago: 'আগে',
   allCategories: 'সব ক্যাটেগরি',
   allStatus: 'সব স্ট্যাটাস',
-  anErrorOccurred: 'একটি ত্রুটি ঘটেছে',
   approved: 'অনুমোদিত',
   approvedExpenses: 'অনুমোদিত খরচ',
   approveExpense: 'খরচ অনুমোদন করুন',
@@ -2474,7 +2886,6 @@ const bengaliTranslations: Translations = {
     'সম্পূর্ণ সিস্টেম অ্যাক্সেস এবং ব্যবহারকারী ব্যবস্থাপনা',
   confirmDeleteUser: 'ব্যবহারকারী মুছে ফেলার নিশ্চিতকরণ',
   customers: 'গ্রাহকগণ',
-  dailySalesRetailDrivers: 'খুচরা চালকের দৈনিক বিক্রয়',
   day: 'দিন',
   days: 'দিনসমূহ',
   deleteExpense: 'খরচ মুছুন',
@@ -2533,6 +2944,7 @@ const bengaliTranslations: Translations = {
   fullAccess: 'সম্পূর্ণ অ্যাক্সেস',
   inventoryManagement: 'ইনভেন্টরি ব্যবস্থাপনা',
   login: 'লগইন',
+  testCredentials: 'পরীক্ষার পরিচয়পত্র',
   noActiveDriversFoundForThisPeriod:
     'এই সময়ের জন্য কোন সক্রিয় চালক পাওয়া যায়নি',
   notApplicable: 'প্রযোজ্য নয়',
@@ -2551,6 +2963,10 @@ const bengaliTranslations: Translations = {
   totalSalesThisMonth: 'এই মাসের মোট বিক্রয়',
   unknown: 'অজানা',
   updateExpense: 'খরচ আপডেট করুন',
+  emptyCylinderReceivables: 'খালি সিলিন্ডার প্রাপ্য',
+  emptyCylindersInStock: 'স্টকে খালি সিলিন্ডার',
+  outstandingShipments: 'অসমাপ্ত চালান',
+  noOutstandingOrders: 'কোন অসমাপ্ত অর্ডার নেই',
 
   // Interface properties that were not duplicated
   bn: 'বাংলা',
@@ -2563,6 +2979,83 @@ const bengaliTranslations: Translations = {
   isComplete: 'সম্পূর্ণ',
   missingKeys: 'অনুপস্থিত কী',
   totalKeys: 'মোট কী',
+  welcomeToOnboarding: 'welcomeToOnboarding', // TODO: Add Bengali translation
+  setupYourBusinessData: 'setupYourBusinessData', // TODO: Add Bengali translation
+  companyNames: 'companyNames', // TODO: Add Bengali translation
+  productSetup: 'productSetup', // TODO: Add Bengali translation
+  inventoryQuantities: 'inventoryQuantities', // TODO: Add Bengali translation
+  driversSetup: 'driversSetup', // TODO: Add Bengali translation
+  receivablesSetup: 'receivablesSetup', // TODO: Add Bengali translation
+  skipOnboarding: 'skipOnboarding', // TODO: Add Bengali translation
+  completing: 'completing', // TODO: Add Bengali translation
+  completeSetup: 'completeSetup', // TODO: Add Bengali translation
+  setupBusiness: 'setupBusiness', // TODO: Add Bengali translation
+  addCompanyNames: 'addCompanyNames', // TODO: Add Bengali translation
+  addCompaniesYouDistributeFor: 'addCompaniesYouDistributeFor', // TODO: Add Bengali translation
+  addNewCompany: 'addNewCompany', // TODO: Add Bengali translation
+  enterCompanyNamesLikeAygaz: 'enterCompanyNamesLikeAygaz', // TODO: Add Bengali translation
+  companyName: 'companyName', // TODO: Add Bengali translation
+  enterCompanyName: 'enterCompanyName', // TODO: Add Bengali translation
+  companyNameRequired: 'companyNameRequired', // TODO: Add Bengali translation
+  companyAlreadyExists: 'companyAlreadyExists', // TODO: Add Bengali translation
+  addedCompanies: 'addedCompanies', // TODO: Add Bengali translation
+  companiesYouDistributeFor: 'companiesYouDistributeFor', // TODO: Add Bengali translation
+  noCompaniesAdded: 'noCompaniesAdded', // TODO: Add Bengali translation
+  addAtLeastOneCompany: 'addAtLeastOneCompany', // TODO: Add Bengali translation
+  setupProductsAndSizes: 'setupProductsAndSizes', // TODO: Add Bengali translation
+  configureCylinderSizesAndProducts: 'configureCylinderSizesAndProducts', // TODO: Add Bengali translation
+  cylinderSizes: 'cylinderSizes', // TODO: Add Bengali translation
+  addCylinderSize: 'addCylinderSize', // TODO: Add Bengali translation
+  addSizesLike12L20L: 'addSizesLike12L20L', // TODO: Add Bengali translation
+  enterSizeLike12L: 'enterSizeLike12L', // TODO: Add Bengali translation
+  enterDescription: 'enterDescription', // TODO: Add Bengali translation
+  addSize: 'addSize', // TODO: Add Bengali translation
+  cylinderSizeRequired: 'cylinderSizeRequired', // TODO: Add Bengali translation
+  cylinderSizeAlreadyExists: 'cylinderSizeAlreadyExists', // TODO: Add Bengali translation
+  addProduct: 'addProduct', // TODO: Add Bengali translation
+  addProductsForEachCompany: 'addProductsForEachCompany', // TODO: Add Bengali translation
+  productName: 'productName', // TODO: Add Bengali translation
+  enterProductName: 'enterProductName', // TODO: Add Bengali translation
+  currentPrice: 'currentPrice', // TODO: Add Bengali translation
+  enterPrice: 'enterPrice', // TODO: Add Bengali translation
+  productNameRequired: 'productNameRequired', // TODO: Add Bengali translation
+  validPriceRequired: 'validPriceRequired', // TODO: Add Bengali translation
+  productAlreadyExists: 'productAlreadyExists', // TODO: Add Bengali translation
+  addedProducts: 'addedProducts', // TODO: Add Bengali translation
+  addCylinderSizesAndProducts: 'addCylinderSizesAndProducts', // TODO: Add Bengali translation
+  bothRequiredToProceed: 'bothRequiredToProceed', // TODO: Add Bengali translation
+  setInitialInventory: 'setInitialInventory', // TODO: Add Bengali translation
+  enterCurrentFullCylinderQuantities: 'enterCurrentFullCylinderQuantities', // TODO: Add Bengali translation
+  fullCylinderInventory: 'fullCylinderInventory', // TODO: Add Bengali translation
+  enterQuantityForEachProduct: 'enterQuantityForEachProduct', // TODO: Add Bengali translation
+  noProductsAvailable: 'noProductsAvailable', // TODO: Add Bengali translation
+  addProductsFirst: 'addProductsFirst', // TODO: Add Bengali translation
+  totalProducts: 'totalProducts', // TODO: Add Bengali translation
+  totalFullCylinders: 'totalFullCylinders', // TODO: Add Bengali translation
+  setEmptyCylinderInventory: 'setEmptyCylinderInventory', // TODO: Add Bengali translation
+  enterCurrentEmptyCylinderQuantities: 'enterCurrentEmptyCylinderQuantities', // TODO: Add Bengali translation
+  emptyCylinderInventory: 'emptyCylinderInventory', // TODO: Add Bengali translation
+  enterQuantityForEachSize: 'enterQuantityForEachSize', // TODO: Add Bengali translation
+  noCylinderSizesAvailable: 'noCylinderSizesAvailable', // TODO: Add Bengali translation
+  addCylinderSizesFirst: 'addCylinderSizesFirst', // TODO: Add Bengali translation
+  totalSizes: 'totalSizes', // TODO: Add Bengali translation
+  totalEmptyCylinders: 'totalEmptyCylinders', // TODO: Add Bengali translation
+  addYourDrivers: 'addYourDrivers', // TODO: Add Bengali translation
+  addDriversWhoWillSellProducts: 'addDriversWhoWillSellProducts', // TODO: Add Bengali translation
+  enterDriverInformation: 'enterDriverInformation', // TODO: Add Bengali translation
+  enterDriverName: 'enterDriverName', // TODO: Add Bengali translation
+  shipmentDriver: 'shipmentDriver', // TODO: Add Bengali translation
+  driverNameRequired: 'driverNameRequired', // TODO: Add Bengali translation
+  driverAlreadyExists: 'driverAlreadyExists', // TODO: Add Bengali translation
+  addedDrivers: 'addedDrivers', // TODO: Add Bengali translation
+  driversInYourTeam: 'driversInYourTeam', // TODO: Add Bengali translation
+  noContactInfo: 'noContactInfo', // TODO: Add Bengali translation
+  noDriversAdded: 'noDriversAdded', // TODO: Add Bengali translation
+  addAtLeastOneDriver: 'addAtLeastOneDriver', // TODO: Add Bengali translation
+  setupReceivables: 'setupReceivables', // TODO: Add Bengali translation
+  enterCurrentReceivablesForEachDriver: 'enterCurrentReceivablesForEachDriver', // TODO: Add Bengali translation
+  driverReceivables: 'driverReceivables', // TODO: Add Bengali translation
+  enterCashAndCylinderReceivables: 'enterCashAndCylinderReceivables', // TODO: Add Bengali translation
 };
 
 const translationMap: Record<string, Translations> = {

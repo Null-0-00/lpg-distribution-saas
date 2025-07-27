@@ -1,11 +1,20 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
+import { useTranslation } from '@/hooks/useTranslation';
+import { AuthTopToggles } from '@/components/ui/AuthTopToggles';
 
 export default function RegisterPage() {
+  const { t } = useTranslation({ component: 'RegisterPage' });
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -33,13 +42,13 @@ export default function RegisterPage() {
     setError('');
 
     if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match');
+      setError(t('passwordsDontMatch'));
       setLoading(false);
       return;
     }
 
     if (formData.password.length < 8) {
-      setError('Password must be at least 8 characters long');
+      setError(t('passwordMinLength'));
       setLoading(false);
       return;
     }
@@ -71,26 +80,40 @@ export default function RegisterPage() {
       }
     } catch (error) {
       console.error('Registration error:', error);
-      setError('An error occurred. Please try again.');
+      setError(t('anErrorOccurred'));
     } finally {
       setLoading(false);
     }
   };
 
+  // Render loading state until mounted to prevent hydration mismatch
+  if (!mounted) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12 transition-colors sm:px-6 lg:px-8 dark:bg-gray-900">
+        <div className="text-center">
+          <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-b-2 border-blue-500"></div>
+          <p className="text-gray-600 dark:text-gray-400">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12 sm:px-6 lg:px-8">
+    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12 transition-colors sm:px-6 lg:px-8 dark:bg-gray-900">
+      <AuthTopToggles />
+
       <div className="w-full max-w-md space-y-8">
         <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Create your account
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-white">
+            {t('createYourAccount')}
           </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
+          <p className="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
             Or{' '}
             <Link
               href="/auth/login"
-              className="font-medium text-blue-600 hover:text-blue-500"
+              className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300"
             >
-              sign in to your existing account
+              {t('signInToExistingAccount')}
             </Link>
           </p>
         </div>
@@ -99,17 +122,17 @@ export default function RegisterPage() {
             <div>
               <label
                 htmlFor="name"
-                className="block text-sm font-medium text-gray-700"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300"
               >
-                Full Name
+                {t('fullName')}
               </label>
               <input
                 id="name"
                 name="name"
                 type="text"
                 required
-                className="relative mt-1 block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm"
-                placeholder="John Doe"
+                className="relative mt-1 block w-full appearance-none rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder-gray-500 transition-colors focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
+                placeholder={t('fullNamePlaceholder')}
                 value={formData.name}
                 onChange={handleChange}
                 disabled={loading}
@@ -119,9 +142,9 @@ export default function RegisterPage() {
             <div>
               <label
                 htmlFor="email"
-                className="block text-sm font-medium text-gray-700"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300"
               >
-                Email Address
+                {t('emailAddress')}
               </label>
               <input
                 id="email"
@@ -129,8 +152,8 @@ export default function RegisterPage() {
                 type="email"
                 autoComplete="email"
                 required
-                className="relative mt-1 block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm"
-                placeholder="john@example.com"
+                className="relative mt-1 block w-full appearance-none rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder-gray-500 transition-colors focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
+                placeholder="rahim@example.com"
                 value={formData.email}
                 onChange={handleChange}
                 disabled={loading}
@@ -140,17 +163,17 @@ export default function RegisterPage() {
             <div>
               <label
                 htmlFor="company"
-                className="block text-sm font-medium text-gray-700"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300"
               >
-                Company Name
+                {t('company')} {t('name')}
               </label>
               <input
                 id="company"
                 name="company"
                 type="text"
                 required
-                className="relative mt-1 block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm"
-                placeholder="Your Company Ltd."
+                className="relative mt-1 block w-full appearance-none rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder-gray-500 transition-colors focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
+                placeholder={t('companyNamePlaceholder')}
                 value={formData.company}
                 onChange={handleChange}
                 disabled={loading}
@@ -160,16 +183,16 @@ export default function RegisterPage() {
             <div>
               <label
                 htmlFor="phone"
-                className="block text-sm font-medium text-gray-700"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300"
               >
-                Phone Number
+                {t('phoneNumber')}
               </label>
               <input
                 id="phone"
                 name="phone"
                 type="tel"
-                className="relative mt-1 block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm"
-                placeholder="+1 (555) 123-4567"
+                className="relative mt-1 block w-full appearance-none rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder-gray-500 transition-colors focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
+                placeholder="+880 1712-345678"
                 value={formData.phone}
                 onChange={handleChange}
                 disabled={loading}
@@ -179,9 +202,9 @@ export default function RegisterPage() {
             <div className="relative">
               <label
                 htmlFor="password"
-                className="block text-sm font-medium text-gray-700"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300"
               >
-                Password
+                {t('password')}
               </label>
               <input
                 id="password"
@@ -189,8 +212,8 @@ export default function RegisterPage() {
                 type={showPassword ? 'text' : 'password'}
                 autoComplete="new-password"
                 required
-                className="relative mt-1 block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 pr-10 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm"
-                placeholder="At least 8 characters"
+                className="relative mt-1 block w-full appearance-none rounded-md border border-gray-300 bg-white px-3 py-2 pr-10 text-gray-900 placeholder-gray-500 transition-colors focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
+                placeholder={t('passwordPlaceholder')}
                 value={formData.password}
                 onChange={handleChange}
                 disabled={loading}
@@ -201,9 +224,9 @@ export default function RegisterPage() {
                 onClick={() => setShowPassword(!showPassword)}
               >
                 {showPassword ? (
-                  <EyeOff className="h-4 w-4 text-gray-400" />
+                  <EyeOff className="h-4 w-4 text-gray-400 dark:text-gray-500" />
                 ) : (
-                  <Eye className="h-4 w-4 text-gray-400" />
+                  <Eye className="h-4 w-4 text-gray-400 dark:text-gray-500" />
                 )}
               </button>
             </div>
@@ -211,9 +234,9 @@ export default function RegisterPage() {
             <div className="relative">
               <label
                 htmlFor="confirmPassword"
-                className="block text-sm font-medium text-gray-700"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300"
               >
-                Confirm Password
+                {t('confirmPassword')}
               </label>
               <input
                 id="confirmPassword"
@@ -221,8 +244,8 @@ export default function RegisterPage() {
                 type={showConfirmPassword ? 'text' : 'password'}
                 autoComplete="new-password"
                 required
-                className="relative mt-1 block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 pr-10 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm"
-                placeholder="Confirm your password"
+                className="relative mt-1 block w-full appearance-none rounded-md border border-gray-300 bg-white px-3 py-2 pr-10 text-gray-900 placeholder-gray-500 transition-colors focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
+                placeholder={t('confirmPasswordPlaceholder')}
                 value={formData.confirmPassword}
                 onChange={handleChange}
                 disabled={loading}
@@ -233,17 +256,19 @@ export default function RegisterPage() {
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
               >
                 {showConfirmPassword ? (
-                  <EyeOff className="h-4 w-4 text-gray-400" />
+                  <EyeOff className="h-4 w-4 text-gray-400 dark:text-gray-500" />
                 ) : (
-                  <Eye className="h-4 w-4 text-gray-400" />
+                  <Eye className="h-4 w-4 text-gray-400 dark:text-gray-500" />
                 )}
               </button>
             </div>
           </div>
 
           {error && (
-            <div className="rounded-md bg-red-50 p-4">
-              <div className="text-sm text-red-700">{error}</div>
+            <div className="rounded-md border border-red-200 bg-red-50 p-4 dark:border-red-800 dark:bg-red-900/50">
+              <div className="text-sm text-red-700 dark:text-red-400">
+                {error}
+              </div>
             </div>
           )}
 
@@ -253,19 +278,25 @@ export default function RegisterPage() {
               name="terms"
               type="checkbox"
               required
-              className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+              className="h-4 w-4 rounded border-gray-300 bg-white text-blue-600 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700"
             />
-            <label htmlFor="terms" className="ml-2 block text-sm text-gray-900">
-              I agree to the{' '}
-              <Link href="/terms" className="text-blue-600 hover:text-blue-500">
-                Terms of Service
+            <label
+              htmlFor="terms"
+              className="ml-2 block text-sm text-gray-900 dark:text-white"
+            >
+              {t('agreeToTerms')}{' '}
+              <Link
+                href="/terms"
+                className="text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300"
+              >
+                {t('termsOfService')}
               </Link>{' '}
               and{' '}
               <Link
                 href="/privacy"
-                className="text-blue-600 hover:text-blue-500"
+                className="text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300"
               >
-                Privacy Policy
+                {t('privacyPolicy')}
               </Link>
             </label>
           </div>
@@ -274,10 +305,10 @@ export default function RegisterPage() {
             <button
               type="submit"
               disabled={loading}
-              className="group relative flex w-full justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              className="group relative flex w-full justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-blue-600 dark:hover:bg-blue-700"
             >
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Create Account
+              {t('createAccount')}
             </button>
           </div>
         </form>

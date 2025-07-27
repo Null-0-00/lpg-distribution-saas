@@ -62,42 +62,55 @@ export async function GET(request: NextRequest) {
       prisma.receivableRecord.count({ where }),
     ]);
 
-    // Get driver-wise summary for the period
-    const driverSummary = await prisma.receivableRecord.groupBy({
-      by: ['driverId'],
+    // Get latest receivable record for each driver to show current totals
+    const drivers = await prisma.driver.findMany({
       where: {
         tenantId,
-        date: { gte: start, lte: end },
-        ...(driverId && { driverId }),
+        status: 'ACTIVE',
+        ...(driverId && { id: driverId }),
       },
-      _sum: {
-        cashReceivablesChange: true,
-        cylinderReceivablesChange: true,
-        totalCashReceivables: true,
-        totalCylinderReceivables: true,
+      select: {
+        id: true,
+        name: true,
+        route: true,
+        status: true,
+        receivableRecords: {
+          orderBy: { date: 'desc' },
+          take: 1,
+          select: {
+            totalCashReceivables: true,
+            totalCylinderReceivables: true,
+            cashReceivablesChange: true,
+            cylinderReceivablesChange: true,
+            date: true,
+          },
+        },
       },
     });
 
-    // Get driver names for summary
-    const driverIds = driverSummary.map((s) => s.driverId);
-    const drivers = await prisma.driver.findMany({
-      where: { id: { in: driverIds } },
-      select: { id: true, name: true, route: true, status: true },
-    });
+    // Calculate summary from latest records for each driver
+    const summary = drivers
+      .map((driver) => {
+        const latestRecord = driver.receivableRecords[0];
+        const currentCashReceivables = latestRecord?.totalCashReceivables || 0;
+        const currentCylinderReceivables =
+          latestRecord?.totalCylinderReceivables || 0;
 
-    const driverMap = new Map(drivers.map((d) => [d.id, d]));
-
-    const summary = driverSummary
-      .map((item) => ({
-        driver: driverMap.get(item.driverId),
-        totalCashChange: item._sum.cashReceivablesChange || 0,
-        totalCylinderChange: item._sum.cylinderReceivablesChange || 0,
-        currentCashReceivables: item._sum.totalCashReceivables || 0,
-        currentCylinderReceivables: item._sum.totalCylinderReceivables || 0,
-        totalReceivables:
-          (item._sum.totalCashReceivables || 0) +
-          (item._sum.totalCylinderReceivables || 0),
-      }))
+        return {
+          driver: {
+            id: driver.id,
+            name: driver.name,
+            route: driver.route,
+            status: driver.status,
+          },
+          totalCashChange: latestRecord?.cashReceivablesChange || 0,
+          totalCylinderChange: latestRecord?.cylinderReceivablesChange || 0,
+          currentCashReceivables,
+          currentCylinderReceivables,
+          totalReceivables: currentCashReceivables + currentCylinderReceivables,
+        };
+      })
+      // Show all drivers, including those with zero receivables
       .sort((a, b) => b.totalReceivables - a.totalReceivables);
 
     // Overall totals
@@ -269,57 +282,121 @@ async function calculateDailyReceivables(
     // Cylinder Receivables Change = driver_refill_sales - cylinder_deposits
     const cylinderReceivablesChange = refillQuantity - cylinderDeposits;
 
-    // Get yesterday's totals
+    // Get yesterday's totals or onboarding receivables for first calculation
     const yesterday = new Date(date.getTime() - 24 * 60 * 60 * 1000);
+    yesterday.setHours(0, 0, 0, 0);
+
+    // First try to get yesterday's record
     const yesterdayRecord = await prisma.receivableRecord.findFirst({
       where: {
         tenantId,
         driverId: driver.id,
         date: {
-          gte: new Date(
-            yesterday.toISOString().split('T')[0] + 'T00:00:00.000Z'
-          ),
+          gte: yesterday,
           lt: new Date(dateStr + 'T00:00:00.000Z'),
         },
       },
       orderBy: { date: 'desc' },
     });
 
-    const yesterdayCashTotal = yesterdayRecord?.totalCashReceivables || 0;
-    const yesterdayCylinderTotal =
-      yesterdayRecord?.totalCylinderReceivables || 0;
+    let yesterdayCashTotal = 0;
+    let yesterdayCylinderTotal = 0;
 
-    // EXACT FORMULAS from prompts.md:
-    // Today's Total = Yesterday's Total + Today's Changes
+    if (yesterdayRecord) {
+      // Use yesterday's totals if available
+      yesterdayCashTotal = yesterdayRecord.totalCashReceivables;
+      yesterdayCylinderTotal = yesterdayRecord.totalCylinderReceivables;
+    } else {
+      // If no yesterday record, check for onboarding receivables (first record)
+      const onboardingRecord = await prisma.receivableRecord.findFirst({
+        where: {
+          tenantId,
+          driverId: driver.id,
+        },
+        orderBy: { date: 'asc' },
+      });
+
+      if (onboardingRecord) {
+        yesterdayCashTotal = onboardingRecord.totalCashReceivables;
+        yesterdayCylinderTotal = onboardingRecord.totalCylinderReceivables;
+      }
+    }
+
+    // EXACT FORMULAS from updated requirements:
+    // Today's Total = Yesterday's Total (or Onboarding if no yesterday) + Today's Changes
     const totalCashReceivables = yesterdayCashTotal + cashReceivablesChange;
     const totalCylinderReceivables =
       yesterdayCylinderTotal + cylinderReceivablesChange;
 
     // Upsert the receivable record
-    await prisma.receivableRecord.upsert({
-      where: {
-        tenantId_driverId_date: {
+    try {
+      const recordDate = new Date(dateStr + 'T00:00:00.000Z');
+
+      // Validate data before upsert
+      if (isNaN(totalCashReceivables) || isNaN(totalCylinderReceivables)) {
+        console.error(`Invalid receivables values for driver ${driver.id}:`, {
+          totalCashReceivables,
+          totalCylinderReceivables,
+          cashReceivablesChange,
+          cylinderReceivablesChange,
+        });
+        continue;
+      }
+
+      const upsertResult = await prisma.receivableRecord.upsert({
+        where: {
+          tenantId_driverId_date: {
+            tenantId,
+            driverId: driver.id,
+            date: recordDate,
+          },
+        },
+        update: {
+          cashReceivablesChange,
+          cylinderReceivablesChange,
+          totalCashReceivables,
+          totalCylinderReceivables,
+          calculatedAt: new Date(),
+        },
+        create: {
           tenantId,
           driverId: driver.id,
-          date: new Date(dateStr),
+          date: recordDate,
+          cashReceivablesChange,
+          cylinderReceivablesChange,
+          totalCashReceivables,
+          totalCylinderReceivables,
         },
-      },
-      update: {
-        cashReceivablesChange,
-        cylinderReceivablesChange,
-        totalCashReceivables,
-        totalCylinderReceivables,
-      },
-      create: {
-        tenantId,
-        driverId: driver.id,
-        date: new Date(dateStr),
-        cashReceivablesChange,
-        cylinderReceivablesChange,
-        totalCashReceivables,
-        totalCylinderReceivables,
-      },
-    });
+      });
+
+      console.log(`✅ Receivable record saved for driver ${driver.id}:`, {
+        id: upsertResult.id,
+        totalCash: upsertResult.totalCashReceivables,
+        totalCylinders: upsertResult.totalCylinderReceivables,
+      });
+    } catch (upsertError: unknown) {
+      console.error(
+        `❌ Failed to save receivable record for driver ${driver.id}:`,
+        upsertError
+      );
+
+      // Log specific error details
+      if (
+        upsertError &&
+        typeof upsertError === 'object' &&
+        'code' in upsertError
+      ) {
+        if ((upsertError as any).code === 'P2002') {
+          console.error('Unique constraint violation');
+        }
+        if ((upsertError as any).code === 'P2003') {
+          console.error('Foreign key constraint violation');
+        }
+      }
+
+      // Continue with other drivers instead of failing completely
+      continue;
+    }
 
     results.push({
       driverId: driver.id,

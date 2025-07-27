@@ -35,6 +35,8 @@ export class ReceivablesCalculator {
    * Core receivables calculation using exact PRD formulas:
    * - Cash Receivables Change = driver_sales_revenue - cash_deposits - discounts
    * - Cylinder Receivables Change = driver_refill_sales - cylinder_deposits
+   *
+   * Note: For drivers with no sales activity, preserve existing receivables (from onboarding)
    */
   async calculateReceivablesForDate(
     data: ReceivablesCalculationData
@@ -54,7 +56,29 @@ export class ReceivablesCalculator {
       date
     );
 
-    // Apply exact PRD formulas
+    // Check if driver has any sales activity
+    const hasSalesActivity =
+      salesRevenue.totalRevenue > 0 ||
+      salesRevenue.cashDeposited > 0 ||
+      salesRevenue.cylindersDeposited > 0 ||
+      salesRevenue.discounts > 0;
+
+    // If no sales activity and there are existing receivables, preserve them
+    // This protects initial balances set during onboarding
+    if (
+      !hasSalesActivity &&
+      (previousCashReceivables > 0 || previousCylinderReceivables > 0)
+    ) {
+      return {
+        cashReceivablesChange: 0,
+        cylinderReceivablesChange: 0,
+        totalCashReceivables: previousCashReceivables,
+        totalCylinderReceivables: previousCylinderReceivables,
+        salesRevenue,
+      };
+    }
+
+    // Apply exact PRD formulas for active drivers
     // Cash Receivables Change = driver_sales_revenue - cash_deposits - discounts
     const cashReceivablesChange =
       salesRevenue.totalRevenue -
@@ -65,7 +89,7 @@ export class ReceivablesCalculator {
     const cylinderReceivablesChange =
       salesRevenue.refillSales - salesRevenue.cylindersDeposited;
 
-    // Calculate running totals
+    // Calculate running totals - include onboarding receivables
     const totalCashReceivables =
       previousCashReceivables + cashReceivablesChange;
     const totalCylinderReceivables =
@@ -106,15 +130,15 @@ export class ReceivablesCalculator {
       select: {
         saleType: true,
         quantity: true,
-        netValue: true,
+        totalValue: true,
         discount: true,
         cashDeposited: true,
         cylindersDeposited: true,
       },
     });
 
-    // Calculate total revenue (sum of all net values)
-    const totalRevenue = sales.reduce((sum, sale) => sum + sale.netValue, 0);
+    // Calculate total revenue (sum of all total values)
+    const totalRevenue = sales.reduce((sum, sale) => sum + sale.totalValue, 0);
 
     // Calculate total cash deposited
     const cashDeposited = sales.reduce(
@@ -147,6 +171,7 @@ export class ReceivablesCalculator {
 
   /**
    * Get current receivables balances for a driver
+   * This method ensures onboarding receivables are included in calculations
    */
   async getCurrentReceivablesBalances(
     tenantId: string,
@@ -170,6 +195,63 @@ export class ReceivablesCalculator {
       return {
         cashReceivables: latestRecord.totalCashReceivables,
         cylinderReceivables: latestRecord.totalCylinderReceivables,
+      };
+    }
+
+    // If no records exist, return zeros
+    return {
+      cashReceivables: 0,
+      cylinderReceivables: 0,
+    };
+  }
+
+  /**
+   * Get previous day's receivables or onboarding receivables for first calculation
+   */
+  async getPreviousReceivables(
+    tenantId: string,
+    driverId: string,
+    date: Date
+  ): Promise<{
+    cashReceivables: number;
+    cylinderReceivables: number;
+  }> {
+    const yesterday = new Date(date.getTime() - 24 * 60 * 60 * 1000);
+    yesterday.setHours(0, 0, 0, 0);
+
+    // First try to get yesterday's record
+    const yesterdayRecord = await this.prisma.receivableRecord.findFirst({
+      where: {
+        tenantId,
+        driverId,
+        date: {
+          gte: yesterday,
+          lt: date,
+        },
+      },
+      orderBy: { date: 'desc' },
+    });
+
+    if (yesterdayRecord) {
+      return {
+        cashReceivables: yesterdayRecord.totalCashReceivables,
+        cylinderReceivables: yesterdayRecord.totalCylinderReceivables,
+      };
+    }
+
+    // If no yesterday record, check for onboarding receivables (first record)
+    const onboardingRecord = await this.prisma.receivableRecord.findFirst({
+      where: {
+        tenantId,
+        driverId,
+      },
+      orderBy: { date: 'asc' },
+    });
+
+    if (onboardingRecord) {
+      return {
+        cashReceivables: onboardingRecord.totalCashReceivables,
+        cylinderReceivables: onboardingRecord.totalCylinderReceivables,
       };
     }
 
@@ -318,7 +400,7 @@ export class ReceivablesCalculator {
         },
       },
       select: {
-        netValue: true,
+        totalValue: true,
         cashDeposited: true,
         cylindersDeposited: true,
         saleType: true,
@@ -327,7 +409,7 @@ export class ReceivablesCalculator {
     });
 
     const totalSalesRevenue = sales.reduce(
-      (sum, sale) => sum + sale.netValue,
+      (sum, sale) => sum + sale.totalValue,
       0
     );
     const totalCashCollected = sales.reduce(

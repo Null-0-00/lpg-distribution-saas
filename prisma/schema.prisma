@@ -24,9 +24,9 @@ model Tenant {
   subscriptionPlan    SubscriptionPlan
   isActive            Boolean           @default(true)
   settings            Json?             // JSON for tenant-specific settings
-  currency            String            @default("USD")
-  timezone            String            @default("UTC")
-  language            String            @default("en")
+  currency            String            @default("BDT")
+  timezone            String            @default("Asia/Dhaka")
+  language            String            @default("bn")
   createdAt           DateTime          @default(now())
   updatedAt           DateTime          @updatedAt
 
@@ -58,6 +58,10 @@ model Tenant {
   distributorPricingAssignments DistributorPricingAssignment[]
   commissionStructures CommissionStructure[]
   fixedCostStructures FixedCostStructure[]
+  fullCylinders       FullCylinder[]
+  emptyCylinders      EmptyCylinder[]
+  driverCylinderSizeBaselines DriverCylinderSizeBaseline[]
+  cylinderReceivablesBySizes CylinderReceivablesBySize[]
 
   @@map("tenants")
 }
@@ -72,6 +76,8 @@ model User {
   avatar      String?
   isActive    Boolean   @default(true)
   lastLoginAt DateTime?
+  onboardingCompleted Boolean @default(false)
+  onboardingCompletedAt DateTime?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
@@ -117,8 +123,12 @@ model CylinderSize {
   updatedAt   DateTime  @updatedAt
 
   // Relationships
-  tenant      Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  products    Product[]
+  tenant          Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  products        Product[]
+  fullCylinders   FullCylinder[]
+  emptyCylinders  EmptyCylinder[]
+  cylinderReceivablesBySizes CylinderReceivablesBySize[]
+  driverCylinderSizeBaselines DriverCylinderSizeBaseline[]
 
   @@unique([tenantId, size])
   @@index([tenantId])
@@ -143,9 +153,10 @@ model Company {
   updatedAt   DateTime  @updatedAt
 
   // Relationships
-  tenant      Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  products    Product[]
-  purchases   Purchase[]
+  tenant        Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  products      Product[]
+  purchases     Purchase[]
+  fullCylinders FullCylinder[]
   shipments   Shipment[]
   purchaseOrders PurchaseOrder[]
   distributorAssignments DistributorAssignment[]
@@ -190,6 +201,7 @@ model Product {
   distributorAssignments DistributorAssignment[]
   commissionStructures CommissionStructure[]
   fixedCostStructures FixedCostStructure[]
+  fullCylinders FullCylinder[]
 
   @@unique([tenantId, companyId, name])
   @@index([tenantId])
@@ -225,6 +237,7 @@ model Driver {
   customerReceivables CustomerReceivable[]
   inventoryMovements InventoryMovement[]
   purchaseOrders PurchaseOrder[]
+  driverCylinderSizeBaselines DriverCylinderSizeBaseline[]
 
   @@unique([tenantId, phone])
   @@index([tenantId])
@@ -390,6 +403,7 @@ model InventoryRecord {
   // Calculated inventory levels
   fullCylinders           Int       @default(0)
   emptyCylinders          Int       @default(0)
+  emptyCylinderReceivables Int      @default(0)
   totalCylinders          Int       @default(0)
   
   // Metadata
@@ -456,12 +470,37 @@ model ReceivableRecord {
   tenant                  Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   driver                  Driver    @relation(fields: [driverId], references: [id], onDelete: Cascade)
   customerReceivables     CustomerReceivable[]
+  cylinderReceivablesBySizes CylinderReceivablesBySize[]
 
   @@unique([tenantId, driverId, date])
   @@index([tenantId])
   @@index([date])
   @@index([driverId])
   @@map("receivable_records")
+}
+
+// Size-wise cylinder receivables for each driver
+model CylinderReceivablesBySize {
+  id                      String    @id @default(cuid())
+  tenantId                String
+  receivableRecordId      String
+  cylinderSizeId          String
+  
+  // Size-wise cylinder receivables
+  cylinderReceivables     Int       @default(0)
+  
+  createdAt               DateTime  @default(now())
+  updatedAt               DateTime  @updatedAt
+  
+  // Relationships
+  tenant                  Tenant              @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  receivableRecord        ReceivableRecord    @relation(fields: [receivableRecordId], references: [id], onDelete: Cascade)
+  cylinderSize            CylinderSize        @relation(fields: [cylinderSizeId], references: [id], onDelete: Cascade)
+  
+  @@unique([receivableRecordId, cylinderSizeId])
+  @@index([tenantId])
+  @@index([cylinderSizeId])
+  @@map("cylinder_receivables_by_size")
 }
 
 // Customer-wise receivables breakdown under each driver
@@ -491,6 +530,34 @@ model CustomerReceivable {
   @@index([customerName])
   @@index([status])
   @@map("customer_receivables")
+}
+
+// Permanent storage for driver cylinder receivables breakdown by size (from onboarding)
+// This table preserves the original cylinder size breakdown and cannot be accidentally deleted
+model DriverCylinderSizeBaseline {
+  id                      String    @id @default(cuid())
+  tenantId                String
+  driverId                String
+  cylinderSizeId          String
+  
+  // Original quantity from onboarding - used for proportional distribution
+  baselineQuantity        Int       @default(0)
+  
+  // Metadata
+  source                  String    @default("ONBOARDING")  // Could be "ONBOARDING", "MANUAL_ADJUSTMENT"
+  createdAt               DateTime  @default(now())
+  updatedAt               DateTime  @updatedAt
+  
+  // Relationships
+  tenant                  Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  driver                  Driver       @relation(fields: [driverId], references: [id], onDelete: Cascade)
+  cylinderSize            CylinderSize @relation(fields: [cylinderSizeId], references: [id], onDelete: Cascade)
+  
+  @@unique([tenantId, driverId, cylinderSizeId])
+  @@index([tenantId])
+  @@index([driverId])
+  @@index([cylinderSizeId])
+  @@map("driver_cylinder_size_baselines")
 }
 
 
@@ -534,6 +601,62 @@ model InventoryAssetValue {
   @@unique([tenantId, assetType], name: "tenantId_assetType")
   @@index([tenantId])
   @@map("inventory_asset_values")
+}
+
+// ============================================================================
+// CYLINDER TRACKING MODELS
+// ============================================================================
+
+// Full Cylinders table (পূর্ণ সিলিন্ডার)
+model FullCylinder {
+  id                String        @id @default(cuid())
+  tenantId          String
+  productId         String
+  companyId         String
+  cylinderSizeId    String
+  quantity          Int           @default(0)
+  date              DateTime      @db.Date
+  calculatedAt      DateTime      @default(now())
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  // Relationships
+  tenant            Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  product           Product       @relation(fields: [productId], references: [id], onDelete: Cascade)
+  company           Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  cylinderSize      CylinderSize  @relation(fields: [cylinderSizeId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, productId, date])
+  @@index([tenantId])
+  @@index([date])
+  @@index([productId])
+  @@index([companyId])
+  @@index([cylinderSizeId])
+  @@map("full_cylinders")
+}
+
+// Empty Cylinders table (খালি সিলিন্ডার)
+model EmptyCylinder {
+  id                    String        @id @default(cuid())
+  tenantId              String
+  cylinderSizeId        String
+  quantity              Int           @default(0)
+  quantityInHand        Int           @default(0)
+  quantityWithDrivers   Int           @default(0)
+  date                  DateTime      @db.Date
+  calculatedAt          DateTime      @default(now())
+  createdAt             DateTime      @default(now())
+  updatedAt             DateTime      @updatedAt
+
+  // Relationships
+  tenant                Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  cylinderSize          CylinderSize  @relation(fields: [cylinderSizeId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, cylinderSizeId, date])
+  @@index([tenantId])
+  @@index([date])
+  @@index([cylinderSizeId])
+  @@map("empty_cylinders")
 }
 
 model Liability {

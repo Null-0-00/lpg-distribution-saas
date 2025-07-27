@@ -25,6 +25,7 @@ import {
   DollarSign,
   Info,
   Fuel,
+  RefreshCw,
 } from 'lucide-react';
 import { useSettings } from '@/contexts/SettingsContext';
 
@@ -150,6 +151,14 @@ export default function ShipmentsPage() {
     fetchDrivers();
   }, [filter]);
 
+  // Refresh companies when modal is shown
+  useEffect(() => {
+    if (showModal) {
+      console.log('Modal opened, refreshing companies list...');
+      fetchCompanies();
+    }
+  }, [showModal]);
+
   const fetchShipments = async () => {
     try {
       setLoading(true);
@@ -172,10 +181,25 @@ export default function ShipmentsPage() {
 
   const fetchCompanies = async () => {
     try {
-      const response = await fetch('/api/companies');
+      // Add cache busting to ensure fresh data
+      const response = await fetch(`/api/companies?_t=${Date.now()}`, {
+        cache: 'no-cache',
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          Pragma: 'no-cache',
+          Expires: '0',
+        },
+      });
       if (response.ok) {
         const data = await response.json();
+        console.log('Fetched companies:', data.companies?.length || 0);
         setCompanies(data.companies || []);
+      } else {
+        console.error(
+          'Failed to fetch companies:',
+          response.status,
+          response.statusText
+        );
       }
     } catch (error) {
       console.error('Error fetching companies:', error);
@@ -564,6 +588,9 @@ export default function ShipmentsPage() {
   const openEditModal = async (shipment: Shipment) => {
     setEditingShipment(shipment);
 
+    // Refresh data to ensure latest companies, products, and drivers
+    await Promise.all([fetchCompanies(), fetchProducts(), fetchDrivers()]);
+
     // Find all shipments in the same group (same invoice + date or same date + company)
     const isEmptyTransaction = ['INCOMING_EMPTY', 'OUTGOING_EMPTY'].includes(
       shipment.shipmentType
@@ -889,6 +916,10 @@ export default function ShipmentsPage() {
                 onClick={() => {
                   setEditingShipment(null); // Clear editing state for new purchase
                   resetForm(); // Reset form to defaults
+                  // Refresh companies list to ensure latest data
+                  fetchCompanies();
+                  fetchProducts();
+                  fetchDrivers();
                   setShowModal(true);
                 }}
                 className="flex items-center space-x-2 rounded-lg bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
@@ -1325,9 +1356,23 @@ export default function ShipmentsPage() {
 
                       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                         <div>
-                          <label className="text-muted-foreground mb-2 block text-sm font-medium">
-                            {t('company')} *
-                          </label>
+                          <div className="mb-2 flex items-center justify-between">
+                            <label className="text-muted-foreground text-sm font-medium">
+                              {t('company')} *
+                            </label>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                console.log('Refreshing companies list...');
+                                fetchCompanies();
+                              }}
+                              className="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-700"
+                              title="Refresh companies list"
+                            >
+                              <RefreshCw className="h-3 w-3" />
+                              Refresh
+                            </button>
+                          </div>
                           <select
                             value={formData.companyId}
                             onChange={(e) => {

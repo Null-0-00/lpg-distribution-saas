@@ -91,28 +91,73 @@ export async function POST(request: NextRequest) {
         },
       });
 
-      if (todaySales) {
-        // Update the sales record to add the cylinder return to deposits
-        await tx.sale.update({
-          where: { id: todaySales.id },
-          data: {
-            cylindersDeposited: { increment: data.quantity },
+      // We need to find a product that matches the cylinder size for proper tracking
+      const matchingProduct = await tx.product.findFirst({
+        where: {
+          tenantId,
+          cylinderSize: {
+            size: customerReceivable.size || '12L', // Default to 12L if no size specified
           },
-        });
-      } else {
-        // Get any product ID to satisfy the foreign key constraint
-        const anyProduct = await tx.product.findFirst({
-          where: { tenantId },
-          select: { id: true },
+        },
+        select: { id: true, name: true, size: true },
+      });
+
+      if (todaySales && matchingProduct) {
+        // Check if the existing sale is for the same product/size
+        const existingSaleProduct = await tx.product.findFirst({
+          where: { id: todaySales.productId },
+          include: { cylinderSize: true },
         });
 
-        // Create a new deposit-only sale record
+        if (
+          existingSaleProduct?.cylinderSize?.size === customerReceivable.size
+        ) {
+          // Update the sales record to add the cylinder return to deposits (same size)
+          await tx.sale.update({
+            where: { id: todaySales.id },
+            data: {
+              cylindersDeposited: { increment: data.quantity },
+            },
+          });
+        } else {
+          // Create a size-specific deposit record for the exact cylinder size
+          await tx.sale.create({
+            data: {
+              tenantId,
+              userId: session.user.id,
+              driverId: customerReceivable.driverId,
+              productId: matchingProduct.id,
+              saleDate: today,
+              saleType: 'REFILL',
+              paymentType: 'CASH',
+              quantity: 0,
+              unitPrice: 0,
+              totalValue: 0,
+              discount: 0,
+              netValue: 0,
+              cashDeposited: 0,
+              cylindersDeposited: data.quantity,
+              customerName: customerReceivable.customerName,
+              notes: `Receivable cylinder return: ${data.quantity} cylinders of ${customerReceivable.size}${data.notes ? ` - ${data.notes}` : ''}`,
+            },
+          });
+        }
+      } else {
+        // Fallback: Get any product ID but prefer one that matches the size
+        const fallbackProduct =
+          matchingProduct ||
+          (await tx.product.findFirst({
+            where: { tenantId },
+            select: { id: true },
+          }));
+
+        // Create a size-specific deposit-only sale record
         await tx.sale.create({
           data: {
             tenantId,
             userId: session.user.id,
             driverId: customerReceivable.driverId,
-            productId: anyProduct?.id || '', // Use a real product ID or empty string
+            productId: fallbackProduct?.id || '',
             saleDate: today,
             saleType: 'REFILL',
             paymentType: 'CASH',
@@ -124,7 +169,7 @@ export async function POST(request: NextRequest) {
             cashDeposited: 0,
             cylindersDeposited: data.quantity,
             customerName: customerReceivable.customerName,
-            notes: `Receivable cylinder return: ${data.quantity} cylinders${data.notes ? ` - ${data.notes}` : ''}`,
+            notes: `Receivable cylinder return: ${data.quantity} cylinders of ${customerReceivable.size || 'Unknown size'}${data.notes ? ` - ${data.notes}` : ''}`,
           },
         });
       }
@@ -239,20 +284,44 @@ async function calculateDailyReceivablesForDate(
   // Cylinder Receivables Change = driver_refill_sales - cylinder_deposits
   const cylinderReceivablesChange = refillQuantity - cylinderDeposits;
 
-  // Get yesterday's totals
+  // Get previous receivables (yesterday's record or onboarding receivables)
   const yesterday = new Date(date.getTime() - 24 * 60 * 60 * 1000);
-  const yesterdayStr = yesterday.toISOString().split('T')[0];
+  yesterday.setHours(0, 0, 0, 0);
 
+  // First try to get yesterday's record
   const yesterdayRecord = await prisma.receivableRecord.findFirst({
     where: {
       tenantId,
       driverId: driverId,
-      date: new Date(yesterdayStr + 'T00:00:00.000Z'),
+      date: {
+        gte: yesterday,
+        lt: date,
+      },
     },
+    orderBy: { date: 'desc' },
   });
 
-  const yesterdayCashTotal = yesterdayRecord?.totalCashReceivables || 0;
-  const yesterdayCylinderTotal = yesterdayRecord?.totalCylinderReceivables || 0;
+  let yesterdayCashTotal = 0;
+  let yesterdayCylinderTotal = 0;
+
+  if (yesterdayRecord) {
+    yesterdayCashTotal = yesterdayRecord.totalCashReceivables;
+    yesterdayCylinderTotal = yesterdayRecord.totalCylinderReceivables;
+  } else {
+    // If no yesterday record, check for onboarding receivables (first record)
+    const onboardingRecord = await prisma.receivableRecord.findFirst({
+      where: {
+        tenantId,
+        driverId: driverId,
+      },
+      orderBy: { date: 'asc' },
+    });
+
+    if (onboardingRecord) {
+      yesterdayCashTotal = onboardingRecord.totalCashReceivables;
+      yesterdayCylinderTotal = onboardingRecord.totalCylinderReceivables;
+    }
+  }
 
   // EXACT FORMULAS:
   // Today's Total = Yesterday's Total + Today's Changes

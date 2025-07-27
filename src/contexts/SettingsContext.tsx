@@ -40,10 +40,18 @@ interface SettingsProviderProps {
 }
 
 export function SettingsProvider({ children }: SettingsProviderProps) {
-  const [settings, setSettings] = useState<SettingsData>({
-    currency: 'BDT', // Better default for LPG distributors in Bangladesh
-    timezone: 'Asia/Dhaka', // Better default timezone
-    language: 'en', // Use English as default to prevent hydration mismatch
+  const [settings, setSettings] = useState<SettingsData>(() => {
+    // Check for auth language preference in localStorage
+    const authLanguage =
+      typeof window !== 'undefined'
+        ? localStorage.getItem('auth-language')
+        : null;
+
+    return {
+      currency: 'BDT', // Better default for LPG distributors in Bangladesh
+      timezone: 'Asia/Dhaka', // Better default timezone
+      language: authLanguage || 'bn', // Use auth language or Bengali as default
+    };
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -58,10 +66,15 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
       if (!response.ok) {
         if (response.status === 401 || response.status === 403) {
           // User is not authorized, use better defaults for LPG distributors
+          const authLanguage =
+            typeof window !== 'undefined'
+              ? localStorage.getItem('auth-language')
+              : null;
+
           setSettings({
             currency: 'BDT',
             timezone: 'Asia/Dhaka',
-            language: 'en',
+            language: authLanguage || 'bn',
           });
           return;
         }
@@ -74,10 +87,15 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
       console.error('Settings fetch error:', err);
       setError(err instanceof Error ? err.message : 'An error occurred');
       // Use better defaults on error for LPG distributors
+      const authLanguage =
+        typeof window !== 'undefined'
+          ? localStorage.getItem('auth-language')
+          : null;
+
       setSettings({
         currency: 'BDT',
         timezone: 'Asia/Dhaka',
-        language: 'en',
+        language: authLanguage || 'bn',
       });
     } finally {
       setLoading(false);
@@ -233,7 +251,70 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
       // Use defaults for auth pages and set loading to false
       setLoading(false);
     }
+
+    // Listen for localStorage changes to update language
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'auth-language' && e.newValue) {
+        console.log('Auth language changed in localStorage:', e.newValue);
+        setSettings((prev) => ({
+          ...prev,
+          language: e.newValue || 'bn',
+        }));
+      }
+    };
+
+    // Also listen for custom events (for same-tab changes)
+    const handleCustomLanguageChange = (e: CustomEvent) => {
+      console.log('Custom language change event:', e.detail);
+      setSettings((prev) => ({
+        ...prev,
+        language: e.detail.language || 'bn',
+      }));
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener(
+      'auth-language-changed',
+      handleCustomLanguageChange as EventListener
+    );
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener(
+        'auth-language-changed',
+        handleCustomLanguageChange as EventListener
+      );
+    };
   }, []);
+
+  // Additional effect to sync with localStorage on auth pages
+  useEffect(() => {
+    const isAuthPage =
+      typeof window !== 'undefined' &&
+      (window.location.pathname.startsWith('/auth/') ||
+        window.location.pathname === '/');
+
+    if (isAuthPage) {
+      const syncWithLocalStorage = () => {
+        const authLanguage = localStorage.getItem('auth-language');
+        if (authLanguage && authLanguage !== settings.language) {
+          console.log('Syncing language from localStorage:', authLanguage);
+          setSettings((prev) => ({
+            ...prev,
+            language: authLanguage,
+          }));
+        }
+      };
+
+      // Sync immediately
+      syncWithLocalStorage();
+
+      // Sync periodically (in case of timing issues)
+      const interval = setInterval(syncWithLocalStorage, 1000);
+
+      return () => clearInterval(interval);
+    }
+  }, [settings.language]);
 
   const value: SettingsContextType = {
     settings,

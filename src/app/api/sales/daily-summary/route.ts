@@ -102,6 +102,7 @@ export async function GET(request: NextRequest) {
             totalDiscount: 0,
             totalCashDeposited: 0,
             totalCylinderDeposited: 0,
+            cylinderDepositsBySize: {} as Record<string, number>,
             salesIds: [],
             canEdit: true, // Can edit today's sales
             canDelete: true, // Can delete today's sales
@@ -119,6 +120,15 @@ export async function GET(request: NextRequest) {
         acc[key].totalDiscount += sale.discount;
         acc[key].totalCashDeposited += sale.cashDeposited;
         acc[key].totalCylinderDeposited += sale.cylindersDeposited;
+
+        // Track cylinder deposits by size
+        if (sale.cylindersDeposited > 0 && sale.product?.size) {
+          const size = sale.product.size;
+          acc[key].cylinderDepositsBySize[size] =
+            (acc[key].cylinderDepositsBySize[size] || 0) +
+            sale.cylindersDeposited;
+        }
+
         acc[key].salesIds.push(sale.id);
 
         return acc;

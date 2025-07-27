@@ -210,13 +210,35 @@ export function CombinedSaleForm({
       try {
         setLoadingData(true);
         const [driversRes, productsRes] = await Promise.all([
-          fetch('/api/drivers?active=true&driverType=RETAIL'),
-          fetch('/api/products?inventory=true'),
+          fetch(`/api/drivers?active=true&driverType=RETAIL&_t=${Date.now()}`, {
+            cache: 'no-store',
+            headers: {
+              'Cache-Control': 'no-cache, no-store, must-revalidate',
+              Pragma: 'no-cache',
+              Expires: '0',
+            },
+          }),
+          fetch(`/api/products?inventory=true&_t=${Date.now()}`, {
+            cache: 'no-store',
+            headers: {
+              'Cache-Control': 'no-cache, no-store, must-revalidate',
+              Pragma: 'no-cache',
+              Expires: '0',
+            },
+          }),
         ]);
 
         if (driversRes.ok && productsRes.ok) {
           const driversData = await driversRes.json();
           const productsData = await productsRes.json();
+          console.log(
+            'CombinedSaleForm: Products loaded:',
+            productsData.products?.length || 0
+          );
+          console.log(
+            'CombinedSaleForm: Products data:',
+            productsData.products
+          );
           setDrivers(driversData.drivers);
           setProducts(productsData.products);
         }

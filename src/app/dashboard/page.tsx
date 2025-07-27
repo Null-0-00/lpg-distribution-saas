@@ -13,10 +13,14 @@ import {
   Truck,
   CreditCard,
   Building2,
+  Settings,
 } from 'lucide-react';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
 import { ClientTime } from '@/components/ui/ClientTime';
 import { useSettings } from '@/contexts/SettingsContext';
+import { useOnboarding } from '@/hooks/useOnboarding';
+import { OnboardingModal } from '@/components/onboarding/OnboardingModal';
+import { Button } from '@/components/ui/button';
 // Removed FallbackDataService import to use only real database data
 
 interface DashboardStats {
@@ -61,6 +65,12 @@ export default function DashboardPage() {
     useSettings();
   const { data: session, status } = useSession();
   const router = useRouter();
+  const {
+    completed: onboardingCompleted,
+    loading: onboardingLoading,
+    checkOnboardingStatus,
+  } = useOnboarding();
+  const [showOnboarding, setShowOnboarding] = useState(false);
   const [stats, setStats] = useState<DashboardStats>({
     todaySales: 0,
     totalRevenue: 0,
@@ -89,6 +99,17 @@ export default function DashboardPage() {
       return () => clearInterval(interval);
     }
   }, [status, session, router]);
+
+  // Handle onboarding modal trigger
+  useEffect(() => {
+    if (
+      !onboardingLoading &&
+      status === 'authenticated' &&
+      !onboardingCompleted
+    ) {
+      setShowOnboarding(true);
+    }
+  }, [onboardingLoading, onboardingCompleted, status]);
 
   const loadDashboardData = async () => {
     // Don't make API calls if not authenticated
@@ -120,6 +141,15 @@ export default function DashboardPage() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleOnboardingComplete = () => {
+    checkOnboardingStatus();
+    setShowOnboarding(false);
+  };
+
+  const handleOpenOnboarding = () => {
+    setShowOnboarding(true);
   };
 
   const navigationCards = useMemo(
@@ -238,7 +268,20 @@ export default function DashboardPage() {
               {t('manageLpgDistributionBusiness')}
             </p>
           </div>
-          <ThemeToggle />
+          <div className="flex items-center gap-3">
+            {onboardingCompleted && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleOpenOnboarding}
+                className="flex items-center gap-2"
+              >
+                <Settings className="h-4 w-4" />
+                {t('setupBusiness')}
+              </Button>
+            )}
+            <ThemeToggle />
+          </div>
         </div>
 
         {/* Error Display */}
@@ -634,6 +677,13 @@ export default function DashboardPage() {
           </div>
         </div>
       </div>
+
+      {/* Onboarding Modal */}
+      <OnboardingModal
+        isOpen={showOnboarding}
+        onClose={() => setShowOnboarding(false)}
+        onComplete={handleOnboardingComplete}
+      />
     </div>
   );
 }

@@ -31,7 +31,9 @@
       "Bash(git commit:*)",
       "Bash(npx husky:*)",
       "Bash(npm run prettier:*)",
-      "Bash(npm run:*)"
+      "Bash(npm run:*)",
+      "Bash(node:*)",
+      "Bash(del migrate-cylinder-baselines.js test-cylinder-breakdown.js)"
     ],
     "deny": []
   }

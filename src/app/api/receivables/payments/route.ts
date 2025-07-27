@@ -241,20 +241,44 @@ async function calculateDailyReceivablesForDate(
   // Cylinder Receivables Change = driver_refill_sales - cylinder_deposits
   const cylinderReceivablesChange = refillQuantity - cylinderDeposits;
 
-  // Get yesterday's totals
+  // Get previous receivables (yesterday's record or onboarding receivables)
   const yesterday = new Date(date.getTime() - 24 * 60 * 60 * 1000);
-  const yesterdayStr = yesterday.toISOString().split('T')[0];
+  yesterday.setHours(0, 0, 0, 0);
 
+  // First try to get yesterday's record
   const yesterdayRecord = await prisma.receivableRecord.findFirst({
     where: {
       tenantId,
       driverId: driverId,
-      date: new Date(yesterdayStr + 'T00:00:00.000Z'),
+      date: {
+        gte: yesterday,
+        lt: date,
+      },
     },
+    orderBy: { date: 'desc' },
   });
 
-  const yesterdayCashTotal = yesterdayRecord?.totalCashReceivables || 0;
-  const yesterdayCylinderTotal = yesterdayRecord?.totalCylinderReceivables || 0;
+  let yesterdayCashTotal = 0;
+  let yesterdayCylinderTotal = 0;
+
+  if (yesterdayRecord) {
+    yesterdayCashTotal = yesterdayRecord.totalCashReceivables;
+    yesterdayCylinderTotal = yesterdayRecord.totalCylinderReceivables;
+  } else {
+    // If no yesterday record, check for onboarding receivables (first record)
+    const onboardingRecord = await prisma.receivableRecord.findFirst({
+      where: {
+        tenantId,
+        driverId: driverId,
+      },
+      orderBy: { date: 'asc' },
+    });
+
+    if (onboardingRecord) {
+      yesterdayCashTotal = onboardingRecord.totalCashReceivables;
+      yesterdayCylinderTotal = onboardingRecord.totalCylinderReceivables;
+    }
+  }
 
   // EXACT FORMULAS:
   // Today's Total = Yesterday's Total + Today's Changes

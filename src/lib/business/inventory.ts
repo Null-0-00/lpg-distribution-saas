@@ -46,7 +46,7 @@ export class InventoryCalculator {
    * - Package Sale: -1 Full Cylinder, no Empty Cylinder change
    * - Refill Sale: -1 Full Cylinder, +1 Empty Cylinder
    * - Today's Full Cylinders = Yesterday's Full + Package Purchase + Refill Purchase - Total Sales
-   * - Today's Empty Cylinders = Yesterday's Empty + Refill Sales + Empty Cylinders Buy/Sell
+   * - Today's Empty Cylinders = Yesterday's Empty + Refill Sales + Empty Cylinders Buy/Sell - Refill Purchase
    */
   async calculateInventoryForDate(
     data: InventoryCalculationData
@@ -75,11 +75,12 @@ export class InventoryCalculator {
       purchaseData.refillPurchase -
       totalSales;
 
-    // Today's Empty Cylinders = Yesterday's Empty + Refill Sales + Empty Cylinders Buy/Sell
+    // Today's Empty Cylinders = Yesterday's Empty + Refill Sales + Empty Cylinders Buy/Sell - Refill Purchase
     const emptyCylinders =
       previousEmptyCylinders +
       salesData.refillSales +
-      purchaseData.emptyCylindersBuySell;
+      purchaseData.emptyCylindersBuySell -
+      purchaseData.refillPurchase;
 
     const totalCylinders = fullCylinders + emptyCylinders;
 
@@ -168,12 +169,11 @@ export class InventoryCalculator {
       },
     });
 
-    // Refill Purchase: Total refills purchased from COMPLETED shipments (INCOMING_FULL with REFILL notes)
+    // Refill Purchase: Total refills purchased from ALL shipments (INCOMING_FULL with REFILL notes) - including outstanding
     const refillPurchaseShipments = await this.prisma.shipment.findMany({
       where: {
         tenantId,
         shipmentType: ShipmentType.INCOMING_FULL,
-        status: ShipmentStatus.COMPLETED,
         shipmentDate: {
           gte: startOfDay,
           lte: endOfDay,
@@ -274,7 +274,7 @@ export class InventoryCalculator {
 
   /**
    * Get current inventory levels for a product
-   * Calculates real-time inventory based on all sales and completed shipments
+   * Calculates real-time inventory based on initial inventory, sales, and completed shipments
    */
   async getCurrentInventoryLevels(
     tenantId: string,
@@ -285,6 +285,45 @@ export class InventoryCalculator {
     totalCylinders: number;
   }> {
     // Calculate real-time inventory by summing all transactions
+
+    // 0. Get initial inventory from onboarding/inventory records (package/refill purchases)
+    const inventoryRecords = await this.prisma.inventoryRecord.findMany({
+      where: {
+        tenantId,
+        productId,
+      },
+      select: {
+        packagePurchase: true,
+        refillPurchase: true,
+        emptyCylindersBuySell: true,
+        fullCylinders: true,
+        emptyCylinders: true,
+      },
+    });
+
+    // Sum up initial inventory from onboarding
+    const initialPackagePurchases = inventoryRecords.reduce(
+      (sum, record) => sum + record.packagePurchase,
+      0
+    );
+    const initialRefillPurchases = inventoryRecords.reduce(
+      (sum, record) => sum + record.refillPurchase,
+      0
+    );
+    const initialEmptyCylindersBuySell = inventoryRecords.reduce(
+      (sum, record) => sum + record.emptyCylindersBuySell,
+      0
+    );
+
+    // Also include the actual baseline inventory values from onboarding
+    const initialFullCylinders = inventoryRecords.reduce(
+      (sum, record) => sum + record.fullCylinders,
+      0
+    );
+    const initialEmptyCylinders = inventoryRecords.reduce(
+      (sum, record) => sum + record.emptyCylinders,
+      0
+    );
 
     // 1. Get all sales (reduces full cylinders, refill sales add empty cylinders)
     const allSales = await this.prisma.sale.findMany({
@@ -306,75 +345,146 @@ export class InventoryCalculator {
       .filter((sale) => sale.saleType === SaleType.REFILL)
       .reduce((sum, sale) => sum + sale.quantity, 0);
 
-    // 2. Get all COMPLETED shipments for purchases
-    const completedShipments = await this.prisma.shipment.findMany({
+    // 2. Get all shipments for purchases (including outstanding for refill purchases)
+    const allShipments = await this.prisma.shipment.findMany({
       where: {
         tenantId,
         productId,
-        status: ShipmentStatus.COMPLETED,
       },
       select: {
         shipmentType: true,
         quantity: true,
         notes: true,
+        status: true,
       },
     });
 
-    // Package purchases (INCOMING_FULL without REFILL notes)
-    const packagePurchases = completedShipments
+    // Package purchases (INCOMING_FULL without REFILL notes) - only completed
+    const packagePurchases = allShipments
       .filter(
         (shipment) =>
           shipment.shipmentType === ShipmentType.INCOMING_FULL &&
+          shipment.status === ShipmentStatus.COMPLETED &&
           (!shipment.notes || !shipment.notes.includes('REFILL:'))
       )
       .reduce((sum, shipment) => sum + shipment.quantity, 0);
 
-    // Refill purchases (INCOMING_FULL with REFILL notes)
-    const refillPurchases = completedShipments
+    // Refill purchases (INCOMING_FULL with REFILL notes) - only completed
+    const refillPurchases = allShipments
       .filter(
         (shipment) =>
           shipment.shipmentType === ShipmentType.INCOMING_FULL &&
+          shipment.status === ShipmentStatus.COMPLETED &&
           shipment.notes &&
           shipment.notes.includes('REFILL:')
       )
       .reduce((sum, shipment) => sum + shipment.quantity, 0);
 
-    // Empty cylinder transactions
-    const emptyBuys = completedShipments
+    // Empty cylinder transactions - only completed
+    const emptyBuys = allShipments
       .filter(
-        (shipment) => shipment.shipmentType === ShipmentType.INCOMING_EMPTY
+        (shipment) =>
+          shipment.shipmentType === ShipmentType.INCOMING_EMPTY &&
+          shipment.status === ShipmentStatus.COMPLETED
       )
       .reduce((sum, shipment) => sum + shipment.quantity, 0);
 
-    const emptySells = completedShipments
+    const emptySells = allShipments
       .filter(
-        (shipment) => shipment.shipmentType === ShipmentType.OUTGOING_EMPTY
+        (shipment) =>
+          shipment.shipmentType === ShipmentType.OUTGOING_EMPTY &&
+          shipment.status === ShipmentStatus.COMPLETED
       )
       .reduce((sum, shipment) => sum + shipment.quantity, 0);
 
-    // 3. Apply business formulas
+    // 3. Apply business formulas including initial inventory
     const totalSales = packageSales + refillSales;
-    const totalPurchases = packagePurchases + refillPurchases;
-    const emptyCylindersBuySell = emptyBuys - emptySells;
+    const totalPurchases =
+      initialPackagePurchases +
+      initialRefillPurchases +
+      packagePurchases +
+      refillPurchases;
+    const emptyCylindersBuySell =
+      initialEmptyCylindersBuySell + emptyBuys - emptySells;
 
-    // Full Cylinders = Total Purchases - Total Sales
-    const fullCylinders = Math.max(0, totalPurchases - totalSales);
+    // Full Cylinders = Initial Full Cylinders + Total Purchases - Total Sales
+    const fullCylinders = Math.max(
+      0,
+      initialFullCylinders + totalPurchases - totalSales
+    );
 
-    // Empty Cylinders = Refill Sales + Empty Cylinders Buy/Sell
-    const emptyCylinders = Math.max(0, refillSales + emptyCylindersBuySell);
+    // Get all completed refill purchases
+    const allRefillPurchaseShipments = await this.prisma.shipment.findMany({
+      where: {
+        tenantId,
+        productId,
+        shipmentType: ShipmentType.INCOMING_FULL,
+        status: ShipmentStatus.COMPLETED,
+        notes: {
+          contains: 'REFILL:',
+        },
+      },
+      select: {
+        quantity: true,
+      },
+    });
+
+    const allRefillPurchases = allRefillPurchaseShipments.reduce(
+      (sum, shipment) => sum + shipment.quantity,
+      0
+    );
+
+    // Empty Cylinders = Initial Empty Cylinders + Refill Sales + Empty Cylinders Buy/Sell - All Refill Purchases (including initial)
+    const emptyCylinders = Math.max(
+      0,
+      initialEmptyCylinders +
+        refillSales +
+        emptyCylindersBuySell -
+        allRefillPurchases
+    );
 
     const totalCylinders = fullCylinders + emptyCylinders;
 
+    // Get outstanding shipments for this specific product for debugging
+    const outstandingShipments = await this.prisma.shipment.findMany({
+      where: {
+        tenantId,
+        productId,
+        shipmentType: ShipmentType.INCOMING_FULL,
+        status: { not: ShipmentStatus.COMPLETED },
+        notes: {
+          contains: 'REFILL:',
+        },
+      },
+      select: {
+        id: true,
+        quantity: true,
+        status: true,
+        notes: true,
+      },
+    });
+
     // Debug logging for real-time inventory calculation
     console.log(`Real-time inventory for product ${productId}:`, {
+      // Outstanding shipments
+      outstandingShipments,
+      // Initial inventory from onboarding
+      initialPackagePurchases,
+      initialRefillPurchases,
+      initialEmptyCylindersBuySell,
+      // Sales data
       packageSales,
       refillSales,
       totalSales,
+      // Shipment purchases (completed only)
       packagePurchases,
       refillPurchases,
-      totalPurchases,
+      allRefillPurchases,
+      // Empty cylinder transactions
       emptyBuys,
       emptySells,
+      // Final calculations
+      totalPurchases,
       emptyCylindersBuySell,
       fullCylinders,
       emptyCylinders,

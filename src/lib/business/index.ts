@@ -16,6 +16,13 @@ export type {
   ReceivablesResult,
 } from './receivables';
 
+export { CylinderCalculator } from './cylinder-calculator';
+export type {
+  CylinderCalculationData,
+  FullCylinderData,
+  EmptyCylinderData,
+} from './cylinder-calculator';
+
 export { BusinessValidator } from './validation';
 export {
   saleValidationSchema,

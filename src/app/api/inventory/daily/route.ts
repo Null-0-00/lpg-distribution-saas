@@ -4,6 +4,7 @@
 // - Package/Refill Sales: Sales table (all drivers)
 // - Package/Refill Purchase: Shipments table (COMPLETED status, INCOMING_FULL type)
 // - Empty Cylinders Buy/Sell: Shipments table (COMPLETED status, INCOMING_EMPTY - OUTGOING_EMPTY)
+// - Refill Purchases: Shipments table (ALL status, INCOMING_FULL with REFILL notes)
 
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
@@ -39,14 +40,29 @@ interface DailyInventoryRecord {
   packagePurchaseProducts: ProductBreakdown[];
   refillPurchase: number;
   refillPurchaseProducts: ProductBreakdown[];
-  emptyCylindersBuySell: number;
-  emptyCylindersBuySellBySizes: SizeBreakdown[];
   fullCylinders: number;
   fullCylindersBySizes: SizeBreakdown[];
-  emptyCylinders: number;
-  emptyCylindersBySizes: SizeBreakdown[];
+  outstandingShipments: number;
+  outstandingShipmentsBySizes: SizeBreakdown[];
+  emptyCylindersBuySell: number;
+  emptyCylindersBuySellBySizes: SizeBreakdown[];
+  emptyCylinderReceivables: number;
+  emptyCylinderReceivablesBySizes: SizeBreakdown[];
+  emptyCylindersInStock: number;
+  emptyCylindersInStockBySizes: SizeBreakdown[];
   totalCylinders: number;
   totalCylindersBySizes: SizeBreakdown[];
+  // Legacy fields for backward compatibility
+  outstandingOrders?: number;
+  outstandingOrdersProducts?: ProductBreakdown[];
+  outstandingOrdersBySizes?: SizeBreakdown[];
+  outstandingPackageOrders?: number;
+  outstandingPackageOrdersProducts?: ProductBreakdown[];
+  outstandingRefillOrders?: number;
+  outstandingRefillOrdersProducts?: ProductBreakdown[];
+  outstandingRefillOrdersBySizes?: SizeBreakdown[];
+  emptyCylinders?: number;
+  emptyCylindersBySizes?: SizeBreakdown[];
 }
 
 export async function GET(request: NextRequest) {
@@ -177,54 +193,15 @@ export async function GET(request: NextRequest) {
 
     // Batch fetch all shipment data for the entire range with product details
     const [
-      packagePurchaseData,
-      refillPurchaseData,
       emptyBuyData,
       emptySellData,
-      packagePurchaseWithProducts,
-      refillPurchaseWithProducts,
+      packagePurchaseShipments,
+      refillPurchaseShipments,
+      allRefillPurchaseData,
+      allRefillPurchaseWithProducts,
     ] = await Promise.all([
-      // Package Purchase: Total packages purchased on that day found on the Completed table on the Shipments page
-      prisma.shipment.groupBy({
-        by: ['shipmentDate'],
-        where: {
-          tenantId,
-          shipmentType: 'INCOMING_FULL',
-          status: 'COMPLETED',
-          shipmentDate: {
-            gte: rangeStart,
-            lt: rangeEnd,
-          },
-          // Package shipments - exclude refill shipments (no REFILL in notes)
-          OR: [{ notes: { not: { contains: 'REFILL:' } } }, { notes: null }],
-        },
-        _sum: {
-          quantity: true,
-        },
-      }),
-      // Refill Purchase: Total refill purchased on that day found on the completed table on the Shipments page
-      prisma.shipment.groupBy({
-        by: ['shipmentDate'],
-        where: {
-          tenantId,
-          shipmentType: 'INCOMING_FULL',
-          status: 'COMPLETED',
-          shipmentDate: {
-            gte: rangeStart,
-            lt: rangeEnd,
-          },
-          // Refill shipments - must have REFILL in notes
-          notes: {
-            contains: 'REFILL:',
-          },
-        },
-        _sum: {
-          quantity: true,
-        },
-      }),
-      // Empty Cylinders Buy: INCOMING_EMPTY from completed shipments
-      prisma.shipment.groupBy({
-        by: ['shipmentDate'],
+      // Empty Cylinders Buy: INCOMING_EMPTY from completed shipments with product details
+      prisma.shipment.findMany({
         where: {
           tenantId,
           shipmentType: 'INCOMING_EMPTY',
@@ -234,13 +211,19 @@ export async function GET(request: NextRequest) {
             lt: rangeEnd,
           },
         },
-        _sum: {
-          quantity: true,
+        include: {
+          product: {
+            include: {
+              cylinderSize: true,
+            },
+          },
+        },
+        orderBy: {
+          shipmentDate: 'asc',
         },
       }),
-      // Empty Cylinders Sell: OUTGOING_EMPTY from completed shipments
-      prisma.shipment.groupBy({
-        by: ['shipmentDate'],
+      // Empty Cylinders Sell: OUTGOING_EMPTY from completed shipments with product details
+      prisma.shipment.findMany({
         where: {
           tenantId,
           shipmentType: 'OUTGOING_EMPTY',
@@ -250,33 +233,87 @@ export async function GET(request: NextRequest) {
             lt: rangeEnd,
           },
         },
-        _sum: {
-          quantity: true,
+        include: {
+          product: {
+            include: {
+              cylinderSize: true,
+            },
+          },
+        },
+        orderBy: {
+          shipmentDate: 'asc',
         },
       }),
-      // Product-wise purchase data
-      prisma.shipment.groupBy({
-        by: ['shipmentDate', 'productId'],
+      // Individual completed package purchase shipments
+      prisma.shipment.findMany({
         where: {
           tenantId,
           shipmentType: 'INCOMING_FULL',
           status: 'COMPLETED',
-          shipmentDate: {
+          updatedAt: {
             gte: rangeStart,
             lt: rangeEnd,
           },
           OR: [{ notes: { not: { contains: 'REFILL:' } } }, { notes: null }],
         },
+        include: {
+          product: {
+            include: {
+              company: true,
+              cylinderSize: true,
+            },
+          },
+        },
+        orderBy: { updatedAt: 'desc' },
+      }),
+      // Individual completed refill purchase shipments
+      prisma.shipment.findMany({
+        where: {
+          tenantId,
+          shipmentType: 'INCOMING_FULL',
+          status: 'COMPLETED',
+          updatedAt: {
+            gte: rangeStart,
+            lt: rangeEnd,
+          },
+          notes: {
+            contains: 'REFILL:',
+          },
+        },
+        include: {
+          product: {
+            include: {
+              company: true,
+              cylinderSize: true,
+            },
+          },
+        },
+        orderBy: { updatedAt: 'desc' },
+      }),
+      // All Refill Purchases: INCOMING_FULL with REFILL notes (including outstanding shipments)
+      prisma.shipment.groupBy({
+        by: ['shipmentDate'],
+        where: {
+          tenantId,
+          shipmentType: 'INCOMING_FULL',
+          shipmentDate: {
+            gte: rangeStart,
+            lt: rangeEnd,
+          },
+          notes: {
+            contains: 'REFILL:',
+          },
+        },
         _sum: {
           quantity: true,
         },
       }),
+      // All Refill Purchases by Product: INCOMING_FULL with REFILL notes (including outstanding shipments)
       prisma.shipment.groupBy({
         by: ['shipmentDate', 'productId'],
         where: {
           tenantId,
           shipmentType: 'INCOMING_FULL',
-          status: 'COMPLETED',
           shipmentDate: {
             gte: rangeStart,
             lt: rangeEnd,
@@ -292,12 +329,12 @@ export async function GET(request: NextRequest) {
     ]);
 
     console.log(`📦 Fetched shipment data:`, {
-      packagePurchaseData: packagePurchaseData.length,
-      refillPurchaseData: refillPurchaseData.length,
       emptyBuyData: emptyBuyData.length,
       emptySellData: emptySellData.length,
-      packagePurchaseWithProducts: packagePurchaseWithProducts.length,
-      refillPurchaseWithProducts: refillPurchaseWithProducts.length,
+      packagePurchaseShipments: packagePurchaseShipments.length,
+      refillPurchaseShipments: refillPurchaseShipments.length,
+      allRefillPurchaseData: allRefillPurchaseData.length,
+      allRefillPurchaseWithProducts: allRefillPurchaseWithProducts.length,
     });
 
     // Fetch all product details and cylinder sizes for the tenant
@@ -321,7 +358,7 @@ export async function GET(request: NextRequest) {
       productMap.set(product.id, {
         id: product.id,
         name: product.name,
-        size: product.cylinderSize?.size || 'Unknown',
+        size: product.cylinderSize?.size || product.size || 'Unknown',
         companyName: product.company.name,
       });
     });
@@ -332,16 +369,19 @@ export async function GET(request: NextRequest) {
     // Create lookup maps for quick access
     const packageSalesMap = new Map();
     const refillSalesMap = new Map();
-    const packagePurchaseMap = new Map();
-    const refillPurchaseMap = new Map();
+    // Note: packagePurchaseMap and refillPurchaseMap removed - totals now calculated from individual shipments
     const emptyBuyMap = new Map();
     const emptySellMap = new Map();
+    const emptyBuyByDateAndSizeMap = new Map<string, Map<string, number>>();
+    const emptySellByDateAndSizeMap = new Map<string, Map<string, number>>();
+    const allRefillPurchaseMap = new Map();
 
     // Create product-wise lookup maps
     const packageSalesProductMap = new Map();
     const refillSalesProductMap = new Map();
     const packagePurchaseProductMap = new Map();
     const refillPurchaseProductMap = new Map();
+    const allRefillPurchaseProductMap = new Map();
 
     packageSalesData.forEach((item) => {
       const dateKey = item.saleDate.toISOString().split('T')[0];
@@ -353,24 +393,54 @@ export async function GET(request: NextRequest) {
       refillSalesMap.set(dateKey, item._sum.quantity || 0);
     });
 
-    packagePurchaseData.forEach((item) => {
-      const dateKey = item.shipmentDate.toISOString().split('T')[0];
-      packagePurchaseMap.set(dateKey, item._sum.quantity || 0);
-    });
-
-    refillPurchaseData.forEach((item) => {
-      const dateKey = item.shipmentDate.toISOString().split('T')[0];
-      refillPurchaseMap.set(dateKey, item._sum.quantity || 0);
-    });
+    // Old packagePurchaseData and refillPurchaseData mapping removed -
+    // totals now calculated directly from individual shipments
 
     emptyBuyData.forEach((item) => {
       const dateKey = item.shipmentDate.toISOString().split('T')[0];
-      emptyBuyMap.set(dateKey, item._sum.quantity || 0);
+      const cylinderSize = item.product?.cylinderSize?.size || 'Unknown';
+
+      // Update total map
+      emptyBuyMap.set(dateKey, (emptyBuyMap.get(dateKey) || 0) + item.quantity);
+
+      // Update size-specific map
+      if (!emptyBuyByDateAndSizeMap.has(dateKey)) {
+        emptyBuyByDateAndSizeMap.set(dateKey, new Map());
+      }
+      const sizeMap = emptyBuyByDateAndSizeMap.get(dateKey)!;
+      sizeMap.set(
+        cylinderSize,
+        (sizeMap.get(cylinderSize) || 0) + item.quantity
+      );
     });
 
     emptySellData.forEach((item) => {
       const dateKey = item.shipmentDate.toISOString().split('T')[0];
-      emptySellMap.set(dateKey, item._sum.quantity || 0);
+      const cylinderSize = item.product?.cylinderSize?.size || 'Unknown';
+
+      // Update total map
+      emptySellMap.set(
+        dateKey,
+        (emptySellMap.get(dateKey) || 0) + item.quantity
+      );
+
+      // Update size-specific map
+      if (!emptySellByDateAndSizeMap.has(dateKey)) {
+        emptySellByDateAndSizeMap.set(dateKey, new Map());
+      }
+      const sizeMap = emptySellByDateAndSizeMap.get(dateKey)!;
+      sizeMap.set(
+        cylinderSize,
+        (sizeMap.get(cylinderSize) || 0) + item.quantity
+      );
+    });
+
+    allRefillPurchaseData.forEach((item) => {
+      const dateKey = item.shipmentDate.toISOString().split('T')[0];
+      allRefillPurchaseMap.set(
+        dateKey,
+        (allRefillPurchaseMap.get(dateKey) || 0) + (item._sum.quantity || 0)
+      );
     });
 
     // Populate product-wise lookup maps
@@ -394,22 +464,56 @@ export async function GET(request: NextRequest) {
         .set(item.productId, item._sum.quantity || 0);
     });
 
-    packagePurchaseWithProducts.forEach((item) => {
-      const dateKey = item.shipmentDate.toISOString().split('T')[0];
+    // Clear and repopulate purchase product maps with individual shipments
+    packagePurchaseProductMap.clear();
+    refillPurchaseProductMap.clear();
+
+    // Process individual package purchase shipments
+    packagePurchaseShipments.forEach((shipment) => {
+      const dateKey = shipment.updatedAt.toISOString().split('T')[0];
       if (!packagePurchaseProductMap.has(dateKey)) {
-        packagePurchaseProductMap.set(dateKey, new Map());
+        packagePurchaseProductMap.set(dateKey, []);
       }
-      packagePurchaseProductMap
-        .get(dateKey)
-        .set(item.productId, item._sum.quantity || 0);
+      packagePurchaseProductMap.get(dateKey).push({
+        productId: shipment.productId,
+        productName: shipment.product.name,
+        productSize:
+          shipment.product.cylinderSize?.size ||
+          shipment.product.size ||
+          'Unknown',
+        companyName: shipment.product.company.name,
+        quantity: shipment.quantity,
+        shipmentId: shipment.id,
+        actualProductId: shipment.productId, // Keep original productId for size calculations
+      });
     });
 
-    refillPurchaseWithProducts.forEach((item) => {
-      const dateKey = item.shipmentDate.toISOString().split('T')[0];
+    // Process individual refill purchase shipments
+    refillPurchaseShipments.forEach((shipment) => {
+      const dateKey = shipment.updatedAt.toISOString().split('T')[0];
       if (!refillPurchaseProductMap.has(dateKey)) {
-        refillPurchaseProductMap.set(dateKey, new Map());
+        refillPurchaseProductMap.set(dateKey, []);
       }
-      refillPurchaseProductMap
+      refillPurchaseProductMap.get(dateKey).push({
+        productId: shipment.productId,
+        productName: shipment.product.name,
+        productSize:
+          shipment.product.cylinderSize?.size ||
+          shipment.product.size ||
+          'Unknown',
+        companyName: shipment.product.company.name,
+        quantity: shipment.quantity,
+        shipmentId: shipment.id,
+        actualProductId: shipment.productId, // Keep original productId for size calculations
+      });
+    });
+
+    allRefillPurchaseWithProducts.forEach((item) => {
+      const dateKey = item.shipmentDate.toISOString().split('T')[0];
+      if (!allRefillPurchaseProductMap.has(dateKey)) {
+        allRefillPurchaseProductMap.set(dateKey, new Map());
+      }
+      allRefillPurchaseProductMap
         .get(dateKey)
         .set(item.productId, item._sum.quantity || 0);
     });
@@ -444,6 +548,19 @@ export async function GET(request: NextRequest) {
       );
     };
 
+    // Helper function to get product breakdown from shipment arrays (for purchases)
+    const getShipmentProductBreakdown = (
+      dateKey: string,
+      shipmentMap: Map<string, any[]>
+    ): ProductBreakdown[] => {
+      const shipments = shipmentMap.get(dateKey) || [];
+      return shipments.map((shipment) => ({
+        ...shipment,
+        // Use shipmentId as the unique identifier instead of productId to avoid React key conflicts
+        productId: shipment.shipmentId,
+      }));
+    };
+
     // Helper function to get size breakdown from product breakdown
     const getSizeBreakdown = (
       products: ProductBreakdown[]
@@ -467,32 +584,206 @@ export async function GET(request: NextRequest) {
       return breakdown.sort((a, b) => a.size.localeCompare(b.size));
     };
 
+    // Helper function to get outstanding orders for a specific date
+    const getOutstandingOrdersForDate = async (date: string) => {
+      const currentDate = new Date(date);
+      currentDate.setHours(23, 59, 59, 999); // End of day
+
+      const nextDay = new Date(currentDate);
+      nextDay.setDate(nextDay.getDate() + 1);
+      nextDay.setHours(0, 0, 0, 0); // Start of next day
+
+      // Get all orders that were outstanding on this specific date:
+      // - Created on or before this date (shipmentDate <= currentDate)
+      // - Either still pending OR completed after this date (updatedAt >= nextDay)
+
+      const outstandingShipments = await prisma.shipment.findMany({
+        where: {
+          tenantId,
+          shipmentType: 'INCOMING_FULL',
+          shipmentDate: {
+            lte: currentDate,
+          },
+          OR: [
+            // Orders that are still pending
+            { status: { not: 'COMPLETED' } },
+            // Orders that were completed after this date
+            {
+              status: 'COMPLETED',
+              updatedAt: {
+                gte: nextDay,
+              },
+            },
+          ],
+        },
+        include: {
+          product: {
+            include: {
+              company: true,
+              cylinderSize: true,
+            },
+          },
+        },
+      });
+
+      // Calculate totals and breakdowns
+      let totalOutstanding = 0;
+      let totalPackageOutstanding = 0;
+      let totalRefillOutstanding = 0;
+
+      const outstandingProducts: ProductBreakdown[] = [];
+      const packageProducts: ProductBreakdown[] = [];
+      const refillProducts: ProductBreakdown[] = [];
+
+      outstandingShipments.forEach((shipment) => {
+        const isRefill = shipment.notes && shipment.notes.includes('REFILL:');
+
+        totalOutstanding += shipment.quantity;
+
+        const productBreakdown: ProductBreakdown = {
+          productId: shipment.productId,
+          productName: shipment.product.name,
+          productSize:
+            shipment.product.cylinderSize?.size ||
+            shipment.product.size ||
+            'Unknown',
+          companyName: shipment.product.company.name,
+          quantity: shipment.quantity,
+        };
+
+        outstandingProducts.push(productBreakdown);
+
+        if (isRefill) {
+          totalRefillOutstanding += shipment.quantity;
+          refillProducts.push(productBreakdown);
+        } else {
+          totalPackageOutstanding += shipment.quantity;
+          packageProducts.push(productBreakdown);
+        }
+      });
+
+      return {
+        totalOutstanding,
+        totalPackageOutstanding,
+        totalRefillOutstanding,
+        outstandingProducts,
+        packageProducts,
+        refillProducts,
+      };
+    };
+
     // Helper function to calculate cylinder size breakdown for inventory calculations
-    const calculateCylinderSizeBreakdown = (
+    const calculateCylinderSizeBreakdown = async (
       previousRecord: DailyInventoryRecord | null,
       packageSalesProducts: ProductBreakdown[],
       refillSalesProducts: ProductBreakdown[],
       packagePurchaseProducts: ProductBreakdown[],
       refillPurchaseProducts: ProductBreakdown[],
-      emptyCylindersBuySell: number
-    ): {
+      allRefillPurchaseProducts: ProductBreakdown[],
+      emptyCylindersBuySell: number,
+      allRefillPurchases: number,
+      actualFullCylinders: number,
+      actualEmptyCylinders: number,
+      tenantId: string,
+      isFirstDay: boolean,
+      date: string
+    ): Promise<{
       fullCylindersBySizes: SizeBreakdown[];
       emptyCylindersBySizes: SizeBreakdown[];
       totalCylindersBySizes: SizeBreakdown[];
       emptyCylindersBuySellBySizes: SizeBreakdown[];
-    } => {
+    }> => {
       // Get size breakdowns for sales and purchases
       const packageSalesSizes = getSizeBreakdown(packageSalesProducts);
       const refillSalesSizes = getSizeBreakdown(refillSalesProducts);
       const packagePurchaseSizes = getSizeBreakdown(packagePurchaseProducts);
       const refillPurchaseSizes = getSizeBreakdown(refillPurchaseProducts);
+      const allRefillPurchaseSizes = getSizeBreakdown(
+        allRefillPurchaseProducts
+      );
 
-      // Calculate full cylinders by size
+      // For first day, get initial inventory breakdown from onboarding data
+      let previousFullBySizes: SizeBreakdown[] = [];
+      let previousEmptyBySizes: SizeBreakdown[] = [];
+
+      if (isFirstDay) {
+        // Get shipment baseline inventory breakdown from onboarding data
+        // These are the initial inventory values entered during onboarding (shipment baseline values)
+        const shipmentBaselineBySize = await prisma.inventoryRecord.findMany({
+          where: {
+            tenantId,
+            productId: { not: null }, // Only product-specific records (from onboarding)
+          },
+        });
+
+        // Get product details separately to avoid include issues
+        const productIds = shipmentBaselineBySize
+          .map((record) => record.productId)
+          .filter(Boolean) as string[];
+        const productsWithSizes = await prisma.product.findMany({
+          where: {
+            id: { in: productIds },
+          },
+          include: {
+            cylinderSize: true,
+          },
+        });
+
+        // Create a map of productId to size
+        const productSizeMap = new Map<string, string>();
+        productsWithSizes.forEach((product) => {
+          productSizeMap.set(
+            product.id,
+            product.cylinderSize?.size || 'Unknown'
+          );
+        });
+
+        // Group by cylinder size - these become "yesterday's" values for first day calculation
+        const shipmentFullBySize = new Map<string, number>();
+        const shipmentEmptyBySize = new Map<string, number>();
+
+        shipmentBaselineBySize.forEach((record) => {
+          const size = record.productId
+            ? productSizeMap.get(record.productId) || 'Unknown'
+            : 'Unknown';
+          shipmentFullBySize.set(
+            size,
+            (shipmentFullBySize.get(size) || 0) + (record.fullCylinders || 0)
+          );
+          shipmentEmptyBySize.set(
+            size,
+            (shipmentEmptyBySize.get(size) || 0) + (record.emptyCylinders || 0)
+          );
+        });
+
+        // Convert to arrays - these are the shipment baseline values used as "previous day" for calculations
+        availableSizes.forEach((size: string) => {
+          previousFullBySizes.push({
+            size,
+            quantity: shipmentFullBySize.get(size) || 0,
+          });
+          previousEmptyBySizes.push({
+            size,
+            quantity: shipmentEmptyBySize.get(size) || 0,
+          });
+        });
+      } else if (previousRecord) {
+        // Use previous day's data
+        previousFullBySizes = previousRecord.fullCylindersBySizes || [];
+        previousEmptyBySizes = previousRecord.emptyCylindersBySizes || [];
+      } else {
+        // Default to zero for all sizes
+        availableSizes.forEach((size: string) => {
+          previousFullBySizes.push({ size, quantity: 0 });
+          previousEmptyBySizes.push({ size, quantity: 0 });
+        });
+      }
+
+      // Calculate full cylinders by size using exact business formula
       const fullCylindersBySizes: SizeBreakdown[] = [];
       availableSizes.forEach((size: string) => {
         const previousFull =
-          previousRecord?.fullCylindersBySizes?.find((s) => s.size === size)
-            ?.quantity || Math.max(availableSizes.size * 10, 50); // Scale with available sizes
+          previousFullBySizes.find((s) => s.size === size)?.quantity || 0;
         const packageSales =
           packageSalesSizes.find((s) => s.size === size)?.quantity || 0;
         const refillSales =
@@ -502,40 +793,66 @@ export async function GET(request: NextRequest) {
         const refillPurchase =
           refillPurchaseSizes.find((s) => s.size === size)?.quantity || 0;
 
-        const fullQty =
+        // Apply exact formula: Previous + Purchases - Sales
+        const fullQty = Math.max(
+          0,
           previousFull +
-          packagePurchase +
-          refillPurchase -
-          (packageSales + refillSales);
-        fullCylindersBySizes.push({ size, quantity: Math.max(0, fullQty) });
+            packagePurchase +
+            refillPurchase -
+            (packageSales + refillSales)
+        );
+        fullCylindersBySizes.push({ size, quantity: fullQty });
       });
 
-      // Calculate empty cylinders by size
+      // First, calculate empty cylinders buy/sell by size using ACTUAL transaction data
+      const emptyCylindersBuySellBySizes: SizeBreakdown[] = [];
+      const emptyBuyBySizeForDate =
+        emptyBuyByDateAndSizeMap.get(date) || new Map();
+      const emptySellBySizeForDate =
+        emptySellByDateAndSizeMap.get(date) || new Map();
+
+      availableSizes.forEach((size: string) => {
+        const buyQty = emptyBuyBySizeForDate.get(size) || 0;
+        const sellQty = emptySellBySizeForDate.get(size) || 0;
+        const netChange = buyQty - sellQty;
+        emptyCylindersBuySellBySizes.push({ size, quantity: netChange });
+      });
+
+      // Calculate empty cylinders by size using exact business formula
       const emptyCylindersBySizes: SizeBreakdown[] = [];
       availableSizes.forEach((size: string) => {
         const previousEmpty =
-          previousRecord?.emptyCylindersBySizes?.find((s) => s.size === size)
-            ?.quantity || Math.max(availableSizes.size * 5, 25); // Scale with available sizes
+          previousEmptyBySizes.find((s) => s.size === size)?.quantity || 0;
         const refillSales =
           refillSalesSizes.find((s) => s.size === size)?.quantity || 0;
-        // Distribute empty cylinder buy/sell proportionally by size (simplified approach)
-        const sizeRatio =
-          refillSales > 0
-            ? refillSales /
-              Math.max(
-                1,
-                refillSalesProducts.reduce((sum, p) => sum + p.quantity, 0)
-              )
-            : 0;
-        const emptyCylinderChange = Math.round(
-          emptyCylindersBuySell * sizeRatio
-        );
+        const allRefillPurchase =
+          allRefillPurchaseSizes.find((s) => s.size === size)?.quantity || 0;
 
-        const emptyQty = previousEmpty + refillSales + emptyCylinderChange;
-        emptyCylindersBySizes.push({ size, quantity: Math.max(0, emptyQty) });
+        // Use ACTUAL size-specific empty cylinder buy/sell data instead of proportional distribution
+        const emptyCylinderChange =
+          emptyCylindersBuySellBySizes.find((s) => s.size === size)?.quantity ||
+          0;
+
+        // Apply exact formula: স্টকে খালি সিলিন্ডার = Yesterday's Empty + Refill Sales + Empty Cylinders Buy/Sell - Outstanding Refill Shipment
+        const emptyQty = Math.max(
+          0,
+          previousEmpty + refillSales + emptyCylinderChange - allRefillPurchase
+        );
+        emptyCylindersBySizes.push({ size, quantity: emptyQty });
       });
 
-      // Calculate total cylinders by size
+      // Size-specific calculations are the source of truth
+      // The aggregate totals should be derived from size breakdowns, not the other way around
+      const calculatedFullTotal = fullCylindersBySizes.reduce(
+        (sum, s) => sum + s.quantity,
+        0
+      );
+      const calculatedEmptyTotal = emptyCylindersBySizes.reduce(
+        (sum, s) => sum + s.quantity,
+        0
+      );
+
+      // Calculate total cylinders by size (will be updated later to include outstanding refill shipments)
       const totalCylindersBySizes: SizeBreakdown[] = [];
       availableSizes.forEach((size: string) => {
         const fullQty =
@@ -545,20 +862,15 @@ export async function GET(request: NextRequest) {
         totalCylindersBySizes.push({ size, quantity: fullQty + emptyQty });
       });
 
-      // Calculate empty cylinders buy/sell by size (distribute proportionally)
-      const emptyCylindersBuySellBySizes: SizeBreakdown[] = [];
-      const totalRefillSales = refillSalesProducts.reduce(
-        (sum, p) => sum + p.quantity,
-        0
-      );
-      availableSizes.forEach((size: string) => {
-        const refillSales =
-          refillSalesSizes.find((s) => s.size === size)?.quantity || 0;
-        const sizeRatio =
-          totalRefillSales > 0 ? refillSales / totalRefillSales : 0;
-        const change = Math.round(emptyCylindersBuySell * sizeRatio);
-        emptyCylindersBuySellBySizes.push({ size, quantity: change });
-      });
+      // Debug log for verification
+      if (emptyCylindersBuySell !== 0) {
+        console.log(`🔍 Empty cylinder buy/sell for ${date}:`, {
+          total: emptyCylindersBuySell,
+          buyBySize: Object.fromEntries(emptyBuyBySizeForDate),
+          sellBySize: Object.fromEntries(emptySellBySizeForDate),
+          sizeBreakdown: emptyCylindersBuySellBySizes,
+        });
+      }
 
       return {
         fullCylindersBySizes,
@@ -599,21 +911,64 @@ export async function GET(request: NextRequest) {
     for (let i = 0; i < dates.length; i++) {
       const date = dates[i];
 
-      // Get quantities from cached maps - using exact formulas as specified
-      const packageSalesQty = packageSalesMap.get(date) || 0; // Package sales: Total Packages sales by all the drivers combined for that particular date
-      const refillSalesQty = refillSalesMap.get(date) || 0; // Refill sales: Total Refill sales by all the drivers combined for that particular date
-      const totalSalesQty = packageSalesQty + refillSalesQty; // Total Sales: Package sales + refill sales by all the drivers combined for that particular date
+      // Get product breakdowns first to calculate accurate totals
+      const packageSalesProducts = getProductBreakdown(
+        date,
+        packageSalesProductMap
+      );
+      const refillSalesProducts = getProductBreakdown(
+        date,
+        refillSalesProductMap
+      );
+      const packagePurchaseProducts = getShipmentProductBreakdown(
+        date,
+        packagePurchaseProductMap
+      );
+      const refillPurchaseProducts = getShipmentProductBreakdown(
+        date,
+        refillPurchaseProductMap
+      );
 
-      const packagePurchaseQty = packagePurchaseMap.get(date) || 0; // Package Purchase: Total packages purchased on that day found on the Completed table on the Shipments page
-      const refillPurchaseQty = refillPurchaseMap.get(date) || 0; // Refill Purchase: Total refill purchased on that day found on the completed table on the Shipments page
+      // Calculate totals from breakdown sums to ensure consistency
+      const packageSalesQty = packageSalesProducts.reduce(
+        (sum, product) => sum + product.quantity,
+        0
+      );
+      const refillSalesQty = refillSalesProducts.reduce(
+        (sum, product) => sum + product.quantity,
+        0
+      );
+      const totalSalesQty = packageSalesQty + refillSalesQty;
+
+      // Get outstanding orders for this date (includes all orders created up to this date that are not completed)
+      const outstandingData = await getOutstandingOrdersForDate(date);
+      const outstandingOrdersQty = outstandingData.totalOutstanding;
+      const outstandingPackageOrdersQty =
+        outstandingData.totalPackageOutstanding;
+      const outstandingRefillOrdersQty = outstandingData.totalRefillOutstanding;
+
+      const allRefillPurchaseProducts = getProductBreakdown(
+        date,
+        allRefillPurchaseProductMap
+      );
+
+      // Calculate purchase totals from individual shipments to ensure consistency
+      const packagePurchaseQty = packagePurchaseProducts.reduce(
+        (sum, product) => sum + product.quantity,
+        0
+      );
+      const refillPurchaseQty = refillPurchaseProducts.reduce(
+        (sum, product) => sum + product.quantity,
+        0
+      );
 
       // Log specific date if it's 2025-07-18
       if (date === '2025-07-18') {
         console.log(`🎯 SPECIFIC DEBUG for ${date}:`, {
           'Raw packageSalesMap': Array.from(packageSalesMap.entries()),
           'Raw refillSalesMap': Array.from(refillSalesMap.entries()),
-          'Raw packagePurchaseMap': Array.from(packagePurchaseMap.entries()),
-          'Raw refillPurchaseMap': Array.from(refillPurchaseMap.entries()),
+          'Package purchases for date': packagePurchaseProducts,
+          'Refill purchases for date': refillPurchaseProducts,
           'Date lookup result': {
             packageSalesQty,
             refillSalesQty,
@@ -624,22 +979,14 @@ export async function GET(request: NextRequest) {
         });
       }
 
-      // Get product breakdowns
-      const packageSalesProducts = getProductBreakdown(
-        date,
-        packageSalesProductMap
-      );
-      const refillSalesProducts = getProductBreakdown(
-        date,
-        refillSalesProductMap
-      );
-      const packagePurchaseProducts = getProductBreakdown(
-        date,
-        packagePurchaseProductMap
-      );
-      const refillPurchaseProducts = getProductBreakdown(
-        date,
-        refillPurchaseProductMap
+      // Use outstanding data from the new function
+      const outstandingOrdersProducts = outstandingData.outstandingProducts;
+      const outstandingPackageOrdersProducts = outstandingData.packageProducts;
+      const outstandingRefillOrdersProducts = outstandingData.refillProducts;
+
+      // Calculate outstanding refill orders by size for use in total cylinders calculation
+      const outstandingRefillOrdersBySizes = getSizeBreakdown(
+        outstandingRefillOrdersProducts
       );
 
       // Combine sales products for total
@@ -667,6 +1014,195 @@ export async function GET(request: NextRequest) {
       const emptyCylindersBuySell =
         (emptyBuyMap.get(date) || 0) - (emptySellMap.get(date) || 0);
 
+      // All Refill Purchases: Total refill purchases on that day (including outstanding shipments)
+      const allRefillPurchases = allRefillPurchaseMap.get(date) || 0;
+
+      // Calculate Empty Cylinder Receivables using EXACT same method as cylinders summary API
+      // This ensures consistency with "হাতে খালি সিলিন্ডার" calculation
+      let emptyCylinderReceivables = 0;
+      let emptyCylinderReceivablesBySizes: SizeBreakdown[] = [];
+
+      try {
+        // Get EXACT cylinder receivables breakdown by size (same as cylinders summary API)
+        const cylinderReceivablesBySize = new Map<string, number>();
+
+        // Get all active retail drivers with their latest receivables records
+        const activeDriversWithReceivables = await prisma.driver.findMany({
+          where: {
+            tenantId,
+            status: 'ACTIVE',
+            driverType: 'RETAIL',
+          },
+          select: {
+            id: true,
+            name: true,
+            receivableRecords: {
+              select: {
+                date: true,
+                totalCylinderReceivables: true,
+              },
+              take: 1,
+              orderBy: {
+                date: 'desc',
+              },
+            },
+          },
+        });
+
+        // Get the exact size breakdown for each driver's receivables
+        for (const driver of activeDriversWithReceivables) {
+          const latestRecord = driver.receivableRecords[0];
+          if (latestRecord?.totalCylinderReceivables > 0) {
+            // Get the EXACT baseline breakdown (from permanent table, not proportional)
+            const baselineBreakdown =
+              await prisma.driverCylinderSizeBaseline.findMany({
+                where: {
+                  tenantId,
+                  driverId: driver.id,
+                },
+                select: {
+                  baselineQuantity: true,
+                  cylinderSize: {
+                    select: {
+                      size: true,
+                    },
+                  },
+                },
+              });
+
+            if (baselineBreakdown.length > 0) {
+              // STEP 1: Start with onboarding baseline breakdown by size
+              const sizeBreakdown: Record<string, number> = {};
+
+              // Initialize with onboarding baseline
+              baselineBreakdown.forEach((item) => {
+                const size = item.cylinderSize.size;
+                sizeBreakdown[size] = item.baselineQuantity;
+              });
+
+              // STEP 2: Add/subtract sales data by specific cylinder sizes (up to the specified date)
+              const salesWithCylinders = await prisma.sale.findMany({
+                where: {
+                  tenantId,
+                  driverId: driver.id,
+                  saleType: 'REFILL',
+                  saleDate: {
+                    lte: new Date(date + 'T23:59:59.999Z'),
+                  },
+                },
+                select: {
+                  quantity: true,
+                  cylindersDeposited: true,
+                  product: {
+                    select: {
+                      name: true,
+                      size: true,
+                      cylinderSize: {
+                        select: {
+                          size: true,
+                        },
+                      },
+                    },
+                  },
+                },
+              });
+
+              // Apply sales transactions to the baseline
+              salesWithCylinders.forEach((sale) => {
+                const size =
+                  sale.product?.cylinderSize?.size ||
+                  sale.product?.size ||
+                  sale.product?.name ||
+                  'Unknown';
+                const receivablesChange =
+                  (sale.quantity || 0) - (sale.cylindersDeposited || 0);
+
+                // Add/subtract from the baseline for this specific size
+                sizeBreakdown[size] =
+                  (sizeBreakdown[size] || 0) + receivablesChange;
+              });
+
+              // STEP 3: Use only positive values from the cumulative calculation
+              Object.entries(sizeBreakdown).forEach(([size, quantity]) => {
+                if (quantity > 0) {
+                  cylinderReceivablesBySize.set(
+                    size,
+                    (cylinderReceivablesBySize.get(size) || 0) + quantity
+                  );
+                }
+              });
+            } else {
+              // Fallback: try to get from actual sales data
+              const salesWithCylinders = await prisma.sale.findMany({
+                where: {
+                  tenantId,
+                  driverId: driver.id,
+                  saleType: 'REFILL',
+                  saleDate: {
+                    lte: new Date(date + 'T23:59:59.999Z'),
+                  },
+                },
+                select: {
+                  quantity: true,
+                  cylindersDeposited: true,
+                  product: {
+                    select: {
+                      name: true,
+                      size: true,
+                    },
+                  },
+                },
+              });
+
+              salesWithCylinders.forEach((sale) => {
+                const size =
+                  sale.product?.size || sale.product?.name || 'Unknown';
+                const receivables =
+                  (sale.quantity || 0) - (sale.cylindersDeposited || 0);
+                if (receivables > 0) {
+                  cylinderReceivablesBySize.set(
+                    size,
+                    (cylinderReceivablesBySize.get(size) || 0) + receivables
+                  );
+                }
+              });
+            }
+          }
+        }
+
+        // Convert to array format using the exact same calculation as cylinders summary
+        availableSizes.forEach((size: string) => {
+          const quantity = cylinderReceivablesBySize.get(size) || 0;
+          emptyCylinderReceivablesBySizes.push({ size, quantity });
+        });
+
+        emptyCylinderReceivables = emptyCylinderReceivablesBySizes.reduce(
+          (sum, s) => sum + s.quantity,
+          0
+        );
+
+        console.log(
+          `📊 Daily inventory receivables for ${date} using EXACT same source as cylinders summary:`,
+          {
+            cylinderReceivablesBySize: Object.fromEntries(
+              cylinderReceivablesBySize
+            ),
+            emptyCylinderReceivables,
+            source:
+              'EXACT baseline + sales changes by SIZE - ZERO proportional distribution',
+          }
+        );
+      } catch (error) {
+        console.warn(
+          `Failed to calculate empty cylinder receivables for ${date}:`,
+          error
+        );
+        // Default to zero for all sizes
+        availableSizes.forEach((size: string) => {
+          emptyCylinderReceivablesBySizes.push({ size, quantity: 0 });
+        });
+      }
+
       // 6. Calculate Today's Full and Empty Cylinders using exact formulas
       let previousFullCylinders = 0;
       let previousEmptyCylinders = 0;
@@ -675,7 +1211,7 @@ export async function GET(request: NextRequest) {
         // Get previous day's totals
         const previousRecord = dailyRecords[i - 1];
         previousFullCylinders = previousRecord.fullCylinders;
-        previousEmptyCylinders = previousRecord.emptyCylinders;
+        previousEmptyCylinders = previousRecord.emptyCylinders || 0;
       } else {
         // For first day, try to get actual previous day inventory from pre-loaded records
         const previousDate = new Date(date);
@@ -688,21 +1224,49 @@ export async function GET(request: NextRequest) {
           previousFullCylinders = previousInventory.fullCylinders;
           previousEmptyCylinders = previousInventory.emptyCylinders;
         } else {
-          // If no previous record exists, start from ZERO as baseline
-          // This is correct - if there's no historical data, start from zero
-          // Real inventory should come from actual purchases and sales on specific dates
-          previousFullCylinders = 0;
-          previousEmptyCylinders = 0;
+          // If no previous record exists, get shipment baseline values from onboarding data
+          // These are the initial inventory values entered during onboarding (shipment values)
+          const shipmentBaselineRecords = await prisma.inventoryRecord.findMany(
+            {
+              where: {
+                tenantId,
+                productId: { not: null }, // Only product-specific records (from onboarding)
+              },
+              select: {
+                fullCylinders: true,
+                emptyCylinders: true,
+              },
+            }
+          );
+
+          // Sum up shipment baseline inventory from onboarding - these become "yesterday's" values for first day calculation
+          previousFullCylinders = shipmentBaselineRecords.reduce(
+            (sum, record) => sum + (record.fullCylinders || 0),
+            0
+          );
+          previousEmptyCylinders = shipmentBaselineRecords.reduce(
+            (sum, record) => sum + (record.emptyCylinders || 0),
+            0
+          );
 
           console.log(
-            `No previous inventory record found for ${previousDateStr}. Starting from zero baseline.`
+            `No previous inventory record found for ${previousDateStr}. Using shipment baseline values from onboarding:`,
+            {
+              shipmentBaselineRecords: shipmentBaselineRecords.length,
+              previousFullCylinders,
+              previousEmptyCylinders,
+            }
           );
         }
 
-        console.log(`Using previous inventory for first day ${date}:`, {
-          previousFullCylinders,
-          previousEmptyCylinders,
-        });
+        console.log(
+          `Using shipment baseline values for first day ${date} calculation:`,
+          {
+            previousFullCylinders,
+            previousEmptyCylinders,
+            note: 'These are the onboarding shipment values used as "yesterday\'s" inventory for formula calculation',
+          }
+        );
       }
 
       // Debug logging after calculating previous values
@@ -713,6 +1277,7 @@ export async function GET(request: NextRequest) {
         packagePurchaseQty,
         refillPurchaseQty,
         emptyCylindersBuySell,
+        allRefillPurchases,
         previousFullCylinders,
         previousEmptyCylinders,
         calculatedFullCylinders:
@@ -721,34 +1286,94 @@ export async function GET(request: NextRequest) {
           refillPurchaseQty -
           totalSalesQty,
         calculatedEmptyCylinders:
-          previousEmptyCylinders + refillSalesQty + emptyCylindersBuySell,
+          previousEmptyCylinders +
+          refillSalesQty +
+          emptyCylindersBuySell -
+          allRefillPurchases,
       });
 
       // Apply EXACT business formulas as specified:
-      // Today's Full Cylinders: Yesterdays full cylinders + Package Purchase + Refill Purchase - Total Sales
+      // For first day: "Yesterday's" values = onboarding shipment baseline values
+      // For subsequent days: "Yesterday's" values = previous day's calculated values
+
+      // Today's Full Cylinders: Yesterday's full cylinders + Package Purchase + Refill Purchase - Total Sales
       const fullCylinders =
         previousFullCylinders +
         packagePurchaseQty +
         refillPurchaseQty -
         totalSalesQty;
 
-      // Today's Empty Cylinders: Yesterday's Empty Cylinders + Refill sales + Empty Cylinders Buy/Sell
+      // Today's Empty Cylinders: Yesterday's Empty Cylinders + Refill sales + Empty Cylinders Buy/Sell - Refill Purchase
       const emptyCylinders =
-        previousEmptyCylinders + refillSalesQty + emptyCylindersBuySell;
+        previousEmptyCylinders +
+        refillSalesQty +
+        emptyCylindersBuySell -
+        allRefillPurchases;
 
-      // Total Cylinders = Today's Full Cylinders + Today's Empty Cylinders
-      const totalCylinders = fullCylinders + emptyCylinders;
+      // Total Cylinders = Today's Full Cylinders + Today's Empty Cylinders + Outstanding refill shipment
+      const totalCylinders =
+        fullCylinders + emptyCylinders + outstandingRefillOrdersQty;
 
       // Calculate cylinder size breakdowns
       const previousRecord = i > 0 ? dailyRecords[i - 1] : null;
-      const cylinderSizeBreakdowns = calculateCylinderSizeBreakdown(
+      const isFirstDay = i === 0;
+      const cylinderSizeBreakdowns = await calculateCylinderSizeBreakdown(
         previousRecord,
         packageSalesProducts,
         refillSalesProducts,
         packagePurchaseProducts,
         refillPurchaseProducts,
-        emptyCylindersBuySell
+        allRefillPurchaseProducts,
+        emptyCylindersBuySell,
+        allRefillPurchases,
+        fullCylinders,
+        emptyCylinders,
+        tenantId,
+        isFirstDay,
+        date
       );
+
+      // Update total cylinders by size to include outstanding refill shipments
+      const updatedTotalCylindersBySizes: SizeBreakdown[] = [];
+      availableSizes.forEach((size: string) => {
+        const fullQty =
+          cylinderSizeBreakdowns.fullCylindersBySizes.find(
+            (s) => s.size === size
+          )?.quantity || 0;
+        const emptyQty =
+          cylinderSizeBreakdowns.emptyCylindersBySizes.find(
+            (s) => s.size === size
+          )?.quantity || 0;
+        const outstandingRefillQty =
+          outstandingRefillOrdersBySizes.find((s) => s.size === size)
+            ?.quantity || 0;
+        updatedTotalCylindersBySizes.push({
+          size,
+          quantity: fullQty + emptyQty + outstandingRefillQty,
+        });
+      });
+
+      // Calculate Empty Cylinders in Stock: Physical empty cylinders - receivables
+      const emptyCylindersInStock = Math.max(
+        0,
+        cylinderSizeBreakdowns.emptyCylindersBySizes.reduce(
+          (sum, s) => sum + s.quantity,
+          0
+        ) - emptyCylinderReceivables
+      );
+      const emptyCylindersInStockBySizes: SizeBreakdown[] = [];
+
+      availableSizes.forEach((size: string) => {
+        const physicalEmpty =
+          cylinderSizeBreakdowns.emptyCylindersBySizes.find(
+            (s) => s.size === size
+          )?.quantity || 0;
+        const receivables =
+          emptyCylinderReceivablesBySizes.find((s) => s.size === size)
+            ?.quantity || 0;
+        const inStock = Math.max(0, physicalEmpty - receivables);
+        emptyCylindersInStockBySizes.push({ size, quantity: inStock });
+      });
 
       // Create the daily record
       const dailyRecord: DailyInventoryRecord = {
@@ -763,15 +1388,39 @@ export async function GET(request: NextRequest) {
         packagePurchaseProducts,
         refillPurchase: refillPurchaseQty,
         refillPurchaseProducts,
+        fullCylinders: cylinderSizeBreakdowns.fullCylindersBySizes.reduce(
+          (sum, s) => sum + s.quantity,
+          0
+        ),
+        fullCylindersBySizes: cylinderSizeBreakdowns.fullCylindersBySizes,
+        outstandingShipments: outstandingRefillOrdersQty,
+        outstandingShipmentsBySizes: outstandingRefillOrdersBySizes,
         emptyCylindersBuySell,
         emptyCylindersBuySellBySizes:
           cylinderSizeBreakdowns.emptyCylindersBuySellBySizes,
-        fullCylinders,
-        fullCylindersBySizes: cylinderSizeBreakdowns.fullCylindersBySizes,
-        emptyCylinders,
+        emptyCylinderReceivables,
+        emptyCylinderReceivablesBySizes,
+        emptyCylindersInStock,
+        emptyCylindersInStockBySizes,
+        totalCylinders: updatedTotalCylindersBySizes.reduce(
+          (sum, s) => sum + s.quantity,
+          0
+        ),
+        totalCylindersBySizes: updatedTotalCylindersBySizes,
+        // Legacy fields for backward compatibility
+        outstandingOrders: outstandingOrdersQty,
+        outstandingOrdersProducts,
+        outstandingOrdersBySizes: getSizeBreakdown(outstandingOrdersProducts),
+        outstandingPackageOrders: outstandingPackageOrdersQty,
+        outstandingPackageOrdersProducts,
+        outstandingRefillOrders: outstandingRefillOrdersQty,
+        outstandingRefillOrdersProducts,
+        outstandingRefillOrdersBySizes,
+        emptyCylinders: cylinderSizeBreakdowns.emptyCylindersBySizes.reduce(
+          (sum, s) => sum + s.quantity,
+          0
+        ),
         emptyCylindersBySizes: cylinderSizeBreakdowns.emptyCylindersBySizes,
-        totalCylinders,
-        totalCylindersBySizes: cylinderSizeBreakdowns.totalCylindersBySizes,
       };
 
       dailyRecords.push(dailyRecord);
@@ -800,6 +1449,7 @@ export async function GET(request: NextRequest) {
               emptyCylindersBuySell,
               fullCylinders,
               emptyCylinders,
+              emptyCylinderReceivables,
               totalCylinders,
             },
           });
@@ -818,6 +1468,7 @@ export async function GET(request: NextRequest) {
               emptyCylindersBuySell,
               fullCylinders,
               emptyCylinders,
+              emptyCylinderReceivables,
               totalCylinders,
             },
           });

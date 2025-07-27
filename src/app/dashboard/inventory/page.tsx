@@ -98,14 +98,29 @@ interface DailyInventoryRecord {
   packagePurchaseProducts: ProductBreakdown[];
   refillPurchase: number;
   refillPurchaseProducts: ProductBreakdown[];
-  emptyCylindersBuySell: number;
-  emptyCylindersBuySellBySizes: SizeBreakdown[];
   fullCylinders: number;
   fullCylindersBySizes: SizeBreakdown[];
-  emptyCylinders: number;
-  emptyCylindersBySizes: SizeBreakdown[];
+  outstandingShipments: number;
+  outstandingShipmentsBySizes: SizeBreakdown[];
+  emptyCylindersBuySell: number;
+  emptyCylindersBuySellBySizes: SizeBreakdown[];
+  emptyCylinderReceivables: number;
+  emptyCylinderReceivablesBySizes: SizeBreakdown[];
+  emptyCylindersInStock: number;
+  emptyCylindersInStockBySizes: SizeBreakdown[];
   totalCylinders: number;
   totalCylindersBySizes: SizeBreakdown[];
+  // Legacy fields for backward compatibility
+  outstandingOrders?: number;
+  outstandingOrdersProducts?: ProductBreakdown[];
+  outstandingOrdersBySizes?: SizeBreakdown[];
+  outstandingPackageOrders?: number;
+  outstandingPackageOrdersProducts?: ProductBreakdown[];
+  outstandingRefillOrders?: number;
+  outstandingRefillOrdersProducts?: ProductBreakdown[];
+  outstandingRefillOrdersBySizes?: SizeBreakdown[];
+  emptyCylinders?: number;
+  emptyCylindersBySizes?: SizeBreakdown[];
 }
 
 interface DailyInventoryData {
@@ -133,6 +148,11 @@ interface EmptyCylinderData {
 interface CylindersSummaryData {
   fullCylinders: FullCylinderData[];
   emptyCylinders: EmptyCylinderData[];
+  totals: {
+    fullCylinders: number;
+    emptyCylinders: number;
+    emptyCylindersInHand: number;
+  };
   totalCylinderReceivables: number;
   lastUpdated: string;
 }
@@ -242,12 +262,17 @@ export default function InventoryPage() {
   const fetchCylindersSummaryData = async () => {
     try {
       console.log(t('fetchingCylindersSummaryData'));
-      const response = await fetch('/api/inventory/cylinders-summary', {
-        cache: 'no-cache',
-        headers: {
-          'Cache-Control': 'no-cache',
-        },
-      });
+      const response = await fetch(
+        `/api/inventory/cylinders-summary?_t=${Date.now()}`,
+        {
+          cache: 'no-cache',
+          headers: {
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            Pragma: 'no-cache',
+            Expires: '0',
+          },
+        }
+      );
 
       console.log(t('cylindersSummaryResponseStatus'), response.status);
 
@@ -513,22 +538,36 @@ export default function InventoryPage() {
                 <tbody className="bg-card divide-border divide-y">
                   {cylindersSummaryData.fullCylinders &&
                   cylindersSummaryData.fullCylinders.length > 0 ? (
-                    cylindersSummaryData.fullCylinders.map((item, index) => (
-                      <tr
-                        key={`${item.company}-${item.size}`}
-                        className="hover:bg-muted/50"
-                      >
-                        <td className="text-foreground whitespace-nowrap px-4 py-3 text-sm font-medium">
-                          {item.company}
+                    <>
+                      {cylindersSummaryData.fullCylinders.map((item, index) => (
+                        <tr
+                          key={`${item.company}-${item.size}`}
+                          className="hover:bg-muted/50"
+                        >
+                          <td className="text-foreground whitespace-nowrap px-4 py-3 text-sm font-medium">
+                            {item.company}
+                          </td>
+                          <td className="text-foreground whitespace-nowrap px-4 py-3 text-sm">
+                            {item.size}
+                          </td>
+                          <td className="whitespace-nowrap px-4 py-3 text-sm font-bold text-blue-600 dark:text-blue-400">
+                            {item.quantity}
+                          </td>
+                        </tr>
+                      ))}
+                      {/* Total Row */}
+                      <tr className="border-t-2 border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-900/20">
+                        <td className="text-foreground whitespace-nowrap px-4 py-3 text-sm font-bold">
+                          {t('total')}
                         </td>
-                        <td className="text-foreground whitespace-nowrap px-4 py-3 text-sm">
-                          {item.size}
+                        <td className="text-foreground whitespace-nowrap px-4 py-3 text-sm font-bold">
+                          -
                         </td>
-                        <td className="whitespace-nowrap px-4 py-3 text-sm font-bold text-blue-600 dark:text-blue-400">
-                          {item.quantity}
+                        <td className="whitespace-nowrap px-4 py-3 text-sm font-bold text-blue-700 dark:text-blue-300">
+                          {cylindersSummaryData.totals?.fullCylinders || 0}
                         </td>
                       </tr>
-                    ))
+                    </>
                   ) : (
                     <tr>
                       <td colSpan={3} className="px-4 py-8 text-center">
@@ -559,35 +598,105 @@ export default function InventoryPage() {
                 <thead className="bg-muted">
                   <tr>
                     <th className="text-muted-foreground px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">
-                      {t('size')}
+                      আকার
                     </th>
                     <th className="text-muted-foreground px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">
-                      {t('emptyCylinders')}
+                      স্টকে খালি সিলিন্ডার
                     </th>
                     <th className="text-muted-foreground px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">
-                      {t('emptyCylindersInHand')}
+                      খালি সিলিন্ডার প্রাপ্য
+                    </th>
+                    <th className="text-muted-foreground px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                      অসমাপ্ত চালান
+                    </th>
+                    <th className="text-muted-foreground px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                      মোট খালি সিলিন্ডার
                     </th>
                   </tr>
                 </thead>
                 <tbody className="bg-card divide-border divide-y">
                   {cylindersSummaryData.emptyCylinders &&
                   cylindersSummaryData.emptyCylinders.length > 0 ? (
-                    cylindersSummaryData.emptyCylinders.map((item, index) => (
-                      <tr key={item.size} className="hover:bg-muted/50">
-                        <td className="text-foreground whitespace-nowrap px-4 py-3 text-sm font-medium">
-                          {item.size}
+                    <>
+                      {cylindersSummaryData.emptyCylinders.map(
+                        (item, index) => {
+                          const receivablesForSize =
+                            (cylindersSummaryData as any)
+                              .receivablesBreakdown?.[item.size] || 0;
+                          const outstandingShipmentsForSize =
+                            dailyInventoryData?.dailyInventory[0]?.outstandingRefillOrdersBySizes?.find(
+                              (s: any) => s.size === item.size
+                            )?.quantity || 0;
+                          // Use correct empty cylinders in stock from daily inventory data
+                          const correctEmptyCylindersInStock =
+                            dailyInventoryData?.dailyInventory[0]?.emptyCylindersInStockBySizes?.find(
+                              (s: any) => s.size === item.size
+                            )?.quantity ||
+                            dailyInventoryData?.dailyInventory[0]?.emptyCylindersBySizes?.find(
+                              (s: any) => s.size === item.size
+                            )?.quantity ||
+                            0;
+                          const totalEmptyCylinders =
+                            correctEmptyCylindersInStock +
+                            receivablesForSize +
+                            outstandingShipmentsForSize;
+
+                          return (
+                            <tr key={item.size} className="hover:bg-muted/50">
+                              <td className="text-foreground whitespace-nowrap px-4 py-3 text-sm font-medium">
+                                {item.size}
+                              </td>
+                              <td className="text-foreground whitespace-nowrap px-4 py-3 text-sm">
+                                {correctEmptyCylindersInStock}
+                              </td>
+                              <td className="whitespace-nowrap px-4 py-3 text-sm font-bold text-orange-600 dark:text-orange-400">
+                                {receivablesForSize}
+                              </td>
+                              <td className="whitespace-nowrap px-4 py-3 text-sm font-bold text-blue-600 dark:text-blue-400">
+                                {outstandingShipmentsForSize}
+                              </td>
+                              <td className="whitespace-nowrap px-4 py-3 text-sm font-bold text-green-600 dark:text-green-400">
+                                {totalEmptyCylinders}
+                              </td>
+                            </tr>
+                          );
+                        }
+                      )}
+                      {/* Total Row */}
+                      <tr className="border-t-2 border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-900/20">
+                        <td className="text-foreground whitespace-nowrap px-4 py-3 text-sm font-bold">
+                          মোট
                         </td>
-                        <td className="text-foreground whitespace-nowrap px-4 py-3 text-sm">
-                          {item.emptyCylinders}
+                        <td className="text-foreground whitespace-nowrap px-4 py-3 text-sm font-bold">
+                          {dailyInventoryData?.dailyInventory[0]
+                            ?.emptyCylindersInStock ||
+                            dailyInventoryData?.dailyInventory[0]
+                              ?.emptyCylinders ||
+                            0}
                         </td>
-                        <td className="whitespace-nowrap px-4 py-3 text-sm font-bold text-green-600 dark:text-green-400">
-                          {item.emptyCylindersInHand}
+                        <td className="whitespace-nowrap px-4 py-3 text-sm font-bold text-orange-700 dark:text-orange-300">
+                          {cylindersSummaryData.totalCylinderReceivables || 0}
+                        </td>
+                        <td className="whitespace-nowrap px-4 py-3 text-sm font-bold text-blue-700 dark:text-blue-300">
+                          {dailyInventoryData?.dailyInventory[0]
+                            ?.outstandingRefillOrders || 0}
+                        </td>
+                        <td className="whitespace-nowrap px-4 py-3 text-sm font-bold text-green-700 dark:text-green-300">
+                          {(dailyInventoryData?.dailyInventory[0]
+                            ?.emptyCylindersInStock ||
+                            dailyInventoryData?.dailyInventory[0]
+                              ?.emptyCylinders ||
+                            0) +
+                            (cylindersSummaryData.totalCylinderReceivables ||
+                              0) +
+                            (dailyInventoryData?.dailyInventory[0]
+                              ?.outstandingRefillOrders || 0)}
                         </td>
                       </tr>
-                    ))
+                    </>
                   ) : (
                     <tr>
-                      <td colSpan={3} className="px-4 py-8 text-center">
+                      <td colSpan={5} className="px-4 py-8 text-center">
                         <Package className="mx-auto mb-4 h-12 w-12 text-gray-400" />
                         <p className="text-muted-foreground">
                           {t('noEmptyCylindersInInventory')}
@@ -626,34 +735,40 @@ export default function InventoryPage() {
             <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
               <thead className="bg-muted">
                 <tr>
-                  <th className="text-muted-foreground px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                  <th className="text-muted-foreground w-20 px-2 py-3 text-left text-xs font-medium uppercase tracking-wider">
                     {t('date')}
                   </th>
-                  <th className="text-muted-foreground px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                  <th className="text-muted-foreground w-40 px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">
                     {t('packageSalesQty')}
                   </th>
-                  <th className="text-muted-foreground px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                  <th className="text-muted-foreground w-40 px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">
                     {t('refillSalesQty')}
                   </th>
-                  <th className="text-muted-foreground px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                  <th className="text-muted-foreground w-40 px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">
                     {t('totalSalesQty')}
                   </th>
-                  <th className="text-muted-foreground px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                  <th className="text-muted-foreground w-36 px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">
                     {t('packagePurchase')}
                   </th>
-                  <th className="text-muted-foreground px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                  <th className="text-muted-foreground w-36 px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">
                     {t('refillPurchase')}
                   </th>
-                  <th className="text-muted-foreground px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">
-                    {t('emptyCylindersBuySell')}
-                  </th>
-                  <th className="text-muted-foreground px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                  <th className="text-muted-foreground w-32 px-3 py-3 text-left text-xs font-medium uppercase tracking-wider">
                     {t('fullCylinders')}
                   </th>
-                  <th className="text-muted-foreground px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">
-                    {t('emptyCylinders')}
+                  <th className="text-muted-foreground w-40 px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                    {t('outstandingShipments')}
                   </th>
-                  <th className="text-muted-foreground px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                  <th className="text-muted-foreground w-24 px-2 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                    {t('emptyCylindersBuySell')}
+                  </th>
+                  <th className="text-muted-foreground w-24 px-2 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                    {t('emptyCylinderReceivables')}
+                  </th>
+                  <th className="text-muted-foreground w-24 px-2 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                    {t('emptyCylindersInStock')}
+                  </th>
+                  <th className="text-muted-foreground w-24 px-2 py-3 text-left text-xs font-medium uppercase tracking-wider">
                     {t('totalCylinders')}
                   </th>
                 </tr>
@@ -669,130 +784,250 @@ export default function InventoryPage() {
                           : ''
                       }`}
                     >
-                      <td className="text-foreground whitespace-nowrap border-r border-gray-200 px-4 py-4 text-sm font-medium dark:border-gray-700">
+                      {/* Date Column */}
+                      <td className="text-foreground whitespace-nowrap border-r border-gray-200 px-2 py-4 text-sm font-medium dark:border-gray-700">
                         {formatDate(record.date)}
                         {index === 0 && (
-                          <span className="ml-2 inline-flex rounded-full bg-blue-100 px-2 py-1 text-xs font-semibold text-blue-800 dark:bg-blue-900 dark:text-blue-200">
-                            {t('latest')}
-                          </span>
+                          <div className="mt-1">
+                            <span className="inline-flex rounded-full bg-blue-100 px-2 py-1 text-xs font-semibold text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                              {t('latest')}
+                            </span>
+                          </div>
                         )}
                       </td>
+
+                      {/* Package Sales(Qty) - Wider */}
                       <td className="border-r border-gray-200 px-4 py-4 dark:border-gray-700">
-                        <div className="mb-1 text-sm font-bold text-blue-600 dark:text-blue-400">
+                        <div className="mb-2 text-sm font-bold text-blue-600 dark:text-blue-400">
                           {record.packageSalesQty}
                         </div>
-                        {record.packageSalesProducts.map((product) => (
+                        {record.packageSalesProducts.map((product, index) => (
                           <div
-                            key={product.productId}
-                            className="py-0.5 text-xs text-gray-600 dark:text-gray-400"
+                            key={`package-sales-${product.productId}-${index}`}
+                            className="text-xs leading-tight text-gray-600 dark:text-gray-400"
                           >
                             <span className="font-medium">
                               {product.companyName}
-                            </span>
-                            <span className="mx-1">-</span>
-                            <span>
+                            </span>{' '}
+                            -
+                            <span className="mx-1">
                               {product.productName} ({product.productSize})
                             </span>
-                            <span className="ml-1 font-semibold">
+                            <span className="font-semibold text-blue-600">
+                              {' '}
                               {product.quantity}
                             </span>
                           </div>
                         ))}
                       </td>
+
+                      {/* Refill Sales(Qty) - Wider */}
                       <td className="border-r border-gray-200 px-4 py-4 dark:border-gray-700">
-                        <div className="mb-1 text-sm font-bold text-green-600 dark:text-green-400">
+                        <div className="mb-2 text-sm font-bold text-green-600 dark:text-green-400">
                           {record.refillSalesQty}
                         </div>
-                        {record.refillSalesProducts.map((product) => (
+                        {record.refillSalesProducts.map((product, index) => (
                           <div
-                            key={product.productId}
-                            className="py-0.5 text-xs text-gray-600 dark:text-gray-400"
+                            key={`refill-sales-${product.productId}-${index}`}
+                            className="text-xs leading-tight text-gray-600 dark:text-gray-400"
                           >
                             <span className="font-medium">
                               {product.companyName}
-                            </span>
-                            <span className="mx-1">-</span>
-                            <span>
+                            </span>{' '}
+                            -
+                            <span className="mx-1">
                               {product.productName} ({product.productSize})
                             </span>
-                            <span className="ml-1 font-semibold">
+                            <span className="font-semibold text-green-600">
+                              {' '}
                               {product.quantity}
                             </span>
                           </div>
                         ))}
                       </td>
+
+                      {/* Total Sales (Qty) - Wider */}
                       <td className="border-r border-gray-200 px-4 py-4 dark:border-gray-700">
-                        <div className="mb-1 text-sm font-bold text-purple-600 dark:text-purple-400">
+                        <div className="mb-2 text-sm font-bold text-purple-600 dark:text-purple-400">
                           {record.totalSalesQty}
                         </div>
-                        {record.totalSalesProducts.map((product) => (
+                        {record.totalSalesProducts.map((product, index) => (
                           <div
-                            key={product.productId}
-                            className="py-0.5 text-xs text-gray-600 dark:text-gray-400"
+                            key={`total-sales-${product.productId}-${index}`}
+                            className="text-xs leading-tight text-gray-600 dark:text-gray-400"
                           >
                             <span className="font-medium">
                               {product.companyName}
-                            </span>
-                            <span className="mx-1">-</span>
-                            <span>
+                            </span>{' '}
+                            -
+                            <span className="mx-1">
                               {product.productName} ({product.productSize})
                             </span>
-                            <span className="ml-1 font-semibold">
+                            <span className="font-semibold text-purple-600">
+                              {' '}
                               {product.quantity}
                             </span>
                           </div>
                         ))}
                       </td>
+
+                      {/* Package Purchase - Wider */}
                       <td className="border-r border-gray-200 px-4 py-4 dark:border-gray-700">
-                        <div className="mb-1 text-sm font-bold text-green-600 dark:text-green-400">
+                        <div className="mb-2 text-sm font-bold text-orange-600 dark:text-orange-400">
                           {record.packagePurchase > 0
                             ? `+${record.packagePurchase}`
                             : '0'}
                         </div>
-                        {record.packagePurchaseProducts.map((product) => (
-                          <div
-                            key={product.productId}
-                            className="py-0.5 text-xs text-gray-600 dark:text-gray-400"
-                          >
-                            <span className="font-medium">
-                              {product.companyName}
-                            </span>
-                            <span className="mx-1">-</span>
-                            <span>
-                              {product.productName} ({product.productSize})
-                            </span>
-                            <span className="ml-1 font-semibold text-green-600">
-                              +{product.quantity}
-                            </span>
-                          </div>
-                        ))}
+                        {record.packagePurchaseProducts.map(
+                          (product, index) => (
+                            <div
+                              key={`package-purchase-${product.productId}-${index}`}
+                              className="text-xs leading-tight text-gray-600 dark:text-gray-400"
+                            >
+                              <span className="font-medium">
+                                {product.companyName}
+                              </span>{' '}
+                              -
+                              <span className="mx-1">
+                                {product.productName} ({product.productSize})
+                              </span>
+                              <span className="font-semibold text-green-600">
+                                {' '}
+                                +{product.quantity}
+                              </span>
+                            </div>
+                          )
+                        )}
                       </td>
+
+                      {/* Refill Purchase - Wider */}
                       <td className="border-r border-gray-200 px-4 py-4 dark:border-gray-700">
-                        <div className="mb-1 text-sm font-bold text-green-600 dark:text-green-400">
+                        <div className="mb-2 text-sm font-bold text-green-600 dark:text-green-400">
                           {record.refillPurchase > 0
                             ? `+${record.refillPurchase}`
                             : '0'}
                         </div>
-                        {record.refillPurchaseProducts.map((product) => (
+                        {record.refillPurchaseProducts.map((product, index) => (
                           <div
-                            key={product.productId}
-                            className="py-0.5 text-xs text-gray-600 dark:text-gray-400"
+                            key={`refill-purchase-${product.productId}-${index}`}
+                            className="text-xs leading-tight text-gray-600 dark:text-gray-400"
                           >
                             <span className="font-medium">
                               {product.companyName}
-                            </span>
-                            <span className="mx-1">-</span>
-                            <span>
+                            </span>{' '}
+                            -
+                            <span className="mx-1">
                               {product.productName} ({product.productSize})
                             </span>
-                            <span className="ml-1 font-semibold text-green-600">
+                            <span className="font-semibold text-green-600">
+                              {' '}
                               +{product.quantity}
                             </span>
                           </div>
                         ))}
                       </td>
+
+                      {/* Full Cylinders */}
+                      <td className="border-r border-gray-200 px-3 py-4 dark:border-gray-700">
+                        <div className="mb-1 text-sm font-bold text-blue-600 dark:text-blue-400">
+                          {record.fullCylinders}
+                        </div>
+                        {record.fullCylindersBySizes?.map((sizeBreakdown) => (
+                          <div
+                            key={sizeBreakdown.size}
+                            className="text-xs leading-tight text-gray-600 dark:text-gray-400"
+                          >
+                            <span className="font-medium">
+                              {sizeBreakdown.size}:
+                            </span>
+                            <span className="ml-1 font-semibold text-blue-600">
+                              {sizeBreakdown.quantity}
+                            </span>
+                          </div>
+                        ))}
+                      </td>
+
+                      {/* Outstanding Shipments - Wider */}
                       <td className="border-r border-gray-200 px-4 py-4 dark:border-gray-700">
-                        <div className="mb-1 text-sm font-bold text-orange-600 dark:text-orange-400">
+                        <div className="mb-2 text-sm font-bold text-orange-600 dark:text-orange-400">
+                          {record.outstandingShipments ||
+                            record.outstandingOrders ||
+                            0}
+                        </div>
+
+                        {/* Package Outstanding Orders */}
+                        {(record.outstandingPackageOrders || 0) > 0 && (
+                          <div className="mb-1">
+                            <div className="text-xs font-semibold text-blue-600 dark:text-blue-400">
+                              Package: {record.outstandingPackageOrders}
+                            </div>
+                            {record.outstandingPackageOrdersProducts?.map(
+                              (product, index) => (
+                                <div
+                                  key={`outstanding-package-${product.productId}-${index}`}
+                                  className="ml-2 text-xs leading-tight text-gray-600 dark:text-gray-400"
+                                >
+                                  <span className="font-medium">
+                                    {product.companyName}
+                                  </span>{' '}
+                                  -
+                                  <span className="mx-1">
+                                    {product.productName} ({product.productSize}
+                                    )
+                                  </span>
+                                  <span className="font-semibold text-blue-600">
+                                    {' '}
+                                    {product.quantity}
+                                  </span>
+                                </div>
+                              )
+                            )}
+                          </div>
+                        )}
+
+                        {/* Refill Outstanding Orders */}
+                        {(record.outstandingRefillOrders || 0) > 0 && (
+                          <div className="mb-1">
+                            <div className="text-xs font-semibold text-green-600 dark:text-green-400">
+                              Refill: {record.outstandingRefillOrders}
+                            </div>
+                            {record.outstandingRefillOrdersProducts?.map(
+                              (product, index) => (
+                                <div
+                                  key={`outstanding-refill-${product.productId}-${index}`}
+                                  className="ml-2 text-xs leading-tight text-gray-600 dark:text-gray-400"
+                                >
+                                  <span className="font-medium">
+                                    {product.companyName}
+                                  </span>{' '}
+                                  -
+                                  <span className="mx-1">
+                                    {product.productName} ({product.productSize}
+                                    )
+                                  </span>
+                                  <span className="font-semibold text-green-600">
+                                    {' '}
+                                    {product.quantity}
+                                  </span>
+                                </div>
+                              )
+                            )}
+                          </div>
+                        )}
+
+                        {/* Show message if no outstanding orders */}
+                        {(record.outstandingShipments ||
+                          record.outstandingOrders ||
+                          0) === 0 && (
+                          <div className="text-xs italic text-gray-500 dark:text-gray-400">
+                            {t('noOutstandingOrders')}
+                          </div>
+                        )}
+                      </td>
+
+                      {/* Empty Cylinders Buy/Sell - Narrower */}
+                      <td className="border-r border-gray-200 px-2 py-4 dark:border-gray-700">
+                        <div className="mb-1 text-sm font-bold">
                           <span
                             className={
                               record.emptyCylindersBuySell >= 0
@@ -808,12 +1043,12 @@ export default function InventoryPage() {
                           (sizeBreakdown) => (
                             <div
                               key={sizeBreakdown.size}
-                              className="py-0.5 text-xs text-gray-600 dark:text-gray-400"
+                              className="text-xs leading-tight text-gray-600 dark:text-gray-400"
                             >
                               <span className="font-medium">
-                                {sizeBreakdown.size}
+                                {sizeBreakdown.size}:
                               </span>
-                              <span className="ml-2 font-semibold">
+                              <span className="ml-1 font-semibold">
                                 {sizeBreakdown.quantity >= 0 ? '+' : ''}
                                 {sizeBreakdown.quantity}
                               </span>
@@ -821,55 +1056,68 @@ export default function InventoryPage() {
                           )
                         )}
                       </td>
-                      <td className="border-r border-gray-200 px-4 py-4 dark:border-gray-700">
-                        <div className="mb-1 text-sm font-bold text-blue-600 dark:text-blue-400">
-                          {record.fullCylinders}
+
+                      {/* Empty Cylinder Receivables - Narrower */}
+                      <td className="border-r border-gray-200 px-2 py-4 dark:border-gray-700">
+                        <div className="mb-1 text-sm font-bold text-red-600 dark:text-red-400">
+                          {record.emptyCylinderReceivables || 0}
                         </div>
-                        {record.fullCylindersBySizes?.map((sizeBreakdown) => (
-                          <div
-                            key={sizeBreakdown.size}
-                            className="py-0.5 text-xs text-gray-600 dark:text-gray-400"
-                          >
-                            <span className="font-medium">
-                              {sizeBreakdown.size}
-                            </span>
-                            <span className="ml-2 font-semibold text-blue-600">
-                              {sizeBreakdown.quantity}
-                            </span>
-                          </div>
-                        ))}
+                        {record.emptyCylinderReceivablesBySizes?.map(
+                          (sizeBreakdown) => (
+                            <div
+                              key={sizeBreakdown.size}
+                              className="text-xs leading-tight text-gray-600 dark:text-gray-400"
+                            >
+                              <span className="font-medium">
+                                {sizeBreakdown.size}:
+                              </span>
+                              <span className="ml-1 font-semibold text-red-600">
+                                {sizeBreakdown.quantity}
+                              </span>
+                            </div>
+                          )
+                        )}
                       </td>
-                      <td className="border-r border-gray-200 px-4 py-4 dark:border-gray-700">
+
+                      {/* Empty Cylinders in Stock - Narrower */}
+                      <td className="border-r border-gray-200 px-2 py-4 dark:border-gray-700">
                         <div className="mb-1 text-sm font-bold text-gray-600 dark:text-gray-400">
-                          {record.emptyCylinders}
+                          {record.emptyCylindersInStock ||
+                            record.emptyCylinders ||
+                            0}
                         </div>
-                        {record.emptyCylindersBySizes?.map((sizeBreakdown) => (
+                        {(
+                          record.emptyCylindersInStockBySizes ||
+                          record.emptyCylindersBySizes
+                        )?.map((sizeBreakdown) => (
                           <div
                             key={sizeBreakdown.size}
-                            className="py-0.5 text-xs text-gray-600 dark:text-gray-400"
+                            className="text-xs leading-tight text-gray-600 dark:text-gray-400"
                           >
                             <span className="font-medium">
-                              {sizeBreakdown.size}
+                              {sizeBreakdown.size}:
                             </span>
-                            <span className="ml-2 font-semibold text-gray-600">
+                            <span className="ml-1 font-semibold text-gray-600">
                               {sizeBreakdown.quantity}
                             </span>
                           </div>
                         ))}
                       </td>
-                      <td className="px-4 py-4">
+
+                      {/* Total Cylinders - Narrower */}
+                      <td className="px-2 py-4">
                         <div className="mb-1 text-sm font-bold text-purple-600 dark:text-purple-400">
                           {record.totalCylinders}
                         </div>
                         {record.totalCylindersBySizes?.map((sizeBreakdown) => (
                           <div
                             key={sizeBreakdown.size}
-                            className="py-0.5 text-xs text-gray-600 dark:text-gray-400"
+                            className="text-xs leading-tight text-gray-600 dark:text-gray-400"
                           >
                             <span className="font-medium">
-                              {sizeBreakdown.size}
+                              {sizeBreakdown.size}:
                             </span>
-                            <span className="ml-2 font-semibold text-purple-600">
+                            <span className="ml-1 font-semibold text-purple-600">
                               {sizeBreakdown.quantity}
                             </span>
                           </div>
@@ -929,7 +1177,8 @@ export default function InventoryPage() {
                 </strong>
                 <span className="text-muted-foreground">
                   {' '}
-                  {t('fullCylinders')} + {t('emptyCylinders')}
+                  {t('fullCylinders')} + {t('emptyCylinders')} + Outstanding
+                  Refill Shipments
                 </span>
               </div>
             </div>

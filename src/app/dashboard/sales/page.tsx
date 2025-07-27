@@ -56,6 +56,7 @@ interface DailySalesEntry {
   totalDiscount: number;
   totalCashDeposited: number;
   totalCylinderDeposited: number;
+  cylinderDepositsBySize: Record<string, number>;
   salesIds: string[];
   canEdit: boolean;
   canDelete: boolean;
@@ -590,8 +591,31 @@ export default function SalesPage() {
                     <td className="text-foreground whitespace-nowrap px-6 py-4 text-sm">
                       {formatCurrency(entry.totalCashDeposited)}
                     </td>
-                    <td className="text-foreground whitespace-nowrap px-6 py-4 text-sm">
-                      {entry.totalCylinderDeposited}
+                    <td className="text-foreground px-6 py-4 text-sm">
+                      {entry.totalCylinderDeposited > 0 ? (
+                        <div className="space-y-1">
+                          {Object.entries(
+                            entry.cylinderDepositsBySize || {}
+                          ).map(([size, quantity]) => (
+                            <div
+                              key={size}
+                              className="flex items-center space-x-2"
+                            >
+                              <span className="inline-flex rounded-md bg-blue-100 px-2 py-1 text-xs font-medium text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                                {size}: {quantity}
+                              </span>
+                            </div>
+                          ))}
+                          {Object.keys(entry.cylinderDepositsBySize || {})
+                            .length === 0 && (
+                            <span className="text-muted-foreground text-xs">
+                              {entry.totalCylinderDeposited} {t('cylinders')}
+                            </span>
+                          )}
+                        </div>
+                      ) : (
+                        <span className="text-muted-foreground">-</span>
+                      )}
                     </td>
                     <td className="whitespace-nowrap px-6 py-4 text-sm font-medium">
                       {entry.canEdit || entry.canDelete ? (

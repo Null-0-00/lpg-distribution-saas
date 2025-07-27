@@ -37,6 +37,7 @@ interface DriverReceivable {
   driverName: string;
   totalCashReceivables: number; // From sales data
   totalCylinderReceivables: number; // From sales data
+  cylinderSizeBreakdown: Record<string, number>; // From sales data - non-editable
   totalReceivables: number;
   salesCashReceivables: number; // For validation
   salesCylinderReceivables: number; // For validation
@@ -55,6 +56,11 @@ interface ValidationError {
     sales: number;
     difference: number;
   } | null;
+  sizeValidationErrors: Array<{
+    size: string;
+    customer: number;
+    expected: number;
+  }> | null;
 }
 
 export default function ReceivablesPage() {
@@ -85,6 +91,9 @@ export default function ReceivablesPage() {
   );
   const [changesLoading, setChangesLoading] = useState(false);
   const [receivablesChanges, setReceivablesChanges] = useState<any[]>([]);
+  const [cylinderSizes, setCylinderSizes] = useState<
+    Array<{ id: string; size: string }>
+  >([]);
 
   const currentUserRole = session?.user?.role || 'MANAGER';
 
@@ -172,6 +181,7 @@ export default function ReceivablesPage() {
     receivableType: 'CASH' as 'CASH' | 'CYLINDER',
     amount: 0,
     quantity: 0,
+    size: '',
     dueDate: '',
     notes: '',
   });
@@ -189,6 +199,7 @@ export default function ReceivablesPage() {
 
   useEffect(() => {
     fetchReceivables();
+    fetchCylinderSizes();
   }, []);
 
   useEffect(() => {
@@ -196,6 +207,18 @@ export default function ReceivablesPage() {
       fetchReceivablesChanges();
     }
   }, [activeTab]);
+
+  const fetchCylinderSizes = async () => {
+    try {
+      const response = await fetch('/api/cylinder-sizes');
+      if (response.ok) {
+        const data = await response.json();
+        setCylinderSizes(data.cylinderSizes || []);
+      }
+    } catch (error) {
+      console.error('Failed to fetch cylinder sizes:', error);
+    }
+  };
 
   const fetchReceivables = async () => {
     try {
@@ -388,6 +411,7 @@ export default function ReceivablesPage() {
         receivableType: customer.receivableType,
         amount: customer.amount,
         quantity: customer.quantity,
+        size: (customer as any).size || '',
         dueDate: customer.dueDate,
         notes: customer.notes || '',
       });
@@ -398,6 +422,7 @@ export default function ReceivablesPage() {
         receivableType: 'CASH',
         amount: 0,
         quantity: 0,
+        size: '',
         dueDate: '',
         notes: '',
       });
@@ -447,6 +472,10 @@ export default function ReceivablesPage() {
           receivableType: customerFormData.receivableType,
           amount: customerFormData.amount,
           quantity: customerFormData.quantity,
+          size:
+            customerFormData.receivableType === 'CYLINDER'
+              ? customerFormData.size
+              : null,
           dueDate: customerFormData.dueDate,
           notes: customerFormData.notes,
         }),
@@ -703,7 +732,7 @@ export default function ReceivablesPage() {
           <div className="mb-2 flex items-center">
             <AlertCircle className="mr-2 h-5 w-5 text-red-500" />
             <span className="font-medium text-red-800 dark:text-red-200">
-              ⚠️ {t('validationError')}: {t('customerReceivablesDontMatch')}
+              ⚠️ বৈধতা ত্রুটি: {t('customerReceivablesDontMatch')}
               sales-based totals
             </span>
           </div>
@@ -752,6 +781,34 @@ export default function ReceivablesPage() {
                     </span>
                   </div>
                 )}
+                {error.sizeValidationErrors &&
+                  error.sizeValidationErrors.length > 0 && (
+                    <div className="ml-2 mt-1">
+                      <span className="text-red-700 dark:text-red-300">
+                        📏 সাইজ অনুযায়ী বৈধতা ত্রুটি:
+                      </span>
+                      <div className="ml-4 mt-1 space-y-1">
+                        {error.sizeValidationErrors.map((sizeError, index) => (
+                          <div
+                            key={index}
+                            className="text-xs text-red-600 dark:text-red-400"
+                          >
+                            • {sizeError.size}: গ্রাহক রেকর্ড{' '}
+                            {sizeError.customer} ≠ প্রত্যাশিত{' '}
+                            {sizeError.expected}
+                            <span className="font-bold">
+                              {' '}
+                              (পার্থক্য:{' '}
+                              {Math.abs(
+                                sizeError.expected - sizeError.customer
+                              )}
+                              )
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
               </div>
             ))}
           </div>
@@ -951,8 +1008,18 @@ export default function ReceivablesPage() {
                         </span>
                         <span className="mx-2">|</span>
                         <span className="font-medium text-purple-600 dark:text-purple-400">
-                          Sales Cylinder Receivable:{' '}
-                          {driver.totalCylinderReceivables}
+                          Cylinder Receivable: {driver.totalCylinderReceivables}{' '}
+                          {(() => {
+                            // Use actual cylinder size breakdown from sales data (not customer entries)
+                            const breakdown = Object.entries(
+                              driver.cylinderSizeBreakdown || {}
+                            )
+                              .filter(([_, qty]) => qty > 0)
+                              .map(([size, qty]) => `${size}: ${qty}`)
+                              .join(', ');
+
+                            return breakdown ? `(${breakdown})` : '';
+                          })()}
                         </span>
                         <span className="mx-2">|</span>
                         <span className="text-xs">
@@ -1490,23 +1557,47 @@ export default function ReceivablesPage() {
               )}
 
               {customerFormData.receivableType === 'CYLINDER' && (
-                <div>
-                  <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Quantity *
-                  </label>
-                  <input
-                    type="number"
-                    value={customerFormData.quantity}
-                    onChange={(e) =>
-                      setCustomerFormData({
-                        ...customerFormData,
-                        quantity: parseInt(e.target.value) || 0,
-                      })
-                    }
-                    className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-                    placeholder={t('enterNumberOfCylinders')}
-                  />
-                </div>
+                <>
+                  <div>
+                    <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                      Cylinder Size *
+                    </label>
+                    <select
+                      value={customerFormData.size}
+                      onChange={(e) =>
+                        setCustomerFormData({
+                          ...customerFormData,
+                          size: e.target.value,
+                        })
+                      }
+                      className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                    >
+                      <option value="">Select cylinder size</option>
+                      {cylinderSizes.map((size) => (
+                        <option key={size.id} value={size.size}>
+                          {size.size}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                      Quantity *
+                    </label>
+                    <input
+                      type="number"
+                      value={customerFormData.quantity}
+                      onChange={(e) =>
+                        setCustomerFormData({
+                          ...customerFormData,
+                          quantity: parseInt(e.target.value) || 0,
+                        })
+                      }
+                      className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                      placeholder={t('enterNumberOfCylinders')}
+                    />
+                  </div>
+                </>
               )}
 
               <div>
@@ -1560,7 +1651,7 @@ export default function ReceivablesPage() {
                   (customerFormData.receivableType === 'CASH' &&
                     customerFormData.amount <= 0) ||
                   (customerFormData.receivableType === 'CYLINDER' &&
-                    customerFormData.quantity <= 0)
+                    (customerFormData.quantity <= 0 || !customerFormData.size))
                 }
                 className="flex items-center rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
               >

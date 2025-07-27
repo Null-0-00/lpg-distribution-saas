@@ -389,14 +389,12 @@ export async function POST(request: NextRequest) {
       const today = new Date();
       today.setHours(0, 0, 0, 0);
 
-      // Get yesterday's receivables for this driver
-      const yesterday = new Date(today);
-      yesterday.setDate(yesterday.getDate() - 1);
-
+      // Get previous day's receivables for this driver (not current day)
       const previousReceivables =
-        await receivablesCalculator.getCurrentReceivablesBalances(
+        await receivablesCalculator.getPreviousReceivables(
           tenantId,
-          validatedData.driverId
+          validatedData.driverId,
+          today
         );
 
       // Calculate receivables using exact formulas

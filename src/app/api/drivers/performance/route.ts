@@ -29,6 +29,7 @@ export async function GET(request: NextRequest) {
       monthEnd: monthEnd.toISOString(),
       targetMonth,
       targetYear,
+      tenantId,
     });
 
     // Get all drivers with their performance data
@@ -89,21 +90,19 @@ export async function GET(request: NextRequest) {
           },
           take: 1,
         },
-        // Current customer receivables for accurate totals
-        customerReceivables: {
-          where: {
-            status: 'CURRENT',
-          },
-          select: {
-            receivableType: true,
-            amount: true,
-            quantity: true,
-          },
-        },
       },
       orderBy: {
         name: 'asc',
       },
+    });
+
+    console.log('Found drivers:', drivers.length);
+    drivers.forEach((driver) => {
+      console.log(`Driver ${driver.name}:`, {
+        id: driver.id,
+        receivableRecordsCount: driver.receivableRecords.length,
+        receivableRecords: driver.receivableRecords,
+      });
     });
 
     // Process the data to calculate performance metrics
@@ -134,22 +133,33 @@ export async function GET(request: NextRequest) {
         }
       );
 
-      // Calculate current customer receivables (same as receivables page)
-      const currentCustomerCashTotal = driver.customerReceivables
-        .filter((r) => r.receivableType === 'CASH')
-        .reduce((sum, r) => sum + r.amount, 0);
+      // Get current receivables from latest receivable record (same as receivables page)
+      const latestReceivableRecord = driver.receivableRecords[0];
+      const currentCashTotal =
+        latestReceivableRecord?.totalCashReceivables || 0;
+      const currentCylinderTotal =
+        latestReceivableRecord?.totalCylinderReceivables || 0;
 
-      const currentCustomerCylinderTotal = driver.customerReceivables
-        .filter((r) => r.receivableType === 'CYLINDER')
-        .reduce((sum, r) => sum + r.quantity, 0);
+      // Debug logging for receivables data
+      if (
+        process.env.NODE_ENV === 'development' &&
+        driver.receivableRecords.length > 0
+      ) {
+        console.log(`Driver ${driver.name} receivables:`, {
+          recordsCount: driver.receivableRecords.length,
+          latestRecord: latestReceivableRecord,
+          currentCashTotal,
+          currentCylinderTotal,
+        });
+      }
 
       // If no daily sales data, calculate from individual sales
       let packageSalesCount = dailySalesTotal.packageSales;
       let refillSalesCount = dailySalesTotal.refillSales;
 
-      // Use customer receivables for consistency with receivables page
-      let totalCashReceivables = currentCustomerCashTotal;
-      let totalCylinderReceivables = currentCustomerCylinderTotal;
+      // Use latest receivable records for consistency with receivables page
+      let totalCashReceivables = currentCashTotal;
+      let totalCylinderReceivables = currentCylinderTotal;
 
       // If no daily sales aggregated data, calculate from individual sales
       if (dailySalesTotal.totalSales === 0 && driver.sales.length > 0) {
@@ -177,7 +187,7 @@ export async function GET(request: NextRequest) {
         area: driver.route || 'N/A',
         totalRefillSales: refillSalesCount,
         totalPackageSales: packageSalesCount,
-        // Use current customer receivables for consistency with receivables page
+        // Use latest receivable records for consistency with receivables page
         totalCashReceivables: Math.max(0, totalCashReceivables),
         totalCylinderReceivables: Math.max(0, totalCylinderReceivables),
         status: driver.status,

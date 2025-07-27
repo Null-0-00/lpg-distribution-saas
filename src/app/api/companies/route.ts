@@ -33,7 +33,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Get companies available to this distributor
-    const companies = await prisma.company.findMany({
+    let companies = await prisma.company.findMany({
       where: {
         ...whereClause,
         OR: [
@@ -51,6 +51,11 @@ export async function GET(request: NextRequest) {
             distributorAssignments: {
               none: {},
             },
+            isActive: true,
+          },
+          // Or companies created by this tenant (distributor's own companies)
+          {
+            tenantId: session.user.tenantId,
             isActive: true,
           },
         ],
@@ -86,6 +91,49 @@ export async function GET(request: NextRequest) {
       orderBy: { name: 'asc' },
     });
 
+    // If no companies found through distributor assignments, get all companies for this tenant
+    if (companies.length === 0) {
+      console.log(
+        'No companies found through distributor assignments, fetching all companies for tenant'
+      );
+      companies = await prisma.company.findMany({
+        where: {
+          ...whereClause,
+          tenantId: session.user.tenantId,
+          isActive: true,
+        },
+        include: {
+          products: includeProducts
+            ? {
+                where: { isActive: true },
+                select: {
+                  id: true,
+                  name: true,
+                  size: true,
+                  currentPrice: true,
+                  lowStockThreshold: true,
+                  isActive: true,
+                },
+              }
+            : false,
+          distributorAssignments: {
+            where: {
+              tenantId: session.user.tenantId,
+              isActive: true,
+            },
+            select: {
+              id: true,
+              territory: true,
+              notes: true,
+              effectiveDate: true,
+              expiryDate: true,
+            },
+          },
+        },
+        orderBy: { name: 'asc' },
+      });
+    }
+
     // Format response to include distributor-specific info
     const formattedCompanies = companies.map((company) => ({
       id: company.id,
@@ -102,6 +150,14 @@ export async function GET(request: NextRequest) {
       createdAt: company.createdAt,
       updatedAt: company.updatedAt,
     }));
+
+    console.log(
+      `Companies API: Found ${formattedCompanies.length} companies for tenant ${session.user.tenantId}`
+    );
+    console.log(
+      'Company names:',
+      formattedCompanies.map((c) => c.name)
+    );
 
     return NextResponse.json({
       success: true,

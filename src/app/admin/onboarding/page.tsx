@@ -13,10 +13,12 @@ import {
 } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
+import { useSettings } from '@/contexts/SettingsContext';
 
 export default function OnboardingPage() {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const { t } = useSettings();
   const [formData, setFormData] = useState({
     // Tenant Info
     tenantName: '',
@@ -56,7 +58,7 @@ export default function OnboardingPage() {
 
       if (response.ok) {
         toast({
-          title: 'Business Onboarded Successfully',
+          title: t('businessOnboardedSuccessfully'),
           description: `${formData.tenantName} has been created with admin user ${formData.userEmail}`,
         });
 
@@ -74,15 +76,15 @@ export default function OnboardingPage() {
         });
       } else {
         toast({
-          title: 'Error',
-          description: result.error || 'Failed to onboard business',
+          title: t('error'),
+          description: result.error || t('failedToOnboardBusiness'),
           variant: 'destructive',
         });
       }
     } catch (error) {
       toast({
-        title: 'Error',
-        description: 'Network error occurred',
+        title: t('error'),
+        description: t('networkErrorOccurred'),
         variant: 'destructive',
       });
     } finally {
@@ -94,30 +96,32 @@ export default function OnboardingPage() {
     <div className="container mx-auto py-8">
       <Card className="mx-auto max-w-2xl">
         <CardHeader>
-          <CardTitle>Manual Business Onboarding</CardTitle>
+          <CardTitle>{t('manualBusinessOnboarding')}</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Tenant Information */}
             <div className="space-y-4">
-              <h3 className="text-lg font-semibold">Business Information</h3>
+              <h3 className="text-lg font-semibold">
+                {t('businessInformation')}
+              </h3>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="tenantName">Business Name *</Label>
+                  <Label htmlFor="tenantName">{t('businessName')} *</Label>
                   <Input
                     id="tenantName"
                     value={formData.tenantName}
                     onChange={(e) =>
                       handleInputChange('tenantName', e.target.value)
                     }
-                    placeholder="ABC LPG Distributors"
+                    placeholder={t('businessNamePlaceholder')}
                     required
                   />
                 </div>
 
                 <div>
-                  <Label htmlFor="subdomain">Subdomain *</Label>
+                  <Label htmlFor="subdomain">{t('subdomain')} *</Label>
                   <Input
                     id="subdomain"
                     value={formData.subdomain}
@@ -127,7 +131,7 @@ export default function OnboardingPage() {
                         e.target.value.toLowerCase()
                       )
                     }
-                    placeholder="abc-lpg"
+                    placeholder={t('subdomainPlaceholder')}
                     required
                   />
                 </div>
@@ -135,7 +139,7 @@ export default function OnboardingPage() {
 
               <div className="grid grid-cols-3 gap-4">
                 <div>
-                  <Label htmlFor="currency">Currency</Label>
+                  <Label htmlFor="currency">{t('currency')}</Label>
                   <Select
                     value={formData.currency}
                     onValueChange={(value) =>
@@ -155,7 +159,7 @@ export default function OnboardingPage() {
                 </div>
 
                 <div>
-                  <Label htmlFor="timezone">Timezone</Label>
+                  <Label htmlFor="timezone">{t('timezone')}</Label>
                   <Select
                     value={formData.timezone}
                     onValueChange={(value) =>
@@ -177,7 +181,7 @@ export default function OnboardingPage() {
                 </div>
 
                 <div>
-                  <Label htmlFor="subscriptionPlan">Plan</Label>
+                  <Label htmlFor="subscriptionPlan">{t('plan')}</Label>
                   <Select
                     value={formData.subscriptionPlan}
                     onValueChange={(value) =>
@@ -188,9 +192,13 @@ export default function OnboardingPage() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="FREEMIUM">Freemium</SelectItem>
-                      <SelectItem value="PROFESSIONAL">Professional</SelectItem>
-                      <SelectItem value="ENTERPRISE">Enterprise</SelectItem>
+                      <SelectItem value="FREEMIUM">{t('freemium')}</SelectItem>
+                      <SelectItem value="PROFESSIONAL">
+                        {t('professional')}
+                      </SelectItem>
+                      <SelectItem value="ENTERPRISE">
+                        {t('enterprise')}
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -199,24 +207,24 @@ export default function OnboardingPage() {
 
             {/* Admin User Information */}
             <div className="space-y-4">
-              <h3 className="text-lg font-semibold">Admin User</h3>
+              <h3 className="text-lg font-semibold">{t('adminUser')}</h3>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="userName">Admin Name *</Label>
+                  <Label htmlFor="userName">{t('adminName')} *</Label>
                   <Input
                     id="userName"
                     value={formData.userName}
                     onChange={(e) =>
                       handleInputChange('userName', e.target.value)
                     }
-                    placeholder="John Doe"
+                    placeholder={t('adminNamePlaceholder')}
                     required
                   />
                 </div>
 
                 <div>
-                  <Label htmlFor="userEmail">Admin Email *</Label>
+                  <Label htmlFor="userEmail">{t('adminEmail')} *</Label>
                   <Input
                     id="userEmail"
                     type="email"
@@ -224,14 +232,14 @@ export default function OnboardingPage() {
                     onChange={(e) =>
                       handleInputChange('userEmail', e.target.value)
                     }
-                    placeholder="admin@abclpg.com"
+                    placeholder={t('adminEmailPlaceholder')}
                     required
                   />
                 </div>
               </div>
 
               <div>
-                <Label htmlFor="userPassword">Admin Password *</Label>
+                <Label htmlFor="userPassword">{t('adminPassword')} *</Label>
                 <Input
                   id="userPassword"
                   type="password"
@@ -239,7 +247,7 @@ export default function OnboardingPage() {
                   onChange={(e) =>
                     handleInputChange('userPassword', e.target.value)
                   }
-                  placeholder="Strong password"
+                  placeholder={t('strongPassword')}
                   required
                   minLength={8}
                 />
@@ -247,7 +255,7 @@ export default function OnboardingPage() {
             </div>
 
             <Button type="submit" disabled={isLoading} className="w-full">
-              {isLoading ? 'Creating Business...' : 'Onboard Business'}
+              {isLoading ? t('creatingBusiness') : t('onboardBusiness')}
             </Button>
           </form>
         </CardContent>

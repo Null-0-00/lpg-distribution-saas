@@ -86,6 +86,16 @@ interface DailySalesReportData {
   };
 }
 
+interface CylinderReceivablesBreakdown {
+  [size: string]: number;
+}
+
+interface DriverReceivablesData {
+  [driverId: string]: {
+    cylinderSizeBreakdown: Record<string, number>;
+  };
+}
+
 export default function DailySalesReportPage() {
   const { formatCurrency, formatDate, t } = useSettings();
 
@@ -111,12 +121,58 @@ export default function DailySalesReportPage() {
   const [reportData, setReportData] = useState<DailySalesReportData | null>(
     null
   );
+  const [cylinderReceivablesBreakdown, setCylinderReceivablesBreakdown] =
+    useState<CylinderReceivablesBreakdown>({});
+  const [driverReceivablesData, setDriverReceivablesData] =
+    useState<DriverReceivablesData>({});
   const [loading, setLoading] = useState(true);
   const [selectedDate, setSelectedDate] = useState(
     new Date().toISOString().split('T')[0]
   );
   const [refreshing, setRefreshing] = useState(false);
   const { toast } = useToast();
+
+  const fetchCylinderReceivablesBreakdown = useCallback(async () => {
+    try {
+      // Fetch both global breakdown and driver-specific breakdowns
+      const [summaryResponse, receivablesResponse] = await Promise.all([
+        fetch(`/api/inventory/cylinders-summary?_t=${Date.now()}`, {
+          cache: 'no-cache',
+          headers: {
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+          },
+        }),
+        fetch(`/api/receivables/customers?_t=${Date.now()}`, {
+          cache: 'no-cache',
+          headers: {
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+          },
+        }),
+      ]);
+
+      if (summaryResponse.ok) {
+        const summaryData = await summaryResponse.json();
+        setCylinderReceivablesBreakdown(summaryData.receivablesBreakdown || {});
+      }
+
+      if (receivablesResponse.ok) {
+        const receivablesData = await receivablesResponse.json();
+        const driverData: DriverReceivablesData = {};
+
+        if (receivablesData.driverReceivables) {
+          receivablesData.driverReceivables.forEach((driver: any) => {
+            driverData[driver.id] = {
+              cylinderSizeBreakdown: driver.cylinderSizeBreakdown || {},
+            };
+          });
+        }
+
+        setDriverReceivablesData(driverData);
+      }
+    } catch (error) {
+      console.error('Failed to load cylinder receivables breakdown:', error);
+    }
+  }, []);
 
   const fetchReportData = useCallback(
     async (date: string, isRefresh = false) => {
@@ -127,23 +183,27 @@ export default function DailySalesReportPage() {
           setLoading(true);
         }
 
-        const response = await fetch(`/api/reports/daily-sales?date=${date}`, {
-          cache: isRefresh ? 'no-cache' : 'default',
-          headers: isRefresh
-            ? {
-                'Cache-Control': 'no-cache',
-              }
-            : {},
-        });
+        // Fetch both report data and cylinder receivables breakdown
+        const [reportResponse] = await Promise.all([
+          fetch(`/api/reports/daily-sales?date=${date}`, {
+            cache: isRefresh ? 'no-cache' : 'default',
+            headers: isRefresh
+              ? {
+                  'Cache-Control': 'no-cache',
+                }
+              : {},
+          }),
+          fetchCylinderReceivablesBreakdown(),
+        ]);
 
-        if (response.ok) {
-          const data = await response.json();
+        if (reportResponse.ok) {
+          const data = await reportResponse.json();
           setReportData(data);
         } else {
-          const errorText = await response.text();
+          const errorText = await reportResponse.text();
           console.error(
             'Daily sales report API error:',
-            response.status,
+            reportResponse.status,
             errorText
           );
           toast({
@@ -164,7 +224,7 @@ export default function DailySalesReportPage() {
         setRefreshing(false);
       }
     },
-    [toast, t]
+    [toast, t, fetchCylinderReceivablesBreakdown]
   );
 
   useEffect(() => {
@@ -411,8 +471,31 @@ export default function DailySalesReportPage() {
                   <td className="text-foreground whitespace-nowrap px-6 py-4 text-right text-sm">
                     {formatCurrency(driver.totalDeposited)}
                   </td>
-                  <td className="text-foreground whitespace-nowrap px-6 py-4 text-center text-sm">
-                    {driver.totalCylinderReceivables}
+                  <td className="whitespace-nowrap px-6 py-4 text-center text-sm">
+                    <div className="mb-1 text-sm font-bold text-orange-600 dark:text-orange-400">
+                      {driver.totalCylinderReceivables}
+                    </div>
+                    {driverReceivablesData[driver.driverId]
+                      ?.cylinderSizeBreakdown && (
+                      <div className="space-y-1">
+                        {Object.entries(
+                          driverReceivablesData[driver.driverId]
+                            .cylinderSizeBreakdown
+                        )
+                          .filter(([size, quantity]) => quantity > 0)
+                          .map(([size, quantity]) => (
+                            <div
+                              key={size}
+                              className="text-xs leading-tight text-gray-600 dark:text-gray-400"
+                            >
+                              <span className="font-medium">{size}:</span>
+                              <span className="ml-1 font-semibold text-orange-600">
+                                {quantity}
+                              </span>
+                            </div>
+                          ))}
+                      </div>
+                    )}
                   </td>
                   <td className="text-foreground whitespace-nowrap px-6 py-4 text-right text-sm">
                     {formatCurrency(driver.totalCashReceivables)}
@@ -473,8 +556,27 @@ export default function DailySalesReportPage() {
                 <td className="text-foreground whitespace-nowrap px-6 py-4 text-right text-sm">
                   {formatCurrency(reportData.totals.totalDeposited)}
                 </td>
-                <td className="text-foreground whitespace-nowrap px-6 py-4 text-center text-sm">
-                  {reportData.totals.totalCylinderReceivables}
+                <td className="whitespace-nowrap px-6 py-4 text-center text-sm">
+                  <div className="mb-1 text-sm font-bold text-orange-600 dark:text-orange-400">
+                    {reportData.totals.totalCylinderReceivables}
+                  </div>
+                  {Object.entries(cylinderReceivablesBreakdown).length > 0 && (
+                    <div className="space-y-1">
+                      {Object.entries(cylinderReceivablesBreakdown)
+                        .filter(([size, quantity]) => quantity > 0)
+                        .map(([size, quantity]) => (
+                          <div
+                            key={size}
+                            className="text-xs leading-tight text-gray-600 dark:text-gray-400"
+                          >
+                            <span className="font-medium">{size}:</span>
+                            <span className="ml-1 font-semibold text-orange-600">
+                              {quantity}
+                            </span>
+                          </div>
+                        ))}
+                    </div>
+                  )}
                 </td>
                 <td className="text-foreground whitespace-nowrap px-6 py-4 text-right text-sm">
                   {formatCurrency(reportData.totals.totalCashReceivables)}
@@ -674,7 +776,7 @@ export default function DailySalesReportPage() {
                 {t('totalAvailableCash')}:
               </span>
               <span className="text-3xl font-bold text-green-600 dark:text-green-400">
-                {formatCurrency(finalAvailableCash)}
+                {formatCurrency(reportData.summary.availableCash)}
               </span>
             </div>
             <p className="text-muted-foreground mt-2 text-sm">

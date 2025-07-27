@@ -13,6 +13,7 @@ const customerReceivableSchema = z.object({
   receivableType: z.enum(['CASH', 'CYLINDER']),
   amount: z.number().min(0),
   quantity: z.number().min(0),
+  size: z.string().nullable().optional(),
   dueDate: z.string().optional(),
   notes: z.string().optional(),
 });
@@ -114,6 +115,120 @@ export async function GET(request: NextRequest) {
       },
     });
 
+    // Get cylinder size breakdown from onboarding data (preserved separately from customer entries)
+    const cylinderSizeBreakdowns = new Map<string, Record<string, number>>();
+
+    for (const driver of activeDriversWithReceivables) {
+      // STEP 1: Start with onboarding baseline breakdown by size
+      const sizeBreakdown: Record<string, number> = {};
+
+      // Get the PERMANENT baseline breakdown (onboarding receivables by size)
+      const baselineBreakdown =
+        await prisma.driverCylinderSizeBaseline.findMany({
+          where: {
+            tenantId,
+            driverId: driver.id,
+          },
+          select: {
+            baselineQuantity: true,
+            cylinderSize: {
+              select: {
+                size: true,
+              },
+            },
+          },
+        });
+
+      // Initialize with onboarding baseline
+      if (baselineBreakdown.length > 0) {
+        baselineBreakdown.forEach((item) => {
+          const size = item.cylinderSize.size;
+          sizeBreakdown[size] = item.baselineQuantity;
+        });
+        console.log(
+          `📋 Starting with onboarding baseline for ${driver.name}:`,
+          sizeBreakdown
+        );
+      } else {
+        console.log(
+          `⚠️ No baseline found for ${driver.name}, starting with empty breakdown`
+        );
+      }
+
+      // STEP 2: Add/subtract sales data by specific cylinder sizes
+      const salesWithCylinders = await prisma.sale.findMany({
+        where: {
+          tenantId,
+          driverId: driver.id,
+          saleType: 'REFILL',
+        },
+        select: {
+          quantity: true,
+          cylindersDeposited: true,
+          product: {
+            select: {
+              name: true,
+              size: true,
+              cylinderSize: {
+                select: {
+                  size: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      // Apply sales transactions to the baseline
+      salesWithCylinders.forEach((sale) => {
+        const size =
+          sale.product?.cylinderSize?.size ||
+          sale.product?.size ||
+          sale.product?.name ||
+          'Unknown';
+        const receivablesChange =
+          (sale.quantity || 0) - (sale.cylindersDeposited || 0);
+
+        // Add/subtract from the baseline for this specific size
+        sizeBreakdown[size] = (sizeBreakdown[size] || 0) + receivablesChange;
+      });
+
+      // STEP 3: Calculate the total from size breakdown for consistency
+      const calculatedTotal = Object.values(sizeBreakdown).reduce(
+        (sum, qty) => sum + Math.max(0, qty),
+        0
+      );
+      const recordedTotal =
+        driver.receivableRecords[0]?.totalCylinderReceivables || 0;
+
+      console.log(`🔍 Driver ${driver.name} calculation comparison:`, {
+        baselineCount: baselineBreakdown.length,
+        salesCount: salesWithCylinders.length,
+        finalSizeBreakdown: sizeBreakdown,
+        calculatedTotalFromBreakdown: calculatedTotal,
+        recordedTotalFromDB: recordedTotal,
+        match: calculatedTotal === recordedTotal,
+      });
+
+      // STEP 4: Display only positive values from the cumulative calculation
+      const displaySizeBreakdown: Record<string, number> = {};
+      Object.entries(sizeBreakdown).forEach(([size, quantity]) => {
+        if (quantity > 0) {
+          displaySizeBreakdown[size] = quantity;
+        }
+      });
+
+      console.log(`📋 Final cumulative size breakdown for ${driver.name}:`, {
+        allSizes: sizeBreakdown,
+        displayPositive: displaySizeBreakdown,
+        displayTotal: Object.values(displaySizeBreakdown).reduce(
+          (sum, qty) => sum + qty,
+          0
+        ),
+      });
+      cylinderSizeBreakdowns.set(driver.id, displaySizeBreakdown);
+    }
+
     // Calculate current date and check for missing records
     const today = new Date();
     const todayStr = today.toISOString().split('T')[0];
@@ -143,15 +258,21 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    // Create a simple receivables map
+    // Create a simple receivables map using calculated values for consistency
     const salesReceivablesMap = new Map(
       activeDriversWithReceivables.map((driver) => {
         const record = driver.receivableRecords[0];
+        const sizeBreakdown = cylinderSizeBreakdowns.get(driver.id) || {};
+        const calculatedCylinderTotal = Object.values(sizeBreakdown).reduce(
+          (sum, qty) => sum + qty,
+          0
+        );
+
         return [
           driver.id,
           {
             cash: record?.totalCashReceivables || 0,
-            cylinders: record?.totalCylinderReceivables || 0,
+            cylinders: calculatedCylinderTotal, // Use calculated total instead of recorded total
           },
         ];
       })
@@ -200,16 +321,59 @@ export async function GET(request: NextRequest) {
         )
         .reduce((sum, r) => sum + r.quantity, 0);
 
+      // Calculate customer cylinder breakdown by size for validation
+      const customerCylinderSizeBreakdown: Record<string, number> = {};
+      driverCustomerReceivables
+        .filter(
+          (r) => r.receivableType === 'CYLINDER' && r.status === 'CURRENT'
+        )
+        .forEach((r) => {
+          const size = r.size || 'Unknown';
+          customerCylinderSizeBreakdown[size] =
+            (customerCylinderSizeBreakdown[size] || 0) + r.quantity;
+        });
+
+      // Get actual cylinder size breakdown from sales data
+      const actualCylinderSizeBreakdown =
+        cylinderSizeBreakdowns.get(driver.id) || {};
+
       // Check for validation errors (customer totals should match sales-calculated totals)
       const cashMismatch =
         Math.abs(customerCashTotal - salesTotals.cash) > 0.01;
       const cylinderMismatch = customerCylinderTotal !== salesTotals.cylinders;
+
+      // Check for size-specific validation errors
+      const sizeValidationErrors: Array<{
+        size: string;
+        customer: number;
+        expected: number;
+      }> = [];
+
+      // Check if customer breakdown matches expected breakdown by size
+      const allSizes = new Set([
+        ...Object.keys(actualCylinderSizeBreakdown),
+        ...Object.keys(customerCylinderSizeBreakdown),
+      ]);
+
+      for (const size of allSizes) {
+        const expectedQuantity = actualCylinderSizeBreakdown[size] || 0;
+        const customerQuantity = customerCylinderSizeBreakdown[size] || 0;
+
+        if (expectedQuantity !== customerQuantity) {
+          sizeValidationErrors.push({
+            size,
+            customer: customerQuantity,
+            expected: expectedQuantity,
+          });
+        }
+      }
 
       return {
         id: driver.id,
         driverName: driver.name,
         totalCashReceivables: salesTotals.cash, // FROM SALES ONLY - Non-editable
         totalCylinderReceivables: salesTotals.cylinders, // FROM SALES ONLY - Non-editable
+        cylinderSizeBreakdown: actualCylinderSizeBreakdown, // FROM SALES DATA - Non-editable
         totalReceivables: salesTotals.cash,
         salesCashReceivables: salesTotals.cash, // For validation
         salesCylinderReceivables: salesTotals.cylinders, // For validation
@@ -217,7 +381,10 @@ export async function GET(request: NextRequest) {
         customerCylinderTotal, // For validation (all statuses)
         currentCustomerCashTotal, // Current status only
         currentCustomerCylinderTotal, // Current status only
-        hasValidationError: cashMismatch || cylinderMismatch,
+        customerCylinderSizeBreakdown, // Customer breakdown by size for validation
+        sizeValidationErrors, // Size-specific validation errors
+        hasValidationError:
+          cashMismatch || cylinderMismatch || sizeValidationErrors.length > 0,
         customerBreakdown: driverCustomerReceivables.map((receivable) => ({
           id: receivable.id,
           customerName: receivable.customerName,
@@ -259,6 +426,10 @@ export async function GET(request: NextRequest) {
                   driver.customerCylinderTotal -
                   driver.salesCylinderReceivables,
               }
+            : null,
+        sizeValidationErrors:
+          driver.sizeValidationErrors && driver.sizeValidationErrors.length > 0
+            ? driver.sizeValidationErrors
             : null,
       }));
 
@@ -341,6 +512,7 @@ export async function POST(request: NextRequest) {
           receivableType: data.receivableType,
           amount: data.receivableType === 'CASH' ? data.amount : 0,
           quantity: data.receivableType === 'CYLINDER' ? data.quantity : 0,
+          size: data.receivableType === 'CYLINDER' ? data.size : null,
           dueDate: data.dueDate ? new Date(data.dueDate) : null,
           status: status as any,
           notes: data.notes,
@@ -465,21 +637,44 @@ async function calculateDailyReceivablesForDate(tenantId: string, date: Date) {
     // Cylinder Receivables Change = driver_refill_sales - cylinder_deposits
     const cylinderReceivablesChange = refillQuantity - cylinderDeposits;
 
-    // Get yesterday's totals
+    // Get previous receivables (yesterday's record or onboarding receivables)
     const yesterday = new Date(date.getTime() - 24 * 60 * 60 * 1000);
-    const yesterdayStr = yesterday.toISOString().split('T')[0];
+    yesterday.setHours(0, 0, 0, 0);
 
+    // First try to get yesterday's record
     const yesterdayRecord = await prisma.receivableRecord.findFirst({
       where: {
         tenantId,
         driverId: driver.id,
-        date: new Date(yesterdayStr + 'T00:00:00.000Z'),
+        date: {
+          gte: yesterday,
+          lt: date,
+        },
       },
+      orderBy: { date: 'desc' },
     });
 
-    const yesterdayCashTotal = yesterdayRecord?.totalCashReceivables || 0;
-    const yesterdayCylinderTotal =
-      yesterdayRecord?.totalCylinderReceivables || 0;
+    let yesterdayCashTotal = 0;
+    let yesterdayCylinderTotal = 0;
+
+    if (yesterdayRecord) {
+      yesterdayCashTotal = yesterdayRecord.totalCashReceivables;
+      yesterdayCylinderTotal = yesterdayRecord.totalCylinderReceivables;
+    } else {
+      // If no yesterday record, check for onboarding receivables (first record)
+      const onboardingRecord = await prisma.receivableRecord.findFirst({
+        where: {
+          tenantId,
+          driverId: driver.id,
+        },
+        orderBy: { date: 'asc' },
+      });
+
+      if (onboardingRecord) {
+        yesterdayCashTotal = onboardingRecord.totalCashReceivables;
+        yesterdayCylinderTotal = onboardingRecord.totalCylinderReceivables;
+      }
+    }
 
     // EXACT FORMULAS:
     // Today's Total = Yesterday's Total + Today's Changes

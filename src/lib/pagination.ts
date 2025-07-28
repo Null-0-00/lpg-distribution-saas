@@ -47,10 +47,14 @@ export class PaginationHelper {
     const page = Math.max(1, parseInt(searchParams.get('page') || '1', 10));
     const limit = Math.min(
       maxLimit,
-      Math.max(1, parseInt(searchParams.get('limit') || defaultLimit.toString(), 10))
+      Math.max(
+        1,
+        parseInt(searchParams.get('limit') || defaultLimit.toString(), 10)
+      )
     );
     const sortBy = searchParams.get('sortBy') || defaultSortBy;
-    const sortOrder = (searchParams.get('sortOrder') as 'asc' | 'desc') || defaultSortOrder;
+    const sortOrder =
+      (searchParams.get('sortOrder') as 'asc' | 'desc') || defaultSortOrder;
     const search = searchParams.get('search') || undefined;
 
     return {
@@ -86,8 +90,13 @@ export class PaginationHelper {
   }
 
   static getPrismaOptions(params: PaginationParams) {
-    const { page = 1, limit = this.DEFAULT_LIMIT, sortBy = 'createdAt', sortOrder = 'desc' } = params;
-    
+    const {
+      page = 1,
+      limit = this.DEFAULT_LIMIT,
+      sortBy = 'createdAt',
+      sortOrder = 'desc',
+    } = params;
+
     return {
       skip: (page - 1) * limit,
       take: limit,
@@ -101,10 +110,8 @@ export class PaginationHelper {
     params: PaginationParams,
     options: PaginationOptions = {}
   ): Promise<PaginationResult<T>> {
-    const {
-      page = 1,
-      limit = options.defaultLimit || this.DEFAULT_LIMIT,
-    } = params;
+    const { page = 1, limit = options.defaultLimit || this.DEFAULT_LIMIT } =
+      params;
 
     // Execute count and data queries in parallel
     const prismaOptions = this.getPrismaOptions(params);
@@ -130,7 +137,7 @@ export class PaginationHelper {
       return {};
     }
 
-    const searchConditions = searchableFields.map(field => ({
+    const searchConditions = searchableFields.map((field) => ({
       [field]: {
         contains: search,
         mode: 'insensitive' as const,
@@ -160,13 +167,15 @@ export class PaginationHelper {
       conditions.lte = end;
     }
 
-    return Object.keys(conditions).length > 0 ? { [dateField]: conditions } : {};
+    return Object.keys(conditions).length > 0
+      ? { [dateField]: conditions }
+      : {};
   }
 
   // Helper for creating combined filter conditions
   static combineConditions(...conditions: any[]): any {
-    const validConditions = conditions.filter(condition => 
-      condition && Object.keys(condition).length > 0
+    const validConditions = conditions.filter(
+      (condition) => condition && Object.keys(condition).length > 0
     );
 
     if (validConditions.length === 0) {
@@ -196,10 +205,7 @@ export function createPaginatedResponse<T>(
 }
 
 // Error response for pagination
-export function createPaginationError(
-  message: string,
-  code: number = 400
-) {
+export function createPaginationError(message: string, code: number = 400) {
   return {
     success: false,
     error: message,
@@ -219,7 +225,9 @@ export function createPaginationError(
 }
 
 // Common pagination validation
-export function validatePaginationParams(params: PaginationParams): string | null {
+export function validatePaginationParams(
+  params: PaginationParams
+): string | null {
   const { page, limit } = params;
 
   if (page && page < 1) {
@@ -243,25 +251,27 @@ export class PaginationPerformanceMonitor {
 
   static startTiming(endpoint: string): () => void {
     const startTime = performance.now();
-    
+
     return () => {
       const duration = performance.now() - startTime;
-      
+
       if (!this.queryTimes.has(endpoint)) {
         this.queryTimes.set(endpoint, []);
       }
-      
+
       const times = this.queryTimes.get(endpoint)!;
       times.push(duration);
-      
+
       // Keep only last 100 measurements
       if (times.length > 100) {
         times.shift();
       }
-      
+
       // Log slow queries in development
       if (process.env.NODE_ENV === 'development' && duration > 1000) {
-        console.warn(`Slow paginated query: ${endpoint} took ${duration.toFixed(2)}ms`);
+        console.warn(
+          `Slow paginated query: ${endpoint} took ${duration.toFixed(2)}ms`
+        );
       }
     };
   }
@@ -270,7 +280,7 @@ export class PaginationPerformanceMonitor {
     if (endpoint) {
       const times = this.queryTimes.get(endpoint) || [];
       if (times.length === 0) return null;
-      
+
       return {
         endpoint,
         count: times.length,
@@ -291,7 +301,7 @@ export class PaginationPerformanceMonitor {
         };
       }
     }
-    
+
     return allStats;
   }
 }

@@ -5,7 +5,11 @@ import { ComponentType } from 'react';
 import { RefreshCw } from 'lucide-react';
 
 // Loading component for dynamic imports
-const LoadingSpinner = ({ text = 'Loading component...' }: { text?: string }) => (
+const LoadingSpinner = ({
+  text = 'Loading component...',
+}: {
+  text?: string;
+}) => (
   <div className="flex items-center justify-center p-4">
     <RefreshCw className="mr-2 h-4 w-4 animate-spin text-blue-600" />
     <span className="text-muted-foreground text-sm">{text}</span>
@@ -47,7 +51,10 @@ export const DynamicResponsiveContainer = dynamic(
 
 // Form components - complex forms can be lazy loaded
 export const DynamicCombinedSaleForm = dynamic(
-  () => import('@/components/forms/CombinedSaleForm').then((mod) => ({ default: mod.CombinedSaleForm })),
+  () =>
+    import('@/components/forms/CombinedSaleForm').then((mod) => ({
+      default: mod.CombinedSaleForm,
+    })),
   {
     loading: () => <LoadingSpinner text="Loading form..." />,
     ssr: false,
@@ -82,7 +89,8 @@ export const DynamicDialogContent = dynamic(
 
 // Table components for large data sets (fallback if not found)
 export const DynamicDataTable = dynamic(
-  () => Promise.resolve({ default: () => <div>Table component not found</div> }),
+  () =>
+    Promise.resolve({ default: () => <div>Table component not found</div> }),
   {
     loading: () => <LoadingSpinner text="Loading table..." />,
     ssr: false,
@@ -176,7 +184,8 @@ export const DynamicExportDialog = dynamic(
 
 // Advanced analytics components (fallback if not found)
 export const DynamicAdvancedAnalytics = dynamic(
-  () => Promise.resolve({ default: () => <div>Advanced analytics not found</div> }),
+  () =>
+    Promise.resolve({ default: () => <div>Advanced analytics not found</div> }),
   {
     loading: () => <LoadingSpinner text="Loading advanced analytics..." />,
     ssr: false,
@@ -194,7 +203,8 @@ export const DynamicCalendar = dynamic(
 
 // Rich text editors or complex input components (fallback if not found)
 export const DynamicRichTextEditor = dynamic(
-  () => Promise.resolve({ default: () => <div>Rich text editor not found</div> }),
+  () =>
+    Promise.resolve({ default: () => <div>Rich text editor not found</div> }),
   {
     loading: () => <LoadingSpinner text="Loading editor..." />,
     ssr: false,

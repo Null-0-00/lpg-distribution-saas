@@ -2539,779 +2539,773 @@ const bengaliTranslations: Translations = {
   equipment: 'equipment', // TODO: Add Bengali translation
   property: 'property', // TODO: Add Bengali translation
   // Auto-generated missing properties (need Bengali translation)
-  quantity: 'quantity_bn', // TODO: Add Bengali translation
-  unitPrice: 'unitPrice_bn', // TODO: Add Bengali translation
-  discount: 'discount_bn', // TODO: Add Bengali translation
-  totalValue: 'totalValue_bn', // TODO: Add Bengali translation
-  packageSales: 'packageSales_bn', // TODO: Add Bengali translation
-  refillSales: 'refillSales_bn', // TODO: Add Bengali translation
-  cylinder: 'cylinder_bn', // TODO: Add Bengali translation
-  cylinders: 'cylinders_bn', // TODO: Add Bengali translation
-  products: 'products_bn', // TODO: Add Bengali translation
-  cash: 'cash_bn', // TODO: Add Bengali translation
-  cashDepositsByDriver: 'cashDepositsByDriver_bn', // TODO: Add Bengali translation
-  includesReceivablePayments: 'includesReceivablePayments_bn', // TODO: Add Bengali translation
-  driverExpense: 'driverExpense_bn', // TODO: Add Bengali translation
-  loadingData: 'loadingData_bn', // TODO: Add Bengali translation
-  noDataAvailable: 'noDataAvailable_bn', // TODO: Add Bengali translation
-  tryAgain: 'tryAgain_bn', // TODO: Add Bengali translation
-  performance: 'performance_bn', // TODO: Add Bengali translation
-  month: 'month_bn', // TODO: Add Bengali translation
-  year: 'year_bn', // TODO: Add Bengali translation
-  allDrivers: 'allDrivers_bn', // TODO: Add Bengali translation
-  totalRevenue: 'totalRevenue_bn', // TODO: Add Bengali translation
-  revenue: 'revenue_bn', // TODO: Add Bengali translation
-  comingSoon: 'comingSoon_bn', // TODO: Add Bengali translation
-  exportReport: 'exportReport_bn', // TODO: Add Bengali translation
-  exportReportFunctionality: 'exportReportFunctionality_bn', // TODO: Add Bengali translation
-  customerRecords: 'customerRecords_bn', // TODO: Add Bengali translation
-  statusBreakdown: 'statusBreakdown_bn', // TODO: Add Bengali translation
-  noReceivablesFound: 'noReceivablesFound_bn', // TODO: Add Bengali translation
-  noChangesRecorded: 'noChangesRecorded_bn', // TODO: Add Bengali translation
-  receivablesChangesLog: 'receivablesChangesLog_bn', // TODO: Add Bengali translation
-  amountPlaceholder: 'amountPlaceholder_bn', // TODO: Add Bengali translation
-  enterExpenseDescription: 'enterExpenseDescription_bn', // TODO: Add Bengali translation
-  selectParentCategory: 'selectParentCategory_bn', // TODO: Add Bengali translation
-  selectCategory: 'selectCategory_bn', // TODO: Add Bengali translation
-  expenseDate: 'expenseDate_bn', // TODO: Add Bengali translation
-  receiptUrl: 'receiptUrl_bn', // TODO: Add Bengali translation
-  receiptUrlPlaceholder: 'receiptUrlPlaceholder_bn', // TODO: Add Bengali translation
-  submitting: 'submitting_bn', // TODO: Add Bengali translation
-  activeDrivers: 'activeDrivers_bn', // TODO: Add Bengali translation
-  activeUsers: 'activeUsers_bn', // TODO: Add Bengali translation
-  addDriver: 'addDriver_bn', // TODO: Add Bengali translation
-  addExpense: 'addExpense_bn', // TODO: Add Bengali translation
-  additionalNotesComments: 'additionalNotesComments_bn', // TODO: Add Bengali translation
-  addNewDriver: 'addNewDriver_bn', // TODO: Add Bengali translation
-  addUser: 'addUser_bn', // TODO: Add Bengali translation
-  administrator: 'administrator_bn', // TODO: Add Bengali translation
-  administrators: 'administrators_bn', // TODO: Add Bengali translation
-  ago: 'ago_bn', // TODO: Add Bengali translation
-  alerts: 'alerts_bn', // TODO: Add Bengali translation
-  allCalculationsUpdatedRealTime: 'allCalculationsUpdatedRealTime_bn', // TODO: Add Bengali translation
-  allCategories: 'allCategories_bn', // TODO: Add Bengali translation
-  allCylinders: 'allCylinders_bn', // TODO: Add Bengali translation
-  allGood: 'allGood_bn', // TODO: Add Bengali translation
-  allStatus: 'allStatus_bn', // TODO: Add Bengali translation
-  approved: 'approved_bn', // TODO: Add Bengali translation
-  approvedExpenses: 'approvedExpenses_bn', // TODO: Add Bengali translation
-  approveExpense: 'approveExpense_bn', // TODO: Add Bengali translation
-  area: 'area_bn', // TODO: Add Bengali translation
-  areYouSureDeleteDriver: 'areYouSureDeleteDriver_bn', // TODO: Add Bengali translation
-  assetsLiabilities: 'assetsLiabilities_bn', // TODO: Add Bengali translation
-  assignedArea: 'assignedArea_bn', // TODO: Add Bengali translation
-  balanceSheet: 'balanceSheet_bn', // TODO: Add Bengali translation
-  businessFormulaImplementation: 'businessFormulaImplementation_bn', // TODO: Add Bengali translation
-  cashReceivables: 'cashReceivables_bn', // TODO: Add Bengali translation
-  changesLog: 'changesLog_bn', // TODO: Add Bengali translation
-  checkStock: 'checkStock_bn', // TODO: Add Bengali translation
-  clear: 'clear_bn', // TODO: Add Bengali translation
-  company: 'company_bn', // TODO: Add Bengali translation
-  completeSystemAccessAndUserManagement:
-    'completeSystemAccessAndUserManagement_bn', // TODO: Add Bengali translation
-  confirmDeleteUser: 'confirmDeleteUser_bn', // TODO: Add Bengali translation
-  contactName: 'contactName_bn', // TODO: Add Bengali translation
-  contactNumber: 'contactNumber_bn', // TODO: Add Bengali translation
-  create: 'create_bn', // TODO: Add Bengali translation
-  criticalAlert: 'criticalAlert_bn', // TODO: Add Bengali translation
-  currency: 'currency_bn', // TODO: Add Bengali translation
-  currentFullCylinderInventory: 'currentFullCylinderInventory_bn', // TODO: Add Bengali translation
-  currentStock: 'currentStock_bn', // TODO: Add Bengali translation
-  currentStockHealth: 'currentStockHealth_bn', // TODO: Add Bengali translation
-  customers: 'customers_bn', // TODO: Add Bengali translation
-  cylinderReceivables: 'cylinderReceivables_bn', // TODO: Add Bengali translation
-  cylindersReceived: 'cylindersReceived_bn', // TODO: Add Bengali translation
-  cylindersSold: 'cylindersSold_bn', // TODO: Add Bengali translation
-  cylindersSummaryApiError: 'cylindersSummaryApiError_bn', // TODO: Add Bengali translation
-  cylindersSummaryDataReceived: 'cylindersSummaryDataReceived_bn', // TODO: Add Bengali translation
-  cylindersSummaryResponseStatus: 'cylindersSummaryResponseStatus_bn', // TODO: Add Bengali translation
-  dailyCalculations: 'dailyCalculations_bn', // TODO: Add Bengali translation
-  dailyInventoryTracking: 'dailyInventoryTracking_bn', // TODO: Add Bengali translation
-  dataSources: 'dataSources_bn', // TODO: Add Bengali translation
-  day: 'day_bn', // TODO: Add Bengali translation
-  days: 'days_bn', // TODO: Add Bengali translation
-  deleteExpense: 'deleteExpense_bn', // TODO: Add Bengali translation
-  deleteUser: 'deleteUser_bn', // TODO: Add Bengali translation
-  deleting: 'deleting_bn', // TODO: Add Bengali translation
-  details: 'details_bn', // TODO: Add Bengali translation
-  driver: 'driver_bn', // TODO: Add Bengali translation
-  driverAddedSuccessfully: 'driverAddedSuccessfully_bn', // TODO: Add Bengali translation
-  driverDeletedSuccessfully: 'driverDeletedSuccessfully_bn', // TODO: Add Bengali translation
-  driverDetails: 'driverDetails_bn', // TODO: Add Bengali translation
-  driverManagement: 'driverManagement_bn', // TODO: Add Bengali translation
-  driverName: 'driverName_bn', // TODO: Add Bengali translation
-  driverType: 'driverType_bn', // TODO: Add Bengali translation
-  driverUpdatedSuccessfully: 'driverUpdatedSuccessfully_bn', // TODO: Add Bengali translation
-  editDriver: 'editDriver_bn', // TODO: Add Bengali translation
-  editExpense: 'editExpense_bn', // TODO: Add Bengali translation
-  editUser: 'editUser_bn', // TODO: Add Bengali translation
-  emailAddress: 'emailAddress_bn', // TODO: Add Bengali translation
-  emergencyContact: 'emergencyContact_bn', // TODO: Add Bengali translation
-  emptyCylinderInventoryAvailability: 'emptyCylinderInventoryAvailability_bn', // TODO: Add Bengali translation
-  emptyCylinders: 'emptyCylinders_bn', // TODO: Add Bengali translation
-  emptyCylindersBuySell: 'emptyCylindersBuySell_bn', // TODO: Add Bengali translation
-  emptyCylindersInHand: 'emptyCylindersInHand_bn', // TODO: Add Bengali translation
-  emptyCylinderReceivables: 'emptyCylinderReceivables_bn', // TODO: Add Bengali translation
-  emptyCylindersInStock: 'emptyCylindersInStock_bn', // TODO: Add Bengali translation
-  outstandingShipments: 'outstandingShipments_bn', // TODO: Add Bengali translation
-  noOutstandingOrders: 'noOutstandingOrders_bn', // TODO: Add Bengali translation
-  enterAssignedAreaRoute: 'enterAssignedAreaRoute_bn', // TODO: Add Bengali translation
-  enterEmailAddress: 'enterEmailAddress_bn', // TODO: Add Bengali translation
-  enterEmergencyContactName: 'enterEmergencyContactName_bn', // TODO: Add Bengali translation
-  enterEmergencyContactNumber: 'enterEmergencyContactNumber_bn', // TODO: Add Bengali translation
-  enterFullAddress: 'enterFullAddress_bn', // TODO: Add Bengali translation
-  enterFullName: 'enterFullName_bn', // TODO: Add Bengali translation
-  enterLicenseNumber: 'enterLicenseNumber_bn', // TODO: Add Bengali translation
-  enterPhoneNumber: 'enterPhoneNumber_bn', // TODO: Add Bengali translation
-  error: 'error_bn', // TODO: Add Bengali translation
-  errorFetchingCylindersSummaryData: 'errorFetchingCylindersSummaryData_bn', // TODO: Add Bengali translation
-  errorFetchingDailyInventoryData: 'errorFetchingDailyInventoryData_bn', // TODO: Add Bengali translation
-  errorFetchingInventoryData: 'errorFetchingInventoryData_bn', // TODO: Add Bengali translation
-  expense: 'expense_bn', // TODO: Add Bengali translation
-  expenseManagement: 'expenseManagement_bn', // TODO: Add Bengali translation
-  exportFunctionalityComingSoon: 'exportFunctionalityComingSoon_bn', // TODO: Add Bengali translation
-  failedToCreateUser: 'failedToCreateUser_bn', // TODO: Add Bengali translation
-  failedToDeleteDriver: 'failedToDeleteDriver_bn', // TODO: Add Bengali translation
-  failedToDeleteUser: 'failedToDeleteUser_bn', // TODO: Add Bengali translation
-  failedToFetchUsers: 'failedToFetchUsers_bn', // TODO: Add Bengali translation
-  failedToLoadInventoryData: 'failedToLoadInventoryData_bn', // TODO: Add Bengali translation
-  failedToUpdateDriver: 'failedToUpdateDriver_bn', // TODO: Add Bengali translation
-  failedToUpdateUser: 'failedToUpdateUser_bn', // TODO: Add Bengali translation
-  fetchingCylindersSummaryData: 'fetchingCylindersSummaryData_bn', // TODO: Add Bengali translation
-  filterByDriverType: 'filterByDriverType_bn', // TODO: Add Bengali translation
-  fri: 'fri_bn', // TODO: Add Bengali translation
-  from: 'from_bn', // TODO: Add Bengali translation
-  fullAccess: 'fullAccess_bn', // TODO: Add Bengali translation
-  fullCylinders: 'fullCylinders_bn', // TODO: Add Bengali translation
-  fullName: 'fullName_bn', // TODO: Add Bengali translation
-  generalSettings: 'generalSettings_bn', // TODO: Add Bengali translation
-  getStartedByAddingFirstExpense: 'getStartedByAddingFirstExpense_bn', // TODO: Add Bengali translation
-  hour: 'hour_bn', // TODO: Add Bengali translation
-  hours: 'hours_bn', // TODO: Add Bengali translation
-  individualDailySalesData: 'individualDailySalesData_bn', // TODO: Add Bengali translation
-  info: 'info_bn', // TODO: Add Bengali translation
-  inventoryManagement: 'inventoryManagement_bn', // TODO: Add Bengali translation
-  joiningDate: 'joiningDate_bn', // TODO: Add Bengali translation
-  justNow: 'justNow_bn', // TODO: Add Bengali translation
-  kPending: 'kPending_bn', // TODO: Add Bengali translation
-  language: 'language_bn', // TODO: Add Bengali translation
-  last7Days: 'last7Days_bn', // TODO: Add Bengali translation
-  lastMonth: 'lastMonth_bn', // TODO: Add Bengali translation
-  lastLogin: 'lastLogin_bn', // TODO: Add Bengali translation
-  lastUpdated: 'lastUpdated_bn', // TODO: Add Bengali translation
-  latest: 'latest_bn', // TODO: Add Bengali translation
-  licenseNumber: 'licenseNumber_bn', // TODO: Add Bengali translation
-  loadingDailySalesData: 'loadingDailySalesData_bn', // TODO: Add Bengali translation
-  loadingDriverPerformance: 'loadingDriverPerformance_bn', // TODO: Add Bengali translation
-  loadingInventoryData: 'loadingInventoryData_bn', // TODO: Add Bengali translation
-  loadingText: 'loadingText_bn', // TODO: Add Bengali translation
-  locationInformation: 'locationInformation_bn', // TODO: Add Bengali translation
-  login: 'login_bn', // TODO: Add Bengali translation
-  lpgDistributorManagementSystem: 'lpgDistributorManagementSystem_bn', // TODO: Add Bengali translation
-  manageBudgets: 'manageBudgets_bn', // TODO: Add Bengali translation
-  manageCategories: 'manageCategories_bn', // TODO: Add Bengali translation
-  manageCompanyAssets: 'manageCompanyAssets_bn', // TODO: Add Bengali translation
-  manageDriversAndAssignments: 'manageDriversAndAssignments_bn', // TODO: Add Bengali translation
-  manageLiabilities: 'manageLiabilities_bn', // TODO: Add Bengali translation
-  manager: 'manager_bn', // TODO: Add Bengali translation
-  managers: 'managers_bn', // TODO: Add Bengali translation
-  manageSystemRoles: 'manageSystemRoles_bn', // TODO: Add Bengali translation
-  manageSystemUsers: 'manageSystemUsers_bn', // TODO: Add Bengali translation
-  manageTeam: 'manageTeam_bn', // TODO: Add Bengali translation
-  mon: 'mon_bn', // TODO: Add Bengali translation
-  monitorCylinderStock: 'monitorCylinderStock_bn', // TODO: Add Bengali translation
-  needAdminPrivileges: 'needAdminPrivileges_bn', // TODO: Add Bengali translation
-  never: 'never_bn', // TODO: Add Bengali translation
-  newSale: 'newSale_bn', // TODO: Add Bengali translation
-  noActiveDriversFoundForThisPeriod: 'noActiveDriversFoundForThisPeriod_bn', // TODO: Add Bengali translation
-  noDailyInventoryDataAvailable: 'noDailyInventoryDataAvailable_bn', // TODO: Add Bengali translation
-  noDailySalesDataFound: 'noDailySalesDataFound_bn', // TODO: Add Bengali translation
-  noDataFound: 'noDataFound_bn', // TODO: Add Bengali translation
-  noEmptyCylindersInInventory: 'noEmptyCylindersInInventory_bn', // TODO: Add Bengali translation
-  noFullCylindersInInventory: 'noFullCylindersInInventory_bn', // TODO: Add Bengali translation
-  notApplicable: 'notApplicable_bn', // TODO: Add Bengali translation
-  note: 'note_bn', // TODO: Add Bengali translation
-  noUsersFound: 'noUsersFound_bn', // TODO: Add Bengali translation
-  operationFailed: 'operationFailed_bn', // TODO: Add Bengali translation
-  operations: 'operations_bn', // TODO: Add Bengali translation
-  outstanding: 'outstanding_bn', // TODO: Add Bengali translation
-  packagePurchase: 'packagePurchase_bn', // TODO: Add Bengali translation
-  packageRefillPurchase: 'packageRefillPurchase_bn', // TODO: Add Bengali translation
-  packageRefillSales: 'packageRefillSales_bn', // TODO: Add Bengali translation
-  packageSale: 'packageSale_bn', // TODO: Add Bengali translation
-  packageSalesQty: 'packageSalesQty_bn', // TODO: Add Bengali translation
-  parentCategory: 'parentCategory_bn', // TODO: Add Bengali translation
-  pay: 'pay_bn', // TODO: Add Bengali translation
-  paymentReceived: 'paymentReceived_bn', // TODO: Add Bengali translation
-  pending: 'pending_bn', // TODO: Add Bengali translation
-  pendingApproval: 'pendingApproval_bn', // TODO: Add Bengali translation
-  performanceStatistics: 'performanceStatistics_bn', // TODO: Add Bengali translation
-  permissions: 'permissions_bn', // TODO: Add Bengali translation
-  personalInformation: 'personalInformation_bn', // TODO: Add Bengali translation
-  phoneNumber: 'phoneNumber_bn', // TODO: Add Bengali translation
-  pleaseLogInToAccessUserManagement: 'pleaseLogInToAccessUserManagement_bn', // TODO: Add Bengali translation
-  producentsWithLowStockWarning: 'producentsWithLowStockWarning_bn', // TODO: Add Bengali translation
-  productsBelowMinimumThreshold: 'productsBelowMinimumThreshold_bn', // TODO: Add Bengali translation
-  productsInCriticalStock: 'productsInCriticalStock_bn', // TODO: Add Bengali translation
-  productsInGoodStock: 'productsInGoodStock_bn', // TODO: Add Bengali translation
-  productsOutOfStock: 'productsOutOfStock_bn', // TODO: Add Bengali translation
-  purchase: 'purchase_bn', // TODO: Add Bengali translation
-  rahmanSoldCylinders: 'rahmanSoldCylinders_bn', // TODO: Add Bengali translation
-  realTimeInventoryTracking: 'realTimeInventoryTracking_bn', // TODO: Add Bengali translation
-  receivableManagement: 'receivableManagement_bn', // TODO: Add Bengali translation
-  receivableRecords: 'receivableRecords_bn', // TODO: Add Bengali translation
-  recentActivity: 'recentActivity_bn', // TODO: Add Bengali translation
-  recordDailySales: 'recordDailySales_bn', // TODO: Add Bengali translation
-  refillPurchase: 'refillPurchase_bn', // TODO: Add Bengali translation
-  refillSale: 'refillSale_bn', // TODO: Add Bengali translation
-  refillSalesQty: 'refillSalesQty_bn', // TODO: Add Bengali translation
-  refreshData: 'refreshData_bn', // TODO: Add Bengali translation
-  rejectExpense: 'rejectExpense_bn', // TODO: Add Bengali translation
-  reportsAnalytics: 'reportsAnalytics_bn', // TODO: Add Bengali translation
-  retail: 'retail_bn', // TODO: Add Bengali translation
-  retailDriver: 'retailDriver_bn', // TODO: Add Bengali translation
-  sale: 'sale_bn', // TODO: Add Bengali translation
-  retailDriverDescription: 'retailDriverDescription_bn', // TODO: Add Bengali translation
-  retailDrivers: 'retailDrivers_bn', // TODO: Add Bengali translation
-  retry: 'retry_bn', // TODO: Add Bengali translation
-  return: 'return_bn', // TODO: Add Bengali translation
-  rolePermissions: 'rolePermissions_bn', // TODO: Add Bengali translation
-  routeArea: 'routeArea_bn', // TODO: Add Bengali translation
-  salesInventoryAndDriverManagement: 'salesInventoryAndDriverManagement_bn', // TODO: Add Bengali translation
-  salesTrend: 'salesTrend_bn', // TODO: Add Bengali translation
-  salesValue: 'salesValue_bn', // TODO: Add Bengali translation
-  sat: 'sat_bn', // TODO: Add Bengali translation
-  saveError: 'saveError_bn', // TODO: Add Bengali translation
-  saveSuccess: 'saveSuccess_bn', // TODO: Add Bengali translation
-  searchExpenses: 'searchExpenses_bn', // TODO: Add Bengali translation
-  selectDriverType: 'selectDriverType_bn', // TODO: Add Bengali translation
-  selectStatus: 'selectStatus_bn', // TODO: Add Bengali translation
-  shipment: 'shipment_bn', // TODO: Add Bengali translation
-  shipmentDriverDescription: 'shipmentDriverDescription_bn', // TODO: Add Bengali translation
-  shipmentDrivers: 'shipmentDrivers_bn', // TODO: Add Bengali translation
-  size: 'size_bn', // TODO: Add Bengali translation
-  statusAndNotes: 'statusAndNotes_bn', // TODO: Add Bengali translation
-  stock: 'stock_bn', // TODO: Add Bengali translation
-  stockReplenished: 'stockReplenished_bn', // TODO: Add Bengali translation
-  submittedBy: 'submittedBy_bn', // TODO: Add Bengali translation
-  success: 'success_bn', // TODO: Add Bengali translation
-  sumAllDriversSalesForDate: 'sumAllDriversSalesForDate_bn', // TODO: Add Bengali translation
-  sumCompletedEmptyCylinderShipments: 'sumCompletedEmptyCylinderShipments_bn', // TODO: Add Bengali translation
-  sumCompletedShipmentsFromShipmentsPage:
-    'sumCompletedShipmentsFromShipmentsPage_bn', // TODO: Add Bengali translation
-  sun: 'sun_bn', // TODO: Add Bengali translation
-  systemUsers: 'systemUsers_bn', // TODO: Add Bengali translation
-  tasks: 'tasks_bn', // TODO: Add Bengali translation
-  teamAccess: 'teamAccess_bn', // TODO: Add Bengali translation
-  thisActionCannotBeUndone: 'thisActionCannotBeUndone_bn', // TODO: Add Bengali translation
-  thisMonth: 'thisMonth_bn', // TODO: Add Bengali translation
-  thu: 'thu_bn', // TODO: Add Bengali translation
-  timezone: 'timezone_bn', // TODO: Add Bengali translation
-  to: 'to_bn', // TODO: Add Bengali translation
-  today: 'today_bn', // TODO: Add Bengali translation
-  todaysEmptyCylinders: 'todaysEmptyCylinders_bn', // TODO: Add Bengali translation
-  todaysFullCylinders: 'todaysFullCylinders_bn', // TODO: Add Bengali translation
-  todaysPurchases: 'todaysPurchases_bn', // TODO: Add Bengali translation
-  todaysSales: 'todaysSales_bn', // TODO: Add Bengali translation
-  topDriverPerformance: 'topDriverPerformance_bn', // TODO: Add Bengali translation
-  totalCylinderReceivables: 'totalCylinderReceivables_bn', // TODO: Add Bengali translation
-  totalCylinders: 'totalCylinders_bn', // TODO: Add Bengali translation
-  totalCylindersReceivables: 'totalCylindersReceivables_bn', // TODO: Add Bengali translation
-  totalReceivables: 'totalReceivables_bn', // TODO: Add Bengali translation
-  totalSales: 'totalSales_bn', // TODO: Add Bengali translation
-  totalSalesQty: 'totalSalesQty_bn', // TODO: Add Bengali translation
-  totalSalesThisMonth: 'totalSalesThisMonth_bn', // TODO: Add Bengali translation
-  totalUsers: 'totalUsers_bn', // TODO: Add Bengali translation
-  trackCustomerCredits: 'trackCustomerCredits_bn', // TODO: Add Bengali translation
-  trackCustomerPayments: 'trackCustomerPayments_bn', // TODO: Add Bengali translation
-  trackExpenses: 'trackExpenses_bn', // TODO: Add Bengali translation
-  trackExpensesAndManageBudgets: 'trackExpensesAndManageBudgets_bn', // TODO: Add Bengali translation
-  trackPerformance: 'trackPerformance_bn', // TODO: Add Bengali translation
-  tue: 'tue_bn', // TODO: Add Bengali translation
-  unknown: 'unknown_bn', // TODO: Add Bengali translation
-  updateDriver: 'updateDriver_bn', // TODO: Add Bengali translation
-  updateExpense: 'updateExpense_bn', // TODO: Add Bengali translation
-  updatePayment: 'updatePayment_bn', // TODO: Add Bengali translation
-  updateUser: 'updateUser_bn', // TODO: Add Bengali translation
-  updating: 'updating_bn', // TODO: Add Bengali translation
-  urgent: 'urgent_bn', // TODO: Add Bengali translation
-  user: 'user_bn', // TODO: Add Bengali translation
-  userDetails: 'userDetails_bn', // TODO: Add Bengali translation
-  userManagement: 'userManagement_bn', // TODO: Add Bengali translation
-  viewDetails: 'viewDetails_bn', // TODO: Add Bengali translation
-  viewingExpensesFor: 'viewingExpensesFor_bn', // TODO: Add Bengali translation
-  viewReceipt: 'viewReceipt_bn', // TODO: Add Bengali translation
-  viewReports: 'viewReports_bn', // TODO: Add Bengali translation
-  warning: 'warning_bn', // TODO: Add Bengali translation
-  wed: 'wed_bn', // TODO: Add Bengali translation
-  week: 'week_bn', // TODO: Add Bengali translation
-  yesterday: 'yesterday_bn', // TODO: Add Bengali translation
-  yesterdaysEmpty: 'yesterdaysEmpty_bn', // TODO: Add Bengali translation
-  yesterdaysFull: 'yesterdaysFull_bn', // TODO: Add Bengali translation
-  fuelExpense: 'fuelExpense_bn', // TODO: Add Bengali translation
-  maintenanceExpense: 'maintenanceExpense_bn', // TODO: Add Bengali translation
-  officeExpense: 'officeExpense_bn', // TODO: Add Bengali translation
-  transportExpense: 'transportExpense_bn', // TODO: Add Bengali translation
-  miscellaneousExpense: 'miscellaneousExpense_bn', // TODO: Add Bengali translation
-  generalExpense: 'generalExpense_bn', // TODO: Add Bengali translation
-  failedToLoadDailySalesReport: 'failedToLoadDailySalesReport_bn', // TODO: Add Bengali translation
-  loadingDailySalesReport: 'loadingDailySalesReport_bn', // TODO: Add Bengali translation
-  noReportDataAvailable: 'noReportDataAvailable_bn', // TODO: Add Bengali translation
-  tryAgainOrSelectDate: 'tryAgainOrSelectDate_bn', // TODO: Add Bengali translation
-  comprehensiveDailySalesReport: 'comprehensiveDailySalesReport_bn', // TODO: Add Bengali translation
-  totalSalesValue: 'totalSalesValue_bn', // TODO: Add Bengali translation
-  totalDeposited: 'totalDeposited_bn', // TODO: Add Bengali translation
-  totalExpenses: 'totalExpenses_bn', // TODO: Add Bengali translation
-  availableCash: 'availableCash_bn', // TODO: Add Bengali translation
-  totalCashReceivables: 'totalCashReceivables_bn', // TODO: Add Bengali translation
-  changeInReceivablesCashCylinders: 'changeInReceivablesCashCylinders_bn', // TODO: Add Bengali translation
-  dailyDepositsExpenses: 'dailyDepositsExpenses_bn', // TODO: Add Bengali translation
-  detailedBreakdownDepositsExpenses: 'detailedBreakdownDepositsExpenses_bn', // TODO: Add Bengali translation
-  deposits: 'deposits_bn', // TODO: Add Bengali translation
-  particulars: 'particulars_bn', // TODO: Add Bengali translation
-  noDepositsFound: 'noDepositsFound_bn', // TODO: Add Bengali translation
-  totalDepositsCalculated: 'totalDepositsCalculated_bn', // TODO: Add Bengali translation
-  noExpensesFound: 'noExpensesFound_bn', // TODO: Add Bengali translation
-  totalExpensesCalculated: 'totalExpensesCalculated_bn', // TODO: Add Bengali translation
-  totalAvailableCash: 'totalAvailableCash_bn', // TODO: Add Bengali translation
-  totalDepositsIncludingSales: 'totalDepositsIncludingSales_bn', // TODO: Add Bengali translation
-  customerName: 'customerName_bn', // TODO: Add Bengali translation
-  selectADriver: 'selectADriver_bn', // TODO: Add Bengali translation
-  enterCustomerName: 'enterCustomerName_bn', // TODO: Add Bengali translation
-  customerNamePlaceholder: 'customerNamePlaceholder_bn', // TODO: Add Bengali translation
-  saleItems: 'saleItems_bn', // TODO: Add Bengali translation
-  itemNumber: 'itemNumber_bn', // TODO: Add Bengali translation
-  selectAProduct: 'selectAProduct_bn', // TODO: Add Bengali translation
-  packagePrice: 'packagePrice_bn', // TODO: Add Bengali translation
-  refillPrice: 'refillPrice_bn', // TODO: Add Bengali translation
-  itemTotal: 'itemTotal_bn', // TODO: Add Bengali translation
-  saleSummary: 'saleSummary_bn', // TODO: Add Bengali translation
-  paymentType: 'paymentType_bn', // TODO: Add Bengali translation
-  paymentTypeRequired: 'paymentTypeRequired_bn', // TODO: Add Bengali translation
-  bankTransfer: 'bankTransfer_bn', // TODO: Add Bengali translation
-  mfs: 'mfs_bn', // TODO: Add Bengali translation
-  mobileFinancialService: 'mobileFinancialService_bn', // TODO: Add Bengali translation
-  credit: 'credit_bn', // TODO: Add Bengali translation
-  cylinderCredit: 'cylinderCredit_bn', // TODO: Add Bengali translation
-  cashDeposited: 'cashDeposited_bn', // TODO: Add Bengali translation
-  cylinderDeposits: 'cylinderDeposits_bn', // TODO: Add Bengali translation
-  cylinderDepositsBySize: 'cylinderDepositsBySize_bn', // TODO: Add Bengali translation
-  cylindersDeposited: 'cylindersDeposited_bn', // TODO: Add Bengali translation
-  maxQuantity: 'maxQuantity_bn', // TODO: Add Bengali translation
-  additionalNotes: 'additionalNotes_bn', // TODO: Add Bengali translation
-  additionalNotesPlaceholder: 'additionalNotesPlaceholder_bn', // TODO: Add Bengali translation
-  totalQuantityLabel: 'totalQuantityLabel_bn', // TODO: Add Bengali translation
-  totalValueLabel: 'totalValueLabel_bn', // TODO: Add Bengali translation
-  totalDiscountLabel: 'totalDiscountLabel_bn', // TODO: Add Bengali translation
-  netValueLabel: 'netValueLabel_bn', // TODO: Add Bengali translation
-  cashReceivableWarning: 'cashReceivableWarning_bn', // TODO: Add Bengali translation
-  customerNameRecommended: 'customerNameRecommended_bn', // TODO: Add Bengali translation
-  cylinderReceivableWarning: 'cylinderReceivableWarning_bn', // TODO: Add Bengali translation
-  lowStockWarning: 'lowStockWarning_bn', // TODO: Add Bengali translation
-  cylindersRemaining: 'cylindersRemaining_bn', // TODO: Add Bengali translation
-  lowStockAlert: 'lowStockAlert_bn', // TODO: Add Bengali translation
-  loadingFormData: 'loadingFormData_bn', // TODO: Add Bengali translation
-  driverRequired: 'driverRequired_bn', // TODO: Add Bengali translation
-  productRequired: 'productRequired_bn', // TODO: Add Bengali translation
-  packageSaleCannotBeNegative: 'packageSaleCannotBeNegative_bn', // TODO: Add Bengali translation
-  refillSaleCannotBeNegative: 'refillSaleCannotBeNegative_bn', // TODO: Add Bengali translation
-  packagePriceCannotBeNegative: 'packagePriceCannotBeNegative_bn', // TODO: Add Bengali translation
-  refillPriceCannotBeNegative: 'refillPriceCannotBeNegative_bn', // TODO: Add Bengali translation
-  quantityAndPriceRequired: 'quantityAndPriceRequired_bn', // TODO: Add Bengali translation
-  atLeastOneSaleItemRequired: 'atLeastOneSaleItemRequired_bn', // TODO: Add Bengali translation
-  discountCannotBeNegative: 'discountCannotBeNegative_bn', // TODO: Add Bengali translation
-  cashDepositedCannotBeNegative: 'cashDepositedCannotBeNegative_bn', // TODO: Add Bengali translation
-  cylinderDepositsCannotBeNegative: 'cylinderDepositsCannotBeNegative_bn', // TODO: Add Bengali translation
-  available: 'available_bn', // TODO: Add Bengali translation
-  for: 'for_bn', // TODO: Add Bengali translation
-  readOnly: 'readOnly_bn', // TODO: Add Bengali translation
-  areYouSure: 'areYouSure_bn', // TODO: Add Bengali translation
-  deleteConfirmation: 'deleteConfirmation_bn', // TODO: Add Bengali translation
-  salesEntries: 'salesEntries_bn', // TODO: Add Bengali translation
-  cannotBeUndone: 'cannotBeUndone_bn', // TODO: Add Bengali translation
-  successfullyDeleted: 'successfullyDeleted_bn', // TODO: Add Bengali translation
-  on: 'on_bn', // TODO: Add Bengali translation
-  thisWillDelete: 'thisWillDelete_bn', // TODO: Add Bengali translation
-  failedToLoadDailySalesData: 'failedToLoadDailySalesData_bn', // TODO: Add Bengali translation
-  combinedSaleCreatedSuccessfully: 'combinedSaleCreatedSuccessfully_bn', // TODO: Add Bengali translation
-  failedToCreateSale: 'failedToCreateSale_bn', // TODO: Add Bengali translation
-  failedToLoadEntryDataForEditing: 'failedToLoadEntryDataForEditing_bn', // TODO: Add Bengali translation
-  salesEntryUpdatedSuccessfully: 'salesEntryUpdatedSuccessfully_bn', // TODO: Add Bengali translation
-  failedToUpdateSalesEntry: 'failedToUpdateSalesEntry_bn', // TODO: Add Bengali translation
-  failedToDeleteSales: 'failedToDeleteSales_bn', // TODO: Add Bengali translation
-  adminPanel: 'adminPanel_bn', // TODO: Add Bengali translation
-  systemAdministration: 'systemAdministration_bn', // TODO: Add Bengali translation
-  viewDistributorDashboard: 'viewDistributorDashboard_bn', // TODO: Add Bengali translation
-  signOut: 'signOut_bn', // TODO: Add Bengali translation
-  lightMode: 'lightMode_bn', // TODO: Add Bengali translation
-  darkMode: 'darkMode_bn', // TODO: Add Bengali translation
-  systemTheme: 'systemTheme_bn', // TODO: Add Bengali translation
-  shipmentsManagement: 'shipmentsManagement_bn', // TODO: Add Bengali translation
-  trackPurchaseOrdersAndShipments: 'trackPurchaseOrdersAndShipments_bn', // TODO: Add Bengali translation
-  newPurchase: 'newPurchase_bn', // TODO: Add Bengali translation
-  emptyCylinderBuySell: 'emptyCylinderBuySell_bn', // TODO: Add Bengali translation
-  allShipments: 'allShipments_bn', // TODO: Add Bengali translation
-  outstandingOrders: 'outstandingOrders_bn', // TODO: Add Bengali translation
-  completedOrders: 'completedOrders_bn', // TODO: Add Bengali translation
-  allCompanies: 'allCompanies_bn', // TODO: Add Bengali translation
-  allProducts: 'allProducts_bn', // TODO: Add Bengali translation
-  fromDate: 'fromDate_bn', // TODO: Add Bengali translation
-  toDate: 'toDate_bn', // TODO: Add Bengali translation
-  clearFilters: 'clearFilters_bn', // TODO: Add Bengali translation
-  loadingShipments: 'loadingShipments_bn', // TODO: Add Bengali translation
-  noShipmentsFound: 'noShipmentsFound_bn', // TODO: Add Bengali translation
-  invoice: 'invoice_bn', // TODO: Add Bengali translation
-  gas: 'gas_bn', // TODO: Add Bengali translation
-  unit: 'unit_bn', // TODO: Add Bengali translation
-  unitCost: 'unitCost_bn', // TODO: Add Bengali translation
-  gasCost: 'gasCost_bn', // TODO: Add Bengali translation
-  cylinderCost: 'cylinderCost_bn', // TODO: Add Bengali translation
-  vehicle: 'vehicle_bn', // TODO: Add Bengali translation
-  markAsFulfilled: 'markAsFulfilled_bn', // TODO: Add Bengali translation
-  totalItems: 'totalItems_bn', // TODO: Add Bengali translation
-  totalCost: 'totalCost_bn', // TODO: Add Bengali translation
-  editPurchaseOrder: 'editPurchaseOrder_bn', // TODO: Add Bengali translation
-  createNewPurchaseOrder: 'createNewPurchaseOrder_bn', // TODO: Add Bengali translation
-  step: 'step_bn', // TODO: Add Bengali translation
-  of: 'of_bn', // TODO: Add Bengali translation
-  orderInformation: 'orderInformation_bn', // TODO: Add Bengali translation
-  selectCompany: 'selectCompany_bn', // TODO: Add Bengali translation
-  selectDriver: 'selectDriver_bn', // TODO: Add Bengali translation
-  shipmentDate: 'shipmentDate_bn', // TODO: Add Bengali translation
-  expectedDeliveryDate: 'expectedDeliveryDate_bn', // TODO: Add Bengali translation
-  invoiceNumber: 'invoiceNumber_bn', // TODO: Add Bengali translation
-  enterInvoiceNumber: 'enterInvoiceNumber_bn', // TODO: Add Bengali translation
-  paymentTerms: 'paymentTerms_bn', // TODO: Add Bengali translation
-  cashOnDelivery: 'cashOnDelivery_bn', // TODO: Add Bengali translation
-  net30Days: 'net30Days_bn', // TODO: Add Bengali translation
-  net60Days: 'net60Days_bn', // TODO: Add Bengali translation
-  advancePayment: 'advancePayment_bn', // TODO: Add Bengali translation
-  priority: 'priority_bn', // TODO: Add Bengali translation
-  low: 'low_bn', // TODO: Add Bengali translation
-  normal: 'normal_bn', // TODO: Add Bengali translation
-  high: 'high_bn', // TODO: Add Bengali translation
-  vehicleNumber: 'vehicleNumber_bn', // TODO: Add Bengali translation
-  enterVehicleNumber: 'enterVehicleNumber_bn', // TODO: Add Bengali translation
-  enterAdditionalNotes: 'enterAdditionalNotes_bn', // TODO: Add Bengali translation
-  addLineItem: 'addLineItem_bn', // TODO: Add Bengali translation
-  selectProduct: 'selectProduct_bn', // TODO: Add Bengali translation
-  selectCompanyFirst: 'selectCompanyFirst_bn', // TODO: Add Bengali translation
-  package: 'package_bn', // TODO: Add Bengali translation
-  refill: 'refill_bn', // TODO: Add Bengali translation
-  gasPrice: 'gasPrice_bn', // TODO: Add Bengali translation
-  cylinderPrice: 'cylinderPrice_bn', // TODO: Add Bengali translation
-  taxRate: 'taxRate_bn', // TODO: Add Bengali translation
-  lineTotalPreview: 'lineTotalPreview_bn', // TODO: Add Bengali translation
-  packageInfo: 'packageInfo_bn', // TODO: Add Bengali translation
-  refillInfo: 'refillInfo_bn', // TODO: Add Bengali translation
-  addItem: 'addItem_bn', // TODO: Add Bengali translation
-  purchaseItems: 'purchaseItems_bn', // TODO: Add Bengali translation
-  qty: 'qty_bn', // TODO: Add Bengali translation
-  lineTotal: 'lineTotal_bn', // TODO: Add Bengali translation
-  action: 'action_bn', // TODO: Add Bengali translation
-  editItem: 'editItem_bn', // TODO: Add Bengali translation
-  removeItem: 'removeItem_bn', // TODO: Add Bengali translation
-  remove: 'remove_bn', // TODO: Add Bengali translation
-  totalPurchaseValue: 'totalPurchaseValue_bn', // TODO: Add Bengali translation
-  orderPreview: 'orderPreview_bn', // TODO: Add Bengali translation
-  orderSummary: 'orderSummary_bn', // TODO: Add Bengali translation
-  totalQuantity: 'totalQuantity_bn', // TODO: Add Bengali translation
-  companyRequired: 'companyRequired_bn', // TODO: Add Bengali translation
-  shipmentDateRequired: 'shipmentDateRequired_bn', // TODO: Add Bengali translation
-  atLeastOneLineItemRequired: 'atLeastOneLineItemRequired_bn', // TODO: Add Bengali translation
-  creating: 'creating_bn', // TODO: Add Bengali translation
-  updatePurchaseOrder: 'updatePurchaseOrder_bn', // TODO: Add Bengali translation
-  createPurchaseOrder: 'createPurchaseOrder_bn', // TODO: Add Bengali translation
-  transactionType: 'transactionType_bn', // TODO: Add Bengali translation
-  buyEmptyCylinders: 'buyEmptyCylinders_bn', // TODO: Add Bengali translation
-  sellEmptyCylinders: 'sellEmptyCylinders_bn', // TODO: Add Bengali translation
-  addEmptyCylindersToInventory: 'addEmptyCylindersToInventory_bn', // TODO: Add Bengali translation
-  removeEmptyCylindersFromInventory: 'removeEmptyCylindersFromInventory_bn', // TODO: Add Bengali translation
-  cylinderSize: 'cylinderSize_bn', // TODO: Add Bengali translation
-  selectCylinderSize: 'selectCylinderSize_bn', // TODO: Add Bengali translation
-  emptyCylindersNote: 'emptyCylindersNote_bn', // TODO: Add Bengali translation
-  transactionDate: 'transactionDate_bn', // TODO: Add Bengali translation
-  enterTransactionDetails: 'enterTransactionDetails_bn', // TODO: Add Bengali translation
-  buy: 'buy_bn', // TODO: Add Bengali translation
-  sell: 'sell_bn', // TODO: Add Bengali translation
-  emptyCylinderTransaction: 'emptyCylinderTransaction_bn', // TODO: Add Bengali translation
-  directTransaction: 'directTransaction_bn', // TODO: Add Bengali translation
-  cylinderBuyTransaction: 'cylinderBuyTransaction_bn', // TODO: Add Bengali translation
-  cylinderSellTransaction: 'cylinderSellTransaction_bn', // TODO: Add Bengali translation
-  comprehensiveProfitabilityAnalysis: 'comprehensiveProfitabilityAnalysis_bn', // TODO: Add Bengali translation
-  visualRepresentationProfitByProduct: 'visualRepresentationProfitByProduct_bn', // TODO: Add Bengali translation
-  individualDriverPerformanceMetrics: 'individualDriverPerformanceMetrics_bn', // TODO: Add Bengali translation
-  comparativeAnalysisRevenueByDriver: 'comparativeAnalysisRevenueByDriver_bn', // TODO: Add Bengali translation
-  monthlyRevenue: 'monthlyRevenue_bn', // TODO: Add Bengali translation
-  allExpenses: 'allExpenses_bn', // TODO: Add Bengali translation
-  totalProfit: 'totalProfit_bn', // TODO: Add Bengali translation
-  buyingPrice: 'buyingPrice_bn', // TODO: Add Bengali translation
-  commission: 'commission_bn', // TODO: Add Bengali translation
-  fixedCost: 'fixedCost_bn', // TODO: Add Bengali translation
-  breakevenPrice: 'breakevenPrice_bn', // TODO: Add Bengali translation
-  sellingPrice: 'sellingPrice_bn', // TODO: Add Bengali translation
-  costPerUnit: 'costPerUnit_bn', // TODO: Add Bengali translation
-  avgCostPerUnit: 'avgCostPerUnit_bn', // TODO: Add Bengali translation
-  failedToLoadData: 'failedToLoadData_bn', // TODO: Add Bengali translation
-  errorLoadingData: 'errorLoadingData_bn', // TODO: Add Bengali translation
-  january: 'january_bn', // TODO: Add Bengali translation
-  february: 'february_bn', // TODO: Add Bengali translation
-  march: 'march_bn', // TODO: Add Bengali translation
-  april: 'april_bn', // TODO: Add Bengali translation
-  may: 'may_bn', // TODO: Add Bengali translation
-  june: 'june_bn', // TODO: Add Bengali translation
-  july: 'july_bn', // TODO: Add Bengali translation
-  august: 'august_bn', // TODO: Add Bengali translation
-  september: 'september_bn', // TODO: Add Bengali translation
-  october: 'october_bn', // TODO: Add Bengali translation
-  november: 'november_bn', // TODO: Add Bengali translation
-  december: 'december_bn', // TODO: Add Bengali translation
-  july2025: 'july2025_bn', // TODO: Add Bengali translation
-  june2025: 'june2025_bn', // TODO: Add Bengali translation
-  may2025: 'may2025_bn', // TODO: Add Bengali translation
-  april2025: 'april2025_bn', // TODO: Add Bengali translation
-  march2025: 'march2025_bn', // TODO: Add Bengali translation
-  february2025: 'february2025_bn', // TODO: Add Bengali translation
-  january2025: 'january2025_bn', // TODO: Add Bengali translation
-  december2024: 'december2024_bn', // TODO: Add Bengali translation
-  november2024: 'november2024_bn', // TODO: Add Bengali translation
-  october2024: 'october2024_bn', // TODO: Add Bengali translation
-  selectTime: 'selectTime_bn', // TODO: Add Bengali translation
-  failedToLoadDashboardData: 'failedToLoadDashboardData_bn', // TODO: Add Bengali translation
-  failedToLoadDashboardDataRefresh: 'failedToLoadDashboardDataRefresh_bn', // TODO: Add Bengali translation
-  errorLoadingCombinedDashboardData: 'errorLoadingCombinedDashboardData_bn', // TODO: Add Bengali translation
-  sessionExpiredRedirectingToLogin: 'sessionExpiredRedirectingToLogin_bn', // TODO: Add Bengali translation
-  realTimeOverview: 'realTimeOverview_bn', // TODO: Add Bengali translation
-  orders: 'orders_bn', // TODO: Add Bengali translation
-  stockLevel: 'stockLevel_bn', // TODO: Add Bengali translation
-  liveActivity: 'liveActivity_bn', // TODO: Add Bengali translation
-  last15Minutes: 'last15Minutes_bn', // TODO: Add Bengali translation
-  targetProgress: 'targetProgress_bn', // TODO: Add Bengali translation
-  performanceIndicators: 'performanceIndicators_bn', // TODO: Add Bengali translation
-  inventoryHealth: 'inventoryHealth_bn', // TODO: Add Bengali translation
-  attentionNeeded: 'attentionNeeded_bn', // TODO: Add Bengali translation
-  good: 'good_bn', // TODO: Add Bengali translation
-  collectionRate: 'collectionRate_bn', // TODO: Add Bengali translation
-  profitMargin: 'profitMargin_bn', // TODO: Add Bengali translation
-  salesDetails: 'salesDetails_bn', // TODO: Add Bengali translation
-  viewDetailedSalesBreakdown: 'viewDetailedSalesBreakdown_bn', // TODO: Add Bengali translation
-  salesBreakdown: 'salesBreakdown_bn', // TODO: Add Bengali translation
-  detailedSalesAnalytics: 'detailedSalesAnalytics_bn', // TODO: Add Bengali translation
-  averageOrderValue: 'averageOrderValue_bn', // TODO: Add Bengali translation
-  driverPerformance: 'driverPerformance_bn', // TODO: Add Bengali translation
-  topPerformersAndRankings: 'topPerformersAndRankings_bn', // TODO: Add Bengali translation
-  driverRankings: 'driverRankings_bn', // TODO: Add Bengali translation
-  performanceLeaderboard: 'performanceLeaderboard_bn', // TODO: Add Bengali translation
-  detailedViewAndTrends: 'detailedViewAndTrends_bn', // TODO: Add Bengali translation
-  vsYesterday: 'vsYesterday_bn', // TODO: Add Bengali translation
-  lpgDistributor: 'lpgDistributor_bn', // TODO: Add Bengali translation
-  welcomeBack: 'welcomeBack_bn', // TODO: Add Bengali translation
-  role: 'role_bn', // TODO: Add Bengali translation
-  loadingDashboard: 'loadingDashboard_bn', // TODO: Add Bengali translation
-  fallbackDriverName1: 'fallbackDriverName1_bn', // TODO: Add Bengali translation
-  fallbackDriverName2: 'fallbackDriverName2_bn', // TODO: Add Bengali translation
-  fallbackDriverName3: 'fallbackDriverName3_bn', // TODO: Add Bengali translation
-  fallbackDriverName4: 'fallbackDriverName4_bn', // TODO: Add Bengali translation
-  salesCount: 'salesCount_bn', // TODO: Add Bengali translation
-  revenueAmount: 'revenueAmount_bn', // TODO: Add Bengali translation
-  performancePercentage: 'performancePercentage_bn', // TODO: Add Bengali translation
-  chartDataFallback: 'chartDataFallback_bn', // TODO: Add Bengali translation
-  weeklyPerformance: 'weeklyPerformance_bn', // TODO: Add Bengali translation
-  dailyAverage: 'dailyAverage_bn', // TODO: Add Bengali translation
-  monthlyTarget: 'monthlyTarget_bn', // TODO: Add Bengali translation
-  quarterlyGrowth: 'quarterlyGrowth_bn', // TODO: Add Bengali translation
-  unknownDriver: 'unknownDriver_bn', // TODO: Add Bengali translation
-  unknownCompany: 'unknownCompany_bn', // TODO: Add Bengali translation
-  completedSale: 'completedSale_bn', // TODO: Add Bengali translation
-  driverCompletedSale: 'driverCompletedSale_bn', // TODO: Add Bengali translation
-  salesTrendUp: 'salesTrendUp_bn', // TODO: Add Bengali translation
-  salesTrendDown: 'salesTrendDown_bn', // TODO: Add Bengali translation
-  addressMustBeAtLeast10Characters: 'addressMustBeAtLeast10Characters_bn', // TODO: Add Bengali translation
-  addressTooLong: 'addressTooLong_bn', // TODO: Add Bengali translation
-  areaMustBeAtLeast2Characters: 'areaMustBeAtLeast2Characters_bn', // TODO: Add Bengali translation
-  areaTooLong: 'areaTooLong_bn', // TODO: Add Bengali translation
-  driverTypeIsRequired: 'driverTypeIsRequired_bn', // TODO: Add Bengali translation
-  emergencyContactMustBeAtLeast10Digits:
-    'emergencyContactMustBeAtLeast10Digits_bn', // TODO: Add Bengali translation
-  emergencyContactNameMustBeAtLeast2Characters:
-    'emergencyContactNameMustBeAtLeast2Characters_bn', // TODO: Add Bengali translation
-  emergencyContactTooLong: 'emergencyContactTooLong_bn', // TODO: Add Bengali translation
-  invalidEmailAddress: 'invalidEmailAddress_bn', // TODO: Add Bengali translation
-  licenseNumberMustBeAtLeast5Characters:
-    'licenseNumberMustBeAtLeast5Characters_bn', // TODO: Add Bengali translation
-  licenseNumberTooLong: 'licenseNumberTooLong_bn', // TODO: Add Bengali translation
-  nameMustBeAtLeast2Characters: 'nameMustBeAtLeast2Characters_bn', // TODO: Add Bengali translation
-  nameTooLong: 'nameTooLong_bn', // TODO: Add Bengali translation
-  phoneNumberMustBeAtLeast10Digits: 'phoneNumberMustBeAtLeast10Digits_bn', // TODO: Add Bengali translation
-  phoneNumberTooLong: 'phoneNumberTooLong_bn', // TODO: Add Bengali translation
-  statusIsRequired: 'statusIsRequired_bn', // TODO: Add Bengali translation
-  all: 'all_bn', // TODO: Add Bengali translation
-  bn: 'bn_bn', // TODO: Add Bengali translation
-  en: 'en_bn', // TODO: Add Bengali translation
-  locale: 'locale_bn', // TODO: Add Bengali translation
-  key: 'key_bn', // TODO: Add Bengali translation
-  value: 'value_bn', // TODO: Add Bengali translation
-  allAlerts: 'allAlerts_bn', // TODO: Add Bengali translation
-  critical: 'critical_bn', // TODO: Add Bengali translation
-  criticalAlerts: 'criticalAlerts_bn', // TODO: Add Bengali translation
-  infoAlerts: 'infoAlerts_bn', // TODO: Add Bengali translation
-  warningAlerts: 'warningAlerts_bn', // TODO: Add Bengali translation
-  inventoryAlert: 'inventoryAlert_bn', // TODO: Add Bengali translation
-  performanceAlert: 'performanceAlert_bn', // TODO: Add Bengali translation
-  stockAlert: 'stockAlert_bn', // TODO: Add Bengali translation
-  systemNotification: 'systemNotification_bn', // TODO: Add Bengali translation
-  completionPercentage: 'completionPercentage_bn', // TODO: Add Bengali translation
-  dashboardDataUpdated: 'dashboardDataUpdated_bn', // TODO: Add Bengali translation
-  dataNotFound: 'dataNotFound_bn', // TODO: Add Bengali translation
-  isComplete: 'isComplete_bn', // TODO: Add Bengali translation
-  liveDataFeed: 'liveDataFeed_bn', // TODO: Add Bengali translation
-  metricsLastUpdated: 'metricsLastUpdated_bn', // TODO: Add Bengali translation
-  missingKeys: 'missingKeys_bn', // TODO: Add Bengali translation
-  newSalesActivity: 'newSalesActivity_bn', // TODO: Add Bengali translation
-  optional: 'optional_bn', // TODO: Add Bengali translation
-  recentSaleActivity: 'recentSaleActivity_bn', // TODO: Add Bengali translation
-  totalKeys: 'totalKeys_bn', // TODO: Add Bengali translation
-  testCredentials: 'testCredentials_bn', // TODO: Add Bengali translation
-  translatedKeys: 'translatedKeys_bn', // TODO: Add Bengali translation
-  lowStock: 'lowStock_bn', // TODO: Add Bengali translation
-  outOfStock: 'outOfStock_bn', // TODO: Add Bengali translation
-  overduePayments: 'overduePayments_bn', // TODO: Add Bengali translation
-  overstock: 'overstock_bn', // TODO: Add Bengali translation
-  performanceTrendDown: 'performanceTrendDown_bn', // TODO: Add Bengali translation
-  performanceTrendStable: 'performanceTrendStable_bn', // TODO: Add Bengali translation
-  performanceTrendUp: 'performanceTrendUp_bn', // TODO: Add Bengali translation
-  salesTrendStable: 'salesTrendStable_bn', // TODO: Add Bengali translation
-  targetAchieved: 'targetAchieved_bn', // TODO: Add Bengali translation
-  topPerformer: 'topPerformer_bn', // TODO: Add Bengali translation
-  deleteDriver: 'deleteDriver_bn', // TODO: Add Bengali translation
-  failedToLoadAlerts: 'failedToLoadAlerts_bn', // TODO: Add Bengali translation
-  failedToLoadInventoryAlerts: 'failedToLoadInventoryAlerts_bn', // TODO: Add Bengali translation
-  movementAnomaly: 'movementAnomaly_bn', // TODO: Add Bengali translation
-  operationSuccessful: 'operationSuccessful_bn', // TODO: Add Bengali translation
-  welcomeToOnboarding: 'welcomeToOnboarding_bn', // TODO: Add Bengali translation
-  setupYourBusinessData: 'setupYourBusinessData_bn', // TODO: Add Bengali translation
-  companyNames: 'companyNames_bn', // TODO: Add Bengali translation
-  productSetup: 'productSetup_bn', // TODO: Add Bengali translation
-  inventoryQuantities: 'inventoryQuantities_bn', // TODO: Add Bengali translation
-  driversSetup: 'driversSetup_bn', // TODO: Add Bengali translation
-  receivablesSetup: 'receivablesSetup_bn', // TODO: Add Bengali translation
-  skipOnboarding: 'skipOnboarding_bn', // TODO: Add Bengali translation
-  completing: 'completing_bn', // TODO: Add Bengali translation
-  completeSetup: 'completeSetup_bn', // TODO: Add Bengali translation
-  setupBusiness: 'setupBusiness_bn', // TODO: Add Bengali translation
-  addCompanyNames: 'addCompanyNames_bn', // TODO: Add Bengali translation
-  addCompaniesYouDistributeFor: 'addCompaniesYouDistributeFor_bn', // TODO: Add Bengali translation
-  addNewCompany: 'addNewCompany_bn', // TODO: Add Bengali translation
-  enterCompanyNamesLikeAygaz: 'enterCompanyNamesLikeAygaz_bn', // TODO: Add Bengali translation
-  companyName: 'companyName_bn', // TODO: Add Bengali translation
-  enterCompanyName: 'enterCompanyName_bn', // TODO: Add Bengali translation
-  companyNameRequired: 'companyNameRequired_bn', // TODO: Add Bengali translation
-  companyAlreadyExists: 'companyAlreadyExists_bn', // TODO: Add Bengali translation
-  addedCompanies: 'addedCompanies_bn', // TODO: Add Bengali translation
-  companiesYouDistributeFor: 'companiesYouDistributeFor_bn', // TODO: Add Bengali translation
-  noCompaniesAdded: 'noCompaniesAdded_bn', // TODO: Add Bengali translation
-  addAtLeastOneCompany: 'addAtLeastOneCompany_bn', // TODO: Add Bengali translation
-  setupProductsAndSizes: 'setupProductsAndSizes_bn', // TODO: Add Bengali translation
-  configureCylinderSizesAndProducts: 'configureCylinderSizesAndProducts_bn', // TODO: Add Bengali translation
-  addCylinderSize: 'addCylinderSize_bn', // TODO: Add Bengali translation
-  addSizesLike12L20L: 'addSizesLike12L20L_bn', // TODO: Add Bengali translation
-  enterSizeLike12L: 'enterSizeLike12L_bn', // TODO: Add Bengali translation
-  addSize: 'addSize_bn', // TODO: Add Bengali translation
-  cylinderSizeRequired: 'cylinderSizeRequired_bn', // TODO: Add Bengali translation
-  cylinderSizeAlreadyExists: 'cylinderSizeAlreadyExists_bn', // TODO: Add Bengali translation
-  enterDescription: 'enterDescription_bn', // TODO: Add Bengali translation
-  addProduct: 'addProduct_bn', // TODO: Add Bengali translation
-  addNewProduct: 'addNewProduct_bn', // TODO: Add Bengali translation
-  addProductsForEachCompany: 'addProductsForEachCompany_bn', // TODO: Add Bengali translation
-  productName: 'productName_bn', // TODO: Add Bengali translation
-  enterProductName: 'enterProductName_bn', // TODO: Add Bengali translation
-  enterProductNameExample: 'enterProductNameExample_bn', // TODO: Add Bengali translation
-  currentPrice: 'currentPrice_bn', // TODO: Add Bengali translation
-  enterPrice: 'enterPrice_bn', // TODO: Add Bengali translation
-  productNameRequired: 'productNameRequired_bn', // TODO: Add Bengali translation
-  validPriceRequired: 'validPriceRequired_bn', // TODO: Add Bengali translation
-  productAlreadyExists: 'productAlreadyExists_bn', // TODO: Add Bengali translation
-  addedProducts: 'addedProducts_bn', // TODO: Add Bengali translation
-  addCylinderSizesAndProducts: 'addCylinderSizesAndProducts_bn', // TODO: Add Bengali translation
-  bothRequiredToProceed: 'bothRequiredToProceed_bn', // TODO: Add Bengali translation
-  setInitialInventory: 'setInitialInventory_bn', // TODO: Add Bengali translation
-  enterCurrentFullCylinderQuantities: 'enterCurrentFullCylinderQuantities_bn', // TODO: Add Bengali translation
-  fullCylinderInventory: 'fullCylinderInventory_bn', // TODO: Add Bengali translation
-  enterQuantityForEachProduct: 'enterQuantityForEachProduct_bn', // TODO: Add Bengali translation
-  noProductsAvailable: 'noProductsAvailable_bn', // TODO: Add Bengali translation
-  addProductsFirst: 'addProductsFirst_bn', // TODO: Add Bengali translation
-  totalProducts: 'totalProducts_bn', // TODO: Add Bengali translation
-  totalFullCylinders: 'totalFullCylinders_bn', // TODO: Add Bengali translation
-  setEmptyCylinderInventory: 'setEmptyCylinderInventory_bn', // TODO: Add Bengali translation
-  enterCurrentEmptyCylinderQuantities: 'enterCurrentEmptyCylinderQuantities_bn', // TODO: Add Bengali translation
-  emptyCylinderInventory: 'emptyCylinderInventory_bn', // TODO: Add Bengali translation
-  enterQuantityForEachSize: 'enterQuantityForEachSize_bn', // TODO: Add Bengali translation
-  noCylinderSizesAvailable: 'noCylinderSizesAvailable_bn', // TODO: Add Bengali translation
-  addCylinderSizesFirst: 'addCylinderSizesFirst_bn', // TODO: Add Bengali translation
-  totalSizes: 'totalSizes_bn', // TODO: Add Bengali translation
-  totalEmptyCylinders: 'totalEmptyCylinders_bn', // TODO: Add Bengali translation
-  emptyCylinderNote: 'emptyCylinderNote_bn', // TODO: Add Bengali translation
-  addYourDrivers: 'addYourDrivers_bn', // TODO: Add Bengali translation
-  addDriversWhoWillSellProducts: 'addDriversWhoWillSellProducts_bn', // TODO: Add Bengali translation
-  enterDriverInformation: 'enterDriverInformation_bn', // TODO: Add Bengali translation
-  enterDriverName: 'enterDriverName_bn', // TODO: Add Bengali translation
-  shipmentDriver: 'shipmentDriver_bn', // TODO: Add Bengali translation
-  driverNameRequired: 'driverNameRequired_bn', // TODO: Add Bengali translation
-  driverAlreadyExists: 'driverAlreadyExists_bn', // TODO: Add Bengali translation
-  addedDrivers: 'addedDrivers_bn', // TODO: Add Bengali translation
-  driversInYourTeam: 'driversInYourTeam_bn', // TODO: Add Bengali translation
-  noContactInfo: 'noContactInfo_bn', // TODO: Add Bengali translation
-  noDriversAdded: 'noDriversAdded_bn', // TODO: Add Bengali translation
-  addAtLeastOneDriver: 'addAtLeastOneDriver_bn', // TODO: Add Bengali translation
-  setupReceivables: 'setupReceivables_bn', // TODO: Add Bengali translation
-  enterCurrentReceivablesForEachDriver:
-    'enterCurrentReceivablesForEachDriver_bn', // TODO: Add Bengali translation
-  driverReceivables: 'driverReceivables_bn', // TODO: Add Bengali translation
-  enterCashAndCylinderReceivables: 'enterCashAndCylinderReceivables_bn', // TODO: Add Bengali translation
-  amountOwedByCustomers: 'amountOwedByCustomers_bn', // TODO: Add Bengali translation
-  cylindersOwedByCustomers: 'cylindersOwedByCustomers_bn', // TODO: Add Bengali translation
-  cylindersOwedByCustomersBySize: 'cylindersOwedByCustomersBySize_bn', // TODO: Add Bengali translation
-  noDriversAvailable: 'noDriversAvailable_bn', // TODO: Add Bengali translation
-  addDriversFirst: 'addDriversFirst_bn', // TODO: Add Bengali translation
-  noRetailDriversAvailable: 'noRetailDriversAvailable_bn', // TODO: Add Bengali translation
-  addRetailDriversFirst: 'addRetailDriversFirst_bn', // TODO: Add Bengali translation
-  receivablesSummary: 'receivablesSummary_bn', // TODO: Add Bengali translation
-  manualBusinessOnboarding: 'manualBusinessOnboarding_bn', // TODO: Add Bengali translation
-  businessInformation: 'businessInformation_bn', // TODO: Add Bengali translation
-  businessName: 'businessName_bn', // TODO: Add Bengali translation
-  businessNamePlaceholder: 'businessNamePlaceholder_bn', // TODO: Add Bengali translation
-  subdomain: 'subdomain_bn', // TODO: Add Bengali translation
-  subdomainPlaceholder: 'subdomainPlaceholder_bn', // TODO: Add Bengali translation
-  plan: 'plan_bn', // TODO: Add Bengali translation
-  freemium: 'freemium_bn', // TODO: Add Bengali translation
-  professional: 'professional_bn', // TODO: Add Bengali translation
-  enterprise: 'enterprise_bn', // TODO: Add Bengali translation
-  adminUser: 'adminUser_bn', // TODO: Add Bengali translation
-  adminName: 'adminName_bn', // TODO: Add Bengali translation
-  adminNamePlaceholder: 'adminNamePlaceholder_bn', // TODO: Add Bengali translation
-  adminEmail: 'adminEmail_bn', // TODO: Add Bengali translation
-  adminEmailPlaceholder: 'adminEmailPlaceholder_bn', // TODO: Add Bengali translation
-  adminPassword: 'adminPassword_bn', // TODO: Add Bengali translation
-  strongPassword: 'strongPassword_bn', // TODO: Add Bengali translation
-  creatingBusiness: 'creatingBusiness_bn', // TODO: Add Bengali translation
-  onboardBusiness: 'onboardBusiness_bn', // TODO: Add Bengali translation
-  businessOnboardedSuccessfully: 'businessOnboardedSuccessfully_bn', // TODO: Add Bengali translation
-  businessCreatedWithAdmin: 'businessCreatedWithAdmin_bn', // TODO: Add Bengali translation
-  failedToOnboardBusiness: 'failedToOnboardBusiness_bn', // TODO: Add Bengali translation
-  networkErrorOccurred: 'networkErrorOccurred_bn', // TODO: Add Bengali translation
-  unauthorized: 'unauthorized_bn', // TODO: Add Bengali translation
-  userNotFound: 'userNotFound_bn', // TODO: Add Bengali translation
-  onboardingAlreadyCompleted: 'onboardingAlreadyCompleted_bn', // TODO: Add Bengali translation
-  failedToCompleteOnboarding: 'failedToCompleteOnboarding_bn', // TODO: Add Bengali translation
-  failedToCheckOnboardingStatus: 'failedToCheckOnboardingStatus_bn', // TODO: Add Bengali translation
-  searchCompanies: 'searchCompanies_bn', // TODO: Add Bengali translation
-  addCompany: 'addCompany_bn', // TODO: Add Bengali translation
-  activeProducts: 'activeProducts_bn', // TODO: Add Bengali translation
-  totalStock: 'totalStock_bn', // TODO: Add Bengali translation
-  companies: 'companies_bn', // TODO: Add Bengali translation
-  searchProducts: 'searchProducts_bn', // TODO: Add Bengali translation
-  created: 'created_bn', // TODO: Add Bengali translation
-  cylinderSizeDeletedSuccessfully: 'cylinderSizeDeletedSuccessfully_bn', // TODO: Add Bengali translation
+  quantity: 'পরিমাণ',
+  unitPrice: 'unit দাম',
+  discount: 'ছাড়',
+  totalValue: 'মোট value',
+  packageSales: 'package বিক্রয়',
+  refillSales: 'refill বিক্রয়',
+  cylinder: 'সিলিন্ডার',
+  cylinders: 'সিলিন্ডারs',
+  products: 'পণ্যs',
+  cash: 'Cash (বাংলা অনুবাদ প্রয়োজন)',
+  cashDepositsByDriver: 'cash deposits by চালক',
+  includesReceivablePayments: 'includes receivable পেমেন্টs',
+  driverExpense: 'চালক expense',
+  loadingData: 'লোড হচ্ছে data',
+  noDataAvailable: 'no তথ্য available',
+  tryAgain: 'চেষ্টা again',
+  performance: 'perফর্মance',
+  month: 'মাস',
+  year: 'বছর',
+  allDrivers: 'all চালকs',
+  totalRevenue: 'মোট revenue',
+  revenue: 'আয়',
+  comingSoon: 'coming শীঘ্রই',
+  exportReport: 'এক্সপোর্ট report',
+  exportReportFunctionality: 'এক্সপোর্ট report functionality',
+  customerRecords: 'গ্রাহক records',
+  statusBreakdown: 'অবস্থা breakdown',
+  noReceivablesFound: 'না receivables found',
+  noChangesRecorded: 'না changes recorded',
+  receivablesChangesLog: 'receivables changes লগ',
+  amountPlaceholder: 'প্রবেশ করান amount...',
+  enterExpenseDescription: 'প্রবেশ করান expense description',
+  selectParentCategory: 'নির্বাচন করুন parent category',
+  selectCategory: 'নির্বাচন করুন category',
+  expenseDate: 'expense তারিখ',
+  receiptUrl: 'রসিদ url',
+  receiptUrlPlaceholder: 'প্রবেশ করান receipt url...',
+  submitting: 'জমা দিনting',
+  activeDrivers: 'active চালকs',
+  activeUsers: 'active ব্যবহারকারীs',
+  addDriver: 'যোগ করুন driver',
+  addExpense: 'যোগ করুন expense',
+  additionalNotesComments: 'যোগ করুনitional notes comments',
+  addNewDriver: 'যোগ করুন new driver',
+  addUser: 'যোগ করুন user',
+  administrator: 'অ্যাডমিনistrator',
+  administrators: 'অ্যাডমিনistrators',
+  ago: 'Ago (বাংলা অনুবাদ প্রয়োজন)',
+  alerts: 'সতর্কs',
+  allCalculationsUpdatedRealTime: 'all calculations আপডেটd real time',
+  allCategories: 'সব categories',
+  allCylinders: 'all সিলিন্ডারs',
+  allGood: 'all ভাল',
+  allStatus: 'all অবস্থা',
+  approved: 'অনুমোদিত',
+  approvedExpenses: 'অনুমোদনd expenses',
+  approveExpense: 'অনুমোদন expense',
+  area: 'এলাকা',
+  areYouSureDeleteDriver: 'are you sure মুছুন driver',
+  assetsLiabilities: 'Assets Liabilities (বাংলা অনুবাদ প্রয়োজন)',
+  assignedArea: 'assigned এলাকা',
+  balanceSheet: 'ভারসাম্য sheet',
+  businessFormulaImplementation: 'ব্যবসায়িক formula implementation',
+  cashReceivables: 'Cash Receivables (বাংলা অনুবাদ প্রয়োজন)',
+  changesLog: 'changes লগ',
+  checkStock: 'check স্টক',
+  clear: 'পরিষ্কার',
+  company: 'কোম্পানি',
+  completeSystemAccessAndUserManagement: 'complete system access and ব্যবহারকারী management',
+  confirmDeleteUser: 'confirm মুছুন user',
+  contactName: 'contact নাম',
+  contactNumber: 'বিপক্ষেtact number',
+  create: 'তৈরি করুন',
+  criticalAlert: 'সমালোচনামূলক alert',
+  currency: 'Currency (বাংলা অনুবাদ প্রয়োজন)',
+  currentFullCylinderInventory: 'current full cylinder মজুদ',
+  currentStock: 'current স্টক',
+  currentStockHealth: 'current স্টক health',
+  customers: 'গ্রাহকs',
+  cylinderReceivables: 'সিলিন্ডার receivables',
+  cylindersReceived: 'সিলিন্ডারs received',
+  cylindersSold: 'সিলিন্ডারs sold',
+  cylindersSummaryApiError: 'error: cylinders সারসংক্ষেপ api',
+  cylindersSummaryDataReceived: 'cylinders summary তথ্য received',
+  cylindersSummaryResponseStatus: 'cylinders summary response অবস্থা',
+  dailyCalculations: 'daily গণনাs',
+  dailyInventoryTracking: 'daily মজুদ tracking',
+  dataSources: 'তথ্য sources',
+  day: 'দিন',
+  days: 'দিনs',
+  deleteExpense: 'মুছুন expense',
+  deleteUser: 'মুছুন user',
+  deleting: 'Deleting (বাংলা অনুবাদ প্রয়োজন)',
+  details: 'বিস্তারিত',
+  driver: 'চালক',
+  driverAddedSuccessfully: 'driver যোগ করুনedfully successful',
+  driverDeletedSuccessfully: 'driver মুছুনdfully successful',
+  driverDetails: 'চালক details',
+  driverManagement: 'চালক management',
+  driverName: 'driver নাম',
+  driverType: 'driver ধরন',
+  driverUpdatedSuccessfully: 'driver আপডেটdfully successful',
+  editDriver: 'সম্পাদনা driver',
+  editExpense: 'সম্পাদনা expense',
+  editUser: 'সম্পাদনা user',
+  emailAddress: 'email যোগ করুনress',
+  emergencyContact: 'emergency বিপক্ষেtact',
+  emptyCylinderInventoryAvailability: 'empty cylinder মজুদ availability',
+  emptyCylinders: 'empty সিলিন্ডারs',
+  emptyCylindersBuySell: 'empty সিলিন্ডারs buy sell',
+  emptyCylindersInHand: 'empty সিলিন্ডারs in hand',
+  emptyCylinderReceivables: 'empty সিলিন্ডার receivables',
+  emptyCylindersInStock: 'empty cylinders in স্টক',
+  outstandingShipments: 'outstanding চালানs',
+  noOutstandingOrders: 'no outstanding আদেশs',
+  enterAssignedAreaRoute: 'প্রবেশ করান assigned area route',
+  enterEmailAddress: 'enter email যোগ করুনress',
+  enterEmergencyContactName: 'প্রবেশ করান emergency contact name',
+  enterEmergencyContactNumber: 'প্রবেশ করান emergency contact number',
+  enterFullAddress: 'enter full যোগ করুনress',
+  enterFullName: 'প্রবেশ করান full name',
+  enterLicenseNumber: 'প্রবেশ করান license number',
+  enterPhoneNumber: 'প্রবেশ করান phone number',
+  error: 'ত্রুটি',
+  errorFetchingCylindersSummaryData: 'error fetching cylinders summary তথ্য',
+  errorFetchingDailyInventoryData: 'error fetching daily inventory তথ্য',
+  errorFetchingInventoryData: 'error fetching inventory তথ্য',
+  expense: 'খরচ',
+  expenseManagement: 'খরচ management',
+  exportFunctionalityComingSoon: 'এক্সপোর্ট functionality coming soon',
+  failedToCreateUser: 'failed to তৈরি করুন user',
+  failedToDeleteDriver: 'failed to মুছুন driver',
+  failedToDeleteUser: 'failed to মুছুন user',
+  failedToFetchUsers: 'failed to fetch ব্যবহারকারীs',
+  failedToLoadInventoryData: 'failed to load inventory তথ্য',
+  failedToUpdateDriver: 'failed to আপডেট driver',
+  failedToUpdateUser: 'failed to আপডেট user',
+  fetchingCylindersSummaryData: 'fetching cylinders summary তথ্য',
+  filterByDriverType: 'ফিল্টার by driver type',
+  fri: 'Fri (বাংলা অনুবাদ প্রয়োজন)',
+  from: 'From (বাংলা অনুবাদ প্রয়োজন)',
+  fullAccess: 'পূর্ণ access',
+  fullCylinders: 'full সিলিন্ডারs',
+  fullName: 'full নাম',
+  generalSettings: 'general সেটিংস',
+  getStartedByAddingFirstExpense: 'get started by যোগ করুনing first expense',
+  hour: 'ঘন্টা',
+  hours: 'ঘন্টাs',
+  individualDailySalesData: 'individual daily sales তথ্য',
+  info: 'Info (বাংলা অনুবাদ প্রয়োজন)',
+  inventoryManagement: 'মজুদ management',
+  joiningDate: 'joining তারিখ',
+  justNow: 'just এখন',
+  kPending: 'k অপেক্ষমাণ',
+  language: 'Language (বাংলা অনুবাদ প্রয়োজন)',
+  last7Days: 'last7 দিনs',
+  lastMonth: 'last মাস',
+  lastLogin: 'last লগইন',
+  lastUpdated: 'last আপডেটd',
+  latest: 'সর্বশেষ',
+  licenseNumber: 'license সংখ্যা',
+  loadingDailySalesData: 'লোড হচ্ছে daily sales data',
+  loadingDriverPerformance: 'লোড হচ্ছে driver performance',
+  loadingInventoryData: 'লোড হচ্ছে inventory data',
+  loadingText: 'লোড হচ্ছে text',
+  locationInformation: 'location তথ্য',
+  login: 'লগইন',
+  lpgDistributorManagementSystem: 'lpg পরিবেশক management system',
+  manageBudgets: 'manage বাজেটs',
+  manageCategories: 'Manage Categories (বাংলা অনুবাদ প্রয়োজন)',
+  manageCompanyAssets: 'manage কোম্পানি assets',
+  manageDriversAndAssignments: 'manage চালকs and assignments',
+  manageLiabilities: 'Manage Liabilities (বাংলা অনুবাদ প্রয়োজন)',
+  manager: 'ম্যানেজার',
+  managers: 'ম্যানেজারs',
+  manageSystemRoles: 'manage সিস্টেম roles',
+  manageSystemUsers: 'manage system ব্যবহারকারীs',
+  manageTeam: 'manage দল',
+  mon: 'Mon (বাংলা অনুবাদ প্রয়োজন)',
+  monitorCylinderStock: 'monitor cylinder স্টক',
+  needAdminPrivileges: 'need অ্যাডমিন privileges',
+  never: 'Never (বাংলা অনুবাদ প্রয়োজন)',
+  newSale: 'নতুন sale',
+  noActiveDriversFoundForThisPeriod: 'no active চালকs found for this period',
+  noDailyInventoryDataAvailable: 'no daily inventory তথ্য available',
+  noDailySalesDataFound: 'no daily sales তথ্য found',
+  noDataFound: 'no তথ্য found',
+  noEmptyCylindersInInventory: 'no empty cylinders in মজুদ',
+  noFullCylindersInInventory: 'no full cylinders in মজুদ',
+  notApplicable: 'নাt applicable',
+  note: 'নোট',
+  noUsersFound: 'no ব্যবহারকারীs found',
+  operationFailed: 'failed to opeঅনুপাতn failed',
+  operations: 'opeঅনুপাতns',
+  outstanding: 'Outstanding (বাংলা অনুবাদ প্রয়োজন)',
+  packagePurchase: 'package ক্রয়',
+  packageRefillPurchase: 'package refill ক্রয়',
+  packageRefillSales: 'package refill বিক্রয়',
+  packageSale: 'প্যাকেজ sale',
+  packageSalesQty: 'package বিক্রয় qty',
+  parentCategory: 'parent বিভাগ',
+  pay: 'Pay (বাংলা অনুবাদ প্রয়োজন)',
+  paymentReceived: 'পেমেন্ট received',
+  pending: 'অপেক্ষমাণ',
+  pendingApproval: 'অপেক্ষমাণ approval',
+  performanceStatistics: 'perফর্মance statistics',
+  permissions: 'Permissions (বাংলা অনুবাদ প্রয়োজন)',
+  personalInformation: 'personal তথ্য',
+  phoneNumber: 'ফোন number',
+  pleaseLogInToAccessUserManagement: 'please log in to access ব্যবহারকারী management',
+  producentsWithLowStockWarning: 'producents with low স্টক warning',
+  productsBelowMinimumThreshold: 'পণ্যs below minimum threshold',
+  productsInCriticalStock: 'পণ্যs in critical stock',
+  productsInGoodStock: 'পণ্যs in good stock',
+  productsOutOfStock: 'পণ্যs out of stock',
+  purchase: 'ক্রয়',
+  rahmanSoldCylinders: 'rahman sold সিলিন্ডারs',
+  realTimeInventoryTracking: 'real সময় inventory tracking',
+  receivableManagement: 'receivable ব্যবস্থাপনা',
+  receivableRecords: 'receivable রেকর্ডs',
+  recentActivity: 'সাম্প্রতিক activity',
+  recordDailySales: 'record daily বিক্রয়',
+  refillPurchase: 'refill ক্রয়',
+  refillSale: 'রিফিল sale',
+  refillSalesQty: 'refill বিক্রয় qty',
+  refreshData: 'রিফ্রেশ data',
+  rejectExpense: 'প্রত্যাখ্যান expense',
+  reportsAnalytics: 'রিপোর্টs analytics',
+  retail: 'খুচরা',
+  retailDriver: 'retail চালক',
+  sale: 'Sale (বাংলা অনুবাদ প্রয়োজন)',
+  retailDriverDescription: 'retail driver বিবরণ',
+  retailDrivers: 'retail চালকs',
+  retry: 'reচেষ্টা',
+  return: 'Return (বাংলা অনুবাদ প্রয়োজন)',
+  rolePermissions: 'Role Permissions (বাংলা অনুবাদ প্রয়োজন)',
+  routeArea: 'রুট area',
+  salesInventoryAndDriverManagement: 'sales inventory and চালক management',
+  salesTrend: 'বিক্রয় trend',
+  salesValue: 'বিক্রয় value',
+  sat: 'Sat (বাংলা অনুবাদ প্রয়োজন)',
+  saveError: 'error: সংরক্ষণ',
+  saveSuccess: 'সংরক্ষণ successful',
+  searchExpenses: 'অনুসন্ধান expenses',
+  selectDriverType: 'নির্বাচন করুন driver type',
+  selectStatus: 'নির্বাচন করুন status',
+  shipment: 'চালান',
+  shipmentDriverDescription: 'shipment driver বিবরণ',
+  shipmentDrivers: 'shipment চালকs',
+  size: 'আকার',
+  statusAndNotes: 'অবস্থা and notes',
+  stock: 'স্টক',
+  stockReplenished: 'স্টক replenished',
+  submittedBy: 'জমা দিনted by',
+  success: 'সাফল্য',
+  sumAllDriversSalesForDate: 'sum all drivers sales for তারিখ',
+  sumCompletedEmptyCylinderShipments: 'sum completed empty সিলিন্ডার shipments',
+  sumCompletedShipmentsFromShipmentsPage: 'sum completed চালানs from চালানs page',
+  sun: 'Sun (বাংলা অনুবাদ প্রয়োজন)',
+  systemUsers: 'system ব্যবহারকারীs',
+  tasks: 'কাজs',
+  teamAccess: 'দল access',
+  thisActionCannotBeUndone: 'this action cannot be পূর্বাবস্থায় ফিরুনne',
+  thisMonth: 'this মাস',
+  thu: 'Thu (বাংলা অনুবাদ প্রয়োজন)',
+  timezone: 'সময়zone',
+  to: 'To (বাংলা অনুবাদ প্রয়োজন)',
+  today: 'আজ',
+  todaysEmptyCylinders: 'todays empty সিলিন্ডারs',
+  todaysFullCylinders: 'todays full সিলিন্ডারs',
+  todaysPurchases: 'todays ক্রয়s',
+  todaysSales: 'todays বিক্রয়',
+  topDriverPerformance: 'top চালক performance',
+  totalCylinderReceivables: 'মোট cylinder receivables',
+  totalCylinders: 'মোট cylinders',
+  totalCylindersReceivables: 'মোট cylinders receivables',
+  totalReceivables: 'মোট receivables',
+  totalSales: 'মোট sales',
+  totalSalesQty: 'মোট sales qty',
+  totalSalesThisMonth: 'মোট sales this month',
+  totalUsers: 'মোট users',
+  trackCustomerCredits: 'track customer crসম্পাদনাs',
+  trackCustomerPayments: 'track গ্রাহক payments',
+  trackExpenses: 'track খরচs',
+  trackExpensesAndManageBudgets: 'track খরচs and manage budgets',
+  trackPerformance: 'track perফর্মance',
+  tue: 'Tue (বাংলা অনুবাদ প্রয়োজন)',
+  unknown: 'অজানা',
+  updateDriver: 'আপডেট driver',
+  updateExpense: 'আপডেট expense',
+  updatePayment: 'আপডেট payment',
+  updateUser: 'আপডেট user',
+  updating: 'উপরেdating',
+  urgent: 'জরুরি',
+  user: 'ব্যবহারকারী',
+  userDetails: 'ব্যবহারকারী details',
+  userManagement: 'ব্যবহারকারী management',
+  viewDetails: 'দৃষ্টিভঙ্গি details',
+  viewingExpensesFor: 'দৃষ্টিভঙ্গিing expenses for',
+  viewReceipt: 'দৃষ্টিভঙ্গি receipt',
+  viewReports: 'দৃষ্টিভঙ্গি reports',
+  warning: 'সতর্কবাণী',
+  wed: 'Wed (বাংলা অনুবাদ প্রয়োজন)',
+  week: 'সপ্তাহ',
+  yesterday: 'গতকাল',
+  yesterdaysEmpty: 'yesterdays খালি',
+  yesterdaysFull: 'yesterdays পূর্ণ',
+  fuelExpense: 'fuel খরচ',
+  maintenanceExpense: 'maintenance খরচ',
+  officeExpense: 'office খরচ',
+  transportExpense: 'transport খরচ',
+  miscellaneousExpense: 'miscellaneous খরচ',
+  generalExpense: 'general খরচ',
+  failedToLoadDailySalesReport: 'failed to load daily sales রিপোর্ট',
+  loadingDailySalesReport: 'লোড হচ্ছে daily sales report',
+  noReportDataAvailable: 'no রিপোর্ট data available',
+  tryAgainOrSelectDate: 'try again or নির্বাচন করুন date',
+  comprehensiveDailySalesReport: 'comprehensive daily sales রিপোর্ট',
+  totalSalesValue: 'মোট sales value',
+  totalDeposited: 'মোট deposited',
+  totalExpenses: 'মোট expenses',
+  availableCash: 'উপলব্ধ cash',
+  totalCashReceivables: 'মোট cash receivables',
+  changeInReceivablesCashCylinders: 'change in receivables cash সিলিন্ডারs',
+  dailyDepositsExpenses: 'daily deposits খরচs',
+  detailedBreakdownDepositsExpenses: 'detailed breakdown deposits খরচs',
+  deposits: 'Deposits (বাংলা অনুবাদ প্রয়োজন)',
+  particulars: 'অংশiculars',
+  noDepositsFound: 'না deposits found',
+  totalDepositsCalculated: 'মোট deposits calculated',
+  noExpensesFound: 'no খরচs found',
+  totalExpensesCalculated: 'মোট expenses calculated',
+  totalAvailableCash: 'মোট available cash',
+  totalDepositsIncludingSales: 'মোট deposits including sales',
+  customerName: 'customer নাম',
+  selectADriver: 'নির্বাচন করুন a driver',
+  enterCustomerName: 'প্রবেশ করান customer name',
+  customerNamePlaceholder: 'প্রবেশ করান customer name...',
+  saleItems: 'sale আইটেমs',
+  itemNumber: 'আইটেম number',
+  selectAProduct: 'নির্বাচন করুন a product',
+  packagePrice: 'package দাম',
+  refillPrice: 'refill দাম',
+  itemTotal: 'item মোট',
+  saleSummary: 'sale সারসংক্ষেপ',
+  paymentType: 'payment ধরন',
+  paymentTypeRequired: 'payment ধরন is required',
+  bankTransfer: 'Bank Transfer (বাংলা অনুবাদ প্রয়োজন)',
+  mfs: 'Mfs (বাংলা অনুবাদ প্রয়োজন)',
+  mobileFinancialService: 'mobile financial সেবা',
+  credit: 'ক্রেডিট',
+  cylinderCredit: 'cylinder crসম্পাদনা',
+  cashDeposited: 'cash depoসাইটd',
+  cylinderDeposits: 'সিলিন্ডার deposits',
+  cylinderDepositsBySize: 'সিলিন্ডার deposits by size',
+  cylindersDeposited: 'সিলিন্ডারs deposited',
+  maxQuantity: 'max পরিমাণ',
+  additionalNotes: 'যোগ করুনitional notes',
+  additionalNotesPlaceholder: 'enter যোগ করুনitional notes...',
+  totalQuantityLabel: 'total পরিমাণ label',
+  totalValueLabel: 'মোট value label',
+  totalDiscountLabel: 'মোট discount label',
+  netValueLabel: 'net মান label',
+  cashReceivableWarning: 'cash receivable সতর্কবাণী',
+  customerNameRecommended: 'customer নাম recommended',
+  cylinderReceivableWarning: 'সিলিন্ডার receivable warning',
+  lowStockWarning: 'low স্টক warning',
+  cylindersRemaining: 'সিলিন্ডারs remaining',
+  lowStockAlert: 'low স্টক alert',
+  loadingFormData: 'লোড হচ্ছে form data',
+  driverRequired: 'চালক is required',
+  productRequired: 'পণ্য is required',
+  packageSaleCannotBeNegative: 'প্যাকেজ sale cannot be negative',
+  refillSaleCannotBeNegative: 'রিফিল sale cannot be negative',
+  packagePriceCannotBeNegative: 'package দাম cannot be negative',
+  refillPriceCannotBeNegative: 'refill দাম cannot be negative',
+  quantityAndPriceRequired: 'পরিমাণ and price is required',
+  atLeastOneSaleItemRequired: 'at সবচেয়ে কম one sale item is required',
+  discountCannotBeNegative: 'ছাড় cannot be negative',
+  cashDepositedCannotBeNegative: 'cash deposited canনাt be negative',
+  cylinderDepositsCannotBeNegative: 'সিলিন্ডার deposits cannot be negative',
+  available: 'উপলব্ধ',
+  for: 'For (বাংলা অনুবাদ প্রয়োজন)',
+  readOnly: 'Read Only (বাংলা অনুবাদ প্রয়োজন)',
+  areYouSure: 'are you নিশ্চিত',
+  deleteConfirmation: 'মুছুন confirmation',
+  salesEntries: 'বিক্রয় entries',
+  cannotBeUndone: 'cannot be পূর্বাবস্থায় ফিরুনne',
+  successfullyDeleted: 'successfully মুছুনd',
+  on: 'system overদৃষ্টিভঙ্গি and metrics',
+  thisWillDelete: 'this will মুছুন',
+  failedToLoadDailySalesData: 'failed to load daily sales তথ্য',
+  combinedSaleCreatedSuccessfully: 'combined sale তৈরি করুনdfully successful',
+  failedToCreateSale: 'failed to তৈরি করুন sale',
+  failedToLoadEntryDataForEditing: 'failed to load entry data for সম্পাদনাing',
+  salesEntryUpdatedSuccessfully: 'sales entry আপডেটdfully successful',
+  failedToUpdateSalesEntry: 'failed to আপডেট sales entry',
+  failedToDeleteSales: 'failed to মুছুন sales',
+  adminPanel: 'অ্যাডমিন panel',
+  systemAdministration: 'সিস্টেম administration',
+  viewDistributorDashboard: 'দৃষ্টিভঙ্গি distributor dashboard',
+  signOut: 'চিহ্ন out',
+  lightMode: 'Light Mode (বাংলা অনুবাদ প্রয়োজন)',
+  darkMode: 'Dark Mode (বাংলা অনুবাদ প্রয়োজন)',
+  systemTheme: 'সিস্টেম theme',
+  shipmentsManagement: 'চালানs management',
+  trackPurchaseOrdersAndShipments: 'track purchase আদেশs and shipments',
+  newPurchase: 'new ক্রয়',
+  emptyCylinderBuySell: 'empty সিলিন্ডার buy sell',
+  allShipments: 'all চালানs',
+  outstandingOrders: 'outstanding আদেশs',
+  completedOrders: 'completed আদেশs',
+  allCompanies: 'সব companies',
+  allProducts: 'all পণ্যs',
+  fromDate: 'from তারিখ',
+  toDate: 'to তারিখ',
+  clearFilters: 'clear ফিল্টারs',
+  loadingShipments: 'লোড হচ্ছে shipments',
+  noShipmentsFound: 'no চালানs found',
+  invoice: 'চালান',
+  gas: 'গ্যাস',
+  unit: 'ইউনিট',
+  unitCost: 'unit খরচ',
+  gasCost: 'gas খরচ',
+  cylinderCost: 'cylinder খরচ',
+  vehicle: 'যানবাহন',
+  markAsFulfilled: 'চিহ্ন as fulfilled',
+  totalItems: 'মোট items',
+  totalCost: 'total খরচ',
+  editPurchaseOrder: 'সম্পাদনা purchase order',
+  createNewPurchaseOrder: 'তৈরি করুন new purchase order',
+  step: 'ধাপ',
+  of: 'Of (বাংলা অনুবাদ প্রয়োজন)',
+  orderInformation: 'আদেশ information',
+  selectCompany: 'নির্বাচন করুন company',
+  selectDriver: 'নির্বাচন করুন driver',
+  shipmentDate: 'shipment তারিখ',
+  expectedDeliveryDate: 'expected delivery তারিখ',
+  invoiceNumber: 'চালান number',
+  enterInvoiceNumber: 'প্রবেশ করান invoice number',
+  paymentTerms: 'পেমেন্ট terms',
+  cashOnDelivery: 'cash on ডেলিভারি',
+  net30Days: 'net30 দিনs',
+  net60Days: 'net60 দিনs',
+  advancePayment: 'advance পেমেন্ট',
+  priority: 'Priority (বাংলা অনুবাদ প্রয়োজন)',
+  low: 'নিম্ন',
+  normal: 'স্বাভাবিক',
+  high: 'উচ্চ',
+  vehicleNumber: 'যানবাহন number',
+  enterVehicleNumber: 'প্রবেশ করান vehicle number',
+  enterAdditionalNotes: 'enter যোগ করুনitional notes',
+  addLineItem: 'যোগ করুন line item',
+  selectProduct: 'নির্বাচন করুন product',
+  selectCompanyFirst: 'নির্বাচন করুন company first',
+  package: 'প্যাকেজ',
+  refill: 'রিফিল',
+  gasPrice: 'gas দাম',
+  cylinderPrice: 'cylinder দাম',
+  taxRate: 'কর rate',
+  lineTotalPreview: 'line total preদৃষ্টিভঙ্গি',
+  packageInfo: 'প্যাকেজ info',
+  refillInfo: 'রিফিল info',
+  addItem: 'যোগ করুন item',
+  purchaseItems: 'ক্রয় items',
+  qty: 'Qty (বাংলা অনুবাদ প্রয়োজন)',
+  lineTotal: 'line মোট',
+  action: 'কর্ম',
+  editItem: 'সম্পাদনা item',
+  removeItem: 'সরান item',
+  remove: 'সরান',
+  totalPurchaseValue: 'মোট purchase value',
+  orderPreview: 'order preদৃষ্টিভঙ্গি',
+  orderSummary: 'আদেশ summary',
+  totalQuantity: 'total পরিমাণ',
+  companyRequired: 'কোম্পানি is required',
+  shipmentDateRequired: 'shipment তারিখ is required',
+  atLeastOneLineItemRequired: 'at সবচেয়ে কম one line item is required',
+  creating: 'Creating (বাংলা অনুবাদ প্রয়োজন)',
+  updatePurchaseOrder: 'আপডেট purchase order',
+  createPurchaseOrder: 'তৈরি করুন purchase order',
+  transactionType: 'transaction ধরন',
+  buyEmptyCylinders: 'buy empty সিলিন্ডারs',
+  sellEmptyCylinders: 'sell empty সিলিন্ডারs',
+  addEmptyCylindersToInventory: 'যোগ করুন empty cylinders to inventory',
+  removeEmptyCylindersFromInventory: 'সরান empty cylinders from inventory',
+  cylinderSize: 'সিলিন্ডার size',
+  selectCylinderSize: 'নির্বাচন করুন cylinder size',
+  emptyCylindersNote: 'empty সিলিন্ডারs note',
+  transactionDate: 'transaction তারিখ',
+  enterTransactionDetails: 'প্রবেশ করান transaction details',
+  buy: 'Buy (বাংলা অনুবাদ প্রয়োজন)',
+  sell: 'Sell (বাংলা অনুবাদ প্রয়োজন)',
+  emptyCylinderTransaction: 'empty সিলিন্ডার transaction',
+  directTransaction: 'direct transকর্ম',
+  cylinderBuyTransaction: 'সিলিন্ডার buy transaction',
+  cylinderSellTransaction: 'সিলিন্ডার sell transaction',
+  comprehensiveProfitabilityAnalysis: 'comprehensive লাভability analysis',
+  visualRepresentationProfitByProduct: 'visual representation profit by পণ্য',
+  individualDriverPerformanceMetrics: 'individual চালক performance metrics',
+  comparativeAnalysisRevenueByDriver: 'comparative analysis revenue by চালক',
+  monthlyRevenue: 'monthly আয়',
+  allExpenses: 'all খরচs',
+  totalProfit: 'মোট profit',
+  buyingPrice: 'buying দাম',
+  commission: 'কমিশন',
+  fixedCost: 'fixed খরচ',
+  breakevenPrice: 'breakeven দাম',
+  sellingPrice: 'selling দাম',
+  costPerUnit: 'খরচ per unit',
+  avgCostPerUnit: 'avg খরচ per unit',
+  failedToLoadData: 'failed to load তথ্য',
+  errorLoadingData: 'লোড হচ্ছে error data...',
+  january: 'January (বাংলা অনুবাদ প্রয়োজন)',
+  february: 'February (বাংলা অনুবাদ প্রয়োজন)',
+  march: 'March (বাংলা অনুবাদ প্রয়োজন)',
+  april: 'April (বাংলা অনুবাদ প্রয়োজন)',
+  may: 'May (বাংলা অনুবাদ প্রয়োজন)',
+  june: 'June (বাংলা অনুবাদ প্রয়োজন)',
+  july: 'July (বাংলা অনুবাদ প্রয়োজন)',
+  august: 'August (বাংলা অনুবাদ প্রয়োজন)',
+  september: 'September (বাংলা অনুবাদ প্রয়োজন)',
+  october: 'October (বাংলা অনুবাদ প্রয়োজন)',
+  november: 'নাvember',
+  december: 'December (বাংলা অনুবাদ প্রয়োজন)',
+  july2025: 'July2025 (বাংলা অনুবাদ প্রয়োজন)',
+  june2025: 'June2025 (বাংলা অনুবাদ প্রয়োজন)',
+  may2025: 'May2025 (বাংলা অনুবাদ প্রয়োজন)',
+  april2025: 'April2025 (বাংলা অনুবাদ প্রয়োজন)',
+  march2025: 'March2025 (বাংলা অনুবাদ প্রয়োজন)',
+  february2025: 'February2025 (বাংলা অনুবাদ প্রয়োজন)',
+  january2025: 'January2025 (বাংলা অনুবাদ প্রয়োজন)',
+  december2024: 'December2024 (বাংলা অনুবাদ প্রয়োজন)',
+  november2024: 'নাvember2024',
+  october2024: 'October2024 (বাংলা অনুবাদ প্রয়োজন)',
+  selectTime: 'নির্বাচন করুন time',
+  failedToLoadDashboardData: 'failed to load dashboard তথ্য',
+  failedToLoadDashboardDataRefresh: 'failed to load dashboard data রিফ্রেশ',
+  errorLoadingCombinedDashboardData: 'লোড হচ্ছে error combined dashboard data...',
+  sessionExpiredRedirectingToLogin: 'session expired redirecting to লগইন',
+  realTimeOverview: 'real time overদৃষ্টিভঙ্গি',
+  orders: 'আদেশs',
+  stockLevel: 'স্টক level',
+  liveActivity: 'live কার্যকলাপ',
+  last15Minutes: 'last15 মিনিটs',
+  targetProgress: 'target পক্ষেgress',
+  performanceIndicators: 'perফর্মance indicators',
+  inventoryHealth: 'মজুদ health',
+  attentionNeeded: 'attention প্রয়োজনed',
+  good: 'ভাল',
+  collectionRate: 'Collection Rate (বাংলা অনুবাদ প্রয়োজন)',
+  profitMargin: 'লাভ margin',
+  salesDetails: 'sales বিস্তারিত',
+  viewDetailedSalesBreakdown: 'দৃষ্টিভঙ্গি detailed sales breakdown',
+  salesBreakdown: 'বিক্রয় breakdown',
+  detailedSalesAnalytics: 'detailed বিক্রয় analytics',
+  averageOrderValue: 'average আদেশ value',
+  driverPerformance: 'চালক performance',
+  topPerformersAndRankings: 'শীর্ষ performers and rankings',
+  driverRankings: 'চালক rankings',
+  performanceLeaderboard: 'perফর্মance leaderboard',
+  detailedViewAndTrends: 'detailed দৃষ্টিভঙ্গি and trends',
+  vsYesterday: 'vs গতকাল',
+  lpgDistributor: 'lpg পরিবেশক',
+  welcomeBack: 'welcome পিছনে',
+  role: 'Role (বাংলা অনুবাদ প্রয়োজন)',
+  loadingDashboard: 'লোড হচ্ছে dashboard',
+  fallbackDriverName1: 'fallপিছনে driver name1',
+  fallbackDriverName2: 'fallপিছনে driver name2',
+  fallbackDriverName3: 'fallপিছনে driver name3',
+  fallbackDriverName4: 'fallপিছনে driver name4',
+  salesCount: 'বিক্রয় count',
+  revenueAmount: 'revenue পরিমাণ',
+  performancePercentage: 'perফর্মance percentage',
+  chartDataFallback: 'chart data fallপিছনে',
+  weeklyPerformance: 'সপ্তাহly performance',
+  dailyAverage: 'Daily Average (বাংলা অনুবাদ প্রয়োজন)',
+  monthlyTarget: 'মাসly target',
+  quarterlyGrowth: 'Quarterly Growth (বাংলা অনুবাদ প্রয়োজন)',
+  unknownDriver: 'unknown চালক',
+  unknownCompany: 'unknown কোম্পানি',
+  completedSale: 'সম্পন্ন sale',
+  driverCompletedSale: 'চালক completed sale',
+  salesTrendUp: 'বিক্রয় trend up',
+  salesTrendDown: 'বিক্রয় trend down',
+  addressMustBeAtLeast10Characters: 'যোগ করুনress must be at least10 characters',
+  addressTooLong: 'যোগ করুনress too long',
+  areaMustBeAtLeast2Characters: 'এলাকা must be at least2 characters',
+  areaTooLong: 'এলাকা too long',
+  driverTypeIsRequired: 'driver ধরন is is required',
+  emergencyContactMustBeAtLeast10Digits: 'emergency contact must be at সবচেয়ে কম10 digits',
+  emergencyContactNameMustBeAtLeast2Characters: 'emergency contact নাম must be at least2 characters',
+  emergencyContactTooLong: 'emergency বিপক্ষেtact too long',
+  invalidEmailAddress: 'invalid email যোগ করুনress',
+  licenseNumberMustBeAtLeast5Characters: 'license number must be at সবচেয়ে কম5 characters',
+  licenseNumberTooLong: 'license সংখ্যা too long',
+  nameMustBeAtLeast2Characters: 'নাম must be at least2 characters',
+  nameTooLong: 'নাম too long',
+  phoneNumberMustBeAtLeast10Digits: 'ফোন number must be at least10 digits',
+  phoneNumberTooLong: 'ফোন number too long',
+  statusIsRequired: 'অবস্থা is is required',
+  all: 'সব',
+  bn: 'Bn (বাংলা অনুবাদ প্রয়োজন)',
+  en: 'En (বাংলা অনুবাদ প্রয়োজন)',
+  locale: 'স্থানীয়e',
+  key: 'Key (বাংলা অনুবাদ প্রয়োজন)',
+  value: 'মান',
+  allAlerts: 'সব alerts',
+  critical: 'সমালোচনামূলক',
+  criticalAlerts: 'সমালোচনামূলক alerts',
+  infoAlerts: 'info সতর্কs',
+  warningAlerts: 'warning সতর্কs',
+  inventoryAlert: 'মজুদ alert',
+  performanceAlert: 'perফর্মance alert',
+  stockAlert: 'স্টক alert',
+  systemNotification: 'system নাtification',
+  completionPercentage: 'completion শতাংশ',
+  dashboardDataUpdated: 'dashboard data আপডেটd',
+  dataNotFound: 'তথ্য not found',
+  isComplete: 'is সম্পূর্ণ',
+  liveDataFeed: 'live তথ্য feed',
+  metricsLastUpdated: 'metrics last আপডেটd',
+  missingKeys: 'Missing Keys (বাংলা অনুবাদ প্রয়োজন)',
+  newSalesActivity: 'new বিক্রয় activity',
+  optional: 'ঐচ্ছিক',
+  recentSaleActivity: 'সাম্প্রতিক sale activity',
+  totalKeys: 'মোট keys',
+  testCredentials: 'পরীক্ষা credentials',
+  translatedKeys: 'Translated Keys (বাংলা অনুবাদ প্রয়োজন)',
+  lowStock: 'low স্টক',
+  outOfStock: 'out of স্টক',
+  overduePayments: 'overdue পেমেন্টs',
+  overstock: 'overস্টক',
+  performanceTrendDown: 'performance trend নিচে',
+  performanceTrendStable: 'performance trend sট্যাবle',
+  performanceTrendUp: 'performance trend উপরে',
+  salesTrendStable: 'বিক্রয় trend stable',
+  targetAchieved: 'লক্ষ্য achieved',
+  topPerformer: 'শীর্ষ performer',
+  deleteDriver: 'মুছুন driver',
+  failedToLoadAlerts: 'failed to load সতর্কs',
+  failedToLoadInventoryAlerts: 'failed to load মজুদ alerts',
+  movementAnomaly: 'movement aনাmaly',
+  operationSuccessful: 'opeঅনুপাতnful successful',
+  welcomeToOnboarding: 'স্বাগতম to onboarding',
+  setupYourBusinessData: 'setup your ব্যবসায়িক data',
+  companyNames: 'company নামs',
+  productSetup: 'পণ্য setup',
+  inventoryQuantities: 'মজুদ quantities',
+  driversSetup: 'চালকs setup',
+  receivablesSetup: 'receivables setউপরে',
+  skipOnboarding: 'Skip Onboarding (বাংলা অনুবাদ প্রয়োজন)',
+  completing: 'Completing (বাংলা অনুবাদ প্রয়োজন)',
+  completeSetup: 'complete setউপরে',
+  setupBusiness: 'setup ব্যবসায়িক',
+  addCompanyNames: 'যোগ করুন company names',
+  addCompaniesYouDistributeFor: 'যোগ করুন companies you distribute for',
+  addNewCompany: 'যোগ করুন new company',
+  enterCompanyNamesLikeAygaz: 'প্রবেশ করান company names like aygaz',
+  companyName: 'company নাম',
+  enterCompanyName: 'প্রবেশ করান company name',
+  companyNameRequired: 'company নাম is required',
+  companyAlreadyExists: 'কোম্পানি already exists',
+  addedCompanies: 'যোগ করুনed companies',
+  companiesYouDistributeFor: 'Companies You Distribute For (বাংলা অনুবাদ প্রয়োজন)',
+  noCompaniesAdded: 'no companies যোগ করুনed',
+  addAtLeastOneCompany: 'যোগ করুন at least one company',
+  setupProductsAndSizes: 'setup পণ্যs and sizes',
+  configureCylinderSizesAndProducts: 'configure cylinder sizes and পণ্যs',
+  addCylinderSize: 'যোগ করুন cylinder size',
+  addSizesLike12L20L: 'যোগ করুন sizes like12 l20 l',
+  enterSizeLike12L: 'প্রবেশ করান size like12 l',
+  addSize: 'যোগ করুন size',
+  cylinderSizeRequired: 'সিলিন্ডার size is required',
+  cylinderSizeAlreadyExists: 'সিলিন্ডার size already exists',
+  enterDescription: 'প্রবেশ করান description',
+  addProduct: 'যোগ করুন product',
+  addNewProduct: 'যোগ করুন new product',
+  addProductsForEachCompany: 'যোগ করুন products for each company',
+  productName: 'product নাম',
+  enterProductName: 'প্রবেশ করান product name',
+  enterProductNameExample: 'প্রবেশ করান product name example',
+  currentPrice: 'current দাম',
+  enterPrice: 'প্রবেশ করান price',
+  productNameRequired: 'product নাম is required',
+  validPriceRequired: 'valid দাম is required',
+  productAlreadyExists: 'পণ্য already exists',
+  addedProducts: 'যোগ করুনed products',
+  addCylinderSizesAndProducts: 'যোগ করুন cylinder sizes and products',
+  bothRequiredToProceed: 'উভয় to proceed is required',
+  setInitialInventory: 'set initial মজুদ',
+  enterCurrentFullCylinderQuantities: 'প্রবেশ করান current full cylinder quantities',
+  fullCylinderInventory: 'full cylinder মজুদ',
+  enterQuantityForEachProduct: 'প্রবেশ করান quantity for each product',
+  noProductsAvailable: 'no পণ্যs available',
+  addProductsFirst: 'যোগ করুন products first',
+  totalProducts: 'মোট products',
+  totalFullCylinders: 'মোট full cylinders',
+  setEmptyCylinderInventory: 'set empty cylinder মজুদ',
+  enterCurrentEmptyCylinderQuantities: 'প্রবেশ করান current empty cylinder quantities',
+  emptyCylinderInventory: 'empty cylinder মজুদ',
+  enterQuantityForEachSize: 'প্রবেশ করান quantity for each size',
+  noCylinderSizesAvailable: 'no সিলিন্ডার sizes available',
+  addCylinderSizesFirst: 'যোগ করুন cylinder sizes first',
+  totalSizes: 'মোট sizes',
+  totalEmptyCylinders: 'মোট empty cylinders',
+  emptyCylinderNote: 'empty সিলিন্ডার note',
+  addYourDrivers: 'যোগ করুন your drivers',
+  addDriversWhoWillSellProducts: 'যোগ করুন drivers who will sell products',
+  enterDriverInformation: 'প্রবেশ করান driver information',
+  enterDriverName: 'প্রবেশ করান driver name',
+  shipmentDriver: 'shipment চালক',
+  driverNameRequired: 'driver নাম is required',
+  driverAlreadyExists: 'চালক already exists',
+  addedDrivers: 'যোগ করুনed drivers',
+  driversInYourTeam: 'চালকs in your team',
+  noContactInfo: 'না contact info',
+  noDriversAdded: 'no drivers যোগ করুনed',
+  addAtLeastOneDriver: 'যোগ করুন at least one driver',
+  setupReceivables: 'setউপরে receivables',
+  enterCurrentReceivablesForEachDriver: 'প্রবেশ করান current receivables for each driver',
+  driverReceivables: 'চালক receivables',
+  enterCashAndCylinderReceivables: 'প্রবেশ করান cash and cylinder receivables',
+  amountOwedByCustomers: 'পরিমাণ owed by customers',
+  cylindersOwedByCustomers: 'cylinders owed by গ্রাহকs',
+  cylindersOwedByCustomersBySize: 'cylinders owed by গ্রাহকs by size',
+  noDriversAvailable: 'no চালকs available',
+  addDriversFirst: 'যোগ করুন drivers first',
+  noRetailDriversAvailable: 'no retail চালকs available',
+  addRetailDriversFirst: 'যোগ করুন retail drivers first',
+  receivablesSummary: 'receivables সারসংক্ষেপ',
+  manualBusinessOnboarding: 'manual ব্যবসায়িক onboarding',
+  businessInformation: 'ব্যবসায়িক information',
+  businessName: 'business নাম',
+  businessNamePlaceholder: 'প্রবেশ করান business name...',
+  subdomain: 'Subdomain (বাংলা অনুবাদ প্রয়োজন)',
+  subdomainPlaceholder: 'প্রবেশ করান subdomain...',
+  plan: 'পরিকল্পনা',
+  freemium: 'বিনামূল্যেmium',
+  professional: 'পেশাদার',
+  enterprise: 'প্রবেশ করানprise',
+  adminUser: 'admin ব্যবহারকারী',
+  adminName: 'admin নাম',
+  adminNamePlaceholder: 'প্রবেশ করান admin name...',
+  adminEmail: 'admin ইমেইল',
+  adminEmailPlaceholder: 'প্রবেশ করান admin email...',
+  adminPassword: 'admin পাসওয়ার্ড',
+  strongPassword: 'strong পাসওয়ার্ড',
+  creatingBusiness: 'creating ব্যবসায়িক',
+  onboardBusiness: 'onboard ব্যবসায়িক',
+  businessOnboardedSuccessfully: 'ব্যবসায়িক onboardedfully successful',
+  businessCreatedWithAdmin: 'business তৈরি করুনd with admin',
+  failedToOnboardBusiness: 'failed to onboard ব্যবসায়িক',
+  networkErrorOccurred: 'ত্রুটি: network occurred',
+  unauthorized: 'অননুমোদিত',
+  userNotFound: 'ব্যবহারকারী not found',
+  onboardingAlreadyCompleted: 'onboarding already সম্পন্ন',
+  failedToCompleteOnboarding: 'failed to সম্পূর্ণ onboarding',
+  failedToCheckOnboardingStatus: 'failed to check onboarding অবস্থা',
+  searchCompanies: 'অনুসন্ধান companies',
+  addCompany: 'যোগ করুন company',
+  activeProducts: 'active পণ্যs',
+  totalStock: 'মোট stock',
+  companies: 'Companies (বাংলা অনুবাদ প্রয়োজন)',
+  searchProducts: 'অনুসন্ধান products',
+  created: 'তৈরি করুনd',
+  cylinderSizeDeletedSuccessfully: 'cylinder size মুছুনdfully successful',
 };
 
 const translationMap: Record<string, Translations> = {

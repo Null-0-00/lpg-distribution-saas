@@ -8,11 +8,11 @@ import { InventoryCalculator, BusinessValidator } from '@/lib/business';
 import { ReceivablesCalculator } from '@/lib/business/receivables';
 import { SaleType, PaymentType } from '@prisma/client';
 import { z } from 'zod';
-import { 
-  PaginationHelper, 
-  createPaginatedResponse, 
+import {
+  PaginationHelper,
+  createPaginatedResponse,
   validatePaginationParams,
-  PaginationPerformanceMonitor 
+  PaginationPerformanceMonitor,
 } from '@/lib/pagination';
 
 const createSaleSchema = z.object({
@@ -284,7 +284,7 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   const stopTiming = PaginationPerformanceMonitor.startTiming('/api/sales');
-  
+
   try {
     const session = await auth();
     if (!session?.user) {
@@ -305,10 +305,7 @@ export async function GET(request: NextRequest) {
     // Validate pagination parameters
     const validationError = validatePaginationParams(paginationParams);
     if (validationError) {
-      return NextResponse.json(
-        { error: validationError },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: validationError }, { status: 400 });
     }
 
     // Parse additional filter parameters
@@ -356,22 +353,23 @@ export async function GET(request: NextRequest) {
     const result = await PaginationHelper.paginate(
       // Count query
       () => prisma.sale.count({ where }),
-      // Data query  
-      (options) => prisma.sale.findMany({
-        where,
-        include: {
-          driver: { select: { name: true, phone: true } },
-          product: {
-            select: {
-              name: true,
-              size: true,
-              company: { select: { name: true } },
+      // Data query
+      (options) =>
+        prisma.sale.findMany({
+          where,
+          include: {
+            driver: { select: { name: true, phone: true } },
+            product: {
+              select: {
+                name: true,
+                size: true,
+                company: { select: { name: true } },
+              },
             },
+            user: { select: { name: true } },
           },
-          user: { select: { name: true } },
-        },
-        ...options,
-      }),
+          ...options,
+        }),
       paginationParams,
       {
         defaultLimit: 20,
@@ -415,9 +413,10 @@ export async function GET(request: NextRequest) {
         phone: sale.driver?.phone || '',
       },
       product: {
-        name: sale.product?.company?.name && sale.product?.name 
-          ? `${sale.product.company.name} ${sale.product.name}`
-          : 'Unknown Product',
+        name:
+          sale.product?.company?.name && sale.product?.name
+            ? `${sale.product.company.name} ${sale.product.name}`
+            : 'Unknown Product',
         size: sale.product?.size || '',
       },
       createdBy: sale.user?.name || 'Unknown User',

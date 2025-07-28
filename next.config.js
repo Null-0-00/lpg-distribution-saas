@@ -71,7 +71,7 @@ const nextConfig = {
           },
         },
       };
-      
+
       // Optimize bundle size
       config.optimization.usedExports = true;
       config.optimization.sideEffects = false;
@@ -88,7 +88,7 @@ const nextConfig = {
         })
       );
     }
-    
+
     return config;
   },
   // Enable compression

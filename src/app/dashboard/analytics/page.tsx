@@ -31,11 +31,11 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { useSettings } from '@/contexts/SettingsContext';
-import { 
+import {
   DynamicBarChart as BarChart,
   DynamicPieChart as PieChart,
   DynamicLineChart as LineChart,
-  DynamicResponsiveContainer as ResponsiveContainer 
+  DynamicResponsiveContainer as ResponsiveContainer,
 } from '@/components/optimization/DynamicComponents';
 
 // These remain as regular imports since they're lightweight

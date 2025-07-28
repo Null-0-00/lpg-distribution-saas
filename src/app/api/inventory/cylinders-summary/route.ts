@@ -239,26 +239,78 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    // Get the exact size breakdown for each driver's receivables
+    // OPTIMIZED: Get all baseline data in single query to prevent N+1
+    const driverIds = activeDriversWithReceivables
+      .filter((d) => d.receivableRecords[0]?.totalCylinderReceivables > 0)
+      .map((d) => d.id);
+
+    // Single query for all baseline breakdowns
+    const allBaselineBreakdowns =
+      await prisma.driverCylinderSizeBaseline.findMany({
+        where: {
+          tenantId,
+          driverId: { in: driverIds },
+        },
+        select: {
+          driverId: true,
+          baselineQuantity: true,
+          cylinderSize: {
+            select: {
+              size: true,
+            },
+          },
+        },
+      });
+
+    // Single query for all sales data
+    const allSalesWithCylinders = await prisma.sale.findMany({
+      where: {
+        tenantId,
+        driverId: { in: driverIds },
+        saleType: 'REFILL',
+      },
+      select: {
+        driverId: true,
+        quantity: true,
+        cylindersDeposited: true,
+        product: {
+          select: {
+            name: true,
+            size: true,
+            cylinderSize: {
+              select: {
+                size: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    // Group data by driver for processing
+    const baselinesByDriver = new Map<string, typeof allBaselineBreakdowns>();
+    const salesByDriver = new Map<string, typeof allSalesWithCylinders>();
+
+    allBaselineBreakdowns.forEach((baseline) => {
+      if (!baselinesByDriver.has(baseline.driverId)) {
+        baselinesByDriver.set(baseline.driverId, []);
+      }
+      baselinesByDriver.get(baseline.driverId)!.push(baseline);
+    });
+
+    allSalesWithCylinders.forEach((sale) => {
+      if (!salesByDriver.has(sale.driverId)) {
+        salesByDriver.set(sale.driverId, []);
+      }
+      salesByDriver.get(sale.driverId)!.push(sale);
+    });
+
+    // Process each driver with pre-loaded data
     for (const driver of activeDriversWithReceivables) {
       const latestRecord = driver.receivableRecords[0];
       if (latestRecord?.totalCylinderReceivables > 0) {
-        // Get the EXACT baseline breakdown (from permanent table, not proportional)
-        const baselineBreakdown =
-          await prisma.driverCylinderSizeBaseline.findMany({
-            where: {
-              tenantId,
-              driverId: driver.id,
-            },
-            select: {
-              baselineQuantity: true,
-              cylinderSize: {
-                select: {
-                  size: true,
-                },
-              },
-            },
-          });
+        const baselineBreakdown = baselinesByDriver.get(driver.id) || [];
+        const salesWithCylinders = salesByDriver.get(driver.id) || [];
 
         if (baselineBreakdown.length > 0) {
           // STEP 1: Start with onboarding baseline breakdown by size
@@ -271,30 +323,6 @@ export async function GET(request: NextRequest) {
           });
 
           // STEP 2: Add/subtract sales data by specific cylinder sizes
-          const salesWithCylinders = await prisma.sale.findMany({
-            where: {
-              tenantId,
-              driverId: driver.id,
-              saleType: 'REFILL',
-            },
-            select: {
-              quantity: true,
-              cylindersDeposited: true,
-              product: {
-                select: {
-                  name: true,
-                  size: true,
-                  cylinderSize: {
-                    select: {
-                      size: true,
-                    },
-                  },
-                },
-              },
-            },
-          });
-
-          // Apply sales transactions to the baseline
           salesWithCylinders.forEach((sale) => {
             const size =
               sale.product?.cylinderSize?.size ||
@@ -319,25 +347,7 @@ export async function GET(request: NextRequest) {
             }
           });
         } else {
-          // Fallback: try to get from actual sales data
-          const salesWithCylinders = await prisma.sale.findMany({
-            where: {
-              tenantId,
-              driverId: driver.id,
-              saleType: 'REFILL',
-            },
-            select: {
-              quantity: true,
-              cylindersDeposited: true,
-              product: {
-                select: {
-                  name: true,
-                  size: true,
-                },
-              },
-            },
-          });
-
+          // Fallback: use pre-loaded sales data
           salesWithCylinders.forEach((sale) => {
             const size = sale.product?.size || sale.product?.name || 'Unknown';
             const receivables =

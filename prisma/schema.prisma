@@ -85,6 +85,9 @@ model User {
   @@unique([tenantId, email])
   @@index([tenantId])
   @@index([email])
+  @@index([tenantId, isActive])
+  @@index([tenantId, role])
+  @@index([lastLoginAt])
   @@map("users")
 }
 
@@ -144,6 +147,8 @@ model Company {
 
   @@unique([tenantId, name])
   @@index([tenantId])
+  @@index([tenantId, isActive])
+  @@index([name])
   @@map("companies")
 }
 
@@ -185,6 +190,10 @@ model Product {
   @@unique([tenantId, companyId, name])
   @@index([tenantId])
   @@index([companyId])
+  @@index([tenantId, isActive])
+  @@index([tenantId, companyId, isActive])
+  @@index([currentPrice])
+  @@index([lowStockThreshold])
   @@map("products")
 }
 
@@ -254,6 +263,10 @@ model Sale {
   @@index([paymentType])
   @@index([driverId])
   @@index([productId])
+  @@index([tenantId, driverId, saleDate])
+  @@index([tenantId, saleType])
+  @@index([tenantId, isOnCredit])
+  @@index([netValue])
   @@map("sales")
 }
 
@@ -530,6 +543,10 @@ model Expense {
   @@index([tenantId])
   @@index([expenseDate])
   @@index([categoryId])
+  @@index([tenantId, expenseDate])
+  @@index([tenantId, isApproved])
+  @@index([tenantId, userId])
+  @@index([amount])
   @@map("expenses")
 }
 

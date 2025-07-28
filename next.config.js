@@ -33,9 +33,51 @@ const nextConfig = {
     // Enable SWC minification
     styledComponents: true,
   },
-  // Simple webpack optimization
-  webpack: (config, { dev }) => {
-    // Only add bundle analyzer in production analysis mode
+  // Enhanced webpack optimization
+  webpack: (config, { dev, isServer }) => {
+    // Enable bundle splitting for better caching
+    if (!dev && !isServer) {
+      config.optimization.splitChunks = {
+        chunks: 'all',
+        cacheGroups: {
+          // Separate vendor chunks
+          vendor: {
+            test: /[\\/]node_modules[\\/]/,
+            name: 'vendors',
+            chunks: 'all',
+            priority: 10,
+          },
+          // Separate UI library chunks
+          ui: {
+            test: /[\\/]node_modules[\\/](@radix-ui|@headlessui|lucide-react)[\\/]/,
+            name: 'ui-libs',
+            chunks: 'all',
+            priority: 20,
+          },
+          // Separate chart library chunks
+          charts: {
+            test: /[\\/]node_modules[\\/](recharts|d3)[\\/]/,
+            name: 'chart-libs',
+            chunks: 'all',
+            priority: 20,
+          },
+          // Common components
+          common: {
+            name: 'common',
+            minChunks: 2,
+            chunks: 'all',
+            priority: 5,
+            reuseExistingChunk: true,
+          },
+        },
+      };
+      
+      // Optimize bundle size
+      config.optimization.usedExports = true;
+      config.optimization.sideEffects = false;
+    }
+
+    // Bundle analyzer
     if (!dev && process.env.ANALYZE === 'true') {
       const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
       config.plugins.push(
@@ -46,6 +88,7 @@ const nextConfig = {
         })
       );
     }
+    
     return config;
   },
   // Enable compression

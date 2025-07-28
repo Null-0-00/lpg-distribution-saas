@@ -8,6 +8,12 @@ import { InventoryCalculator, BusinessValidator } from '@/lib/business';
 import { ReceivablesCalculator } from '@/lib/business/receivables';
 import { SaleType, PaymentType } from '@prisma/client';
 import { z } from 'zod';
+import { 
+  PaginationHelper, 
+  createPaginatedResponse, 
+  validatePaginationParams,
+  PaginationPerformanceMonitor 
+} from '@/lib/pagination';
 
 const createSaleSchema = z.object({
   driverId: z.string().cuid(),
@@ -277,6 +283,8 @@ export async function POST(request: NextRequest) {
 }
 
 export async function GET(request: NextRequest) {
+  const stopTiming = PaginationPerformanceMonitor.startTiming('/api/sales');
+  
   try {
     const session = await auth();
     if (!session?.user) {
@@ -286,62 +294,70 @@ export async function GET(request: NextRequest) {
     const { tenantId } = session.user;
     const { searchParams } = new URL(request.url);
 
-    // Parse query parameters
-    const page = parseInt(searchParams.get('page') || '1');
-    const limit = Math.min(parseInt(searchParams.get('limit') || '50'), 100);
+    // Parse pagination parameters with validation
+    const paginationParams = PaginationHelper.parseParams(searchParams, {
+      defaultLimit: 20,
+      maxLimit: 100,
+      defaultSortBy: 'saleDate',
+      defaultSortOrder: 'desc',
+    });
+
+    // Validate pagination parameters
+    const validationError = validatePaginationParams(paginationParams);
+    if (validationError) {
+      return NextResponse.json(
+        { error: validationError },
+        { status: 400 }
+      );
+    }
+
+    // Parse additional filter parameters
     const driverId = searchParams.get('driverId');
     const productId = searchParams.get('productId');
     const startDate = searchParams.get('startDate');
     const endDate = searchParams.get('endDate');
     const saleType = searchParams.get('saleType') as SaleType | null;
 
-    // Build where clause
-    const where: Record<string, unknown> = { tenantId };
+    // Build base where clause
+    const baseWhere: any = { tenantId };
 
-    if (driverId) where.driverId = driverId;
-    if (productId) where.productId = productId;
-    if (saleType) where.saleType = saleType;
+    // Add specific filters
+    if (driverId) baseWhere.driverId = driverId;
+    if (productId) baseWhere.productId = productId;
+    if (saleType) baseWhere.saleType = saleType;
 
-    if (startDate || endDate) {
-      const dateFilter: Record<string, Date> = {};
-      if (startDate) {
-        const startDateTime = new Date(startDate);
-        startDateTime.setHours(0, 0, 0, 0);
-        dateFilter.gte = startDateTime;
-      }
-      if (endDate) {
-        const endDateTime = new Date(endDate);
-        endDateTime.setHours(23, 59, 59, 999);
-        dateFilter.lte = endDateTime;
-      }
-      where.saleDate = dateFilter;
-    }
-
-    // Get all sales for this tenant to see their dates
-    const allSales = await prisma.sale.findMany({
-      where: { tenantId },
-      select: {
-        id: true,
-        saleDate: true,
-        driver: { select: { name: true } },
-        product: { select: { name: true } },
-      },
-      orderBy: { saleDate: 'desc' },
-      take: 10,
-    });
-    console.log(
-      'Recent sales with dates:',
-      allSales.map((s) => ({
-        id: s.id,
-        saleDate: s.saleDate,
-        driver: s.driver.name,
-        product: s.product.name,
-      }))
+    // Add search condition
+    const searchCondition = PaginationHelper.createSearchCondition(
+      paginationParams.search,
+      ['notes']
     );
 
-    // Execute queries
-    const [sales, totalCount] = await Promise.all([
-      prisma.sale.findMany({
+    // Add date range condition
+    const dateRangeCondition = PaginationHelper.createDateRangeCondition(
+      startDate || undefined,
+      endDate || undefined,
+      'saleDate'
+    );
+
+    // Combine all conditions
+    const where = PaginationHelper.combineConditions(
+      baseWhere,
+      searchCondition,
+      dateRangeCondition
+    );
+
+    console.log('Sales query conditions:', {
+      where,
+      pagination: paginationParams,
+      filters: { driverId, productId, saleType, startDate, endDate },
+    });
+
+    // Use pagination helper for data retrieval
+    const result = await PaginationHelper.paginate(
+      // Count query
+      () => prisma.sale.count({ where }),
+      // Data query  
+      (options) => prisma.sale.findMany({
         where,
         include: {
           driver: { select: { name: true, phone: true } },
@@ -354,28 +370,16 @@ export async function GET(request: NextRequest) {
           },
           user: { select: { name: true } },
         },
-        orderBy: { saleDate: 'desc' },
-        skip: (page - 1) * limit,
-        take: limit,
+        ...options,
       }),
-      prisma.sale.count({ where }),
-    ]);
-
-    // Debug logging
-    console.log('Sales found:', sales.length);
-    console.log(
-      'Sales details:',
-      sales.map((s) => ({
-        id: s.id,
-        saleDate: s.saleDate,
-        driverName: s.driver.name,
-        productName: s.product.name,
-        saleType: s.saleType,
-        quantity: s.quantity,
-      }))
+      paginationParams,
+      {
+        defaultLimit: 20,
+        maxLimit: 100,
+      }
     );
 
-    // Calculate summary statistics
+    // Calculate summary statistics for filtered data
     const summary = await prisma.sale.aggregate({
       where,
       _sum: {
@@ -390,38 +394,47 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    return NextResponse.json({
-      sales: sales.map((sale) => ({
-        id: sale.id,
-        saleType: sale.saleType,
-        quantity: sale.quantity,
-        unitPrice: sale.unitPrice,
-        totalValue: sale.totalValue,
-        discount: sale.discount,
-        netValue: sale.netValue,
-        paymentType: sale.paymentType,
-        cashDeposited: sale.cashDeposited,
-        cylindersDeposited: sale.cylindersDeposited,
-        isOnCredit: sale.isOnCredit,
-        isCylinderCredit: sale.isCylinderCredit,
-        saleDate: sale.saleDate,
-        notes: sale.notes,
-        driver: {
-          name: sale.driver.name,
-          phone: sale.driver.phone,
-        },
-        product: {
-          name: `${sale.product.company.name} ${sale.product.name}`,
-          size: sale.product.size,
-        },
-        createdBy: sale.user.name,
-      })),
-      pagination: {
-        page,
-        limit,
-        total: totalCount,
-        pages: Math.ceil(totalCount / limit),
+    // Transform data
+    const transformedData = result.data.map((sale: any) => ({
+      id: sale.id,
+      saleType: sale.saleType,
+      quantity: sale.quantity,
+      unitPrice: sale.unitPrice,
+      totalValue: sale.totalValue,
+      discount: sale.discount,
+      netValue: sale.netValue,
+      paymentType: sale.paymentType,
+      cashDeposited: sale.cashDeposited,
+      cylindersDeposited: sale.cylindersDeposited,
+      isOnCredit: sale.isOnCredit,
+      isCylinderCredit: sale.isCylinderCredit,
+      saleDate: sale.saleDate,
+      notes: sale.notes,
+      driver: {
+        name: sale.driver?.name || 'Unknown Driver',
+        phone: sale.driver?.phone || '',
       },
+      product: {
+        name: sale.product?.company?.name && sale.product?.name 
+          ? `${sale.product.company.name} ${sale.product.name}`
+          : 'Unknown Product',
+        size: sale.product?.size || '',
+      },
+      createdBy: sale.user?.name || 'Unknown User',
+    }));
+
+    stopTiming();
+
+    const response = createPaginatedResponse(
+      {
+        data: transformedData,
+        pagination: result.pagination,
+      },
+      'Sales retrieved successfully'
+    );
+
+    return NextResponse.json({
+      ...response,
       summary: {
         totalSales: summary._count.id || 0,
         totalQuantity: summary._sum.quantity || 0,
@@ -429,8 +442,17 @@ export async function GET(request: NextRequest) {
         totalCashCollected: summary._sum.cashDeposited || 0,
         totalCylindersCollected: summary._sum.cylindersDeposited || 0,
       },
+      filters: {
+        driverId,
+        productId,
+        saleType,
+        startDate,
+        endDate,
+        search: paginationParams.search,
+      },
     });
   } catch (error) {
+    stopTiming();
     console.error('Sales fetch error:', error);
     return NextResponse.json(
       { error: 'Internal server error' },

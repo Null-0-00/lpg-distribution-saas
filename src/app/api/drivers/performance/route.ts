@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
+import { cache } from '@/lib/cache';
 
 export async function GET(request: NextRequest) {
   try {
@@ -19,6 +20,17 @@ export async function GET(request: NextRequest) {
     const currentDate = new Date();
     const targetMonth = month ? parseInt(month) : currentDate.getMonth() + 1;
     const targetYear = year ? parseInt(year) : currentDate.getFullYear();
+
+    // Check cache first
+    const cacheKey = `drivers_performance:${tenantId}:${targetYear}-${targetMonth}`;
+    const cachedResult = await cache.get(cacheKey);
+    if (cachedResult) {
+      return NextResponse.json(cachedResult, {
+        headers: {
+          'Cache-Control': 'private, max-age=300, stale-while-revalidate=600',
+        },
+      });
+    }
 
     // Calculate month boundaries
     const monthStart = new Date(targetYear, targetMonth - 1, 1);
@@ -235,7 +247,7 @@ export async function GET(request: NextRequest) {
           : 0,
     };
 
-    return NextResponse.json({
+    const responseData = {
       success: true,
       data: performanceData,
       summary,
@@ -244,6 +256,15 @@ export async function GET(request: NextRequest) {
         year: targetYear,
         monthName: monthStart.toLocaleString('default', { month: 'long' }),
         dateRange: `${monthStart.toLocaleDateString()} - ${monthEnd.toLocaleDateString()}`,
+      },
+    };
+
+    // Cache the result for 5 minutes (performance data doesn't change often)
+    await cache.set(cacheKey, responseData, 300);
+
+    return NextResponse.json(responseData, {
+      headers: {
+        'Cache-Control': 'private, max-age=300, stale-while-revalidate=600',
       },
     });
   } catch (error) {

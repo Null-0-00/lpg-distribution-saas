@@ -10,7 +10,7 @@ import {
   Trash2,
   RefreshCw,
 } from 'lucide-react';
-import { CombinedSaleForm } from '@/components/forms/CombinedSaleForm';
+import { DynamicCombinedSaleForm as CombinedSaleForm } from '@/components/optimization/DynamicComponents';
 import {
   Dialog,
   DialogContent,

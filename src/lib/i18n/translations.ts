@@ -1025,7 +1025,7 @@ export interface Translations {
   optionalDescription: string;
   failedToFetchCylinderSizes: string;
   areYouSureDeleteCustomerReceivable: string;
-  
+
   // Asset and Receivables translations
   dueDate: string;
   noDate: string;
@@ -1265,16 +1265,18 @@ const englishTranslations: Translations = {
   dueSoon: 'Due Soon',
   overdue: 'Overdue',
   paid: 'Paid',
-  
+
   // Receivables translations
   failedToFetchReceivables: 'Failed to fetch receivables',
   receivablesRecalculatedSuccessfully: 'Receivables recalculated successfully',
   failedToRecalculateReceivables: 'Failed to recalculate receivables',
   failedToFetchReceivablesChanges: 'Failed to fetch receivables changes',
-  customerReceivableUpdatedSuccessfully: 'Customer receivable updated successfully',
+  customerReceivableUpdatedSuccessfully:
+    'Customer receivable updated successfully',
   customerReceivableAddedSuccessfully: 'Customer receivable added successfully',
   failedToSaveCustomerReceivable: 'Failed to save customer receivable',
-  customerReceivableDeletedSuccessfully: 'Customer receivable deleted successfully',
+  customerReceivableDeletedSuccessfully:
+    'Customer receivable deleted successfully',
   failedToDeleteCustomerReceivable: 'Failed to delete customer receivable',
   paymentRecordedSuccessfully: 'Payment recorded successfully',
   failedToRecordPayment: 'Failed to record payment',
@@ -1286,7 +1288,7 @@ const englishTranslations: Translations = {
   recordPayment: 'Record Payment',
   recordCylinderReturn: 'Record Cylinder Return',
   recordReturn: 'Record Return',
-  customerReceivablesDontMatch: 'Customer receivables don\'t match',
+  customerReceivablesDontMatch: "Customer receivables don't match",
   editCustomerReceivable: 'Edit Customer Receivable',
   addCustomerReceivable: 'Add Customer Receivable',
   cashReceivable: 'Cash Receivable',
@@ -1313,7 +1315,7 @@ const englishTranslations: Translations = {
   salesCashReceivables: 'Sales Cash Receivables',
   fromSalesData: 'From Sales Data',
   salesCylinderReceivables: 'Sales Cylinder Receivables',
-  
+
   companyCreatedUpdatedSuccessfully: 'Company created/updated successfully',
   productCreatedUpdatedSuccessfully: 'Product created/updated successfully',
   productDeletedSuccessfully: 'Product deleted successfully',
@@ -1520,7 +1522,8 @@ const englishTranslations: Translations = {
   checkStock: 'Check Stock',
   clear: 'Clear',
   company: 'Company',
-  completeSystemAccessAndUserManagement: 'Complete System Access And User Management',
+  completeSystemAccessAndUserManagement:
+    'Complete System Access And User Management',
   confirmDeleteUser: 'Confirm Delete User',
   contactName: 'Contact Name',
   contactNumber: 'Contact Number',
@@ -1709,7 +1712,8 @@ const englishTranslations: Translations = {
   success: 'Success',
   sumAllDriversSalesForDate: 'Sum All Drivers Sales For Date',
   sumCompletedEmptyCylinderShipments: 'Sum Completed Empty Cylinder Shipments',
-  sumCompletedShipmentsFromShipmentsPage: 'Sum Completed Shipments From Shipments Page',
+  sumCompletedShipmentsFromShipmentsPage:
+    'Sum Completed Shipments From Shipments Page',
   sun: 'Sun',
   systemUsers: 'System Users',
   tasks: 'Tasks',
@@ -1950,7 +1954,8 @@ const englishTranslations: Translations = {
   cylinderBuyTransaction: 'Cylinder Buy Transaction',
   cylinderSellTransaction: 'Cylinder Sell Transaction',
   comprehensiveProfitabilityAnalysis: 'Comprehensive Profitability Analysis',
-  visualRepresentationProfitByProduct: 'Visual Representation Profit By Product',
+  visualRepresentationProfitByProduct:
+    'Visual Representation Profit By Product',
   individualDriverPerformanceMetrics: 'Individual Driver Performance Metrics',
   comparativeAnalysisRevenueByDriver: 'Comparative Analysis Revenue By Driver',
   monthlyRevenue: 'Monthly Revenue',
@@ -2042,11 +2047,14 @@ const englishTranslations: Translations = {
   areaMustBeAtLeast2Characters: 'Area Must Be At Least2 Characters',
   areaTooLong: 'Area Too Long',
   driverTypeIsRequired: 'Driver Type Is is required',
-  emergencyContactMustBeAtLeast10Digits: 'Emergency Contact Must Be At Least10 Digits',
-  emergencyContactNameMustBeAtLeast2Characters: 'Emergency Contact Name Must Be At Least2 Characters',
+  emergencyContactMustBeAtLeast10Digits:
+    'Emergency Contact Must Be At Least10 Digits',
+  emergencyContactNameMustBeAtLeast2Characters:
+    'Emergency Contact Name Must Be At Least2 Characters',
   emergencyContactTooLong: 'Emergency Contact Too Long',
   invalidEmailAddress: 'Invalid Email Address',
-  licenseNumberMustBeAtLeast5Characters: 'License Number Must Be At Least5 Characters',
+  licenseNumberMustBeAtLeast5Characters:
+    'License Number Must Be At Least5 Characters',
   licenseNumberTooLong: 'License Number Too Long',
   nameMustBeAtLeast2Characters: 'Name Must Be At Least2 Characters',
   nameTooLong: 'Name Too Long',
@@ -2151,7 +2159,8 @@ const englishTranslations: Translations = {
   totalProducts: 'Total Products',
   totalFullCylinders: 'Total Full Cylinders',
   setEmptyCylinderInventory: 'Set Empty Cylinder Inventory',
-  enterCurrentEmptyCylinderQuantities: 'Enter Current Empty Cylinder Quantities',
+  enterCurrentEmptyCylinderQuantities:
+    'Enter Current Empty Cylinder Quantities',
   emptyCylinderInventory: 'Empty Cylinder Inventory',
   enterQuantityForEachSize: 'Enter Quantity For Each Size',
   noCylinderSizesAvailable: 'No Cylinder Sizes Available',
@@ -2172,7 +2181,8 @@ const englishTranslations: Translations = {
   noDriversAdded: 'No Drivers Added',
   addAtLeastOneDriver: 'Add At Least One Driver',
   setupReceivables: 'Setup Receivables',
-  enterCurrentReceivablesForEachDriver: 'Enter Current Receivables For Each Driver',
+  enterCurrentReceivablesForEachDriver:
+    'Enter Current Receivables For Each Driver',
   driverReceivables: 'Driver Receivables',
   enterCashAndCylinderReceivables: 'Enter Cash And Cylinder Receivables',
   amountOwedByCustomers: 'Amount Owed By Customers',
@@ -2219,7 +2229,6 @@ const englishTranslations: Translations = {
   searchProducts: 'Search Products',
   created: 'Created',
   cylinderSizeDeletedSuccessfully: 'Cylinder Size Deletedfully successful',
-
 };
 
 const bengaliTranslations: Translations = {
@@ -2372,16 +2381,18 @@ const bengaliTranslations: Translations = {
   dueSoon: 'শীঘ্রই প্রদেয়',
   overdue: 'বকেয়া',
   paid: 'পরিশোধিত',
-  
+
   // Receivables translations
   failedToFetchReceivables: 'প্রাপ্য আনতে ব্যর্থ',
   receivablesRecalculatedSuccessfully: 'প্রাপ্য সফলভাবে পুনর্গণনা হয়েছে',
   failedToRecalculateReceivables: 'প্রাপ্য পুনর্গণনা করতে ব্যর্থ',
   failedToFetchReceivablesChanges: 'প্রাপ্য পরিবর্তন আনতে ব্যর্থ',
-  customerReceivableUpdatedSuccessfully: 'গ্রাহকের প্রাপ্য সফলভাবে আপডেট হয়েছে',
+  customerReceivableUpdatedSuccessfully:
+    'গ্রাহকের প্রাপ্য সফলভাবে আপডেট হয়েছে',
   customerReceivableAddedSuccessfully: 'গ্রাহকের প্রাপ্য সফলভাবে যোগ হয়েছে',
   failedToSaveCustomerReceivable: 'গ্রাহকের প্রাপ্য সংরক্ষণ করতে ব্যর্থ',
-  customerReceivableDeletedSuccessfully: 'গ্রাহকের প্রাপ্য সফলভাবে মুছে ফেলা হয়েছে',
+  customerReceivableDeletedSuccessfully:
+    'গ্রাহকের প্রাপ্য সফলভাবে মুছে ফেলা হয়েছে',
   failedToDeleteCustomerReceivable: 'গ্রাহকের প্রাপ্য মুছতে ব্যর্থ',
   paymentRecordedSuccessfully: 'পেমেন্ট সফলভাবে রেকর্ড হয়েছে',
   failedToRecordPayment: 'পেমেন্ট রেকর্ড করতে ব্যর্থ',
@@ -2411,7 +2422,8 @@ const bengaliTranslations: Translations = {
   automaticallyCalculatedFromSales: 'বিক্রয় থেকে স্বয়ংক্রিয়ভাবে গণনা',
   customerReceivablesManuallyManaged: 'গ্রাহকের প্রাপ্য ম্যানুয়ালি পরিচালিত',
   validation: 'বৈধতা',
-  customerTotalsMustEqualDriverSales: 'গ্রাহকের মোট ড্রাইভার বিক্রয়ের সমান হতে হবে',
+  customerTotalsMustEqualDriverSales:
+    'গ্রাহকের মোট ড্রাইভার বিক্রয়ের সমান হতে হবে',
   payments: 'পেমেন্ট',
   paymentsAutomaticallyAdded: 'পেমেন্ট স্বয়ংক্রিয়ভাবে যোগ',
   changesLogAllReceivableActions: 'সমস্ত প্রাপ্য কার্যক্রম লগ পরিবর্তন',
@@ -2420,7 +2432,7 @@ const bengaliTranslations: Translations = {
   salesCashReceivables: 'বিক্রয় নগদ প্রাপ্য',
   fromSalesData: 'বিক্রয় ডেটা থেকে',
   salesCylinderReceivables: 'বিক্রয় সিলিন্ডার প্রাপ্য',
-  
+
   companyCreatedUpdatedSuccessfully: 'কোম্পানি সফলভাবে তৈরি/আপডেট হয়েছে',
   productCreatedUpdatedSuccessfully: 'পণ্য সফলভাবে তৈরি/আপডেট হয়েছে',
   productDeletedSuccessfully: 'পণ্য সফলভাবে মুছে ফেলা হয়েছে',
@@ -2595,7 +2607,8 @@ const bengaliTranslations: Translations = {
   checkStock: 'checkStock_bn', // TODO: Add Bengali translation
   clear: 'clear_bn', // TODO: Add Bengali translation
   company: 'company_bn', // TODO: Add Bengali translation
-  completeSystemAccessAndUserManagement: 'completeSystemAccessAndUserManagement_bn', // TODO: Add Bengali translation
+  completeSystemAccessAndUserManagement:
+    'completeSystemAccessAndUserManagement_bn', // TODO: Add Bengali translation
   confirmDeleteUser: 'confirmDeleteUser_bn', // TODO: Add Bengali translation
   contactName: 'contactName_bn', // TODO: Add Bengali translation
   contactNumber: 'contactNumber_bn', // TODO: Add Bengali translation
@@ -2784,7 +2797,8 @@ const bengaliTranslations: Translations = {
   success: 'success_bn', // TODO: Add Bengali translation
   sumAllDriversSalesForDate: 'sumAllDriversSalesForDate_bn', // TODO: Add Bengali translation
   sumCompletedEmptyCylinderShipments: 'sumCompletedEmptyCylinderShipments_bn', // TODO: Add Bengali translation
-  sumCompletedShipmentsFromShipmentsPage: 'sumCompletedShipmentsFromShipmentsPage_bn', // TODO: Add Bengali translation
+  sumCompletedShipmentsFromShipmentsPage:
+    'sumCompletedShipmentsFromShipmentsPage_bn', // TODO: Add Bengali translation
   sun: 'sun_bn', // TODO: Add Bengali translation
   systemUsers: 'systemUsers_bn', // TODO: Add Bengali translation
   tasks: 'tasks_bn', // TODO: Add Bengali translation
@@ -3117,11 +3131,14 @@ const bengaliTranslations: Translations = {
   areaMustBeAtLeast2Characters: 'areaMustBeAtLeast2Characters_bn', // TODO: Add Bengali translation
   areaTooLong: 'areaTooLong_bn', // TODO: Add Bengali translation
   driverTypeIsRequired: 'driverTypeIsRequired_bn', // TODO: Add Bengali translation
-  emergencyContactMustBeAtLeast10Digits: 'emergencyContactMustBeAtLeast10Digits_bn', // TODO: Add Bengali translation
-  emergencyContactNameMustBeAtLeast2Characters: 'emergencyContactNameMustBeAtLeast2Characters_bn', // TODO: Add Bengali translation
+  emergencyContactMustBeAtLeast10Digits:
+    'emergencyContactMustBeAtLeast10Digits_bn', // TODO: Add Bengali translation
+  emergencyContactNameMustBeAtLeast2Characters:
+    'emergencyContactNameMustBeAtLeast2Characters_bn', // TODO: Add Bengali translation
   emergencyContactTooLong: 'emergencyContactTooLong_bn', // TODO: Add Bengali translation
   invalidEmailAddress: 'invalidEmailAddress_bn', // TODO: Add Bengali translation
-  licenseNumberMustBeAtLeast5Characters: 'licenseNumberMustBeAtLeast5Characters_bn', // TODO: Add Bengali translation
+  licenseNumberMustBeAtLeast5Characters:
+    'licenseNumberMustBeAtLeast5Characters_bn', // TODO: Add Bengali translation
   licenseNumberTooLong: 'licenseNumberTooLong_bn', // TODO: Add Bengali translation
   nameMustBeAtLeast2Characters: 'nameMustBeAtLeast2Characters_bn', // TODO: Add Bengali translation
   nameTooLong: 'nameTooLong_bn', // TODO: Add Bengali translation
@@ -3247,7 +3264,8 @@ const bengaliTranslations: Translations = {
   noDriversAdded: 'noDriversAdded_bn', // TODO: Add Bengali translation
   addAtLeastOneDriver: 'addAtLeastOneDriver_bn', // TODO: Add Bengali translation
   setupReceivables: 'setupReceivables_bn', // TODO: Add Bengali translation
-  enterCurrentReceivablesForEachDriver: 'enterCurrentReceivablesForEachDriver_bn', // TODO: Add Bengali translation
+  enterCurrentReceivablesForEachDriver:
+    'enterCurrentReceivablesForEachDriver_bn', // TODO: Add Bengali translation
   driverReceivables: 'driverReceivables_bn', // TODO: Add Bengali translation
   enterCashAndCylinderReceivables: 'enterCashAndCylinderReceivables_bn', // TODO: Add Bengali translation
   amountOwedByCustomers: 'amountOwedByCustomers_bn', // TODO: Add Bengali translation
@@ -3294,7 +3312,6 @@ const bengaliTranslations: Translations = {
   searchProducts: 'searchProducts_bn', // TODO: Add Bengali translation
   created: 'created_bn', // TODO: Add Bengali translation
   cylinderSizeDeletedSuccessfully: 'cylinderSizeDeletedSuccessfully_bn', // TODO: Add Bengali translation
-
 };
 
 const translationMap: Record<string, Translations> = {

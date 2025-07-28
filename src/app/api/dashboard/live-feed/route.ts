@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { PrismaClient } from '@prisma/client';
+import { cache } from '@/lib/cache';
 
 const prisma = new PrismaClient();
 
@@ -14,6 +15,17 @@ export async function GET(request: NextRequest) {
 
     const tenantId = session.user.tenantId;
     const lastHour = new Date(Date.now() - 60 * 60 * 1000);
+
+    // Check cache first - live feed updates every 30 seconds
+    const cacheKey = `live_feed:${tenantId}`;
+    const cachedResult = await cache.get(cacheKey);
+    if (cachedResult) {
+      return NextResponse.json(cachedResult, {
+        headers: {
+          'Cache-Control': 'private, max-age=30, stale-while-revalidate=60',
+        },
+      });
+    }
 
     // Get recent activities
     const [recentSales, recentExpenses, lowStockItems] = await Promise.all([
@@ -182,10 +194,19 @@ export async function GET(request: NextRequest) {
       )
       .slice(0, 20);
 
-    return NextResponse.json({
+    const responseData = {
       feed: sortedFeed,
       lastUpdated: new Date().toISOString(),
       totalItems: sortedFeed.length,
+    };
+
+    // Cache for 30 seconds (live feed needs to be fresh)
+    await cache.set(cacheKey, responseData, 30);
+
+    return NextResponse.json(responseData, {
+      headers: {
+        'Cache-Control': 'private, max-age=30, stale-while-revalidate=60',
+      },
     });
   } catch (error) {
     console.error('Error fetching live feed:', error);

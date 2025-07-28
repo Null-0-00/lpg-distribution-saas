@@ -216,7 +216,7 @@ export default function ReceivablesPage() {
         setCylinderSizes(data.cylinderSizes || []);
       }
     } catch (error) {
-      console.error('Failed to fetch cylinder sizes:', error);
+      console.error(t('failedToFetchCylinderSizes'), error);
     }
   };
 
@@ -324,16 +324,16 @@ export default function ReceivablesPage() {
         const errorText = await response.text();
         console.error('Changes API error:', response.status, errorText);
         toast({
-          title: 'Error',
-          description: 'Failed to fetch receivables changes',
+          title: t('error'),
+          description: t('failedToFetchReceivablesChanges'),
           variant: 'destructive',
         });
       }
     } catch (error) {
       console.error('Error fetching receivables changes:', error);
       toast({
-        title: 'Error',
-        description: 'Failed to fetch receivables changes',
+        title: t('error'),
+        description: t('failedToFetchReceivablesChanges'),
         variant: 'destructive',
       });
     } finally {
@@ -512,8 +512,8 @@ export default function ReceivablesPage() {
     } catch (error) {
       console.error('Error saving customer receivable:', error);
       toast({
-        title: 'Error',
-        description: 'Failed to save customer receivable',
+        title: t('error'),
+        description: t('failedToSaveCustomerReceivable'),
         variant: 'destructive',
       });
     } finally {
@@ -522,8 +522,7 @@ export default function ReceivablesPage() {
   };
 
   const handleDeleteCustomer = async (driverId: string, customerId: string) => {
-    if (!confirm('Are you sure you want to delete this customer receivable?'))
-      return;
+    if (!confirm(t('areYouSureDeleteCustomerReceivable'))) return;
 
     try {
       setSubmitting(true);
@@ -534,8 +533,8 @@ export default function ReceivablesPage() {
 
       if (response.ok) {
         toast({
-          title: 'Success',
-          description: 'Customer receivable deleted successfully',
+          title: t('success'),
+          description: t('customerReceivableDeletedSuccessfully'),
         });
 
         // Refresh the receivables list
@@ -546,7 +545,7 @@ export default function ReceivablesPage() {
       } else {
         const errorData = await response.json();
         toast({
-          title: 'Error',
+          title: t('error'),
           description:
             errorData.error || 'Failed to delete customer receivable',
           variant: 'destructive',
@@ -555,8 +554,8 @@ export default function ReceivablesPage() {
     } catch (error) {
       console.error('Error deleting customer receivable:', error);
       toast({
-        title: 'Error',
-        description: 'Failed to delete customer receivable',
+        title: t('error'),
+        description: t('failedToDeleteCustomerReceivable'),
         variant: 'destructive',
       });
     } finally {
@@ -585,8 +584,8 @@ export default function ReceivablesPage() {
 
       if (response.ok) {
         toast({
-          title: 'Success',
-          description: 'Payment recorded successfully',
+          title: t('success'),
+          description: t('paymentRecordedSuccessfully'),
         });
 
         // Refresh the receivables list
@@ -601,7 +600,7 @@ export default function ReceivablesPage() {
       } else {
         const errorData = await response.json();
         toast({
-          title: 'Error',
+          title: t('error'),
           description: errorData.error || 'Failed to record payment',
           variant: 'destructive',
         });
@@ -609,8 +608,8 @@ export default function ReceivablesPage() {
     } catch (error) {
       console.error('Error recording payment:', error);
       toast({
-        title: 'Error',
-        description: 'Failed to record payment',
+        title: t('error'),
+        description: t('failedToRecordPayment'),
         variant: 'destructive',
       });
     } finally {
@@ -638,8 +637,8 @@ export default function ReceivablesPage() {
 
       if (response.ok) {
         toast({
-          title: 'Success',
-          description: 'Cylinder return recorded successfully',
+          title: t('success'),
+          description: t('cylinderReturnRecordedSuccessfully'),
         });
 
         // Refresh the receivables list
@@ -654,7 +653,7 @@ export default function ReceivablesPage() {
       } else {
         const errorData = await response.json();
         toast({
-          title: 'Error',
+          title: t('error'),
           description: errorData.error || 'Failed to record cylinder return',
           variant: 'destructive',
         });
@@ -662,8 +661,8 @@ export default function ReceivablesPage() {
     } catch (error) {
       console.error('Error recording cylinder return:', error);
       toast({
-        title: 'Error',
-        description: 'Failed to record cylinder return',
+        title: t('error'),
+        description: t('failedToRecordCylinderReturn'),
         variant: 'destructive',
       });
     } finally {
@@ -1003,12 +1002,13 @@ export default function ReceivablesPage() {
                     <div className="flex items-center space-x-6">
                       <div className="text-muted-foreground text-sm">
                         <span className="font-medium text-blue-600 dark:text-blue-400">
-                          Sales Cash Receivable:{' '}
+                          {t('salesCashReceivables')}:{' '}
                           {formatCurrency(driver.totalCashReceivables)}
                         </span>
                         <span className="mx-2">|</span>
                         <span className="font-medium text-purple-600 dark:text-purple-400">
-                          Cylinder Receivable: {driver.totalCylinderReceivables}{' '}
+                          {t('cylinderReceivable')}:{' '}
+                          {driver.totalCylinderReceivables}{' '}
                           {(() => {
                             // Use actual cylinder size breakdown from sales data (not customer entries)
                             const breakdown = Object.entries(
@@ -1023,14 +1023,14 @@ export default function ReceivablesPage() {
                         </span>
                         <span className="mx-2">|</span>
                         <span className="text-xs">
-                          Customer Records:{' '}
+                          {t('customerRecords')}:{' '}
                           {driver.customerBreakdown?.filter(
                             (c) => c.status === 'CURRENT'
                           ).length || 0}
                         </span>
                         <span className="mx-1">|</span>
                         <span className="text-xs text-green-600">
-                          Active:{' '}
+                          {t('active')}:{' '}
                           {driver.customerBreakdown?.filter(
                             (c) => c.status === 'CURRENT'
                           ).length || 0}
@@ -1052,9 +1052,9 @@ export default function ReceivablesPage() {
                   driver.customerBreakdown.length > 0 && (
                     <div className="bg-muted border-t border-gray-200 px-6 py-2 dark:border-gray-600">
                       <div className="flex items-center space-x-4 text-xs text-gray-600 dark:text-gray-400">
-                        <span>Status Breakdown:</span>
+                        <span>{t('statusBreakdown')}:</span>
                         <span className="text-green-600">
-                          Current:{' '}
+                          {t('current')}:{' '}
                           {
                             driver.customerBreakdown.filter(
                               (c) => c.status === 'CURRENT'
@@ -1062,7 +1062,7 @@ export default function ReceivablesPage() {
                           }
                         </span>
                         <span className="text-yellow-600">
-                          Due Soon:{' '}
+                          {t('dueSoon')}:{' '}
                           {
                             driver.customerBreakdown.filter(
                               (c) => c.status === 'DUE_SOON'
@@ -1070,7 +1070,7 @@ export default function ReceivablesPage() {
                           }
                         </span>
                         <span className="text-red-600">
-                          Overdue:{' '}
+                          {t('overdue')}:{' '}
                           {
                             driver.customerBreakdown.filter(
                               (c) => c.status === 'OVERDUE'
@@ -1078,7 +1078,7 @@ export default function ReceivablesPage() {
                           }
                         </span>
                         <span className="text-gray-600">
-                          Paid:{' '}
+                          {t('paid')}:{' '}
                           {
                             driver.customerBreakdown.filter(
                               (c) => c.status === 'PAID'
@@ -1094,7 +1094,7 @@ export default function ReceivablesPage() {
                   {/* Cash Receivables Table */}
                   <div>
                     <h4 className="text-foreground mb-3 text-sm font-medium">
-                      Cash Receivables
+                      {t('cashReceivables')}
                     </h4>
                     <div className="border-border overflow-x-auto rounded-lg border">
                       <table className="w-full">
@@ -1125,7 +1125,7 @@ export default function ReceivablesPage() {
                                 colSpan={4}
                                 className="px-4 py-8 text-center text-gray-500 dark:text-gray-400"
                               >
-                                No cash receivables
+                                {t('noCashReceivables')}
                               </td>
                             </tr>
                           ) : (
@@ -1223,7 +1223,7 @@ export default function ReceivablesPage() {
                   {/* Cylinder Receivables Table */}
                   <div>
                     <h4 className="text-foreground mb-3 text-sm font-medium">
-                      Cylinder Receivables
+                      {t('cylinderReceivables')}
                     </h4>
                     <div className="border-border overflow-x-auto rounded-lg border">
                       <table className="w-full">
@@ -1257,7 +1257,7 @@ export default function ReceivablesPage() {
                                 colSpan={5}
                                 className="px-4 py-8 text-center text-gray-500 dark:text-gray-400"
                               >
-                                No cylinder receivables
+                                {t('noCylinderReceivables')}
                               </td>
                             </tr>
                           ) : (

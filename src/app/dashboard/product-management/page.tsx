@@ -226,7 +226,9 @@ export default function ProductManagementPage() {
       } else {
         const errorData = await response.json();
         console.error('❌ Failed to save company:', errorData);
-        alert(`Failed to save company: ${errorData.error || 'Unknown error'}`);
+        alert(
+          `${t('failedToSaveCompany')}: ${errorData.error || t('unknownError')}`
+        );
       }
     } catch (error) {
       console.error('Error saving company:', error);
@@ -261,7 +263,9 @@ export default function ProductManagementPage() {
       } else {
         const errorData = await response.json();
         console.error('❌ Failed to save product:', errorData);
-        alert(`Failed to save product: ${errorData.error || 'Unknown error'}`);
+        alert(
+          `${t('failedToSaveProduct')}: ${errorData.error || t('unknownError')}`
+        );
       }
     } catch (error) {
       console.error('Error saving product:', error);
@@ -269,12 +273,7 @@ export default function ProductManagementPage() {
   };
 
   const handleDeleteCompany = async (companyId: string) => {
-    if (
-      !confirm(
-        'Are you sure you want to delete this company? This will also delete all associated products.'
-      )
-    )
-      return;
+    if (!confirm(t('areYouSureDeleteCompany'))) return;
 
     try {
       const response = await fetch(`/api/companies/${companyId}`, {
@@ -290,7 +289,7 @@ export default function ProductManagementPage() {
   };
 
   const handleDeleteProduct = async (productId: string) => {
-    if (!confirm('Are you sure you want to delete this product?')) return;
+    if (!confirm(t('areYouSureDeleteProduct'))) return;
 
     try {
       const response = await fetch(`/api/products/${productId}`, {
@@ -306,7 +305,7 @@ export default function ProductManagementPage() {
         const errorData = await response.json();
         console.error('❌ Failed to delete product:', errorData);
         alert(
-          `Failed to delete product: ${errorData.error || 'Unknown error'}`
+          `${t('failedToDeleteProduct')}: ${errorData.error || t('unknownError')}`
         );
       }
     } catch (error) {
@@ -417,7 +416,7 @@ export default function ProductManagementPage() {
   };
 
   const handleDeleteCylinderSize = async (cylinderSizeId: string) => {
-    if (confirm('Are you sure you want to delete this cylinder size?')) {
+    if (confirm(t('areYouSureDeleteCylinderSize'))) {
       try {
         const response = await fetch(`/api/cylinder-sizes/${cylinderSizeId}`, {
           method: 'DELETE',
@@ -486,7 +485,11 @@ export default function ProductManagementPage() {
             {[
               { id: 'companies', label: t('company'), icon: Building2 },
               { id: 'products', label: t('products'), icon: Package },
-              { id: 'cylinder-sizes', label: 'Cylinder Sizes', icon: Settings },
+              {
+                id: 'cylinder-sizes',
+                label: t('cylinderSizes'),
+                icon: Settings,
+              },
             ].map((tab) => {
               const Icon = tab.icon;
               return (
@@ -517,7 +520,7 @@ export default function ProductManagementPage() {
                   <Search className="text-muted-foreground absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 transform" />
                   <input
                     type="text"
-                    placeholder="Search companies..."
+                    placeholder={t('searchCompanies')}
                     value={companySearch}
                     onChange={(e) => setCompanySearch(e.target.value)}
                     className="border-border bg-input text-foreground rounded-md border py-2 pl-10 pr-4"
@@ -529,7 +532,7 @@ export default function ProductManagementPage() {
                 className="flex items-center space-x-2 rounded-lg bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
               >
                 <Plus className="h-5 w-5" />
-                <span>Add Company</span>
+                <span>{t('addCompany')}</span>
               </button>
             </div>
 
@@ -573,14 +576,14 @@ export default function ProductManagementPage() {
                     <button
                       onClick={() => openEditCompanyModal(company)}
                       className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
-                      title="Edit Company"
+                      title={t('editCompany')}
                     >
                       <Edit className="h-4 w-4" />
                     </button>
                     <button
                       onClick={() => handleDeleteCompany(company.id)}
                       className="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300"
-                      title="Delete Company"
+                      title={t('deleteCompany')}
                     >
                       <Trash2 className="h-4 w-4" />
                     </button>
@@ -601,7 +604,7 @@ export default function ProductManagementPage() {
                   <Package className="h-8 w-8 text-blue-600" />
                   <div className="ml-3">
                     <p className="dark:text-muted-foreground text-sm font-medium text-gray-600">
-                      Total Products
+                      {t('totalProducts')}
                     </p>
                     <p className="text-foreground text-2xl font-bold">
                       {products.length}
@@ -614,7 +617,7 @@ export default function ProductManagementPage() {
                   <Check className="h-8 w-8 text-green-600 dark:text-green-400" />
                   <div className="ml-3">
                     <p className="dark:text-muted-foreground text-sm font-medium text-gray-600">
-                      Active Products
+                      {t('activeProducts')}
                     </p>
                     <p className="text-2xl font-bold text-green-600 dark:text-green-400">
                       {products.filter((p) => p.isActive).length}
@@ -631,7 +634,7 @@ export default function ProductManagementPage() {
                   </div>
                   <div className="ml-3">
                     <p className="dark:text-muted-foreground text-sm font-medium text-gray-600">
-                      Low Stock
+                      {t('lowStock')}
                     </p>
                     <p className="text-2xl font-bold text-orange-600 dark:text-orange-400">
                       {products.filter((p) => p.inventory?.isLowStock).length}
@@ -646,7 +649,7 @@ export default function ProductManagementPage() {
                   </div>
                   <div className="ml-3">
                     <p className="dark:text-muted-foreground text-sm font-medium text-gray-600">
-                      Total Stock
+                      {t('totalStock')}
                     </p>
                     <p className="text-2xl font-bold text-blue-600">
                       {products.reduce(
@@ -662,7 +665,7 @@ export default function ProductManagementPage() {
                   <Building2 className="h-8 w-8 text-purple-600 dark:text-purple-400" />
                   <div className="ml-3">
                     <p className="dark:text-muted-foreground text-sm font-medium text-gray-600">
-                      Companies
+                      {t('companies')}
                     </p>
                     <p className="text-2xl font-bold text-purple-600 dark:text-purple-400">
                       {companies.filter((c) => c.isActive).length}
@@ -679,7 +682,7 @@ export default function ProductManagementPage() {
                   <Search className="text-muted-foreground absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 transform" />
                   <input
                     type="text"
-                    placeholder="Search products..."
+                    placeholder={t('searchProducts')}
                     value={productSearch}
                     onChange={(e) => setProductSearch(e.target.value)}
                     className="border-border bg-input text-foreground rounded-md border py-2 pl-10 pr-4"
@@ -691,7 +694,7 @@ export default function ProductManagementPage() {
                 className="flex items-center space-x-2 rounded-lg bg-green-600 px-4 py-2 text-white transition-colors hover:bg-green-700"
               >
                 <Plus className="h-5 w-5" />
-                <span>Add Product</span>
+                <span>{t('addProduct')}</span>
               </button>
             </div>
 
@@ -702,31 +705,31 @@ export default function ProductManagementPage() {
                   <thead className="bg-muted">
                     <tr>
                       <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
-                        Product Name
+                        {t('productName')}
                       </th>
                       <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
                         Company
                       </th>
                       <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
-                        Cylinder Size
+                        {t('cylinderSize')}
                       </th>
                       <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
-                        Current Price
+                        {t('currentPrice')}
                       </th>
                       <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
-                        Current Stock
+                        {t('currentStock')}
                       </th>
                       <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
-                        Low Stock Alert
+                        {t('lowStockAlert')}
                       </th>
                       <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
                         Status
                       </th>
                       <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
-                        Created
+                        {t('created')}
                       </th>
                       <th className="text-muted-foreground px-6 py-3 text-right text-xs font-medium uppercase tracking-wider">
-                        Actions
+                        {t('actions')}
                       </th>
                     </tr>
                   </thead>
@@ -768,15 +771,16 @@ export default function ProductManagementPage() {
                                       : 'text-foreground'
                                   }`}
                                 >
-                                  {product.inventory.fullCylinders} Full
+                                  {product.inventory.fullCylinders} {t('full')}
                                 </div>
                                 <div className="dark:text-muted-foreground text-xs text-gray-500">
-                                  {product.inventory.emptyCylinders} Empty
+                                  {product.inventory.emptyCylinders}{' '}
+                                  {t('empty')}
                                 </div>
                               </div>
                             ) : (
                               <span className="text-muted-foreground">
-                                Loading...
+                                {t('loading')}
                               </span>
                             )}
                           </div>
@@ -784,7 +788,7 @@ export default function ProductManagementPage() {
                         <td className="whitespace-nowrap px-6 py-4">
                           <div className="text-foreground text-sm">
                             {product.lowStockThreshold
-                              ? `${product.lowStockThreshold} units`
+                              ? `${product.lowStockThreshold} ${t('units')}`
                               : '-'}
                           </div>
                         </td>
@@ -798,9 +802,9 @@ export default function ProductManagementPage() {
                                 ? 'bg-green-100 text-green-800 hover:bg-green-200 dark:bg-green-900 dark:text-green-200 dark:hover:bg-green-800'
                                 : 'bg-red-100 text-red-800 hover:bg-red-200 dark:bg-red-900 dark:text-red-200 dark:hover:bg-red-800'
                             }`}
-                            title={`Click to ${product.isActive ? 'deactivate' : 'activate'} product`}
+                            title={`${product.isActive ? t('clickToDeactivate') : t('clickToActivate')} ${t('product')}`}
                           >
-                            {product.isActive ? 'Active' : 'Inactive'}
+                            {product.isActive ? t('active') : t('inactive')}
                           </button>
                         </td>
                         <td className="whitespace-nowrap px-6 py-4">
@@ -813,14 +817,14 @@ export default function ProductManagementPage() {
                             <button
                               onClick={() => openEditProductModal(product)}
                               className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300"
-                              title="Edit Product"
+                              title={t('editProduct')}
                             >
                               <Edit className="h-4 w-4" />
                             </button>
                             <button
                               onClick={() => handleDeleteProduct(product.id)}
                               className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300"
-                              title="Delete Product"
+                              title={t('deleteProduct')}
                             >
                               <Trash2 className="h-4 w-4" />
                             </button>
@@ -843,17 +847,17 @@ export default function ProductManagementPage() {
           </div>
         )}
 
-        {/* Cylinder Sizes Tab */}
+        {/* {t("cylinderSize")}s Tab */}
         {activeTab === 'cylinder-sizes' && (
           <div className="space-y-6">
-            {/* Cylinder Sizes Header */}
+            {/* {t("cylinderSize")}s Header */}
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-4">
                 <div className="relative">
                   <Search className="text-muted-foreground absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 transform" />
                   <input
                     type="text"
-                    placeholder="Search cylinder sizes..."
+                    placeholder={t('searchCylinderSizes')}
                     value={cylinderSizeSearch}
                     onChange={(e) => setCylinderSizeSearch(e.target.value)}
                     className="border-border bg-input text-foreground rounded-md border py-2 pl-10 pr-4"
@@ -865,18 +869,18 @@ export default function ProductManagementPage() {
                 className="flex items-center space-x-2 rounded-lg bg-purple-600 px-4 py-2 text-white transition-colors hover:bg-purple-700"
               >
                 <Plus className="h-5 w-5" />
-                <span>Add Cylinder Size</span>
+                <span>Add {t('cylinderSize')}</span>
               </button>
             </div>
 
-            {/* Cylinder Sizes Table */}
+            {/* {t("cylinderSize")}s Table */}
             <div className="bg-card overflow-hidden rounded-lg shadow-sm">
               <div className="overflow-x-auto">
                 <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                   <thead className="bg-muted">
                     <tr>
                       <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
-                        Cylinder Size
+                        {t('cylinderSize')}
                       </th>
                       <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
                         Description
@@ -885,10 +889,10 @@ export default function ProductManagementPage() {
                         Status
                       </th>
                       <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
-                        Created
+                        {t('created')}
                       </th>
                       <th className="text-muted-foreground px-6 py-3 text-right text-xs font-medium uppercase tracking-wider">
-                        Actions
+                        {t('actions')}
                       </th>
                     </tr>
                   </thead>
@@ -930,7 +934,7 @@ export default function ProductManagementPage() {
                                 openEditCylinderSizeModal(cylinderSize)
                               }
                               className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300"
-                              title="Edit Cylinder Size"
+                              title={`Edit ${t('cylinderSize')}`}
                             >
                               <Edit className="h-4 w-4" />
                             </button>
@@ -939,7 +943,7 @@ export default function ProductManagementPage() {
                                 handleDeleteCylinderSize(cylinderSize.id)
                               }
                               className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300"
-                              title="Delete Cylinder Size"
+                              title={`Delete ${t('cylinderSize')}`}
                             >
                               <Trash2 className="h-4 w-4" />
                             </button>
@@ -968,7 +972,7 @@ export default function ProductManagementPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-600 bg-opacity-50">
           <div className="bg-card mx-4 w-full max-w-md rounded-lg p-6">
             <h3 className="text-foreground mb-4 text-lg font-medium">
-              {editingCompany ? 'Edit Company' : 'Add New Company'}
+              {editingCompany ? t('editCompany') : t('addNewCompany')}
             </h3>
             <form onSubmit={handleCompanySubmit} className="space-y-4">
               <div>
@@ -1107,7 +1111,7 @@ export default function ProductManagementPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-600 bg-opacity-50">
           <div className="bg-card mx-4 max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-lg p-6">
             <h3 className="text-foreground mb-4 text-lg font-medium">
-              {editingProduct ? 'Edit Product' : 'Add New Product'}
+              {editingProduct ? t('editProduct') : t('addNewProduct')}
             </h3>
             <form onSubmit={handleProductSubmit} className="space-y-4">
               <div>
@@ -1138,7 +1142,7 @@ export default function ProductManagementPage() {
 
               <div>
                 <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Product Name *
+                  {t('productName')} *
                 </label>
                 <input
                   type="text"
@@ -1150,11 +1154,11 @@ export default function ProductManagementPage() {
                     }))
                   }
                   className="border-border bg-input text-foreground w-full rounded-md border px-3 py-2"
-                  placeholder="e.g., LPG Cylinder, Cooking Gas, Industrial Gas"
+                  placeholder={t('productNamePlaceholder')}
                   required
                 />
                 <p className="dark:text-muted-foreground mt-1 text-xs text-gray-500">
-                  Enter the product name (e.g., LPG Cylinder, Cooking Gas)
+                  {t('enterProductNameExample')}
                 </p>
               </div>
 
@@ -1173,7 +1177,7 @@ export default function ProductManagementPage() {
                   className="border-border bg-input text-foreground w-full rounded-md border px-3 py-2"
                   required
                 >
-                  <option value="">Select Cylinder Size</option>
+                  <option value="">Select {t('cylinderSize')}</option>
                   {cylinderSizes
                     .filter((cs) => cs.isActive)
                     .map((cylinderSize) => (
@@ -1199,7 +1203,7 @@ export default function ProductManagementPage() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Current Price (৳)
+                    {t('currentPrice')} (৳)
                   </label>
                   <input
                     type="number"
@@ -1217,7 +1221,7 @@ export default function ProductManagementPage() {
                 </div>
                 <div>
                   <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Low Stock Threshold
+                    {t('lowStock')} Threshold
                   </label>
                   <input
                     type="number"
@@ -1279,19 +1283,19 @@ export default function ProductManagementPage() {
         </div>
       )}
 
-      {/* Cylinder Size Modal */}
+      {/* {t("cylinderSize")} Modal */}
       {showCylinderSizeModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-600 bg-opacity-50">
           <div className="bg-card mx-4 w-full max-w-md rounded-lg p-6">
             <h3 className="text-foreground mb-4 text-lg font-medium">
               {editingCylinderSize
-                ? 'Edit Cylinder Size'
-                : 'Add New Cylinder Size'}
+                ? 'Edit {t("cylinderSize")}'
+                : 'Add New {t("cylinderSize")}'}
             </h3>
             <form onSubmit={handleCylinderSizeSubmit} className="space-y-4">
               <div>
                 <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Cylinder Size *
+                  {t('cylinderSize')} *
                 </label>
                 <input
                   type="text"
@@ -1303,7 +1307,7 @@ export default function ProductManagementPage() {
                     }))
                   }
                   className="border-border bg-input text-foreground w-full rounded-md border px-3 py-2"
-                  placeholder="e.g., 12L, 35L, 5kg"
+                  placeholder={t('cylinderSizePlaceholder')}
                   required
                 />
                 <p className="dark:text-muted-foreground mt-1 text-xs text-gray-500">
@@ -1324,7 +1328,7 @@ export default function ProductManagementPage() {
                     }))
                   }
                   className="border-border bg-input text-foreground w-full rounded-md border px-3 py-2"
-                  placeholder="Optional description"
+                  placeholder={t('optionalDescription')}
                   rows={3}
                 />
               </div>
@@ -1366,7 +1370,8 @@ export default function ProductManagementPage() {
                   type="submit"
                   className="rounded-md border border-transparent bg-purple-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-purple-700"
                 >
-                  {editingCylinderSize ? 'Update' : 'Create'} Cylinder Size
+                  {editingCylinderSize ? 'Update' : 'Create'}{' '}
+                  {t('cylinderSize')}
                 </button>
               </div>
             </form>

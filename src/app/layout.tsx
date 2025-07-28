@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { APP_CONFIG } from '@/lib/utils/constants';
 import { SessionProvider } from '@/components/providers/SessionProvider';
+import { QueryProvider } from '@/components/providers/QueryProvider';
 import { ThemeProvider } from '@/providers/ThemeProvider';
 import { SettingsProvider } from '@/contexts/SettingsContext';
 
@@ -112,9 +113,11 @@ export default function RootLayout({
           }}
         />
         <SessionProvider>
-          <SettingsProvider>
-            <ThemeProvider>{children}</ThemeProvider>
-          </SettingsProvider>
+          <QueryProvider>
+            <SettingsProvider>
+              <ThemeProvider>{children}</ThemeProvider>
+            </SettingsProvider>
+          </QueryProvider>
         </SessionProvider>
         <script
           dangerouslySetInnerHTML={{

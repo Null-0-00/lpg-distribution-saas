@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
+import { cache } from '@/lib/cache';
+import { performanceMonitor } from '@/lib/performance-monitor';
 
 export async function GET(request: NextRequest) {
   try {
@@ -11,7 +13,20 @@ export async function GET(request: NextRequest) {
 
     const { tenantId } = session.user;
     const todayStr = new Date().toISOString().split('T')[0];
+    const cacheKey = `cylinders_summary:${tenantId}:${todayStr}`;
 
+    // Check cache first
+    const cachedResult = await cache.get(cacheKey);
+    if (cachedResult) {
+      performanceMonitor.logQuery('/api/inventory/cylinders-summary', 0, {
+        tenantId,
+        cacheHit: true,
+      });
+      console.log('⚡ Returning cached cylinder summary');
+      return NextResponse.json(cachedResult);
+    }
+
+    const startTime = performance.now();
     console.log(
       '🔄 Creating FRESH cylinder summary from daily inventory data...'
     );
@@ -473,7 +488,8 @@ export async function GET(request: NextRequest) {
       }
     );
 
-    return NextResponse.json({
+    const endTime = performance.now();
+    const responseData = {
       success: true,
       fullCylinders: fullCylindersData,
       emptyCylinders: emptyCylindersData,
@@ -489,7 +505,30 @@ export async function GET(request: NextRequest) {
       formula:
         "Today's Empty Cylinders = Yesterday's Empty Cylinders + Refill sales + Empty Cylinders Buy/Sell - Outstanding refill shipment",
       receivablesBreakdown: Object.fromEntries(cylinderReceivablesBySize),
-    });
+      performanceMetrics: {
+        queryTime: `${(endTime - startTime).toFixed(2)}ms`,
+        cacheHit: false,
+      },
+    };
+
+    // Log performance metrics
+    performanceMonitor.logQuery(
+      '/api/inventory/cylinders-summary',
+      endTime - startTime,
+      {
+        tenantId,
+        cacheHit: false,
+      }
+    );
+
+    // Cache the result for 2 minutes
+    await cache.set(cacheKey, responseData, 120);
+
+    console.log(
+      `🎉 Cylinder summary completed in ${(endTime - startTime).toFixed(2)}ms`
+    );
+
+    return NextResponse.json(responseData);
   } catch (error) {
     console.error('Cylinder summary error:', error);
     return NextResponse.json(

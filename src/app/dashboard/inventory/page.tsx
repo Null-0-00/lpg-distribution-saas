@@ -173,130 +173,120 @@ export default function InventoryPage() {
   const [includeMovements, setIncludeMovements] = useState(false);
   const [movements, setMovements] = useState<InventoryMovement[]>([]);
 
-  useEffect(() => {
-    fetchInventoryData();
-    fetchDailyInventoryData();
-    fetchCylindersSummaryData();
-  }, [includeMovements]);
-
-  const fetchInventoryData = async () => {
+  // Fetch dashboard data using traditional API calls
+  const fetchDashboardData = async () => {
     try {
       setLoading(true);
-      const params = new URLSearchParams();
+      console.log('🚀 Fetching dashboard data...');
 
-      if (includeMovements) {
-        params.append('includeMovements', 'true');
-      }
+      const today = new Date();
+      const fourDaysAgo = new Date(today.getTime() - 3 * 24 * 60 * 60 * 1000); // 3 days ago + today = 4 days total
+      const startDate = fourDaysAgo.toISOString().split('T')[0];
+      const endDate = today.toISOString().split('T')[0];
 
-      const response = await fetch(`/api/inventory?${params}`, {
-        cache: 'no-cache',
-        headers: {
-          'Cache-Control': 'no-cache',
-        },
-      });
+      // Use the new optimized endpoint if available, otherwise fall back to individual calls
+      try {
+        const params = new URLSearchParams({
+          includeMovements: includeMovements.toString(),
+          startDate,
+          endDate,
+        });
 
-      if (response.ok) {
-        const data = await response.json();
-        setInventoryData(data);
+        const response = await fetch(`/api/inventory/dashboard?${params}`);
 
-        // Extract movements from the first product if available
-        if (data.inventory.length > 0 && data.inventory[0].movements) {
-          setMovements(data.inventory[0].movements);
+        if (response.ok) {
+          const data = await response.json();
+          console.log('✅ Using optimized dashboard API');
+
+          setInventoryData({
+            inventory: data.inventory || [],
+            summary: data.summary || {},
+            lastUpdated: new Date().toISOString(),
+          });
+
+          setDailyInventoryData({
+            dailyInventory: data.dailyInventory || [],
+            summary: {
+              totalDays: data.dailyInventory?.length || 0,
+              currentFullCylinders: data.summary?.totalFullCylinders || 0,
+              currentEmptyCylinders: data.summary?.totalEmptyCylinders || 0,
+              currentTotalCylinders:
+                (data.summary?.totalFullCylinders || 0) +
+                (data.summary?.totalEmptyCylinders || 0),
+            },
+          });
+
+          setCylindersSummaryData(data.cylinderSummary || null);
+
+          if (data.inventory?.[0]?.movements) {
+            setMovements(data.inventory[0].movements);
+          }
+        } else {
+          throw new Error('Dashboard API failed');
         }
+      } catch (error) {
+        console.log('⚠️ Falling back to individual API calls');
+
+        // Fallback to individual API calls
+        await Promise.all([
+          fetchInventoryData(),
+          fetchDailyInventoryData(),
+          fetchCylindersSummaryData(),
+        ]);
       }
     } catch (error) {
-      console.error(t('errorFetchingInventoryData'), error);
+      console.error('Error fetching dashboard data:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  const fetchDailyInventoryData = async () => {
-    try {
-      console.log('🔄 Fetching daily inventory data...');
-      const startTime = performance.now();
+  const fetchInventoryData = async () => {
+    const params = new URLSearchParams();
+    if (includeMovements) {
+      params.append('includeMovements', 'true');
+    }
 
-      // Add reduced date range for faster loading - default to 3 days for optimal performance
-      const endDate = new Date().toISOString().split('T')[0];
-      const startDate = (() => {
-        const date = new Date();
-        date.setDate(date.getDate() - 3); // Reduced to 3 days for optimal performance
-        return date.toISOString().split('T')[0];
-      })();
+    const response = await fetch(`/api/inventory?${params}`);
+    if (response.ok) {
+      const data = await response.json();
+      setInventoryData(data);
 
-      const response = await fetch(
-        `/api/inventory/daily?startDate=${startDate}&endDate=${endDate}&_t=${Date.now()}`,
-        {
-          cache: 'no-store',
-          headers: {
-            'Cache-Control': 'no-cache, no-store, must-revalidate',
-            Pragma: 'no-cache',
-            Expires: '0',
-          },
-        }
-      );
-
-      if (response.ok) {
-        const data = await response.json();
-        const endTime = performance.now();
-        console.log(
-          `✅ Daily inventory data loaded in ${(endTime - startTime).toFixed(2)}ms`
-        );
-        console.log(
-          `📊 Daily inventory records:`,
-          data.dailyInventory?.length || 0
-        );
-        setDailyInventoryData(data);
-      } else {
-        console.error(
-          '❌ Failed to fetch daily inventory data:',
-          response.status,
-          response.statusText
-        );
+      if (data.inventory.length > 0 && data.inventory[0].movements) {
+        setMovements(data.inventory[0].movements);
       }
-    } catch (error) {
-      console.error(t('errorFetchingDailyInventoryData'), error);
+    }
+  };
+
+  const fetchDailyInventoryData = async () => {
+    const today = new Date();
+    const fourDaysAgo = new Date(today.getTime() - 3 * 24 * 60 * 60 * 1000); // 3 days ago + today = 4 days total
+    const startDate = fourDaysAgo.toISOString().split('T')[0];
+    const endDate = today.toISOString().split('T')[0];
+
+    const response = await fetch(
+      `/api/inventory/daily?startDate=${startDate}&endDate=${endDate}`
+    );
+    if (response.ok) {
+      const data = await response.json();
+      setDailyInventoryData(data);
     }
   };
 
   const fetchCylindersSummaryData = async () => {
-    try {
-      console.log(t('fetchingCylindersSummaryData'));
-      const response = await fetch(
-        `/api/inventory/cylinders-summary?_t=${Date.now()}`,
-        {
-          cache: 'no-cache',
-          headers: {
-            'Cache-Control': 'no-cache, no-store, must-revalidate',
-            Pragma: 'no-cache',
-            Expires: '0',
-          },
-        }
-      );
-
-      console.log(t('cylindersSummaryResponseStatus'), response.status);
-
-      if (response.ok) {
-        const data = await response.json();
-        console.log(t('cylindersSummaryDataReceived'), data);
-        setCylindersSummaryData(data);
-      } else {
-        const errorText = await response.text();
-        console.error(
-          t('cylindersSummaryApiError'),
-          response.status,
-          errorText
-        );
-      }
-    } catch (error) {
-      console.error(t('errorFetchingCylindersSummaryData'), error);
+    const response = await fetch('/api/inventory/cylinders-summary');
+    if (response.ok) {
+      const data = await response.json();
+      setCylindersSummaryData(data);
     }
   };
 
+  useEffect(() => {
+    fetchDashboardData();
+  }, [includeMovements]);
+
   const handleRefresh = () => {
-    fetchInventoryData();
-    fetchDailyInventoryData();
-    fetchCylindersSummaryData();
+    fetchDashboardData();
   };
 
   const filteredInventory = inventoryData?.inventory || [];
@@ -327,13 +317,240 @@ export default function InventoryPage() {
     }
   };
 
-  if (loading) {
+  if (
+    loading &&
+    !inventoryData &&
+    !cylindersSummaryData &&
+    !dailyInventoryData
+  ) {
     return (
       <div className="space-y-6 p-6">
-        <div className="flex h-64 items-center justify-center">
-          <div className="flex items-center space-x-2">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-foreground text-2xl font-bold">
+              {t('inventoryManagement')}
+            </h1>
+            <p className="text-muted-foreground">
+              {t('realTimeInventoryTracking')}
+            </p>
+          </div>
+          <div className="flex items-center space-x-4">
+            <button className="flex items-center rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700">
+              <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+              {t('refresh')}
+            </button>
+            <button className="flex items-center rounded-lg bg-green-600 px-4 py-2 text-white hover:bg-green-700">
+              <Download className="mr-2 h-4 w-4" />
+              {t('export')}
+            </button>
+          </div>
+        </div>
+
+        {/* Loading Summary Cards */}
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-5">
+          {[1, 2, 3, 4, 5].map((i) => (
+            <div
+              key={i}
+              className="bg-card animate-pulse rounded-lg p-6 shadow"
+            >
+              <div className="flex items-center">
+                <div className="h-8 w-8 rounded bg-gray-300"></div>
+                <div className="ml-4 flex-1">
+                  <div className="mb-2 h-4 w-20 rounded bg-gray-300"></div>
+                  <div className="mb-1 h-8 w-12 rounded bg-gray-300"></div>
+                  <div className="h-3 w-16 rounded bg-gray-300"></div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Loading Cylinder Summary Tables */}
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+          {/* Full Cylinders Table Skeleton */}
+          <div className="bg-card overflow-hidden rounded-lg shadow">
+            <div className="border-border border-b px-6 py-4">
+              <div className="flex items-center space-x-2">
+                <RefreshCw className="h-4 w-4 animate-spin text-blue-600" />
+                <h2 className="text-foreground text-lg font-semibold">
+                  {t('fullCylinders')}
+                </h2>
+              </div>
+              <p className="text-muted-foreground mt-1 text-sm">
+                {t('currentFullCylinderInventory')}
+              </p>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                <thead className="bg-muted">
+                  <tr>
+                    <th className="text-muted-foreground px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                      {t('company')}
+                    </th>
+                    <th className="text-muted-foreground px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                      {t('size')}
+                    </th>
+                    <th className="text-muted-foreground px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                      {t('quantity')}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-card divide-border divide-y">
+                  {[1, 2, 3].map((i) => (
+                    <tr key={i} className="animate-pulse">
+                      <td className="px-4 py-3">
+                        <div className="h-4 w-20 rounded bg-gray-300"></div>
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="h-4 w-12 rounded bg-gray-300"></div>
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="h-4 w-8 rounded bg-gray-300"></div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* Empty Cylinders Table Skeleton */}
+          <div className="bg-card overflow-hidden rounded-lg shadow">
+            <div className="border-border border-b px-6 py-4">
+              <div className="flex items-center space-x-2">
+                <RefreshCw className="h-4 w-4 animate-spin text-blue-600" />
+                <h2 className="text-foreground text-lg font-semibold">
+                  {t('emptyCylinders')}
+                </h2>
+              </div>
+              <p className="text-muted-foreground mt-1 text-sm">
+                {t('emptyCylinderInventoryAvailability')}
+              </p>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                <thead className="bg-muted">
+                  <tr>
+                    <th className="text-muted-foreground px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                      আকার
+                    </th>
+                    <th className="text-muted-foreground px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                      স্টকে খালি সিলিন্ডার
+                    </th>
+                    <th className="text-muted-foreground px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                      খালি সিলিন্ডার প্রাপ্য
+                    </th>
+                    <th className="text-muted-foreground px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                      অসমাপ্ত চালান
+                    </th>
+                    <th className="text-muted-foreground px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                      মোট খালি সিলিন্ডার
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-card divide-border divide-y">
+                  {[1, 2, 3].map((i) => (
+                    <tr key={i} className="animate-pulse">
+                      <td className="px-4 py-3">
+                        <div className="h-4 w-12 rounded bg-gray-300"></div>
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="h-4 w-8 rounded bg-gray-300"></div>
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="h-4 w-8 rounded bg-gray-300"></div>
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="h-4 w-8 rounded bg-gray-300"></div>
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="h-4 w-8 rounded bg-gray-300"></div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        {/* Daily Inventory Tracking Table Skeleton */}
+        <div className="bg-card overflow-hidden rounded-lg shadow">
+          <div className="border-border border-b px-6 py-4">
+            <div className="flex items-center space-x-2">
+              <RefreshCw className="h-4 w-4 animate-spin text-blue-600" />
+              <h2 className="text-foreground text-lg font-semibold">
+                {t('dailyInventoryTracking')}
+              </h2>
+            </div>
+            <p className="text-muted-foreground mt-1 text-sm">
+              {t('automatedCalculationsExactFormulas')}
+            </p>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+              <thead className="bg-muted">
+                <tr>
+                  <th className="text-muted-foreground w-20 px-2 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                    {t('date')}
+                  </th>
+                  <th className="text-muted-foreground w-40 px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                    {t('packageSalesQty')}
+                  </th>
+                  <th className="text-muted-foreground w-40 px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                    {t('refillSalesQty')}
+                  </th>
+                  <th className="text-muted-foreground w-40 px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                    {t('totalSalesQty')}
+                  </th>
+                  <th className="text-muted-foreground w-36 px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                    {t('packagePurchase')}
+                  </th>
+                  <th className="text-muted-foreground w-36 px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                    {t('refillPurchase')}
+                  </th>
+                  <th className="text-muted-foreground w-32 px-3 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                    {t('fullCylinders')}
+                  </th>
+                  <th className="text-muted-foreground w-40 px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                    {t('outstandingShipments')}
+                  </th>
+                  <th className="text-muted-foreground w-24 px-2 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                    {t('emptyCylindersBuySell')}
+                  </th>
+                  <th className="text-muted-foreground w-24 px-2 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                    {t('emptyCylinderReceivables')}
+                  </th>
+                  <th className="text-muted-foreground w-24 px-2 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                    {t('emptyCylindersInStock')}
+                  </th>
+                  <th className="text-muted-foreground w-24 px-2 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                    {t('totalCylinders')}
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-card divide-border divide-y">
+                {[1, 2, 3].map((i) => (
+                  <tr key={i} className="animate-pulse">
+                    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((j) => (
+                      <td key={j} className="px-2 py-4">
+                        <div className="mb-1 h-4 w-8 rounded bg-gray-300"></div>
+                        <div className="h-3 w-12 rounded bg-gray-200"></div>
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Loading Message */}
+        <div className="flex items-center justify-center py-8">
+          <div className="flex items-center space-x-3">
             <RefreshCw className="h-6 w-6 animate-spin text-blue-600" />
-            <span className="text-muted-foreground">
+            <span className="text-muted-foreground text-lg">
               {t('loadingInventoryData')}
             </span>
           </div>
@@ -508,7 +725,115 @@ export default function InventoryPage() {
       </div>
 
       {/* Cylinder Summary Tables */}
-      {cylindersSummaryData && (
+      {loading ? (
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+          {/* Full Cylinders Table Skeleton */}
+          <div className="bg-card overflow-hidden rounded-lg shadow">
+            <div className="border-border border-b px-6 py-4">
+              <div className="flex items-center space-x-2">
+                <RefreshCw className="h-4 w-4 animate-spin text-blue-600" />
+                <h2 className="text-foreground text-lg font-semibold">
+                  {t('fullCylinders')}
+                </h2>
+              </div>
+              <p className="text-muted-foreground mt-1 text-sm">
+                {t('currentFullCylinderInventory')}
+              </p>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                <thead className="bg-muted">
+                  <tr>
+                    <th className="text-muted-foreground px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                      {t('company')}
+                    </th>
+                    <th className="text-muted-foreground px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                      {t('size')}
+                    </th>
+                    <th className="text-muted-foreground px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                      {t('quantity')}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-card divide-border divide-y">
+                  {[1, 2, 3].map((i) => (
+                    <tr key={i} className="animate-pulse">
+                      <td className="px-4 py-3">
+                        <div className="h-4 w-20 rounded bg-gray-300"></div>
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="h-4 w-12 rounded bg-gray-300"></div>
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="h-4 w-8 rounded bg-gray-300"></div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* Empty Cylinders Table Skeleton */}
+          <div className="bg-card overflow-hidden rounded-lg shadow">
+            <div className="border-border border-b px-6 py-4">
+              <div className="flex items-center space-x-2">
+                <RefreshCw className="h-4 w-4 animate-spin text-blue-600" />
+                <h2 className="text-foreground text-lg font-semibold">
+                  {t('emptyCylinders')}
+                </h2>
+              </div>
+              <p className="text-muted-foreground mt-1 text-sm">
+                {t('emptyCylinderInventoryAvailability')}
+              </p>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                <thead className="bg-muted">
+                  <tr>
+                    <th className="text-muted-foreground px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                      আকার
+                    </th>
+                    <th className="text-muted-foreground px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                      স্টকে খালি সিলিন্ডার
+                    </th>
+                    <th className="text-muted-foreground px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                      খালি সিলিন্ডার প্রাপ্য
+                    </th>
+                    <th className="text-muted-foreground px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                      অসমাপ্ত চালান
+                    </th>
+                    <th className="text-muted-foreground px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                      মোট খালি সিলিন্ডার
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-card divide-border divide-y">
+                  {[1, 2, 3].map((i) => (
+                    <tr key={i} className="animate-pulse">
+                      <td className="px-4 py-3">
+                        <div className="h-4 w-12 rounded bg-gray-300"></div>
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="h-4 w-8 rounded bg-gray-300"></div>
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="h-4 w-8 rounded bg-gray-300"></div>
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="h-4 w-8 rounded bg-gray-300"></div>
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="h-4 w-8 rounded bg-gray-300"></div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      ) : cylindersSummaryData ? (
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
           {/* Full Cylinders Table */}
           <div className="bg-card overflow-hidden rounded-lg shadow">
@@ -718,10 +1043,80 @@ export default function InventoryPage() {
             )}
           </div>
         </div>
-      )}
+      ) : null}
 
       {/* Daily Inventory Tracking Table */}
-      {dailyInventoryData && (
+      {loading ? (
+        <div className="bg-card overflow-hidden rounded-lg shadow">
+          <div className="border-border border-b px-6 py-4">
+            <div className="flex items-center space-x-2">
+              <RefreshCw className="h-4 w-4 animate-spin text-blue-600" />
+              <h2 className="text-foreground text-lg font-semibold">
+                {t('dailyInventoryTracking')}
+              </h2>
+            </div>
+            <p className="text-muted-foreground mt-1 text-sm">
+              {t('automatedCalculationsExactFormulas')}
+            </p>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+              <thead className="bg-muted">
+                <tr>
+                  <th className="text-muted-foreground w-20 px-2 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                    {t('date')}
+                  </th>
+                  <th className="text-muted-foreground w-40 px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                    {t('packageSalesQty')}
+                  </th>
+                  <th className="text-muted-foreground w-40 px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                    {t('refillSalesQty')}
+                  </th>
+                  <th className="text-muted-foreground w-40 px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                    {t('totalSalesQty')}
+                  </th>
+                  <th className="text-muted-foreground w-36 px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                    {t('packagePurchase')}
+                  </th>
+                  <th className="text-muted-foreground w-36 px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                    {t('refillPurchase')}
+                  </th>
+                  <th className="text-muted-foreground w-32 px-3 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                    {t('fullCylinders')}
+                  </th>
+                  <th className="text-muted-foreground w-40 px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                    {t('outstandingShipments')}
+                  </th>
+                  <th className="text-muted-foreground w-24 px-2 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                    {t('emptyCylindersBuySell')}
+                  </th>
+                  <th className="text-muted-foreground w-24 px-2 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                    {t('emptyCylinderReceivables')}
+                  </th>
+                  <th className="text-muted-foreground w-24 px-2 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                    {t('emptyCylindersInStock')}
+                  </th>
+                  <th className="text-muted-foreground w-24 px-2 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                    {t('totalCylinders')}
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-card divide-border divide-y">
+                {[1, 2].map((i) => (
+                  <tr key={i} className="animate-pulse">
+                    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((j) => (
+                      <td key={j} className="px-2 py-4">
+                        <div className="mb-1 h-4 w-8 rounded bg-gray-300"></div>
+                        <div className="h-3 w-12 rounded bg-gray-200"></div>
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      ) : dailyInventoryData ? (
         <div className="bg-card overflow-hidden rounded-lg shadow">
           <div className="border-border border-b px-6 py-4">
             <h2 className="text-foreground text-lg font-semibold">
@@ -1138,121 +1533,7 @@ export default function InventoryPage() {
             )}
           </div>
         </div>
-      )}
-
-      {/* Business Formula Explanations */}
-      <div className="bg-card rounded-lg p-6 shadow">
-        <h3 className="text-foreground mb-4 text-lg font-semibold">
-          {t('businessFormulaImplementation')}
-        </h3>
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-          <div>
-            <h4 className="text-foreground mb-3 font-medium">
-              {t('dailyCalculations')}
-            </h4>
-            <div className="space-y-2 text-sm">
-              <div className="rounded bg-blue-50 p-2 dark:bg-blue-900/20">
-                <strong className="text-foreground">
-                  {t('todaysFullCylinders')} =
-                </strong>
-                <span className="text-muted-foreground">
-                  {' '}
-                  {t('yesterdaysFull')} + {t('packagePurchase')} +{' '}
-                  {t('refillPurchase')} - {t('totalSales')}
-                </span>
-              </div>
-              <div className="rounded bg-green-50 p-2 dark:bg-green-900/20">
-                <strong className="text-foreground">
-                  {t('todaysEmptyCylinders')} =
-                </strong>
-                <span className="text-muted-foreground">
-                  {' '}
-                  {t('yesterdaysEmpty')} + {t('refillSales')} +{' '}
-                  {t('emptyCylindersBuySell')}
-                </span>
-              </div>
-              <div className="rounded bg-purple-50 p-2 dark:bg-purple-900/20">
-                <strong className="text-foreground">
-                  {t('totalCylinders')} =
-                </strong>
-                <span className="text-muted-foreground">
-                  {' '}
-                  {t('fullCylinders')} + {t('emptyCylinders')} + Outstanding
-                  Refill Shipments
-                </span>
-              </div>
-            </div>
-          </div>
-          <div>
-            <h4 className="text-foreground mb-3 font-medium">
-              {t('dataSources')}
-            </h4>
-            <div className="text-muted-foreground space-y-2 text-sm">
-              <div>
-                •{' '}
-                <strong className="text-foreground">
-                  {t('packageRefillSales')}:
-                </strong>{' '}
-                {t('sumAllDriversSalesForDate')}
-              </div>
-              <div>
-                •{' '}
-                <strong className="text-foreground">
-                  {t('packageRefillPurchase')}:
-                </strong>{' '}
-                {t('sumCompletedShipmentsFromShipmentsPage')}
-              </div>
-              <div>
-                •{' '}
-                <strong className="text-foreground">
-                  {t('emptyCylindersBuySell')}:
-                </strong>{' '}
-                {t('sumCompletedEmptyCylinderShipments')}
-              </div>
-              <div className="mt-3 rounded border border-yellow-200 bg-yellow-50 p-2 dark:border-yellow-800 dark:bg-yellow-900/20">
-                <strong className="text-foreground">{t('note')}:</strong>
-                <span className="text-muted-foreground">
-                  {' '}
-                  {t('allCalculationsUpdatedRealTime')}
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Stock Health Summary */}
-      <div className="bg-card rounded-lg p-6 shadow">
-        <h3 className="text-foreground mb-4 text-lg font-semibold">
-          {t('currentStockHealth')}
-        </h3>
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-          <div className="text-center">
-            <div className="mb-2 text-3xl font-bold text-green-600 dark:text-green-400">
-              {inventoryData.summary.stockHealth.good}
-            </div>
-            <div className="text-muted-foreground text-sm">
-              {t('productsInGoodStock')}
-            </div>
-          </div>
-          <div className="text-center">
-            <div className="mb-2 text-3xl font-bold text-yellow-600 dark:text-yellow-400">
-              {inventoryData.summary.stockHealth.warning}
-            </div>
-            <div className="text-muted-foreground text-sm">
-              {t('producentsWithLowStockWarning')}
-            </div>
-          </div>
-          <div className="text-center">
-            <div className="mb-2 text-3xl font-bold text-red-600 dark:text-red-400">
-              {inventoryData.summary.stockHealth.critical}
-            </div>
-            <div className="text-muted-foreground text-sm">
-              {t('productsInCriticalStock')}
-            </div>
-          </div>
-        </div>
-      </div>
+      ) : null}
     </div>
   );
 }

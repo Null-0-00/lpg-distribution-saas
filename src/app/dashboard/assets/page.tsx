@@ -136,9 +136,8 @@ export default function AssetsPage() {
     } catch (error) {
       console.error('Error fetching data:', error);
       toast({
-        title: 'Error',
-        description:
-          'Failed to load assets and liabilities data. Please try again.',
+        title: t('error'),
+        description: t('failedToLoadAssetsLiabilities'),
         variant: 'destructive',
       });
     } finally {
@@ -209,8 +208,8 @@ export default function AssetsPage() {
 
   const getCategoryDisplayName = (category: string) => {
     const displayNames: { [key: string]: string } = {
-      FIXED_ASSET: 'Fixed Asset',
-      CURRENT_ASSET: 'Current Asset',
+      FIXED_ASSET: t('fixedAsset'),
+      CURRENT_ASSET: t('currentAsset'),
       CURRENT_LIABILITY: 'Current Liability',
       LONG_TERM_LIABILITY: 'Long-term Liability',
     };
@@ -289,11 +288,11 @@ export default function AssetsPage() {
 
       if (response.ok) {
         toast({
-          title: 'Success',
+          title: t('success'),
           description: `${modalType === 'asset' ? 'Asset' : 'Liability'} ${isEditing ? 'updated' : 'created'} successfully!`,
         });
         closeModal();
-        fetchData(); // Refresh the data
+        fetchData(); // refresh the data
       } else {
         const error = await response.json();
         throw new Error(
@@ -306,15 +305,15 @@ export default function AssetsPage() {
         error
       );
       toast({
-        title: 'Error',
-        description: `Failed to ${editingItem ? 'update' : 'create'} ${modalType}. Please try again.`,
+        title: t('error'),
+        description: `${editingItem ? (modalType === 'asset' ? t('failedToUpdateAsset') : t('failedToUpdateLiability')) : modalType === 'asset' ? t('failedToCreateAsset') : t('failedToCreateLiability')}`,
         variant: 'destructive',
       });
     }
   };
 
   const handleDeleteAsset = async (assetId: string) => {
-    if (!confirm('Are you sure you want to delete this asset?')) return;
+    if (!confirm(t('areYouSureDeleteAsset'))) return;
 
     try {
       const response = await fetch(`/api/assets?id=${assetId}`, {
@@ -323,8 +322,8 @@ export default function AssetsPage() {
 
       if (response.ok) {
         toast({
-          title: 'Success',
-          description: 'Asset deleted successfully!',
+          title: t('success'),
+          description: t('assetDeletedSuccessfully'),
         });
         fetchData();
       } else {
@@ -334,8 +333,8 @@ export default function AssetsPage() {
     } catch (error) {
       console.error('Error deleting asset:', error);
       toast({
-        title: 'Error',
-        description: 'Failed to delete asset. Please try again.',
+        title: t('error'),
+        description: t('failedToDeleteAsset'),
         variant: 'destructive',
       });
     }
@@ -361,8 +360,8 @@ export default function AssetsPage() {
 
       if (response.ok) {
         toast({
-          title: 'Success',
-          description: 'Unit value updated successfully!',
+          title: t('success'),
+          description: t('unitValueUpdatedSuccessfully'),
         });
         setEditingAsset(null);
         fetchData();
@@ -373,8 +372,8 @@ export default function AssetsPage() {
     } catch (error) {
       console.error('Error updating unit value:', error);
       toast({
-        title: 'Error',
-        description: 'Failed to update unit value. Please try again.',
+        title: t('error'),
+        description: t('failedToUpdateUnitValue'),
         variant: 'destructive',
       });
     }
@@ -422,7 +421,7 @@ export default function AssetsPage() {
   };
 
   const handleDeleteLiability = async (liabilityId: string) => {
-    if (!confirm('Are you sure you want to delete this liability?')) return;
+    if (!confirm(t('areYouSureDeleteLiability'))) return;
 
     try {
       const response = await fetch(`/api/liabilities?id=${liabilityId}`, {
@@ -431,8 +430,8 @@ export default function AssetsPage() {
 
       if (response.ok) {
         toast({
-          title: 'Success',
-          description: 'Liability deleted successfully!',
+          title: t('success'),
+          description: t('liabilityDeletedSuccessfully'),
         });
         fetchData();
       } else {
@@ -442,8 +441,8 @@ export default function AssetsPage() {
     } catch (error) {
       console.error('Error deleting liability:', error);
       toast({
-        title: 'Error',
-        description: 'Failed to delete liability. Please try again.',
+        title: t('error'),
+        description: t('failedToDeleteLiability'),
         variant: 'destructive',
       });
     }
@@ -466,11 +465,9 @@ export default function AssetsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-foreground text-2xl font-bold">
-            Assets and Liabilities
+            {t('assetsAndLiabilities')}
           </h1>
-          <p className="text-muted-foreground">
-            Manage company assets and financial obligations
-          </p>
+          <p className="text-muted-foreground">{t('manageCompanyAssets')}</p>
         </div>
         <div className="flex items-center space-x-3">
           <button
@@ -481,14 +478,14 @@ export default function AssetsPage() {
             <RefreshCw
               className={`mr-2 h-4 w-4 ${refreshing ? 'animate-spin' : ''}`}
             />
-            Refresh
+            {t('refresh')}
           </button>
           <button
             className="flex items-center rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
             onClick={() => openModal('asset')}
           >
             <Building2 className="mr-2 h-4 w-4" />
-            Add Assets/Liabilities
+            {t('addAssetsLiabilities')}
           </button>
         </div>
       </div>
@@ -521,7 +518,7 @@ export default function AssetsPage() {
           <div className="flex items-center">
             <DollarSign className="h-8 w-8 text-blue-500" />
             <div className="ml-4">
-              <p className="text-muted-foreground text-sm">Net Worth</p>
+              <p className="text-muted-foreground text-sm">{t('netWorth')}</p>
               <p className="text-foreground text-2xl font-bold">
                 {formatCurrency(netWorth)}
               </p>
@@ -532,7 +529,9 @@ export default function AssetsPage() {
           <div className="flex items-center">
             <Package className="h-8 w-8 text-orange-500" />
             <div className="ml-4">
-              <p className="text-muted-foreground text-sm">Depreciation</p>
+              <p className="text-muted-foreground text-sm">
+                {t('depreciation')}
+              </p>
               <p className="text-foreground text-2xl font-bold">
                 {formatCurrency(totalDepreciation)}
               </p>
@@ -545,7 +544,7 @@ export default function AssetsPage() {
       <div className="bg-card rounded-lg shadow">
         <div className="border-border border-b px-6 py-4">
           <h2 className="text-foreground text-lg font-semibold">
-            Company Assets
+            {t('companyAssets')}
           </h2>
         </div>
         <div className="overflow-x-auto">
@@ -553,29 +552,29 @@ export default function AssetsPage() {
             <thead className="bg-muted">
               <tr>
                 <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase">
-                  Asset Name
+                  {t('assetName')}
                 </th>
                 <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase">
-                  Category
+                  {t('category')}
                 </th>
                 <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase">
-                  Quantity
+                  {t('quantity')}
                 </th>
                 <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase">
-                  Unit Value
+                  {t('unitValue')}
                 </th>
                 <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase">
-                  Total Value
+                  {t('totalValue')}
                 </th>
                 <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase">
-                  Depreciation
+                  {t('depreciation')}
                 </th>
                 <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase">
-                  Net Value
+                  {t('netValue')}
                 </th>
                 {isAdmin && (
                   <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase">
-                    Actions
+                    {t('actions')}
                   </th>
                 )}
               </tr>
@@ -636,7 +635,7 @@ export default function AssetsPage() {
                     </td>
                     <td className="text-foreground whitespace-nowrap px-6 py-4 text-sm">
                       {asset.isAutoCalculated
-                        ? asset.details?.quantity || 'Auto'
+                        ? asset.details?.quantity || t('auto')
                         : '1'}
                     </td>
                     <td className="text-foreground whitespace-nowrap px-6 py-4 text-sm">
@@ -706,14 +705,14 @@ export default function AssetsPage() {
                             <button
                               onClick={() => handleEditAsset(asset)}
                               className="text-blue-600 hover:text-blue-800"
-                              title="Edit Asset"
+                              title={t('editAsset')}
                             >
                               <Edit className="h-4 w-4" />
                             </button>
                             <button
                               onClick={() => handleDeleteAsset(asset.id)}
                               className="text-red-600 hover:text-red-800"
-                              title="Delete Asset"
+                              title={t('deleteAsset')}
                             >
                               <Trash2 className="h-4 w-4" />
                             </button>
@@ -735,7 +734,7 @@ export default function AssetsPage() {
                     colSpan={isAdmin ? 8 : 7}
                     className="text-muted-foreground px-6 py-4 text-center"
                   >
-                    No assets found. Click "Add Assets/Liabilities" to get
+                    No assets found. Click "{t('addAssetsLiabilities')}" to get
                     started.
                   </td>
                 </tr>
@@ -749,7 +748,7 @@ export default function AssetsPage() {
       <div className="bg-card rounded-lg shadow">
         <div className="border-border border-b px-6 py-4">
           <h2 className="text-foreground text-lg font-semibold">
-            Company Liabilities
+            {t('companyLiabilities')}
           </h2>
         </div>
         <div className="overflow-x-auto">
@@ -757,26 +756,26 @@ export default function AssetsPage() {
             <thead className="bg-muted">
               <tr>
                 <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase">
-                  Liability
+                  {t('liability')}
                 </th>
                 <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase">
-                  Category
+                  {t('category')}
                 </th>
                 <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase">
-                  Amount
+                  {t('amount')}
                 </th>
                 <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase">
-                  Due Date
+                  {t('dueDate')}
                 </th>
                 <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase">
-                  Monthly Payment
+                  {t('monthlyPayment')}
                 </th>
                 <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase">
-                  Status
+                  {t('status')}
                 </th>
                 {isAdmin && (
                   <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase">
-                    Actions
+                    {t('actions')}
                   </th>
                 )}
               </tr>
@@ -807,7 +806,7 @@ export default function AssetsPage() {
                   <td className="text-foreground whitespace-nowrap px-6 py-4 text-sm">
                     {liability.dueDate
                       ? new Date(liability.dueDate).toLocaleDateString()
-                      : 'N/A'}
+                      : t('notAvailable')}
                   </td>
                   <td className="text-foreground whitespace-nowrap px-6 py-4 text-sm">
                     N/A
@@ -823,14 +822,14 @@ export default function AssetsPage() {
                         <button
                           onClick={() => handleEditLiability(liability)}
                           className="text-blue-600 hover:text-blue-800"
-                          title="Edit Liability"
+                          title="Edit liability"
                         >
                           <Edit className="h-4 w-4" />
                         </button>
                         <button
                           onClick={() => handleDeleteLiability(liability.id)}
                           className="text-red-600 hover:text-red-800"
-                          title="Delete Liability"
+                          title="Delete liability"
                         >
                           <Trash2 className="h-4 w-4" />
                         </button>
@@ -845,8 +844,8 @@ export default function AssetsPage() {
                     colSpan={isAdmin ? 7 : 6}
                     className="text-muted-foreground px-6 py-4 text-center"
                   >
-                    No liabilities found. Click "Add Assets/Liabilities" to get
-                    started.
+                    No liabilities found. Click "{t('addAssetsLiabilities')}" to
+                    get started.
                   </td>
                 </tr>
               )}
@@ -888,7 +887,7 @@ export default function AssetsPage() {
         </div>
       </div>
 
-      {/* Quick Actions */}
+      {/* Quick actions */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         {/* Add New Asset */}
         <div className="bg-card rounded-lg p-6 shadow">
@@ -1017,7 +1016,7 @@ export default function AssetsPage() {
                 </th>
                 {isAdmin && (
                   <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase">
-                    Actions
+                    {t('actions')}
                   </th>
                 )}
               </tr>
@@ -1076,7 +1075,7 @@ export default function AssetsPage() {
                       <td className="text-foreground whitespace-nowrap px-6 py-4 text-sm">
                         {purchaseDate
                           ? purchaseDate.toLocaleDateString()
-                          : 'N/A'}
+                          : t('notAvailable')}
                       </td>
                       <td className="text-foreground whitespace-nowrap px-6 py-4 text-sm">
                         Straight Line
@@ -1106,7 +1105,7 @@ export default function AssetsPage() {
                             <button
                               onClick={() => handleDeleteAsset(asset.id)}
                               className="text-red-600 hover:text-red-800"
-                              title="Delete Asset"
+                              title={t('deleteAsset')}
                             >
                               <Trash2 className="h-4 w-4" />
                             </button>
@@ -1180,7 +1179,7 @@ export default function AssetsPage() {
               </div>
               <div className="text-center">
                 <span className="text-muted-foreground">
-                  Total Depreciation:
+                  Total {t('depreciation')}:
                 </span>
                 <div className="font-semibold text-red-600">
                   {formatCurrency(
@@ -1264,7 +1263,7 @@ export default function AssetsPage() {
             <div className="mb-4 flex items-center justify-between">
               <h3 className="text-foreground text-lg font-semibold">
                 {editingItem ? 'Edit' : 'Add New'}{' '}
-                {modalType === 'asset' ? 'Asset' : 'Liability'}
+                {modalType === 'asset' ? 'Asset' : '{t("liability")}'}
               </h3>
               <button
                 onClick={closeModal}
@@ -1306,7 +1305,7 @@ export default function AssetsPage() {
                       : 'bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300'
                   }`}
                 >
-                  Liability
+                  {t('liability')}
                 </button>
               </div>
             </div>
@@ -1314,7 +1313,7 @@ export default function AssetsPage() {
             <div className="space-y-4">
               <div>
                 <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  {modalType === 'asset' ? 'Asset' : 'Liability'} Name
+                  {modalType === 'asset' ? 'Asset' : '{t("liability")}'} Name
                 </label>
                 <input
                   type="text"
@@ -1329,7 +1328,7 @@ export default function AssetsPage() {
 
               <div>
                 <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Category
+                  {t('category')}
                 </label>
                 <select
                   value={formData.category}
@@ -1346,10 +1345,10 @@ export default function AssetsPage() {
                   ) : (
                     <>
                       <option value="CURRENT_LIABILITY">
-                        Current Liability
+                        Current {t('liability')}
                       </option>
                       <option value="LONG_TERM_LIABILITY">
-                        Long-term Liability
+                        Long-term {t('liability')}
                       </option>
                     </>
                   )}
@@ -1360,7 +1359,7 @@ export default function AssetsPage() {
                 <>
                   <div>
                     <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                      Sub Category
+                      Sub {t('category')}
                     </label>
                     <input
                       type="text"
@@ -1411,7 +1410,7 @@ export default function AssetsPage() {
                     </div>
                     <div>
                       <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                        Depreciation Rate (%)
+                        {t('depreciation')} Rate (%)
                       </label>
                       <input
                         type="number"
@@ -1451,7 +1450,7 @@ export default function AssetsPage() {
                 <>
                   <div>
                     <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                      Total Amount (৳)
+                      Total {t('amount')} (৳)
                     </label>
                     <input
                       type="number"
@@ -1468,7 +1467,7 @@ export default function AssetsPage() {
                   </div>
                   <div>
                     <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                      Due Date
+                      {t('dueDate')}
                     </label>
                     <input
                       type="date"

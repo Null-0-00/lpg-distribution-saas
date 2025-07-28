@@ -23,11 +23,35 @@ const nextConfig = {
   images: {
     formats: ['image/webp', 'image/avif'],
     domains: ['localhost'],
+    minimumCacheTTL: 60,
+    dangerouslyAllowSVG: true,
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
   output: 'standalone',
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
+    // Enable SWC minification
+    styledComponents: true,
   },
+  // Simple webpack optimization
+  webpack: (config, { dev }) => {
+    // Only add bundle analyzer in production analysis mode
+    if (!dev && process.env.ANALYZE === 'true') {
+      const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
+      config.plugins.push(
+        new BundleAnalyzerPlugin({
+          analyzerMode: 'static',
+          openAnalyzer: false,
+          reportFilename: 'bundle-analyzer-report.html',
+        })
+      );
+    }
+    return config;
+  },
+  // Enable compression
+  compress: true,
+  // Optimize static files
+  assetPrefix: process.env.NODE_ENV === 'production' ? '/static' : '',
   async headers() {
     return [
       {

@@ -32,8 +32,8 @@ model Tenant {
   deposits                      Deposit[]
   distributorAssignments        DistributorAssignment[]
   distributorPricingAssignments DistributorPricingAssignment[]
-  drivers                       Driver[]
   driverCylinderSizeBaselines   DriverCylinderSizeBaseline[]
+  drivers                       Driver[]
   emptyCylinders                EmptyCylinder[]
   expenseCategories             ExpenseCategory[]
   expenseParentCategories       ExpenseParentCategory[]
@@ -65,11 +65,11 @@ model User {
   role                          UserRole                       @default(MANAGER)
   avatar                        String?
   isActive                      Boolean                        @default(true)
-  onboardingCompleted           Boolean                        @default(false)
-  onboardingCompletedAt         DateTime?
   lastLoginAt                   DateTime?
   createdAt                     DateTime                       @default(now())
   updatedAt                     DateTime                       @updatedAt
+  onboardingCompleted           Boolean                        @default(false)
+  onboardingCompletedAt         DateTime?
   auditLogs                     AuditLog[]
   deposits                      Deposit[]
   distributorAssignments        DistributorAssignment[]
@@ -98,13 +98,13 @@ model Permission {
 }
 
 model CylinderSize {
-  id          String    @id @default(cuid())
-  tenantId    String
-  size        String
-  description String?
-  isActive    Boolean   @default(true)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  id                          String                       @id @default(cuid())
+  tenantId                    String
+  size                        String
+  description                 String?
+  isActive                    Boolean                      @default(true)
+  createdAt                   DateTime                     @default(now())
+  updatedAt                   DateTime                     @updatedAt
   tenant                      Tenant                       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   driverCylinderSizeBaselines DriverCylinderSizeBaseline[]
   emptyCylinders              EmptyCylinder[]
@@ -189,20 +189,20 @@ model Product {
 }
 
 model Driver {
-  id                  String               @id @default(cuid())
-  tenantId            String
-  name                String
-  phone               String?
-  email               String?
-  address             String?
-  licenseNumber       String?
-  status              DriverStatus         @default(ACTIVE)
-  driverType          DriverType           @default(RETAIL)
-  route               String?
-  joiningDate         DateTime?
-  leavingDate         DateTime?
-  createdAt           DateTime             @default(now())
-  updatedAt           DateTime             @updatedAt
+  id                          String                       @id @default(cuid())
+  tenantId                    String
+  name                        String
+  phone                       String?
+  email                       String?
+  address                     String?
+  licenseNumber               String?
+  status                      DriverStatus                 @default(ACTIVE)
+  driverType                  DriverType                   @default(RETAIL)
+  route                       String?
+  joiningDate                 DateTime?
+  leavingDate                 DateTime?
+  createdAt                   DateTime                     @default(now())
+  updatedAt                   DateTime                     @updatedAt
   customerReceivables         CustomerReceivable[]
   dailySales                  DailySales[]
   driverCylinderSizeBaselines DriverCylinderSizeBaseline[]
@@ -338,24 +338,24 @@ model Shipment {
 }
 
 model InventoryRecord {
-  id                    String   @id @default(cuid())
-  tenantId              String
-  productId             String?
-  date                  DateTime @db.Date
-  packageSales          Int      @default(0)
-  refillSales           Int      @default(0)
-  totalSales            Int      @default(0)
-  packagePurchase       Int      @default(0)
-  refillPurchase        Int      @default(0)
-  emptyCylindersBuySell Int      @default(0)
-  fullCylinders         Int      @default(0)
-  emptyCylinders        Int      @default(0)
-  emptyCylinderReceivables Int   @default(0)
-  totalCylinders        Int      @default(0)
-  calculatedAt          DateTime @default(now())
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
-  tenant                Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  id                       String   @id @default(cuid())
+  tenantId                 String
+  productId                String?
+  date                     DateTime @db.Date
+  packageSales             Int      @default(0)
+  refillSales              Int      @default(0)
+  totalSales               Int      @default(0)
+  packagePurchase          Int      @default(0)
+  refillPurchase           Int      @default(0)
+  emptyCylindersBuySell    Int      @default(0)
+  fullCylinders            Int      @default(0)
+  emptyCylinders           Int      @default(0)
+  totalCylinders           Int      @default(0)
+  calculatedAt             DateTime @default(now())
+  createdAt                DateTime @default(now())
+  updatedAt                DateTime @updatedAt
+  emptyCylinderReceivables Int      @default(0)
+  tenant                   Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   @@unique([tenantId, date, productId])
   @@index([tenantId])
@@ -790,8 +790,8 @@ model DriverCylinderSizeBaseline {
   source           String       @default("ONBOARDING")
   createdAt        DateTime     @default(now())
   updatedAt        DateTime     @updatedAt
-  driver           Driver       @relation(fields: [driverId], references: [id], onDelete: Cascade)
   cylinderSize     CylinderSize @relation(fields: [cylinderSizeId], references: [id], onDelete: Cascade)
+  driver           Driver       @relation(fields: [driverId], references: [id], onDelete: Cascade)
   tenant           Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   @@unique([tenantId, driverId, cylinderSizeId])
@@ -808,12 +808,12 @@ model FullCylinder {
   companyId           String
   cylinderSizeId      String
   quantity            Int          @default(0)
-  quantityInHand      Int          @default(0)
-  quantityWithDrivers Int          @default(0)
   date                DateTime     @db.Date
   calculatedAt        DateTime     @default(now())
   createdAt           DateTime     @default(now())
   updatedAt           DateTime     @updatedAt
+  quantityInHand      Int          @default(0)
+  quantityWithDrivers Int          @default(0)
   company             Company      @relation(fields: [companyId], references: [id], onDelete: Cascade)
   cylinderSize        CylinderSize @relation(fields: [cylinderSizeId], references: [id], onDelete: Cascade)
   product             Product      @relation(fields: [productId], references: [id], onDelete: Cascade)
@@ -831,8 +831,6 @@ model FullCylinder {
 model EmptyCylinder {
   id                  String       @id @default(cuid())
   tenantId            String
-  productId           String
-  companyId           String
   cylinderSizeId      String
   quantity            Int          @default(0)
   quantityInHand      Int          @default(0)
@@ -841,6 +839,8 @@ model EmptyCylinder {
   calculatedAt        DateTime     @default(now())
   createdAt           DateTime     @default(now())
   updatedAt           DateTime     @updatedAt
+  companyId           String
+  productId           String
   company             Company      @relation(fields: [companyId], references: [id], onDelete: Cascade)
   cylinderSize        CylinderSize @relation(fields: [cylinderSizeId], references: [id], onDelete: Cascade)
   product             Product      @relation(fields: [productId], references: [id], onDelete: Cascade)
@@ -856,15 +856,15 @@ model EmptyCylinder {
 }
 
 model InventoryAssetValue {
-  id          String      @id @default(cuid())
+  id          String    @id @default(cuid())
   tenantId    String
-  assetType   AssetType
   unitValue   Float
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
   description String?
-  isActive    Boolean     @default(true)
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-  tenant      Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  isActive    Boolean   @default(true)
+  assetType   AssetType
+  tenant      Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   @@unique([tenantId, assetType])
   @@index([tenantId])

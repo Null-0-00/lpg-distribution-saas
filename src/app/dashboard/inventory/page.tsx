@@ -836,7 +836,7 @@ export default function InventoryPage() {
       ) : cylindersSummaryData ? (
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
           {/* Full Cylinders Table */}
-          <div className="bg-card overflow-hidden rounded-lg shadow">
+          <div className="bg-card flex flex-col overflow-hidden rounded-lg shadow">
             <div className="border-border border-b px-6 py-4">
               <h2 className="text-foreground text-lg font-semibold">
                 {t('fullCylinders')}
@@ -845,8 +845,8 @@ export default function InventoryPage() {
                 {t('currentFullCylinderInventory')}
               </p>
             </div>
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+            <div className="flex flex-1 flex-col overflow-x-auto">
+              <table className="min-w-full flex-1 divide-y divide-gray-200 dark:divide-gray-700">
                 <thead className="bg-muted">
                   <tr>
                     <th className="text-muted-foreground px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">
@@ -860,7 +860,7 @@ export default function InventoryPage() {
                     </th>
                   </tr>
                 </thead>
-                <tbody className="bg-card divide-border divide-y">
+                <tbody className="bg-card divide-border flex-1 divide-y">
                   {cylindersSummaryData.fullCylinders &&
                   cylindersSummaryData.fullCylinders.length > 0 ? (
                     <>
@@ -880,18 +880,20 @@ export default function InventoryPage() {
                           </td>
                         </tr>
                       ))}
-                      {/* Total Row */}
-                      <tr className="border-t-2 border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-900/20">
-                        <td className="text-foreground whitespace-nowrap px-4 py-3 text-sm font-bold">
-                          {t('total')}
-                        </td>
-                        <td className="text-foreground whitespace-nowrap px-4 py-3 text-sm font-bold">
-                          -
-                        </td>
-                        <td className="whitespace-nowrap px-4 py-3 text-sm font-bold text-blue-700 dark:text-blue-300">
-                          {cylindersSummaryData.totals?.fullCylinders || 0}
-                        </td>
-                      </tr>
+                      {/* Add empty rows to match the height of empty cylinders table */}
+                      {Array.from({
+                        length: Math.max(
+                          0,
+                          (cylindersSummaryData.emptyCylinders?.length || 0) -
+                            (cylindersSummaryData.fullCylinders?.length || 0)
+                        ),
+                      }).map((_, index) => (
+                        <tr key={`empty-${index}`} className="h-12">
+                          <td className="px-4 py-3">&nbsp;</td>
+                          <td className="px-4 py-3">&nbsp;</td>
+                          <td className="px-4 py-3">&nbsp;</td>
+                        </tr>
+                      ))}
                     </>
                   ) : (
                     <tr>
@@ -904,12 +906,25 @@ export default function InventoryPage() {
                     </tr>
                   )}
                 </tbody>
+                <tfoot>
+                  <tr className="border-t-2 border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-900/20">
+                    <td className="text-foreground whitespace-nowrap px-4 py-3 text-sm font-bold">
+                      {t('total')}
+                    </td>
+                    <td className="text-foreground whitespace-nowrap px-4 py-3 text-sm font-bold">
+                      -
+                    </td>
+                    <td className="whitespace-nowrap px-4 py-3 text-sm font-bold text-blue-700 dark:text-blue-300">
+                      {cylindersSummaryData.totals?.fullCylinders || 0}
+                    </td>
+                  </tr>
+                </tfoot>
               </table>
             </div>
           </div>
 
           {/* Empty Cylinders Table */}
-          <div className="bg-card overflow-hidden rounded-lg shadow">
+          <div className="bg-card flex flex-col overflow-hidden rounded-lg shadow">
             <div className="border-border border-b px-6 py-4">
               <h2 className="text-foreground text-lg font-semibold">
                 {t('emptyCylinders')}
@@ -918,8 +933,8 @@ export default function InventoryPage() {
                 {t('emptyCylinderInventoryAvailability')}
               </p>
             </div>
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+            <div className="flex flex-1 flex-col overflow-x-auto">
+              <table className="min-w-full flex-1 divide-y divide-gray-200 dark:divide-gray-700">
                 <thead className="bg-muted">
                   <tr>
                     <th className="text-muted-foreground px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">
@@ -939,7 +954,7 @@ export default function InventoryPage() {
                     </th>
                   </tr>
                 </thead>
-                <tbody className="bg-card divide-border divide-y">
+                <tbody className="bg-card divide-border flex-1 divide-y">
                   {cylindersSummaryData.emptyCylinders &&
                   cylindersSummaryData.emptyCylinders.length > 0 ? (
                     <>
@@ -987,37 +1002,22 @@ export default function InventoryPage() {
                           );
                         }
                       )}
-                      {/* Total Row */}
-                      <tr className="border-t-2 border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-900/20">
-                        <td className="text-foreground whitespace-nowrap px-4 py-3 text-sm font-bold">
-                          মোট
-                        </td>
-                        <td className="text-foreground whitespace-nowrap px-4 py-3 text-sm font-bold">
-                          {dailyInventoryData?.dailyInventory[0]
-                            ?.emptyCylindersInStock ||
-                            dailyInventoryData?.dailyInventory[0]
-                              ?.emptyCylinders ||
-                            0}
-                        </td>
-                        <td className="whitespace-nowrap px-4 py-3 text-sm font-bold text-orange-700 dark:text-orange-300">
-                          {cylindersSummaryData.totalCylinderReceivables || 0}
-                        </td>
-                        <td className="whitespace-nowrap px-4 py-3 text-sm font-bold text-blue-700 dark:text-blue-300">
-                          {dailyInventoryData?.dailyInventory[0]
-                            ?.outstandingRefillOrders || 0}
-                        </td>
-                        <td className="whitespace-nowrap px-4 py-3 text-sm font-bold text-green-700 dark:text-green-300">
-                          {(dailyInventoryData?.dailyInventory[0]
-                            ?.emptyCylindersInStock ||
-                            dailyInventoryData?.dailyInventory[0]
-                              ?.emptyCylinders ||
-                            0) +
-                            (cylindersSummaryData.totalCylinderReceivables ||
-                              0) +
-                            (dailyInventoryData?.dailyInventory[0]
-                              ?.outstandingRefillOrders || 0)}
-                        </td>
-                      </tr>
+                      {/* Add empty rows to match the height of full cylinders table */}
+                      {Array.from({
+                        length: Math.max(
+                          0,
+                          (cylindersSummaryData.fullCylinders?.length || 0) -
+                            (cylindersSummaryData.emptyCylinders?.length || 0)
+                        ),
+                      }).map((_, index) => (
+                        <tr key={`empty-${index}`} className="h-12">
+                          <td className="px-4 py-3">&nbsp;</td>
+                          <td className="px-4 py-3">&nbsp;</td>
+                          <td className="px-4 py-3">&nbsp;</td>
+                          <td className="px-4 py-3">&nbsp;</td>
+                          <td className="px-4 py-3">&nbsp;</td>
+                        </tr>
+                      ))}
                     </>
                   ) : (
                     <tr>
@@ -1030,17 +1030,37 @@ export default function InventoryPage() {
                     </tr>
                   )}
                 </tbody>
+                <tfoot>
+                  <tr className="border-t-2 border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-900/20">
+                    <td className="text-foreground whitespace-nowrap px-4 py-3 text-sm font-bold">
+                      মোট
+                    </td>
+                    <td className="text-foreground whitespace-nowrap px-4 py-3 text-sm font-bold">
+                      {dailyInventoryData?.dailyInventory[0]
+                        ?.emptyCylindersInStock ||
+                        dailyInventoryData?.dailyInventory[0]?.emptyCylinders ||
+                        0}
+                    </td>
+                    <td className="whitespace-nowrap px-4 py-3 text-sm font-bold text-orange-700 dark:text-orange-300">
+                      {cylindersSummaryData.totalCylinderReceivables || 0}
+                    </td>
+                    <td className="whitespace-nowrap px-4 py-3 text-sm font-bold text-blue-700 dark:text-blue-300">
+                      {dailyInventoryData?.dailyInventory[0]
+                        ?.outstandingRefillOrders || 0}
+                    </td>
+                    <td className="whitespace-nowrap px-4 py-3 text-sm font-bold text-green-700 dark:text-green-300">
+                      {(dailyInventoryData?.dailyInventory[0]
+                        ?.emptyCylindersInStock ||
+                        dailyInventoryData?.dailyInventory[0]?.emptyCylinders ||
+                        0) +
+                        (cylindersSummaryData.totalCylinderReceivables || 0) +
+                        (dailyInventoryData?.dailyInventory[0]
+                          ?.outstandingRefillOrders || 0)}
+                    </td>
+                  </tr>
+                </tfoot>
               </table>
             </div>
-            {cylindersSummaryData.totalCylinderReceivables > 0 && (
-              <div className="border-t border-blue-200 bg-blue-50 px-6 py-3 dark:border-blue-800 dark:bg-blue-900/20">
-                <p className="text-sm text-blue-800 dark:text-blue-200">
-                  <strong>{t('note')}:</strong> {t('totalCylinderReceivables')}:{' '}
-                  {cylindersSummaryData.totalCylinderReceivables}{' '}
-                  {t('cylinders')}
-                </p>
-              </div>
-            )}
           </div>
         </div>
       ) : null}

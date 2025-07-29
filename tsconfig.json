@@ -28,5 +28,10 @@
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules"]
+  "exclude": [
+    "node_modules",
+    "api-receivables-validation.ts",
+    "sample-inventory-retrieval-api.ts",
+    "src/app/api/inventory/daily-optimized/route-old.ts"
+  ]
 }

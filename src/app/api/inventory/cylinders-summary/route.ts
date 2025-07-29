@@ -110,50 +110,119 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    // Build FULL CYLINDERS data directly from daily inventory size breakdowns
+    // Build FULL CYLINDERS data from actual inventory using InventoryCalculator
     const fullCylindersData: Array<{
       company: string;
       size: string;
       quantity: number;
     }> = [];
 
-    // Group products by size for company assignment
-    const productsBySize = new Map<string, typeof allProducts>();
-    allProducts.forEach((product) => {
-      const size = product.cylinderSize?.size;
-      if (size) {
-        if (!productsBySize.has(size)) {
-          productsBySize.set(size, []);
-        }
-        productsBySize.get(size)!.push(product);
-      }
-    });
+    try {
+      // Get real-time full cylinders inventory breakdown by calculating each product individually
+      const { InventoryCalculator } = await import('@/lib/business');
+      const inventoryCalculator = new InventoryCalculator(prisma);
 
-    // Create full cylinders breakdown from daily inventory data
-    if (
-      todaysRecord.fullCylindersBySizes &&
-      todaysRecord.fullCylindersBySizes.length > 0
-    ) {
-      todaysRecord.fullCylindersBySizes.forEach((sizeBreakdown: any) => {
-        if (sizeBreakdown.quantity > 0) {
-          const productsForSize = productsBySize.get(sizeBreakdown.size) || [];
+      // Get all active products to calculate their individual inventories
+      const products = await prisma.product.findMany({
+        where: {
+          tenantId,
+          isActive: true,
+        },
+        include: {
+          company: true,
+          cylinderSize: true,
+        },
+      });
 
-          if (productsForSize.length > 0) {
-            // Use the first company for this size (in real scenario, distribute based on actual data)
+      // Calculate real-time inventory for each product
+      for (const product of products) {
+        try {
+          const levels = await inventoryCalculator.getCurrentInventoryLevels(
+            tenantId,
+            product.id
+          );
+
+          if (levels.fullCylinders > 0) {
             fullCylindersData.push({
-              company: productsForSize[0].company.name,
-              size: sizeBreakdown.size,
-              quantity: sizeBreakdown.quantity,
-            });
-          } else {
-            fullCylindersData.push({
-              company: 'Unknown',
-              size: sizeBreakdown.size,
-              quantity: sizeBreakdown.quantity,
+              company: product.company.name,
+              size: product.cylinderSize?.size || product.size || 'Unknown',
+              quantity: levels.fullCylinders,
             });
           }
+        } catch (error) {
+          console.warn(
+            `Error calculating inventory for product ${product.id}:`,
+            error
+          );
+        }
+      }
+
+      // Sort by company name and size for consistent display
+      fullCylindersData.sort(
+        (a, b) =>
+          a.company.localeCompare(b.company) || a.size.localeCompare(b.size)
+      );
+
+      console.log(
+        '✅ Built full cylinders data from real-time inventory calculations:',
+        {
+          totalItems: fullCylindersData.length,
+          totalQuantity: fullCylindersData.reduce(
+            (sum, item) => sum + item.quantity,
+            0
+          ),
+          companies: Array.from(
+            new Set(fullCylindersData.map((item) => item.company))
+          ),
+          sizes: Array.from(
+            new Set(fullCylindersData.map((item) => item.size))
+          ),
+          products: products.length,
+        }
+      );
+    } catch (error) {
+      console.warn(
+        'Could not calculate real-time inventory, falling back to size breakdown:',
+        error
+      );
+
+      // Fallback: Use size breakdown with first available company (old behavior)
+      const productsBySize = new Map<string, typeof allProducts>();
+      allProducts.forEach((product) => {
+        const size = product.cylinderSize?.size;
+        if (size) {
+          if (!productsBySize.has(size)) {
+            productsBySize.set(size, []);
+          }
+          productsBySize.get(size)!.push(product);
         }
       });
+
+      if (
+        todaysRecord.fullCylindersBySizes &&
+        todaysRecord.fullCylindersBySizes.length > 0
+      ) {
+        todaysRecord.fullCylindersBySizes.forEach((sizeBreakdown: any) => {
+          if (sizeBreakdown.quantity > 0) {
+            const productsForSize =
+              productsBySize.get(sizeBreakdown.size) || [];
+
+            if (productsForSize.length > 0) {
+              fullCylindersData.push({
+                company: productsForSize[0].company.name,
+                size: sizeBreakdown.size,
+                quantity: sizeBreakdown.quantity,
+              });
+            } else {
+              fullCylindersData.push({
+                company: 'Unknown',
+                size: sizeBreakdown.size,
+                quantity: sizeBreakdown.quantity,
+              });
+            }
+          }
+        });
+      }
     }
 
     // Calculate EMPTY CYLINDERS using exact business formula:

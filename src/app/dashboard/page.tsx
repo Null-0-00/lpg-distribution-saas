@@ -150,15 +150,6 @@ export default function DashboardPage() {
   const navigationCards = useMemo(
     () => [
       {
-        title: t('dashboard'),
-        description: t('manageLpgDistributionBusiness'),
-        icon: Building2,
-        href: '/dashboard',
-        color: 'text-blue-600',
-        bgColor: 'bg-blue-50',
-        stat: t('realTimeOverview'),
-      },
-      {
         title: t('dailySalesReport'),
         description: t('comprehensiveDailySalesReport'),
         icon: FileText,
@@ -179,6 +170,15 @@ export default function DashboardPage() {
             ? `${stats.lowStockAlerts} ${t('alerts')}`
             : t('allGood'),
         urgent: stats.lowStockAlerts > 0,
+      },
+      {
+        title: t('assets'),
+        description: t('manageCompanyAssets'),
+        icon: Building2,
+        href: '/dashboard/assets',
+        color: 'text-blue-600',
+        bgColor: 'bg-blue-50',
+        stat: t('realTimeOverview'),
       },
       {
         title: t('analytics'),

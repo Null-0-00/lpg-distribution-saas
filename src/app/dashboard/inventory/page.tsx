@@ -167,75 +167,75 @@ export default function InventoryPage() {
   const [cylindersSummaryData, setCylindersSummaryData] =
     useState<CylindersSummaryData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [cylindersLoading, setCylindersLoading] = useState(true);
+  const [dailyTrackingLoading, setDailyTrackingLoading] = useState(true);
   const [selectedDate, setSelectedDate] = useState(
     new Date().toISOString().split('T')[0]
   );
   const [includeMovements, setIncludeMovements] = useState(false);
   const [movements, setMovements] = useState<InventoryMovement[]>([]);
 
-  // Fetch dashboard data using traditional API calls
+  // PROGRESSIVE LOADING: Load cylinder summary first, then daily tracking
   const fetchDashboardData = async () => {
     try {
       setLoading(true);
-      console.log('🚀 Fetching dashboard data...');
+      setCylindersLoading(true);
+      setDailyTrackingLoading(true);
+      console.log('🚀 Starting progressive dashboard data loading...');
 
       const today = new Date();
-      const fourDaysAgo = new Date(today.getTime() - 3 * 24 * 60 * 60 * 1000); // 3 days ago + today = 4 days total
+      const fourDaysAgo = new Date(today.getTime() - 3 * 24 * 60 * 60 * 1000);
       const startDate = fourDaysAgo.toISOString().split('T')[0];
       const endDate = today.toISOString().split('T')[0];
 
-      // Use the new optimized endpoint if available, otherwise fall back to individual calls
+      // PHASE 1: Load cylinder summary and basic inventory first (fastest)
+      console.log('📊 Phase 1: Loading cylinder summary and basic inventory...');
       try {
-        const params = new URLSearchParams({
-          includeMovements: includeMovements.toString(),
-          startDate,
-          endDate,
-        });
+        const [inventoryResponse, cylindersResponse] = await Promise.all([
+          fetch(`/api/inventory?includeMovements=${includeMovements}`),
+          fetch('/api/inventory/cylinders-summary'),
+        ]);
 
-        const response = await fetch(`/api/inventory/dashboard?${params}`);
-
-        if (response.ok) {
-          const data = await response.json();
-          console.log('✅ Using optimized dashboard API');
-
-          setInventoryData({
-            inventory: data.inventory || [],
-            summary: data.summary || {},
-            lastUpdated: new Date().toISOString(),
-          });
-
-          setDailyInventoryData({
-            dailyInventory: data.dailyInventory || [],
-            summary: {
-              totalDays: data.dailyInventory?.length || 0,
-              currentFullCylinders: data.summary?.totalFullCylinders || 0,
-              currentEmptyCylinders: data.summary?.totalEmptyCylinders || 0,
-              currentTotalCylinders:
-                (data.summary?.totalFullCylinders || 0) +
-                (data.summary?.totalEmptyCylinders || 0),
-            },
-          });
-
-          setCylindersSummaryData(data.cylinderSummary || null);
-
-          if (data.inventory?.[0]?.movements) {
-            setMovements(data.inventory[0].movements);
+        if (inventoryResponse.ok) {
+          const inventoryData = await inventoryResponse.json();
+          setInventoryData(inventoryData);
+          if (inventoryData.inventory?.[0]?.movements) {
+            setMovements(inventoryData.inventory[0].movements);
           }
-        } else {
-          throw new Error('Dashboard API failed');
+        }
+
+        if (cylindersResponse.ok) {
+          const cylindersData = await cylindersResponse.json();
+          setCylindersSummaryData(cylindersData);
+        }
+
+        setCylindersLoading(false);
+        console.log('✅ Phase 1 complete: Cylinder tables loaded');
+      } catch (error) {
+        console.error('❌ Phase 1 failed:', error);
+        setCylindersLoading(false);
+      }
+
+      // PHASE 2: Load daily tracking data (slower)
+      console.log('📈 Phase 2: Loading daily tracking data...');
+      try {
+        const dailyResponse = await fetch(
+          `/api/inventory/daily?startDate=${startDate}&endDate=${endDate}`
+        );
+
+        if (dailyResponse.ok) {
+          const dailyData = await dailyResponse.json();
+          setDailyInventoryData(dailyData);
+          console.log('✅ Phase 2 complete: Daily tracking loaded');
         }
       } catch (error) {
-        console.log('⚠️ Falling back to individual API calls');
-
-        // Fallback to individual API calls
-        await Promise.all([
-          fetchInventoryData(),
-          fetchDailyInventoryData(),
-          fetchCylindersSummaryData(),
-        ]);
+        console.error('❌ Phase 2 failed:', error);
+      } finally {
+        setDailyTrackingLoading(false);
       }
+
     } catch (error) {
-      console.error('Error fetching dashboard data:', error);
+      console.error('Error in progressive loading:', error);
     } finally {
       setLoading(false);
     }
@@ -286,6 +286,7 @@ export default function InventoryPage() {
   }, [includeMovements]);
 
   const handleRefresh = () => {
+    console.log('🔄 Manual refresh triggered');
     fetchDashboardData();
   };
 
@@ -725,7 +726,7 @@ export default function InventoryPage() {
       </div>
 
       {/* Cylinder Summary Tables */}
-      {loading ? (
+      {cylindersLoading ? (
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
           {/* Full Cylinders Table Skeleton */}
           <div className="bg-card overflow-hidden rounded-lg shadow">
@@ -838,9 +839,14 @@ export default function InventoryPage() {
           {/* Full Cylinders Table */}
           <div className="bg-card flex flex-col overflow-hidden rounded-lg shadow">
             <div className="border-border border-b px-6 py-4">
-              <h2 className="text-foreground text-lg font-semibold">
-                {t('fullCylinders')}
-              </h2>
+              <div className="flex items-center space-x-2">
+                <h2 className="text-foreground text-lg font-semibold">
+                  {t('fullCylinders')}
+                </h2>
+                <span className="inline-flex rounded-full bg-green-100 px-2 py-1 text-xs font-semibold text-green-800 dark:bg-green-900 dark:text-green-200">
+                  ✓ Loaded
+                </span>
+              </div>
               <p className="text-muted-foreground mt-1 text-sm">
                 {t('currentFullCylinderInventory')}
               </p>
@@ -926,9 +932,14 @@ export default function InventoryPage() {
           {/* Empty Cylinders Table */}
           <div className="bg-card flex flex-col overflow-hidden rounded-lg shadow">
             <div className="border-border border-b px-6 py-4">
-              <h2 className="text-foreground text-lg font-semibold">
-                {t('emptyCylinders')}
-              </h2>
+              <div className="flex items-center space-x-2">
+                <h2 className="text-foreground text-lg font-semibold">
+                  {t('emptyCylinders')}
+                </h2>
+                <span className="inline-flex rounded-full bg-green-100 px-2 py-1 text-xs font-semibold text-green-800 dark:bg-green-900 dark:text-green-200">
+                  ✓ Loaded
+                </span>
+              </div>
               <p className="text-muted-foreground mt-1 text-sm">
                 {t('emptyCylinderInventoryAvailability')}
               </p>
@@ -1066,7 +1077,7 @@ export default function InventoryPage() {
       ) : null}
 
       {/* Daily Inventory Tracking Table */}
-      {loading ? (
+      {dailyTrackingLoading ? (
         <div className="bg-card overflow-hidden rounded-lg shadow">
           <div className="border-border border-b px-6 py-4">
             <div className="flex items-center space-x-2">
@@ -1074,6 +1085,9 @@ export default function InventoryPage() {
               <h2 className="text-foreground text-lg font-semibold">
                 {t('dailyInventoryTracking')}
               </h2>
+              <span className="inline-flex rounded-full bg-blue-100 px-2 py-1 text-xs font-semibold text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                Loading...
+              </span>
             </div>
             <p className="text-muted-foreground mt-1 text-sm">
               {t('automatedCalculationsExactFormulas')}
@@ -1139,9 +1153,14 @@ export default function InventoryPage() {
       ) : dailyInventoryData ? (
         <div className="bg-card overflow-hidden rounded-lg shadow">
           <div className="border-border border-b px-6 py-4">
-            <h2 className="text-foreground text-lg font-semibold">
-              {t('dailyInventoryTracking')}
-            </h2>
+            <div className="flex items-center space-x-2">
+              <h2 className="text-foreground text-lg font-semibold">
+                {t('dailyInventoryTracking')}
+              </h2>
+              <span className="inline-flex rounded-full bg-green-100 px-2 py-1 text-xs font-semibold text-green-800 dark:bg-green-900 dark:text-green-200">
+                ✓ Loaded
+              </span>
+            </div>
             <p className="text-muted-foreground mt-1 text-sm">
               {t('automatedCalculationsExactFormulas')}
             </p>

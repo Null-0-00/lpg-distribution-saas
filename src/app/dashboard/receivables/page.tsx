@@ -198,7 +198,42 @@ export default function ReceivablesPage() {
   });
 
   useEffect(() => {
-    fetchReceivables();
+    // Smart auto-recalculate with caching to avoid excessive computation
+    const initializePage = async () => {
+      const lastRecalcKey = 'lastReceivablesRecalc';
+      const recalcInterval = 10 * 60 * 1000; // 10 minutes
+      const lastRecalc = localStorage.getItem(lastRecalcKey);
+      const now = Date.now();
+      
+      const shouldRecalculate = !lastRecalc || (now - parseInt(lastRecalc)) > recalcInterval;
+      
+      if (shouldRecalculate) {
+        console.log('🔄 Auto-recalculating receivables (cache expired)...');
+        try {
+          const recalcResponse = await fetch('/api/receivables/recalculate?days=3', {
+            method: 'POST',
+          });
+          
+          if (recalcResponse.ok) {
+            const result = await recalcResponse.json();
+            console.log('✅ Auto-recalculation completed:', result.message);
+            console.log('⚡ Performance:', result.performance);
+            localStorage.setItem(lastRecalcKey, now.toString());
+          } else {
+            console.warn('⚠️ Auto-recalculation failed, continuing with existing data');
+          }
+        } catch (error) {
+          console.warn('⚠️ Auto-recalculation error:', error);
+        }
+      } else {
+        console.log('✅ Skipping recalculation (cache still fresh)');
+      }
+      
+      // Then fetch the updated data
+      await fetchReceivables();
+    };
+    
+    initializePage();
     fetchCylinderSizes();
   }, []);
 
@@ -701,6 +736,7 @@ export default function ReceivablesPage() {
             className="flex items-center rounded-lg bg-green-600 px-4 py-2 text-white hover:bg-green-700 disabled:opacity-50"
             onClick={recalculateReceivables}
             disabled={submitting}
+            title="Auto-recalculation happens on page load. Click to manually recalculate."
           >
             {submitting ? (
               <div className="mr-2 h-4 w-4 animate-spin rounded-full border-b-2 border-white"></div>
@@ -847,6 +883,10 @@ export default function ReceivablesPage() {
                   {t('customers')} {t('receivables')}:
                 </strong>{' '}
                 {t('customerReceivablesManuallyManaged')}
+              </li>
+              <li>
+                • <strong>⚡ Smart Recalculation:</strong>{' '}
+                Receivables are efficiently recalculated with intelligent caching (10-minute intervals)
               </li>
               <li>
                 • <strong>{t('validation')}:</strong>{' '}

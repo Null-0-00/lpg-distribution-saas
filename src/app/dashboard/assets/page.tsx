@@ -210,8 +210,8 @@ export default function AssetsPage() {
     const displayNames: { [key: string]: string } = {
       FIXED_ASSET: t('fixedAsset'),
       CURRENT_ASSET: t('currentAsset'),
-      CURRENT_LIABILITY: 'Current Liability',
-      LONG_TERM_LIABILITY: 'Long-term Liability',
+      CURRENT_LIABILITY: t('currentLiability'),
+      LONG_TERM_LIABILITY: t('longTermLiability'),
     };
     return displayNames[category] || category;
   };
@@ -1262,8 +1262,8 @@ export default function AssetsPage() {
           <div className="bg-card w-full max-w-md rounded-lg p-6">
             <div className="mb-4 flex items-center justify-between">
               <h3 className="text-foreground text-lg font-semibold">
-                {editingItem ? 'Edit' : 'Add New'}{' '}
-                {modalType === 'asset' ? 'Asset' : '{t("liability")}'}
+                {editingItem ? t('edit') : t('addNew')}{' '}
+                {modalType === 'asset' ? t('asset') : t('liability')}
               </h3>
               <button
                 onClick={closeModal}
@@ -1313,7 +1313,7 @@ export default function AssetsPage() {
             <div className="space-y-4">
               <div>
                 <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  {modalType === 'asset' ? 'Asset' : '{t("liability")}'} Name
+                  {modalType === 'asset' ? t('asset') : t('liability')} Name
                 </label>
                 <input
                   type="text"

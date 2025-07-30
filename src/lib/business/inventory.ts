@@ -510,12 +510,23 @@ export class InventoryCalculator {
     const dateOnly = new Date(date);
     dateOnly.setHours(0, 0, 0, 0);
 
+    // Get cylinderSizeId from product
+    const product = productId ? await this.prisma.product.findUnique({
+      where: { id: productId },
+      select: { cylinderSizeId: true }
+    }) : null;
+
+    if (!product?.cylinderSizeId) {
+      throw new Error(`Product ${productId} not found or missing cylinderSizeId`);
+    }
+
     await this.prisma.inventoryRecord.upsert({
       where: {
-        tenantId_date_productId: {
+        tenantId_date_productId_cylinderSizeId: {
           tenantId,
           date: dateOnly,
           productId: productId as string,
+          cylinderSizeId: product.cylinderSizeId,
         },
       },
       update: {
@@ -536,6 +547,7 @@ export class InventoryCalculator {
         tenantId,
         date: dateOnly,
         productId,
+        cylinderSizeId: product.cylinderSizeId,
         packageSales: inventoryData.salesData.packageSales,
         refillSales: inventoryData.salesData.refillSales,
         totalSales:

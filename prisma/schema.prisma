@@ -112,6 +112,7 @@ model CylinderSize {
   driverCylinderSizeBaselines DriverCylinderSizeBaseline[]
   emptyCylinders              EmptyCylinder[]
   fullCylinders               FullCylinder[]
+  inventoryRecords            InventoryRecord[]
   products                    Product[]
 
   @@unique([tenantId, size])
@@ -351,28 +352,31 @@ model Shipment {
 }
 
 model InventoryRecord {
-  id                       String   @id @default(cuid())
+  id                       String       @id @default(cuid())
   tenantId                 String
   productId                String?
-  date                     DateTime @db.Date
-  packageSales             Int      @default(0)
-  refillSales              Int      @default(0)
-  totalSales               Int      @default(0)
-  packagePurchase          Int      @default(0)
-  refillPurchase           Int      @default(0)
-  emptyCylindersBuySell    Int      @default(0)
-  fullCylinders            Int      @default(0)
-  emptyCylinders           Int      @default(0)
-  totalCylinders           Int      @default(0)
-  calculatedAt             DateTime @default(now())
-  createdAt                DateTime @default(now())
-  updatedAt                DateTime @updatedAt
-  emptyCylinderReceivables Int      @default(0)
-  tenant                   Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  cylinderSizeId           String
+  date                     DateTime     @db.Date
+  packageSales             Int          @default(0)
+  refillSales              Int          @default(0)
+  totalSales               Int          @default(0)
+  packagePurchase          Int          @default(0)
+  refillPurchase           Int          @default(0)
+  emptyCylindersBuySell    Int          @default(0)
+  fullCylinders            Int          @default(0)
+  emptyCylinders           Int          @default(0)
+  totalCylinders           Int          @default(0)
+  calculatedAt             DateTime     @default(now())
+  createdAt                DateTime     @default(now())
+  updatedAt                DateTime     @updatedAt
+  emptyCylinderReceivables Int          @default(0)
+  cylinderSize             CylinderSize @relation(fields: [cylinderSizeId], references: [id], onDelete: Cascade)
+  tenant                   Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
-  @@unique([tenantId, date, productId])
+  @@unique([tenantId, date, productId, cylinderSizeId])
   @@index([tenantId])
   @@index([date])
+  @@index([cylinderSizeId])
   @@map("inventory_records")
 }
 

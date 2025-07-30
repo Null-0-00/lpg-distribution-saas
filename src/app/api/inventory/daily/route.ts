@@ -977,10 +977,21 @@ export async function GET(request: NextRequest) {
       );
       const totalSalesQty = packageSalesQty + refillSalesQty;
 
-      // OPTIMIZED: Use simple calculation for outstanding orders to avoid expensive queries
-      const outstandingOrdersQty = 0; // Simplified - outstanding orders are minimal impact
-      const outstandingPackageOrdersQty = 0;
-      const outstandingRefillOrdersQty = 0;
+      // Calculate actual outstanding orders for this date
+      const outstandingData = await getOutstandingOrdersForDate(date);
+      const outstandingOrdersQty = outstandingData.totalOutstanding;
+      const outstandingPackageOrdersQty = outstandingData.totalPackageOutstanding;
+      const outstandingRefillOrdersQty = outstandingData.totalRefillOutstanding;
+      const outstandingOrdersProducts = outstandingData.outstandingProducts;
+      const outstandingPackageOrdersProducts = outstandingData.packageProducts;
+      const outstandingRefillOrdersProducts = outstandingData.refillProducts;
+
+      console.log(`📦 Outstanding orders for ${date}:`, {
+        total: outstandingOrdersQty,
+        package: outstandingPackageOrdersQty,
+        refill: outstandingRefillOrdersQty,
+        productsCount: outstandingOrdersProducts.length,
+      });
 
       const allRefillPurchaseProducts = getProductBreakdown(
         date,
@@ -1014,12 +1025,9 @@ export async function GET(request: NextRequest) {
         });
       }
 
-      // OPTIMIZED: Use empty arrays for outstanding data
-      const outstandingOrdersProducts: ProductBreakdown[] = [];
-      const outstandingPackageOrdersProducts: ProductBreakdown[] = [];
-      const outstandingRefillOrdersProducts: ProductBreakdown[] = [];
+      // Outstanding data is already defined above from getOutstandingOrdersForDate()
 
-      // Calculate outstanding refill orders by size (will be empty)
+      // Calculate outstanding refill orders by size
       const outstandingRefillOrdersBySizes = getSizeBreakdown(
         outstandingRefillOrdersProducts
       );
@@ -1476,58 +1484,8 @@ export async function GET(request: NextRequest) {
 
       dailyRecords.push(dailyRecord);
 
-      // Save aggregated inventory record to database for future reference
-      try {
-        // Check if record exists first
-        const existingRecord = await prisma.inventoryRecord.findFirst({
-          where: {
-            tenantId,
-            date: new Date(date),
-            productId: null, // Aggregated record
-          },
-        });
-
-        if (existingRecord) {
-          // Update existing record
-          await prisma.inventoryRecord.update({
-            where: { id: existingRecord.id },
-            data: {
-              packageSales: packageSalesQty,
-              refillSales: refillSalesQty,
-              totalSales: totalSalesQty,
-              packagePurchase: packagePurchaseQty,
-              refillPurchase: refillPurchaseQty,
-              emptyCylindersBuySell,
-              fullCylinders,
-              emptyCylinders,
-              emptyCylinderReceivables,
-              totalCylinders,
-            },
-          });
-        } else {
-          // Create new record
-          await prisma.inventoryRecord.create({
-            data: {
-              tenantId,
-              productId: null, // Aggregated record
-              date: new Date(date),
-              packageSales: packageSalesQty,
-              refillSales: refillSalesQty,
-              totalSales: totalSalesQty,
-              packagePurchase: packagePurchaseQty,
-              refillPurchase: refillPurchaseQty,
-              emptyCylindersBuySell,
-              fullCylinders,
-              emptyCylinders,
-              emptyCylinderReceivables,
-              totalCylinders,
-            },
-          });
-        }
-      } catch (error) {
-        // Don't fail the API if inventory record save fails
-        console.warn(`Failed to save inventory record for ${date}:`, error);
-      }
+      // Note: Aggregated inventory record saving removed since we now track by cylinder size
+      // All inventory data is calculated and returned by cylinder size breakdown
     }
 
     // Return records in descending order (newest first)

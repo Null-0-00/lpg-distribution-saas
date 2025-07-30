@@ -148,11 +148,13 @@ export async function POST(request: NextRequest) {
         await Promise.all(
           data.inventory.map((inventory, index) => {
             const productIndex = parseInt(inventory.productId);
+            const product = createdProducts[productIndex];
 
             return tx.inventoryRecord.create({
               data: {
                 tenantId,
-                productId: createdProducts[productIndex].id,
+                productId: product.id,
+                cylinderSizeId: product.cylinderSizeId,
                 date: today,
                 fullCylinders: inventory.fullCylinders, // Shipment baseline for full cylinders
                 emptyCylinders: 0,
@@ -181,10 +183,11 @@ export async function POST(request: NextRequest) {
             if (productWithSize && emptyCylinder.quantity > 0) {
               return tx.inventoryRecord.upsert({
                 where: {
-                  tenantId_date_productId: {
+                  tenantId_date_productId_cylinderSizeId: {
                     tenantId,
                     date: today,
                     productId: productWithSize.id,
+                    cylinderSizeId: productWithSize.cylinderSizeId,
                   },
                 },
                 update: {
@@ -197,6 +200,7 @@ export async function POST(request: NextRequest) {
                 create: {
                   tenantId,
                   productId: productWithSize.id,
+                  cylinderSizeId: productWithSize.cylinderSizeId,
                   date: today,
                   fullCylinders: 0,
                   emptyCylinders: emptyCylinder.quantity, // Shipment baseline for empty cylinders
@@ -406,10 +410,11 @@ export async function POST(request: NextRequest) {
             inventoryReceivablePromises.push(
               tx.inventoryRecord.upsert({
                 where: {
-                  tenantId_date_productId: {
+                  tenantId_date_productId_cylinderSizeId: {
                     tenantId,
                     date: today,
                     productId: productWithSize.id,
+                    cylinderSizeId: productWithSize.cylinderSizeId,
                   },
                 },
                 update: {
@@ -418,6 +423,7 @@ export async function POST(request: NextRequest) {
                 create: {
                   tenantId,
                   productId: productWithSize.id,
+                  cylinderSizeId: productWithSize.cylinderSizeId,
                   date: today,
                   fullCylinders: 0,
                   emptyCylinders: 0,

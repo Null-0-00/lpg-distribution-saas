@@ -6,6 +6,7 @@ import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import { UserRole, AssetCategory } from '@prisma/client';
 import { z } from 'zod';
+import { InventoryCalculator } from '@/lib/business';
 
 interface AssetResponse {
   id: string;
@@ -455,56 +456,7 @@ async function calculateCurrentAssets(
       });
     }
 
-    // 4. Cylinder Receivables (auto from receivables) - Convert to cash value
-    const cylinderReceivables = await prisma.receivableRecord.aggregate({
-      where: {
-        tenantId,
-        date: { lte: asOfDate },
-      },
-      _sum: {
-        totalCylinderReceivables: true,
-      },
-    });
-
-    const totalCylinderReceivables =
-      cylinderReceivables._sum.totalCylinderReceivables || 0;
-    if (totalCylinderReceivables > 0) {
-      // Get the most recent product for pricing cylinder receivables
-      const recentProduct = await prisma.product.findFirst({
-        where: { tenantId, isActive: true },
-        select: { currentPrice: true, name: true },
-        orderBy: { updatedAt: 'desc' },
-      });
-
-      if (recentProduct) {
-        // Use custom unit value or default to current product price
-        const cylinderReceivableUnitValue = getCustomUnitValue(
-          'auto-cylinder-receivables',
-          recentProduct.currentPrice
-        );
-        const cylinderReceivablesValue =
-          totalCylinderReceivables * cylinderReceivableUnitValue;
-
-        assets.push({
-          id: 'auto-cylinder-receivables',
-          name: 'Cylinder Receivables',
-          category: AssetCategory.CURRENT_ASSET,
-          subCategory: 'Receivables',
-          originalValue: cylinderReceivablesValue,
-          currentValue: cylinderReceivablesValue,
-          description: `${totalCylinderReceivables} cylinders receivable @ ${cylinderReceivableUnitValue} each`,
-          isAutoCalculated: true,
-          details: {
-            quantity: totalCylinderReceivables,
-            unitPrice: cylinderReceivableUnitValue,
-            date: asOfDate,
-            isEditable: true,
-          },
-          createdAt: asOfDate,
-          updatedAt: asOfDate,
-        });
-      }
-    }
+    // 4. REMOVED: Cylinder Receivables - as requested by user
 
     // 5. Cash in Hand (auto calculated from sales - expenses - deposits)
     const [totalSales, totalExpenses] = await Promise.all([

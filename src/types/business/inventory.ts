@@ -1,6 +1,8 @@
 export interface InventoryRecord {
   id: string;
   tenantId: string;
+  productId?: string;
+  cylinderSizeId: string;
   date: Date;
   packageSales: number;
   refillSales: number;
@@ -11,6 +13,7 @@ export interface InventoryRecord {
   fullCylinders: number;
   emptyCylinders: number;
   totalCylinders: number;
+  emptyCylinderReceivables: number;
   createdAt: Date;
   updatedAt: Date;
 }

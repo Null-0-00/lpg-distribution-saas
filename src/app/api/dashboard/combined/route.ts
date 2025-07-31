@@ -28,14 +28,17 @@ export async function GET(request: NextRequest) {
       topDriversData,
       recentActivity,
     ] = await Promise.all([
-      // Metrics data
-      prisma.sale.count({
+      // Metrics data - Sum of quantities sold today (refill + package sales)
+      prisma.sale.aggregate({
         where: {
           tenantId,
           saleDate: {
             gte: today,
             lt: tomorrow,
           },
+        },
+        _sum: {
+          quantity: true,
         },
       }),
 
@@ -212,7 +215,7 @@ export async function GET(request: NextRequest) {
     // Combined response
     const dashboardData = {
       metrics: {
-        todaySales: todaysSales,
+        todaySales: todaysSales._sum.quantity || 0,
         totalRevenue: totalRevenue._sum.netValue || 0,
         pendingReceivables: pendingReceivables
           ? pendingReceivables

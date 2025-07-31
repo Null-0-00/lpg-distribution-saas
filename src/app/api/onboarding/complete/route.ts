@@ -257,8 +257,10 @@ export async function POST(request: NextRequest) {
               update: {
                 cashReceivablesChange: 0, // Onboarding values are starting balances, not changes
                 cylinderReceivablesChange: 0,
-                totalCashReceivables: receivable.cashReceivables,
-                totalCylinderReceivables: receivable.cylinderReceivables,
+                onboardingCashReceivables: receivable.cashReceivables, // Save onboarding cash here
+                onboardingCylinderReceivables: receivable.cylinderReceivables, // Save onboarding cylinders here
+                totalCashReceivables: receivable.cashReceivables, // Keep for backward compatibility
+                totalCylinderReceivables: receivable.cylinderReceivables, // Keep for backward compatibility
               },
               create: {
                 tenantId,
@@ -266,8 +268,10 @@ export async function POST(request: NextRequest) {
                 date: today,
                 cashReceivablesChange: 0, // Onboarding values are starting balances, not changes
                 cylinderReceivablesChange: 0,
-                totalCashReceivables: receivable.cashReceivables,
-                totalCylinderReceivables: receivable.cylinderReceivables,
+                onboardingCashReceivables: receivable.cashReceivables, // Save onboarding cash here
+                onboardingCylinderReceivables: receivable.cylinderReceivables, // Save onboarding cylinders here
+                totalCashReceivables: receivable.cashReceivables, // Keep for backward compatibility
+                totalCylinderReceivables: receivable.cylinderReceivables, // Keep for backward compatibility
               },
             });
           });

@@ -402,20 +402,22 @@ model InventoryMovement {
 }
 
 model ReceivableRecord {
-  id                        String               @id @default(cuid())
-  tenantId                  String
-  driverId                  String
-  date                      DateTime             @db.Date
-  cashReceivablesChange     Float                @default(0)
-  cylinderReceivablesChange Int                  @default(0)
-  totalCashReceivables      Float                @default(0)
-  totalCylinderReceivables  Int                  @default(0)
-  calculatedAt              DateTime             @default(now())
-  createdAt                 DateTime             @default(now())
-  updatedAt                 DateTime             @updatedAt
-  customerReceivables       CustomerReceivable[]
-  driver                    Driver               @relation(fields: [driverId], references: [id], onDelete: Cascade)
-  tenant                    Tenant               @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  id                           String               @id @default(cuid())
+  tenantId                     String
+  driverId                     String
+  date                         DateTime             @db.Date
+  cashReceivablesChange        Float                @default(0)
+  cylinderReceivablesChange    Int                  @default(0)
+  totalCashReceivables         Float                @default(0)
+  totalCylinderReceivables     Int                  @default(0)
+  onboardingCashReceivables    Float                @default(0)
+  onboardingCylinderReceivables Int                 @default(0)
+  calculatedAt                 DateTime             @default(now())
+  createdAt                    DateTime             @default(now())
+  updatedAt                    DateTime             @updatedAt
+  customerReceivables          CustomerReceivable[]
+  driver                       Driver               @relation(fields: [driverId], references: [id], onDelete: Cascade)
+  tenant                       Tenant               @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   @@unique([tenantId, driverId, date])
   @@index([tenantId])

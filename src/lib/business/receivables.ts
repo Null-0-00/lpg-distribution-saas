@@ -33,10 +33,8 @@ export class ReceivablesCalculator {
 
   /**
    * Core receivables calculation using exact PRD formulas:
-   * - Cash Receivables Change = driver_sales_revenue - cash_deposits - discounts
-   * - Cylinder Receivables Change = driver_refill_sales - cylinder_deposits
-   *
-   * Note: For drivers with no sales activity, preserve existing receivables (from onboarding)
+   * - Cash Receivables = Yesterday's Total + (Sales Revenue - Cash Deposits - Discounts) + Today's Onboarding Receivables
+   * - Cylinder Receivables = Yesterday's Total + (Refill Sales - Cylinder Deposits) + Today's Onboarding Receivables
    */
   async calculateReceivablesForDate(
     data: ReceivablesCalculationData
@@ -56,44 +54,82 @@ export class ReceivablesCalculator {
       date
     );
 
-    // Check if driver has any sales activity
-    const hasSalesActivity =
-      salesRevenue.totalRevenue > 0 ||
-      salesRevenue.cashDeposited > 0 ||
-      salesRevenue.cylindersDeposited > 0 ||
-      salesRevenue.discounts > 0;
+    console.log(
+      `💰 Sales revenue data for driver ${driverId} on ${date.toISOString().split('T')[0]}:`,
+      salesRevenue
+    );
 
-    // If no sales activity and there are existing receivables, preserve them
-    // This protects initial balances set during onboarding
-    if (
-      !hasSalesActivity &&
-      (previousCashReceivables > 0 || previousCylinderReceivables > 0)
-    ) {
-      return {
-        cashReceivablesChange: 0,
-        cylinderReceivablesChange: 0,
-        totalCashReceivables: previousCashReceivables,
-        totalCylinderReceivables: previousCylinderReceivables,
-        salesRevenue,
-      };
-    }
+    // Check if there are onboarding receivables for today's date
+    const todaysOnboardingReceivables = await this.getTodaysOnboardingReceivables(
+      tenantId,
+      driverId,
+      date
+    );
 
-    // Apply exact PRD formulas for active drivers
+    console.log(
+      `🎯 Today's onboarding receivables for driver ${driverId}:`,
+      todaysOnboardingReceivables
+    );
+
+    // Apply exact PRD formulas:
     // Cash Receivables Change = driver_sales_revenue - cash_deposits - discounts
-    const cashReceivablesChange =
+    const salesCashChange =
       salesRevenue.totalRevenue -
       salesRevenue.cashDeposited -
       salesRevenue.discounts;
 
     // Cylinder Receivables Change = driver_refill_sales - cylinder_deposits
-    const cylinderReceivablesChange =
+    const salesCylinderChange =
       salesRevenue.refillSales - salesRevenue.cylindersDeposited;
 
-    // Calculate running totals - include onboarding receivables
-    const totalCashReceivables =
-      previousCashReceivables + cashReceivablesChange;
-    const totalCylinderReceivables =
-      previousCylinderReceivables + cylinderReceivablesChange;
+    // CORRECTED FORMULA: Previous Day's Total + Today's Sales Changes + Today's Onboarding
+    // totalCashReceivables = cashReceivablesChange + onboardingCashReceivables + PREVIOUS DAY'S totalCashReceivables
+    const cashReceivablesChange = salesCashChange; // Only sales changes (not including onboarding)
+    const cylinderReceivablesChange = salesCylinderChange; // Only sales changes (not including onboarding)
+    
+    const totalCashReceivables = 
+      cashReceivablesChange + 
+      todaysOnboardingReceivables.cash + 
+      previousCashReceivables;
+      
+    const totalCylinderReceivables = 
+      cylinderReceivablesChange + 
+      todaysOnboardingReceivables.cylinders + 
+      previousCylinderReceivables;
+
+    console.log(
+      `🧮 DETAILED RECEIVABLES CALCULATION for driver ${driverId}:`,
+      {
+        "STEP 1 - Previous (Yesterday)": {
+          previousCash: previousCashReceivables,
+          previousCylinders: previousCylinderReceivables,
+        },
+        "STEP 2 - Sales Changes": {
+          salesRevenue: salesRevenue.totalRevenue,
+          cashDeposited: salesRevenue.cashDeposited,
+          discounts: salesRevenue.discounts,
+          salesCashChange: salesCashChange,
+          salesCylinderChange: salesCylinderChange,
+        },
+        "STEP 3 - Today's Onboarding": {
+          onboardingCash: todaysOnboardingReceivables.cash,
+          onboardingCylinders: todaysOnboardingReceivables.cylinders,
+        },
+        "STEP 4 - FINAL CALCULATION": {
+          formula: "cashReceivablesChange + onboardingCashReceivables + previousDay's totalCashReceivables",
+          calculation: `${cashReceivablesChange} + ${todaysOnboardingReceivables.cash} + ${previousCashReceivables}`,
+          finalCash: totalCashReceivables,
+          finalCylinders: totalCylinderReceivables,
+        },
+        "EXPECTED FOR BABLU": {
+          onboarding: 2000,
+          sales: 5000,
+          expected: 7000,
+          actual: totalCashReceivables,
+          correct: totalCashReceivables === 7000 ? "✅ CORRECT" : "❌ WRONG"
+        }
+      }
+    );
 
     return {
       cashReceivablesChange,
@@ -101,6 +137,60 @@ export class ReceivablesCalculator {
       totalCashReceivables,
       totalCylinderReceivables,
       salesRevenue,
+    };
+  }
+
+  /**
+   * Get onboarding receivables for today's date (if any)
+   * This handles cases where onboarding happens on the same day as sales
+   */
+  private async getTodaysOnboardingReceivables(
+    tenantId: string,
+    driverId: string,
+    date: Date
+  ): Promise<{
+    cash: number;
+    cylinders: number;
+  }> {
+    const dateOnly = new Date(date);
+    dateOnly.setHours(0, 0, 0, 0);
+
+    // Check if there's an onboarding record for today using the new onboarding columns
+    const onboardingRecord = await this.prisma.receivableRecord.findFirst({
+      where: {
+        tenantId,
+        driverId,
+        date: dateOnly,
+        // Look for records with onboarding values
+        OR: [
+          { onboardingCashReceivables: { gt: 0 } },
+          { onboardingCylinderReceivables: { gt: 0 } }
+        ]
+      },
+    });
+
+    if (onboardingRecord) {
+      console.log(
+        `🎯 Found onboarding record for driver ${driverId} on ${dateOnly.toISOString().split('T')[0]}:`,
+        {
+          cash: onboardingRecord.onboardingCashReceivables,
+          cylinders: onboardingRecord.onboardingCylinderReceivables,
+        }
+      );
+
+      return {
+        cash: onboardingRecord.onboardingCashReceivables,
+        cylinders: onboardingRecord.onboardingCylinderReceivables,
+      };
+    }
+
+    console.log(
+      `🎯 No onboarding record found for driver ${driverId} on ${dateOnly.toISOString().split('T')[0]}`
+    );
+
+    return {
+      cash: 0,
+      cylinders: 0,
     };
   }
 
@@ -206,7 +296,9 @@ export class ReceivablesCalculator {
   }
 
   /**
-   * Get previous day's receivables or onboarding receivables for first calculation
+   * Get previous receivables for a specific date (excludes today's onboarding)
+   * Returns the most recent receivables record before the given date
+   * This should be yesterday's totals, not including today's onboarding
    */
   async getPreviousReceivables(
     tenantId: string,
@@ -216,46 +308,84 @@ export class ReceivablesCalculator {
     cashReceivables: number;
     cylinderReceivables: number;
   }> {
+    // Debug: Show all records for this driver
+    const allRecords = await this.prisma.receivableRecord.findMany({
+      where: {
+        tenantId,
+        driverId,
+      },
+      orderBy: { date: 'desc' },
+    });
+
+    console.log(
+      `🔍 All receivables records for driver ${driverId}:`,
+      allRecords.map(r => ({
+        id: r.id,
+        date: r.date.toISOString().split('T')[0],
+        totalCash: r.totalCashReceivables,
+        totalCylinders: r.totalCylinderReceivables,
+        cashChange: r.cashReceivablesChange,
+        cylinderChange: r.cylinderReceivablesChange,
+        onboardingCash: r.onboardingCashReceivables || 0,
+        onboardingCylinders: r.onboardingCylinderReceivables || 0,
+      }))
+    );
+
+    // Check for duplicate records for the same date (should not happen with unique constraint)
+    const todayRecords = allRecords.filter(r => 
+      r.date.toISOString().split('T')[0] === date.toISOString().split('T')[0]
+    );
+    
+    if (todayRecords.length > 1) {
+      console.error(
+        `⚠️ DUPLICATE RECORDS FOUND for driver ${driverId} on ${date.toISOString().split('T')[0]}:`,
+        todayRecords.map(r => ({
+          id: r.id,
+          onboardingCash: r.onboardingCashReceivables,
+          totalCash: r.totalCashReceivables,
+        }))
+      );
+    }
+
+    // Get yesterday's date
     const yesterday = new Date(date.getTime() - 24 * 60 * 60 * 1000);
     yesterday.setHours(0, 0, 0, 0);
 
-    // First try to get yesterday's record
-    const yesterdayRecord = await this.prisma.receivableRecord.findFirst({
+    // Get the most recent receivables record from yesterday or before
+    // This excludes today's onboarding record to avoid double-counting
+    const previousRecord = await this.prisma.receivableRecord.findFirst({
       where: {
         tenantId,
         driverId,
         date: {
-          gte: yesterday,
-          lt: date,
+          lte: yesterday,
         },
       },
       orderBy: { date: 'desc' },
     });
 
-    if (yesterdayRecord) {
+    if (previousRecord) {
+      console.log(
+        `📊 Found previous (yesterday's) receivables for driver ${driverId}:`,
+        {
+          id: previousRecord.id,
+          date: previousRecord.date.toISOString().split('T')[0],
+          cash: previousRecord.totalCashReceivables,
+          cylinders: previousRecord.totalCylinderReceivables,
+          cashChange: previousRecord.cashReceivablesChange,
+          cylinderChange: previousRecord.cylinderReceivablesChange,
+        }
+      );
+      
       return {
-        cashReceivables: yesterdayRecord.totalCashReceivables,
-        cylinderReceivables: yesterdayRecord.totalCylinderReceivables,
+        cashReceivables: previousRecord.totalCashReceivables,
+        cylinderReceivables: previousRecord.totalCylinderReceivables,
       };
     }
 
-    // If no yesterday record, check for onboarding receivables (first record)
-    const onboardingRecord = await this.prisma.receivableRecord.findFirst({
-      where: {
-        tenantId,
-        driverId,
-      },
-      orderBy: { date: 'asc' },
-    });
-
-    if (onboardingRecord) {
-      return {
-        cashReceivables: onboardingRecord.totalCashReceivables,
-        cylinderReceivables: onboardingRecord.totalCylinderReceivables,
-      };
-    }
-
-    // If no records exist, return zeros
+    console.log(`📊 No previous (yesterday's) receivables found for driver ${driverId} - using zeros`);
+    
+    // If no records exist, return zeros (first day after onboarding)
     return {
       cashReceivables: 0,
       cylinderReceivables: 0,
@@ -274,7 +404,39 @@ export class ReceivablesCalculator {
     const dateOnly = new Date(date);
     dateOnly.setHours(0, 0, 0, 0);
 
-    await this.prisma.receivableRecord.upsert({
+    console.log(
+      `💾 Upserting receivables record for driver ${driverId} on ${dateOnly.toISOString().split('T')[0]}:`,
+      {
+        cashChange: receivablesData.cashReceivablesChange,
+        cylinderChange: receivablesData.cylinderReceivablesChange,
+        totalCash: receivablesData.totalCashReceivables,
+        totalCylinders: receivablesData.totalCylinderReceivables,
+      }
+    );
+
+    // Check if there's an existing record to merge with (especially onboarding data)
+    const existingRecord = await this.prisma.receivableRecord.findUnique({
+      where: {
+        tenantId_driverId_date: {
+          tenantId,
+          driverId,
+          date: dateOnly,
+        },
+      },
+    });
+
+    console.log(
+      `🔍 Existing record check for driver ${driverId} on ${dateOnly.toISOString().split('T')[0]}:`,
+      existingRecord ? {
+        id: existingRecord.id,
+        onboardingCash: existingRecord.onboardingCashReceivables,
+        onboardingCylinders: existingRecord.onboardingCylinderReceivables,
+        currentTotalCash: existingRecord.totalCashReceivables,
+        currentTotalCylinders: existingRecord.totalCylinderReceivables,
+      } : "No existing record found"
+    );
+
+    const result = await this.prisma.receivableRecord.upsert({
       where: {
         tenantId_driverId_date: {
           tenantId,
@@ -283,11 +445,15 @@ export class ReceivablesCalculator {
         },
       },
       update: {
+        // Update only sales-related changes (not including onboarding)
         cashReceivablesChange: receivablesData.cashReceivablesChange,
         cylinderReceivablesChange: receivablesData.cylinderReceivablesChange,
         totalCashReceivables: receivablesData.totalCashReceivables,
         totalCylinderReceivables: receivablesData.totalCylinderReceivables,
         calculatedAt: new Date(),
+        // PRESERVE existing onboarding values - don't overwrite them
+        onboardingCashReceivables: existingRecord?.onboardingCashReceivables || 0,
+        onboardingCylinderReceivables: existingRecord?.onboardingCylinderReceivables || 0,
       },
       create: {
         tenantId,
@@ -297,8 +463,19 @@ export class ReceivablesCalculator {
         cylinderReceivablesChange: receivablesData.cylinderReceivablesChange,
         totalCashReceivables: receivablesData.totalCashReceivables,
         totalCylinderReceivables: receivablesData.totalCylinderReceivables,
+        // New records have zero onboarding (sales-only day)
+        onboardingCashReceivables: 0,
+        onboardingCylinderReceivables: 0,
       },
     });
+
+    console.log(
+      `✅ Receivables record saved with ID: ${result.id}`,
+      {
+        totalCash: result.totalCashReceivables,
+        totalCylinders: result.totalCylinderReceivables,
+      }
+    );
   }
 
   /**

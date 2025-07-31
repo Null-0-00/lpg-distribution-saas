@@ -172,13 +172,21 @@ export async function POST(request: NextRequest) {
       const today = new Date();
       today.setHours(0, 0, 0, 0);
 
-      // Get previous day's receivables for this driver (not current day)
+      // Get previous day's receivables for this driver (includes onboarding values)
       const previousReceivables =
         await receivablesCalculator.getPreviousReceivables(
           tenantId,
           validatedData.driverId,
           today
         );
+
+      console.log(
+        `📊 Previous receivables for driver ${validatedData.driverId}:`,
+        {
+          cash: previousReceivables.cashReceivables,
+          cylinders: previousReceivables.cylinderReceivables,
+        }
+      );
 
       // Calculate receivables using exact formulas
       const receivablesData =
@@ -192,13 +200,20 @@ export async function POST(request: NextRequest) {
 
       // Store the calculated receivables in the database
       console.log(
-        `💰 Saving receivables for driver ${validatedData.driverId} on ${today.toISOString().split('T')[0]}:`,
+        `💰 Calculated receivables for driver ${validatedData.driverId}:`,
         {
-          receivablesData,
-          tenantId,
-          driverId: validatedData.driverId,
-          date: today.toISOString().split('T')[0],
+          previousCash: previousReceivables.cashReceivables,
+          previousCylinders: previousReceivables.cylinderReceivables,
+          cashChange: receivablesData.cashReceivablesChange,
+          cylinderChange: receivablesData.cylinderReceivablesChange,
+          totalCash: receivablesData.totalCashReceivables,
+          totalCylinders: receivablesData.totalCylinderReceivables,
+          salesRevenue: receivablesData.salesRevenue,
         }
+      );
+
+      console.log(
+        `💾 Saving receivables for driver ${validatedData.driverId} on ${today.toISOString().split('T')[0]}`
       );
 
       await receivablesCalculator.updateReceivablesRecord(

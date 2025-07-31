@@ -282,51 +282,58 @@ async function calculateDailyReceivables(
     // Cylinder Receivables Change = driver_refill_sales - cylinder_deposits
     const cylinderReceivablesChange = refillQuantity - cylinderDeposits;
 
-    // Get yesterday's totals or onboarding receivables for first calculation
+    // Get previous day's receivables for this driver (includes onboarding values)
     const yesterday = new Date(date.getTime() - 24 * 60 * 60 * 1000);
     yesterday.setHours(0, 0, 0, 0);
 
-    // First try to get yesterday's record
-    const yesterdayRecord = await prisma.receivableRecord.findFirst({
+    // Get the most recent receivables record before today
+    const previousRecord = await prisma.receivableRecord.findFirst({
       where: {
         tenantId,
         driverId: driver.id,
         date: {
-          gte: yesterday,
           lt: new Date(dateStr + 'T00:00:00.000Z'),
         },
       },
       orderBy: { date: 'desc' },
     });
 
-    let yesterdayCashTotal = 0;
-    let yesterdayCylinderTotal = 0;
+    let previousCashTotal = 0;
+    let previousCylinderTotal = 0;
 
-    if (yesterdayRecord) {
-      // Use yesterday's totals if available
-      yesterdayCashTotal = yesterdayRecord.totalCashReceivables;
-      yesterdayCylinderTotal = yesterdayRecord.totalCylinderReceivables;
+    if (previousRecord) {
+      // Use most recent record's totals (could be yesterday or onboarding)
+      previousCashTotal = previousRecord.totalCashReceivables;
+      previousCylinderTotal = previousRecord.totalCylinderReceivables;
+      
+      console.log(
+        `📊 Found previous receivables for driver ${driver.id}:`,
+        {
+          date: previousRecord.date.toISOString().split('T')[0],
+          cash: previousCashTotal,
+          cylinders: previousCylinderTotal,
+        }
+      );
     } else {
-      // If no yesterday record, check for onboarding receivables (first record)
-      const onboardingRecord = await prisma.receivableRecord.findFirst({
-        where: {
-          tenantId,
-          driverId: driver.id,
-        },
-        orderBy: { date: 'asc' },
-      });
-
-      if (onboardingRecord) {
-        yesterdayCashTotal = onboardingRecord.totalCashReceivables;
-        yesterdayCylinderTotal = onboardingRecord.totalCylinderReceivables;
-      }
+      console.log(`📊 No previous receivables found for driver ${driver.id}`);
     }
 
     // EXACT FORMULAS from updated requirements:
-    // Today's Total = Yesterday's Total (or Onboarding if no yesterday) + Today's Changes
-    const totalCashReceivables = yesterdayCashTotal + cashReceivablesChange;
-    const totalCylinderReceivables =
-      yesterdayCylinderTotal + cylinderReceivablesChange;
+    // Today's Total = Previous Total (includes onboarding values) + Today's Changes
+    const totalCashReceivables = previousCashTotal + cashReceivablesChange;
+    const totalCylinderReceivables = previousCylinderTotal + cylinderReceivablesChange;
+    
+    console.log(
+      `💰 Calculated receivables for driver ${driver.id}:`,
+      {
+        previousCash: previousCashTotal,
+        previousCylinders: previousCylinderTotal,
+        cashChange: cashReceivablesChange,
+        cylinderChange: cylinderReceivablesChange,
+        totalCash: totalCashReceivables,
+        totalCylinders: totalCylinderReceivables,
+      }
+    );
 
     // Upsert the receivable record
     try {

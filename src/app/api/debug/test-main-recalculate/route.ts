@@ -1,22 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 
-// Manual endpoint to recalculate receivables for debugging
+// Test the main recalculate endpoint logic without auth
 export async function POST(request: NextRequest) {
   const startTime = performance.now();
   
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    // Use actual tenant ID
+    const tenantId = 'cmdqabjh00000ubs0gkdpyyx4';
+    const days = 1; // Only test for today
 
-    const { searchParams } = new URL(request.url);
-    const days = parseInt(searchParams.get('days') || '7');
-    const tenantId = session.user.tenantId;
-
-    console.log(`🔄 OPTIMIZED: Recalculating receivables for ${days} days...`);
+    console.log(`🔄 TESTING: Recalculating receivables for ${days} days...`);
 
     // OPTIMIZED: Calculate all receivables in one efficient operation
     const results = await calculateReceivablesOptimized(tenantId, days);
@@ -24,7 +18,7 @@ export async function POST(request: NextRequest) {
     const endTime = performance.now();
     const duration = endTime - startTime;
 
-    console.log(`✅ OPTIMIZED: Completed receivables recalculation in ${duration.toFixed(2)}ms`);
+    console.log(`✅ TESTING: Completed receivables recalculation in ${duration.toFixed(2)}ms`);
 
     return NextResponse.json({
       success: true,
@@ -33,7 +27,7 @@ export async function POST(request: NextRequest) {
       performance: {
         duration: `${duration.toFixed(2)}ms`,
         daysProcessed: days,
-        optimization: 'Batch queries with exact calculations'
+        optimization: 'Batch queries with exact calculations + onboarding support'
       }
     });
   } catch (error) {
@@ -64,7 +58,7 @@ async function calculateReceivablesOptimized(tenantId: string, days: number) {
   const driverIds = drivers.map(d => d.id);
   const results = [];
   
-  // Step 2: Create date range
+  // Step 2: Create date range (just today for testing)
   const dates = [];
   for (let i = days - 1; i >= 0; i--) {
     const calcDate = new Date(Date.now() - i * 24 * 60 * 60 * 1000);
@@ -221,6 +215,13 @@ async function calculateReceivablesOptimized(tenantId: string, days: number) {
       const totalCashReceivables = cashReceivablesChange + todaysOnboardingCash + yesterdayCashTotal;
       const totalCylinderReceivables = cylinderReceivablesChange + todaysOnboardingCylinders + yesterdayCylinderTotal;
       
+      console.log(`${driver.name} calculation:`, {
+        formula: `${cashReceivablesChange} + ${todaysOnboardingCash} + ${yesterdayCashTotal} = ${totalCashReceivables}`,
+        currentInDB: todaysRecord?.totalCashReceivables,
+        newCalculated: totalCashReceivables,
+        needsUpdate: todaysRecord ? Math.abs(totalCashReceivables - todaysRecord.totalCashReceivables) > 0.01 : true,
+      });
+      
       // Prepare upsert operation
       upsertOperations.push({
         where: {
@@ -256,21 +257,14 @@ async function calculateReceivablesOptimized(tenantId: string, days: number) {
     results.push({ date: dateStr, status: 'calculated' });
   }
   
-  // Step 7: BATCH EXECUTE ALL UPSERTS
-  console.log(`💾 Executing ${upsertOperations.length} upsert operations...`);
+  // Step 7: SHOW WHAT WOULD BE UPDATED (for testing - don't actually update)
+  console.log(`💾 Would execute ${upsertOperations.length} upsert operations...`);
   
-  // Use Promise.all to execute upserts in parallel (but be careful not to overwhelm DB)
-  const batchSize = 50; // Process in batches of 50
-  for (let i = 0; i < upsertOperations.length; i += batchSize) {
-    const batch = upsertOperations.slice(i, i + batchSize);
-    await Promise.all(
-      batch.map(operation => 
-        prisma.receivableRecord.upsert(operation)
-      )
-    );
-  }
-  
-  console.log(`✅ Batch processing completed for ${drivers.length} drivers × ${days} days = ${upsertOperations.length} records`);
-  
-  return results;
+  return {
+    results,
+    upsertOperations: upsertOperations.map(op => ({
+      driverName: drivers.find(d => d.id === op.create.driverId)?.name,
+      ...op
+    })),
+  };
 }

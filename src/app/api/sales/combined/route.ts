@@ -385,35 +385,8 @@ export async function POST(request: NextRequest) {
         }
       }
 
-      // Update receivables using exact formulas
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-
-      // Get previous day's receivables for this driver (not current day)
-      const previousReceivables =
-        await receivablesCalculator.getPreviousReceivables(
-          tenantId,
-          validatedData.driverId,
-          today
-        );
-
-      // Calculate receivables using exact formulas
-      const receivablesData =
-        await receivablesCalculator.calculateReceivablesForDate({
-          date: today,
-          tenantId,
-          driverId: validatedData.driverId,
-          previousCashReceivables: previousReceivables.cashReceivables,
-          previousCylinderReceivables: previousReceivables.cylinderReceivables,
-        });
-
-      // Store the calculated receivables in the database
-      await receivablesCalculator.updateReceivablesRecord(
-        tenantId,
-        validatedData.driverId,
-        today,
-        receivablesData
-      );
+      // Note: Receivables calculation will be done after transaction completes
+      // to avoid transaction conflicts
 
       // Create customer receivables for tracking individual customer debts
       if (validatedData.cashDeposited < netValue) {
@@ -473,6 +446,46 @@ export async function POST(request: NextRequest) {
       }
 
       return createdSales;
+    });
+
+    // Update receivables after transaction completes (to avoid transaction conflicts)
+    setImmediate(async () => {
+      try {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        // Get previous day's receivables for this driver
+        const previousReceivables =
+          await receivablesCalculator.getPreviousReceivables(
+            tenantId,
+            validatedData.driverId,
+            today
+          );
+
+        // Calculate receivables using exact formulas
+        const receivablesData =
+          await receivablesCalculator.calculateReceivablesForDate({
+            date: today,
+            tenantId,
+            driverId: validatedData.driverId,
+            previousCashReceivables: previousReceivables.cashReceivables,
+            previousCylinderReceivables: previousReceivables.cylinderReceivables,
+          });
+
+        // Store the calculated receivables in the database
+        await receivablesCalculator.updateReceivablesRecord(
+          tenantId,
+          validatedData.driverId,
+          today,
+          receivablesData
+        );
+
+        console.log(
+          `✅ Receivables updated for driver ${validatedData.driverId} after combined sales`
+        );
+      } catch (receivablesError) {
+        console.error('Error updating receivables:', receivablesError);
+      }
     });
 
     return NextResponse.json(

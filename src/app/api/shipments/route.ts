@@ -180,7 +180,7 @@ export async function POST(request: NextRequest) {
       if (refillLineItems.length > 0) {
         // Prepare validation request for refill purchases
         const validationLineItems = [];
-        
+
         for (const item of refillLineItems) {
           const product = await prisma.product.findFirst({
             where: { id: item.productId, tenantId },
@@ -189,7 +189,9 @@ export async function POST(request: NextRequest) {
 
           if (!product || !product.cylinderSize) {
             return NextResponse.json(
-              { error: `Product not found or missing cylinder size: ${item.productId}` },
+              {
+                error: `Product not found or missing cylinder size: ${item.productId}`,
+              },
               { status: 404 }
             );
           }
@@ -439,7 +441,7 @@ export async function POST(request: NextRequest) {
     if (isEmptyTransaction && shipmentType === 'OUTGOING_EMPTY') {
       // Get the cylinder size for validation
       let cylinderSizeForValidation: string;
-      
+
       if (cylinderSize) {
         cylinderSizeForValidation = (cylinderSize as any).size;
       } else if (product) {
@@ -448,10 +450,12 @@ export async function POST(request: NextRequest) {
           where: { id: actualProductId, tenantId },
           include: { cylinderSize: true },
         });
-        
+
         if (!productWithSize || !productWithSize.cylinderSize) {
           return NextResponse.json(
-            { error: 'Product missing cylinder size information for validation' },
+            {
+              error: 'Product missing cylinder size information for validation',
+            },
             { status: 404 }
           );
         }

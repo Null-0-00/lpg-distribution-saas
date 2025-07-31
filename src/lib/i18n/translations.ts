@@ -244,7 +244,7 @@ export interface Translations {
   emptyCylinders: string;
   emptyCylindersBuySell: string;
   emptyCylindersInHand: string;
-  
+
   // Inventory validation messages
   checkingInventory: string;
   inventoryAvailable: string;
@@ -1232,7 +1232,7 @@ export interface Translations {
 }
 
 const englishTranslations: Translations = {
-// Navigation
+  // Navigation
   dashboard: 'Dashboard',
   sales: 'Sales',
   drivers: 'Drivers',
@@ -1654,7 +1654,7 @@ const englishTranslations: Translations = {
   emptyCylinders: 'খালি সিলিন্ডার',
   emptyCylindersBuySell: 'খালি সিলিন্ডার ক্রয়/বিক্রয়',
   emptyCylindersInHand: 'স্টকে খালি সিলিন্ডার',
-  
+
   // Inventory validation messages
   checkingInventory: 'Checking inventory...',
   inventoryAvailable: 'available',
@@ -2347,7 +2347,8 @@ const englishTranslations: Translations = {
   availableForRefill: 'Available for Refill',
   noFullCylindersAvailable: 'No full cylinders available',
   noEmptyCylindersAvailable: 'No empty cylinders available',
-  noEmptyCylindersOfSizeAvailable: 'No empty cylinders of size {size} available',
+  noEmptyCylindersOfSizeAvailable:
+    'No empty cylinders of size {size} available',
   automatedInventoryCalculationsForCylinders:
     'Automated inventory calculations for cylinders',
   asset: 'Asset',
@@ -2394,7 +2395,6 @@ const englishTranslations: Translations = {
   cashInHand: 'Cash in Hand',
   availableCashCalculatedFromDeposits:
     'Available cash calculated from deposits minus expenses',
-
 };
 
 const bengaliTranslations: Translations = {
@@ -3566,10 +3566,11 @@ const bengaliTranslations: Translations = {
   availableForRefill: 'রিফিলের জন্য উপলব্ধ',
   noFullCylindersAvailable: 'কোনো পূর্ণ সিলিন্ডার উপলব্ধ নেই',
   noEmptyCylindersAvailable: 'কোনো খালি সিলিন্ডার উপলব্ধ নেই',
-  noEmptyCylindersOfSizeAvailable: '{size} সাইজের কোনো খালি সিলিন্ডার উপলব্ধ নেই',
+  noEmptyCylindersOfSizeAvailable:
+    '{size} সাইজের কোনো খালি সিলিন্ডার উপলব্ধ নেই',
   automatedInventoryCalculationsForCylinders:
     'সিলিন্ডারের জন্য স্বয়ংক্রিয় মজুদ গণনা',
-  
+
   // Missing asset-related keys
   receivables: 'প্রাপ্য',
   inventory: 'মজুদ',
@@ -3583,7 +3584,8 @@ const bengaliTranslations: Translations = {
   purchaseDate: 'ক্রয়ের তারিখ',
   monthlyPayment: 'মাসিক পরিশোধ',
   outstandingCashReceivablesFromDrivers: 'চালকদের কাছ থেকে বকেয়া নগদ প্রাপ্য',
-  availableCashCalculatedFromDeposits: 'জমা থেকে খরচ বিয়োগ করে গণনা করা উপলব্ধ নগদ',
+  availableCashCalculatedFromDeposits:
+    'জমা থেকে খরচ বিয়োগ করে গণনা করা উপলব্ধ নগদ',
   emptyCylinders: 'খালি সিলিন্ডার',
   fullCylinders: 'পূর্ণ সিলিন্ডার',
 

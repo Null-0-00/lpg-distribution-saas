@@ -15,7 +15,10 @@ export async function POST(request: NextRequest) {
 
     if (!cylinderSizeId || !quantity || !transactionType) {
       return NextResponse.json(
-        { error: 'Missing required fields: cylinderSizeId, quantity, transactionType' },
+        {
+          error:
+            'Missing required fields: cylinderSizeId, quantity, transactionType',
+        },
         { status: 400 }
       );
     }
@@ -59,7 +62,7 @@ export async function POST(request: NextRequest) {
 
     // Use the validator to check inventory
     const cylinderValidator = new CylinderInventoryValidator(prisma);
-    
+
     const validation = await cylinderValidator.validateSingleCylinderType(
       tenantId,
       cylinderSize.size,

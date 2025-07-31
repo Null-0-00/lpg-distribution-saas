@@ -155,21 +155,26 @@ export default function ShipmentsPage() {
     isChecking: false,
   });
 
-  const [isEmptyCylinderSubmitting, setIsEmptyCylinderSubmitting] = useState(false);
+  const [isEmptyCylinderSubmitting, setIsEmptyCylinderSubmitting] =
+    useState(false);
 
   // Helper function to translate inventory validation messages
   const translateInventoryMessage = (message: string | undefined): string => {
     if (!message) return '';
-    
+
     // Handle "No empty cylinders of size X available" message
-    const noEmptyMatch = message.match(/No empty cylinders of size (\w+) available/);
+    const noEmptyMatch = message.match(
+      /No empty cylinders of size (\w+) available/
+    );
     if (noEmptyMatch) {
       const size = noEmptyMatch[1];
       return t('noEmptyCylindersOfSizeAvailable').replace('{size}', size);
     }
-    
+
     // Handle "Insufficient empty cylinders of size X" message
-    const insufficientMatch = message.match(/Insufficient empty cylinders of size (\w+)/);
+    const insufficientMatch = message.match(
+      /Insufficient empty cylinders of size (\w+)/
+    );
     if (insufficientMatch) {
       const size = insufficientMatch[1];
       const requiredMatch = message.match(/Required: (\d+)/);
@@ -178,7 +183,7 @@ export default function ShipmentsPage() {
       const available = availableMatch ? availableMatch[1] : '0';
       return `${size} সাইজের পর্যাপ্ত খালি সিলিন্ডার নেই। প্রয়োজন: ${required}টি, উপলব্ধ: ${available}টি`;
     }
-    
+
     // Return original message if no translation pattern matches
     return message;
   };
@@ -417,15 +422,23 @@ export default function ShipmentsPage() {
       }
     } catch (error) {
       console.error('Error saving shipment:', error);
-      
+
       // Handle different types of errors with Bengali messages
       let errorMessage = '';
-      const errorString = error instanceof Error ? error.message : String(error);
-      
-      if (errorString.includes('Insufficient cylinder inventory for refill purchases')) {
+      const errorString =
+        error instanceof Error ? error.message : String(error);
+
+      if (
+        errorString.includes(
+          'Insufficient cylinder inventory for refill purchases'
+        )
+      ) {
         errorMessage = 'রিফিল ক্রয় ব্যর্থ: পর্যাপ্ত খালি সিলিন্ডার স্টক নেই';
-      } else if (errorString.includes('Product not found or missing cylinder size')) {
-        errorMessage = 'পণ্য পাওয়া যায়নি অথবা সিলিন্ডার সাইজের তথ্য অনুপস্থিত';
+      } else if (
+        errorString.includes('Product not found or missing cylinder size')
+      ) {
+        errorMessage =
+          'পণ্য পাওয়া যায়নি অথবা সিলিন্ডার সাইজের তথ্য অনুপস্থিত';
       } else if (errorString.includes('Driver not found or inactive')) {
         errorMessage = 'চালক পাওয়া যায়নি অথবা নিষ্ক্রিয়';
       } else if (errorString.includes('Company not found')) {
@@ -435,7 +448,7 @@ export default function ShipmentsPage() {
       } else {
         errorMessage = `ক্রয় অর্ডার সংরক্ষণ ব্যর্থ: ${errorString}`;
       }
-      
+
       setFormErrors({
         submit: errorMessage,
       });
@@ -590,7 +603,7 @@ export default function ShipmentsPage() {
 
   const handleEmptyCylinderSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     setIsEmptyCylinderSubmitting(true);
 
     try {
@@ -620,19 +633,27 @@ export default function ShipmentsPage() {
         fetchShipments();
       } else {
         const errorData = await response.json();
-        
+
         // Handle different types of errors with Bengali messages
         let errorMessage = '';
-        if (errorData.error === 'Insufficient empty cylinder inventory for shipment') {
+        if (
+          errorData.error ===
+          'Insufficient empty cylinder inventory for shipment'
+        ) {
           errorMessage = `খালি সিলিন্ডার বিক্রয় ব্যর্থ: ${errorData.details ? errorData.details.join(', ') : 'পর্যাপ্ত স্টক নেই'}`;
-        } else if (errorData.error === 'Product missing cylinder size information for validation') {
+        } else if (
+          errorData.error ===
+          'Product missing cylinder size information for validation'
+        ) {
           errorMessage = 'পণ্যের সিলিন্ডার সাইজের তথ্য পাওয়া যাচ্ছে না';
-        } else if (errorData.error === 'Cannot determine cylinder size for validation') {
+        } else if (
+          errorData.error === 'Cannot determine cylinder size for validation'
+        ) {
           errorMessage = 'সিলিন্ডার সাইজ নির্ধারণ করা যাচ্ছে না';
         } else {
           errorMessage = `লেনদেন ব্যর্থ: ${errorData.error || 'অজানা ত্রুটি'}`;
         }
-        
+
         alert(errorMessage);
       }
     } catch (error) {
@@ -2491,7 +2512,8 @@ export default function ShipmentsPage() {
                       }))
                     }
                     className={`border-border bg-input text-foreground w-full rounded-md border px-3 py-2 ${
-                      !inventoryValidation.isValid && emptyCylinderData.transactionType === 'SELL'
+                      !inventoryValidation.isValid &&
+                      emptyCylinderData.transactionType === 'SELL'
                         ? 'border-red-500 focus:border-red-500'
                         : ''
                     }`}
@@ -2499,31 +2521,37 @@ export default function ShipmentsPage() {
                     min="1"
                   />
                   {/* Inventory validation feedback */}
-                  {emptyCylinderData.transactionType === 'SELL' && emptyCylinderData.quantity > 0 && emptyCylinderData.cylinderSizeId && (
-                    <div className="mt-1">
-                      {inventoryValidation.isChecking ? (
-                        <div className="flex items-center text-xs text-blue-600">
-                          <RefreshCw className="mr-1 h-3 w-3 animate-spin" />
-                          {t('checkingInventory')}
-                        </div>
-                      ) : !inventoryValidation.isValid ? (
-                        <div className="flex items-center text-xs text-red-600">
-                          <AlertCircle className="mr-1 h-3 w-3" />
-                          {translateInventoryMessage(inventoryValidation.message) || `${t('only')} ${inventoryValidation.available}টি ${t('availableText')}`}
-                        </div>
-                      ) : inventoryValidation.available === emptyCylinderData.quantity ? (
-                        <div className="flex items-center text-xs text-yellow-600">
-                          <Info className="mr-1 h-3 w-3" />
-                          {`${t('usingAllAvailable')} (${inventoryValidation.available}টি)`}
-                        </div>
-                      ) : (
-                        <div className="flex items-center text-xs text-green-600">
-                          <CheckCircle className="mr-1 h-3 w-3" />
-                          {`${inventoryValidation.available}টি ${t('availableText')}`}
-                        </div>
-                      )}
-                    </div>
-                  )}
+                  {emptyCylinderData.transactionType === 'SELL' &&
+                    emptyCylinderData.quantity > 0 &&
+                    emptyCylinderData.cylinderSizeId && (
+                      <div className="mt-1">
+                        {inventoryValidation.isChecking ? (
+                          <div className="flex items-center text-xs text-blue-600">
+                            <RefreshCw className="mr-1 h-3 w-3 animate-spin" />
+                            {t('checkingInventory')}
+                          </div>
+                        ) : !inventoryValidation.isValid ? (
+                          <div className="flex items-center text-xs text-red-600">
+                            <AlertCircle className="mr-1 h-3 w-3" />
+                            {translateInventoryMessage(
+                              inventoryValidation.message
+                            ) ||
+                              `${t('only')} ${inventoryValidation.available}টি ${t('availableText')}`}
+                          </div>
+                        ) : inventoryValidation.available ===
+                          emptyCylinderData.quantity ? (
+                          <div className="flex items-center text-xs text-yellow-600">
+                            <Info className="mr-1 h-3 w-3" />
+                            {`${t('usingAllAvailable')} (${inventoryValidation.available}টি)`}
+                          </div>
+                        ) : (
+                          <div className="flex items-center text-xs text-green-600">
+                            <CheckCircle className="mr-1 h-3 w-3" />
+                            {`${inventoryValidation.available}টি ${t('availableText')}`}
+                          </div>
+                        )}
+                      </div>
+                    )}
                 </div>
                 <div>
                   <label className="text-muted-foreground mb-1 block text-sm font-medium">
@@ -2606,25 +2634,27 @@ export default function ShipmentsPage() {
                   type="submit"
                   disabled={
                     isEmptyCylinderSubmitting ||
-                    (emptyCylinderData.transactionType === 'SELL' && 
-                    !inventoryValidation.isValid &&
-                    emptyCylinderData.quantity > 0 &&
-                    !!emptyCylinderData.cylinderSizeId)
+                    (emptyCylinderData.transactionType === 'SELL' &&
+                      !inventoryValidation.isValid &&
+                      emptyCylinderData.quantity > 0 &&
+                      !!emptyCylinderData.cylinderSizeId)
                   }
                   className={`rounded-md border border-transparent px-4 py-2 text-sm font-medium text-white transition-colors ${
                     isEmptyCylinderSubmitting ||
-                    (emptyCylinderData.transactionType === 'SELL' && 
-                    !inventoryValidation.isValid &&
-                    emptyCylinderData.quantity > 0 &&
-                    !!emptyCylinderData.cylinderSizeId)
-                      ? 'bg-gray-400 cursor-not-allowed'
+                    (emptyCylinderData.transactionType === 'SELL' &&
+                      !inventoryValidation.isValid &&
+                      emptyCylinderData.quantity > 0 &&
+                      !!emptyCylinderData.cylinderSizeId)
+                      ? 'cursor-not-allowed bg-gray-400'
                       : 'bg-green-600 hover:bg-green-700'
                   }`}
                 >
                   {isEmptyCylinderSubmitting ? (
                     <>
                       <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
-                      {emptyCylinderData.transactionType === 'BUY' ? t('purchasing') : t('selling')}
+                      {emptyCylinderData.transactionType === 'BUY'
+                        ? t('purchasing')
+                        : t('selling')}
                     </>
                   ) : (
                     <>

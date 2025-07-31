@@ -11,9 +11,7 @@ module.exports = {
       transform: {
         '^.+\\.tsx?$': 'babel-jest',
       },
-      transformIgnorePatterns: [
-        'node_modules/(?!(.*\\.mjs$))',
-      ],
+      transformIgnorePatterns: ['node_modules/(?!(.*\\.mjs$))'],
     },
     {
       displayName: 'unit',
@@ -27,9 +25,7 @@ module.exports = {
       transform: {
         '^.+\\.tsx?$': 'babel-jest',
       },
-      transformIgnorePatterns: [
-        'node_modules/(?!(.*\\.mjs$))',
-      ],
+      transformIgnorePatterns: ['node_modules/(?!(.*\\.mjs$))'],
     },
   ],
   collectCoverageFrom: [
@@ -37,8 +33,5 @@ module.exports = {
     '!src/**/*.d.ts',
     '!src/**/*.stories.{js,jsx,ts,tsx}',
   ],
-  testPathIgnorePatterns: [
-    '<rootDir>/.next/',
-    '<rootDir>/node_modules/',
-  ],
+  testPathIgnorePatterns: ['<rootDir>/.next/', '<rootDir>/node_modules/'],
 };

@@ -511,13 +511,17 @@ export class InventoryCalculator {
     dateOnly.setHours(0, 0, 0, 0);
 
     // Get cylinderSizeId from product
-    const product = productId ? await this.prisma.product.findUnique({
-      where: { id: productId },
-      select: { cylinderSizeId: true }
-    }) : null;
+    const product = productId
+      ? await this.prisma.product.findUnique({
+          where: { id: productId },
+          select: { cylinderSizeId: true },
+        })
+      : null;
 
     if (!product?.cylinderSizeId) {
-      throw new Error(`Product ${productId} not found or missing cylinderSizeId`);
+      throw new Error(
+        `Product ${productId} not found or missing cylinderSizeId`
+      );
     }
 
     await this.prisma.inventoryRecord.upsert({

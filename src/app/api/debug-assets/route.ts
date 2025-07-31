@@ -10,24 +10,27 @@ export async function GET(request: NextRequest) {
 
     // Make internal request to assets API
     const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
-    const assetsResponse = await fetch(`${baseUrl}/api/assets?includeAutoCalculated=true`, {
-      headers: {
-        'Cookie': request.headers.get('cookie') || '',
-      },
-    });
+    const assetsResponse = await fetch(
+      `${baseUrl}/api/assets?includeAutoCalculated=true`,
+      {
+        headers: {
+          Cookie: request.headers.get('cookie') || '',
+        },
+      }
+    );
 
     if (!assetsResponse.ok) {
-      return NextResponse.json({ 
+      return NextResponse.json({
         error: 'Failed to fetch assets',
         status: assetsResponse.status,
-        statusText: assetsResponse.statusText 
+        statusText: assetsResponse.statusText,
       });
     }
 
     const assetsData = await assetsResponse.json();
 
     // Filter out only empty cylinder assets
-    const emptyCylinderAssets = assetsData.assets.filter((asset: any) => 
+    const emptyCylinderAssets = assetsData.assets.filter((asset: any) =>
       asset.name.includes('Empty Cylinders')
     );
 
@@ -41,14 +44,18 @@ export async function GET(request: NextRequest) {
         description: asset.description,
       })),
       totalAssets: assetsData.assets.length,
-      autoCalculatedAssets: assetsData.assets.filter((a: any) => a.isAutoCalculated).length,
+      autoCalculatedAssets: assetsData.assets.filter(
+        (a: any) => a.isAutoCalculated
+      ).length,
     });
-
   } catch (error) {
     console.error('Debug assets error:', error);
-    return NextResponse.json({ 
-      error: 'Internal server error',
-      details: error instanceof Error ? error.message : String(error)
-    }, { status: 500 });
+    return NextResponse.json(
+      {
+        error: 'Internal server error',
+        details: error instanceof Error ? error.message : String(error),
+      },
+      { status: 500 }
+    );
   }
 }

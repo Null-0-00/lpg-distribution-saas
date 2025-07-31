@@ -10,17 +10,20 @@ export async function GET(request: NextRequest) {
 
     // Make internal request to cylinders-summary API
     const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
-    const cylindersResponse = await fetch(`${baseUrl}/api/inventory/cylinders-summary`, {
-      headers: {
-        'Cookie': request.headers.get('cookie') || '',
-      },
-    });
+    const cylindersResponse = await fetch(
+      `${baseUrl}/api/inventory/cylinders-summary`,
+      {
+        headers: {
+          Cookie: request.headers.get('cookie') || '',
+        },
+      }
+    );
 
     if (!cylindersResponse.ok) {
-      return NextResponse.json({ 
+      return NextResponse.json({
         error: 'Failed to fetch cylinders summary',
         status: cylindersResponse.status,
-        statusText: cylindersResponse.statusText 
+        statusText: cylindersResponse.statusText,
       });
     }
 
@@ -34,12 +37,14 @@ export async function GET(request: NextRequest) {
       lastUpdated: cylindersData.lastUpdated,
       dataSource: cylindersData.dataSource,
     });
-
   } catch (error) {
     console.error('Debug cylinders summary error:', error);
-    return NextResponse.json({ 
-      error: 'Internal server error',
-      details: error instanceof Error ? error.message : String(error)
-    }, { status: 500 });
+    return NextResponse.json(
+      {
+        error: 'Internal server error',
+        details: error instanceof Error ? error.message : String(error),
+      },
+      { status: 500 }
+    );
   }
 }

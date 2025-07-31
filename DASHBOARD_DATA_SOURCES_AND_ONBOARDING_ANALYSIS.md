@@ -5,6 +5,7 @@
 ### 1. Daily Sales Report Page (`/dashboard/reports/daily-sales`)
 
 #### Data Sources:
+
 - **Primary Tables**: `sale`, `driver`, `expense`, `deposit`, `receivableRecord`
 - **Key Columns**:
   - `sale`: `id`, `driverId`, `totalValue`, `discount`, `cashDeposited`, `cylindersDeposited`, `saleType`, `saleDate`, `quantity`
@@ -14,6 +15,7 @@
   - `receivableRecord`: `totalCashReceivables`, `totalCylinderReceivables`, `cashReceivablesChange`, `cylinderReceivablesChange`
 
 #### Business Logic & Calculations:
+
 - **Cash Receivables Change** = `driver_sales_revenue - cash_deposits - discounts`
 - **Cylinder Receivables Change** = `driver_refill_sales - cylinder_deposits`
 - **Today's Cash Total** = `yesterday_cash_total + cash_receivables_change`
@@ -26,6 +28,7 @@
 ### 2. Inventory Page (`/dashboard/inventory`)
 
 #### Data Sources:
+
 - **Primary Tables**: `product`, `company`, `cylinderSize`, `inventoryMovement`, `inventoryRecord`, `sale`, `shipment`, `driverCylinderSizeBaseline`
 - **Key Columns**:
   - `product`: `id`, `name`, `size`, `cylinderSizeId`, `purchasePrice`, `salePrice`
@@ -38,6 +41,7 @@
   - `driverCylinderSizeBaseline`: `baselineQuantity`, `cylinderSizeId`
 
 #### Business Logic & Calculations:
+
 - **Package Sale Impact**: `-1 Full Cylinder`, `+0 Empty Cylinder`
 - **Refill Sale Impact**: `-1 Full Cylinder`, `+1 Empty Cylinder`
 - **Today's Full Cylinders** = `yesterday_full + package_purchase + refill_purchase - total_sales`
@@ -52,6 +56,7 @@
 ### 3. Receivables Page (`/dashboard/receivables`)
 
 #### Data Sources:
+
 - **Primary Tables**: `customerReceivable`, `driver`, `receivableRecord`, `driverCylinderSizeBaseline`, `sale`
 - **Key Columns**:
   - `customerReceivable`: `id`, `driverId`, `customerName`, `receivableType`, `amount`, `quantity`, `size`, `dueDate`, `status`, `notes`
@@ -61,6 +66,7 @@
   - `sale`: `quantity`, `cylindersDeposited`, `saleType`, `productId`
 
 #### Business Logic & Calculations:
+
 - **Driver Cash Receivables** = `latest_receivableRecord.totalCashReceivables`
 - **Driver Cylinder Receivables** = `latest_receivableRecord.totalCylinderReceivables`
 - **Cylinder Size Breakdown Formula**:
@@ -77,6 +83,7 @@
 ### 4. Assets Page (`/dashboard/assets`)
 
 #### Data Sources:
+
 - **Primary Tables**: `asset`, `inventoryAssetValue`, `receivableRecord`, `sale`, `expense`
 - **Key Columns**:
   - `asset`: `id`, `name`, `assetType`, `category`, `originalValue`, `currentValue`, `acquisitionDate`, `depreciationRate`, `units`, `unitValue`
@@ -86,6 +93,7 @@
   - `expense`: `amount`, `category`
 
 #### Business Logic & Calculations:
+
 - **Current Cash Assets** = `SUM(sale.totalValue) - SUM(sale.cashDeposited) + SUM(receivableRecord.totalCashReceivables)`
 - **Cylinder Inventory Valuation**:
   - Full Cylinders: `SUM(inventory_quantity × product.purchasePrice)` (by size)
@@ -93,7 +101,7 @@
   - Empty Cylinder Value: `SUM(empty_quantity_by_size × cylinder_unit_value_by_size)`
 - **Empty Cylinder Formula by Size**:
   - **Yesterday's Empty (Size)** = Previous day's empty cylinder count for specific size
-  - **Refill Sales (Size)** = `SUM(sale.quantity WHERE saleType = 'REFILL' AND product.cylinderSize = size)`  
+  - **Refill Sales (Size)** = `SUM(sale.quantity WHERE saleType = 'REFILL' AND product.cylinderSize = size)`
   - **Empty Buy/Sell (Size)** = `SUM(INCOMING_EMPTY) - SUM(OUTGOING_EMPTY)` by product size
   - **Result**: Each cylinder size calculated independently using exact business formula
 - **Total Receivables Asset** = `SUM(receivableRecord.totalCashReceivables + receivableRecord.totalCylinderReceivables × cylinder_value)`
@@ -108,6 +116,7 @@
 ### Summary
 
 Each dashboard page implements sophisticated business logic with:
+
 - **Multi-tenant data isolation** using `tenantId`
 - **Real-time calculations** using exact business formulas
 - **Progressive loading and caching** for performance
@@ -120,6 +129,7 @@ The architecture ensures data consistency across all pages while maintaining hig
 ## Key Business Calculation Formulas
 
 ### Inventory Calculations (CRITICAL)
+
 - **Package Sale**: `-1 Full Cylinder`, `no Empty Cylinder change`
 - **Refill Sale**: `-1 Full Cylinder`, `+1 Empty Cylinder`
 - **Today's Full Cylinders**: `Yesterday's Full + Package Purchase + Refill Purchase - Total Sales`
@@ -128,16 +138,19 @@ The architecture ensures data consistency across all pages while maintaining hig
   - Assets page uses this formula for precise cylinder inventory valuation
 
 ### Receivables Calculations (CRITICAL)
+
 - **Cash Receivables Change**: `driver_sales_revenue - cash_deposits - discounts`
 - **Cylinder Receivables Change**: `driver_refill_sales - cylinder_deposits`
 - **Today's Total**: `Yesterday's Total + Today's Changes`
 
 ### Asset Valuations
+
 - **Current Cash**: `total_sales - cash_deposits + cash_receivables`
 - **Cylinder Inventory Value**: `quantity × purchase_price` (full) + `quantity × unit_value` (empty)
 - **Manual Asset Depreciation**: `original_value × (1 - rate)^years` or `units × unit_value`
 
 ### Empty Cylinder Aggregations
+
 - **Total by Size**: `baseline + sales_impact + shipment_impact - outstanding_shipments`
 - **In Hand**: `total_quantity - quantity_with_drivers`
 - **Sales Impact**: `refill_sales - cylinder_deposits`
@@ -147,55 +160,65 @@ The architecture ensures data consistency across all pages while maintaining hig
 ## Onboarding Data Storage Locations
 
 ### 1. **Companies** → `company` table
+
 - **Columns**: `tenantId`, `name`, `isActive`
 - **Source**: `data.companies` array from onboarding form
 
-### 2. **Cylinder Sizes** → `cylinderSize` table  
+### 2. **Cylinder Sizes** → `cylinderSize` table
+
 - **Columns**: `tenantId`, `size`, `description`, `isActive`
 - **Source**: `data.cylinderSizes` array from onboarding form
 
 ### 3. **Products** → `product` table
+
 - **Columns**: `tenantId`, `companyId`, `cylinderSizeId`, `name`, `size`, `currentPrice`, `isActive`
 - **Source**: `data.products` array from onboarding form
 
 ### 4. **Drivers** → `driver` table
+
 - **Columns**: `tenantId`, `name`, `phone`, `driverType`, `status`
 - **Source**: `data.drivers` array from onboarding form
 
 ### 5. **Initial Inventory (Full Cylinders)** → `inventoryRecord` table
+
 - **Columns**: `tenantId`, `productId`, `date`, `fullCylinders`, `emptyCylinders`, `totalCylinders`
 - **Key Values**: `fullCylinders` set from `data.inventory[].fullCylinders`
 - **Purpose**: Shipment baseline values for full cylinders
 
 ### 6. **Initial Empty Cylinders** → `inventoryRecord` table (updated/created)
+
 - **Columns**: `emptyCylinders`, `totalCylinders`, `cylinderSizeId` (required)
 - **Source**: `data.emptyCylinders` array with quantities by cylinder size
 - **Purpose**: Direct cylinder size linkage for precise inventory tracking
 
 ### 7. **Driver Receivables** → `receivableRecord` table
+
 - **Columns**: `tenantId`, `driverId`, `date`, `totalCashReceivables`, `totalCylinderReceivables`
-- **Key Values**: 
+- **Key Values**:
   - `totalCashReceivables` from `data.receivables[].cashReceivables`
   - `totalCylinderReceivables` from `data.receivables[].cylinderReceivables`
 - **Purpose**: Starting balances (not changes)
 
 ### 8. **Permanent Cylinder Size Baselines** → `driverCylinderSizeBaseline` table ⭐
+
 - **Columns**: `tenantId`, `driverId`, `cylinderSizeId`, `baselineQuantity`, `source`
 - **Source**: `data.receivables[].cylinderReceivablesBySizes` array
 - **Purpose**: **Permanent baseline breakdown by cylinder size per driver**
 - **Key**: These records are used in the receivables API to calculate current breakdowns
 
 ### 9. **Customer Receivables (Backward Compatibility)** → `customerReceivable` table
+
 - **Columns**: `tenantId`, `driverId`, `customerName`, `receivableType`, `quantity`, `size`, `status`
 - **Default Values**: `customerName: 'Onboarding Balance'`, `status: 'CURRENT'`
 - **Source**: `data.receivables[].cylinderReceivablesBySizes`
 
 ### 10. **Empty Cylinder Records** → `emptyCylinder` table
+
 - **Stored Columns**: `tenantId`, `productId`, `cylinderSizeId`, `date`, `baselineQuantity`, `createdAt`, `updatedAt`
-- **Auto-calculated from Sales**: 
+- **Auto-calculated from Sales**:
   - `refillSales` = Sum from `sale` table where `saleType = 'REFILL'` by `productId`/`cylinderSizeId`
   - `cylinderDeposits` = Sum of `sale.cylindersDeposited` by `productId`/`cylinderSizeId`
-- **Auto-calculated from Shipments**: 
+- **Auto-calculated from Shipments**:
   - `emptyCylindersBuySell` = Sum of `INCOMING_EMPTY`/`OUTGOING_EMPTY` shipments by `productId`
   - `outstandingShipments` = Sum of `PENDING`/`IN_TRANSIT` status shipments by `productId`
 - **Auto-calculated Quantities**:
@@ -205,8 +228,9 @@ The architecture ensures data consistency across all pages while maintaining hig
 - **Purpose**: Pure baseline storage with all operational values calculated dynamically from authoritative sources
 
 ### 10a. **Empty Cylinder Totals by Size** → `empty_cylinder_totals_by_size` view ⭐
+
 - **Data Sources**: Aggregates from `driverCylinderSizeBaseline`, `sale`, `shipment`, `emptyCylinder` tables
-- **Key Fields**: 
+- **Key Fields**:
   - `cylinderSizeId`, `cylinderSizeName`
   - `totalQuantity`, `quantityInHand`, `quantityWithDrivers`
   - `onboardingBaseline`, `netSalesImpact`, `netShipmentImpact`
@@ -220,6 +244,7 @@ The architecture ensures data consistency across all pages while maintaining hig
 - **API Endpoint**: `/api/inventory/empty-cylinders-by-size`
 
 ### 11. **User Onboarding Status** → `user` table
+
 - **Columns**: `onboardingCompleted`, `onboardingCompletedAt`
 - **Purpose**: Prevents re-running onboarding
 

@@ -15,7 +15,7 @@ export enum CylinderEventType {
   SALES = 'SALES',
   SHIPMENT = 'SHIPMENT',
   ADJUSTMENT = 'ADJUSTMENT',
-  RECEIVABLES_UPDATE = 'RECEIVABLES_UPDATE'
+  RECEIVABLES_UPDATE = 'RECEIVABLES_UPDATE',
 }
 
 export interface OnboardingCylinderData extends CylinderTrackingEventData {
@@ -75,12 +75,12 @@ export interface InventoryCylinderData extends CylinderTrackingEventData {
   totalCylinders: number;
 }
 
-export interface ComprehensiveCylinderRecord 
-  extends OnboardingCylinderData, 
-          SalesCylinderData, 
-          ShipmentCylinderData, 
-          ReceivablesCylinderData, 
-          InventoryCylinderData {
+export interface ComprehensiveCylinderRecord
+  extends OnboardingCylinderData,
+    SalesCylinderData,
+    ShipmentCylinderData,
+    ReceivablesCylinderData,
+    InventoryCylinderData {
   id: string;
   calculatedAt: Date;
   createdAt: Date;
@@ -94,7 +94,7 @@ export interface CylinderTrackingInput {
   productId?: string;
   eventType: CylinderEventType;
   eventId?: string;
-  
+
   // Optional data based on event type
   onboardingData?: Partial<OnboardingCylinderData>;
   salesData?: Partial<SalesCylinderData>;
@@ -116,26 +116,26 @@ export interface CylinderTrackingQuery {
 export interface CylinderTrackingAggregation {
   cylinderSizeId: string;
   cylinderSize: string;
-  
+
   // Onboarding totals
   totalOnboardingFullCylinders: number;
   totalOnboardingEmptyCylinders: number;
   totalOnboardingCylinderReceivables: number;
-  
+
   // Sales totals
   totalPackageSales: number;
   totalRefillSales: number;
   totalSalesRevenue: number;
   totalCashDeposited: number;
   totalCylinderDeposited: number;
-  
+
   // Shipment totals
   totalIncomingFull: number;
   totalIncomingEmpty: number;
   totalOutgoingFull: number;
   totalOutgoingEmpty: number;
   totalShipmentCost: number;
-  
+
   // Current status
   currentFullCylinders: number;
   currentEmptyCylinders: number;
@@ -202,7 +202,7 @@ export interface CylinderAuditTrail {
   cylinderSizeId: string;
   changeType: 'CREATE' | 'UPDATE' | 'DELETE';
   oldValues?: Partial<ComprehensiveCylinderRecord>;
-  newValues?: Partial<ComprehensiveCylinderRecord>;  
+  newValues?: Partial<ComprehensiveCylinderRecord>;
   changedBy?: string;
   changeReason?: string;
   timestamp: Date;
@@ -211,6 +211,6 @@ export interface CylinderAuditTrail {
 
 // Export utility type for Prisma integration
 export type PrismaCylinderTrackingData = Omit<
-  ComprehensiveCylinderRecord, 
+  ComprehensiveCylinderRecord,
   'id' | 'createdAt' | 'updatedAt' | 'calculatedAt'
 >;

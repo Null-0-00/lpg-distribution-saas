@@ -6,7 +6,7 @@ import {
   CylinderTrackingInput,
   CylinderValidationError,
   CylinderEventType,
-  CylinderBusinessRules
+  CylinderBusinessRules,
 } from '@/types/cylinder-tracking';
 
 export class CylinderTrackingValidator {
@@ -23,7 +23,7 @@ export class CylinderTrackingValidator {
       validateOnboardingBaseline: true,
       enforceNonNegativeInventory: true,
       validateEventSequence: true,
-      ...businessRules
+      ...businessRules,
     };
   }
 
@@ -39,14 +39,22 @@ export class CylinderTrackingValidator {
     errors.push(...this.validateBasicFields(input));
 
     // Tenant validation
-    errors.push(...await this.validateTenant(input.tenantId));
+    errors.push(...(await this.validateTenant(input.tenantId)));
 
     // Cylinder size validation
-    errors.push(...await this.validateCylinderSize(input.tenantId, input.cylinderSizeId));
+    errors.push(
+      ...(await this.validateCylinderSize(input.tenantId, input.cylinderSizeId))
+    );
 
     // Product validation (if provided)
     if (input.productId) {
-      errors.push(...await this.validateProduct(input.tenantId, input.productId, input.cylinderSizeId));
+      errors.push(
+        ...(await this.validateProduct(
+          input.tenantId,
+          input.productId,
+          input.cylinderSizeId
+        ))
+      );
     }
 
     // Event-specific validation
@@ -58,15 +66,18 @@ export class CylinderTrackingValidator {
     }
 
     if (this.businessRules.validateInventoryBalance) {
-      errors.push(...await this.validateInventoryBalance(input));
+      errors.push(...(await this.validateInventoryBalance(input)));
     }
 
-    if (this.businessRules.validateOnboardingBaseline && input.eventType === CylinderEventType.ONBOARDING) {
+    if (
+      this.businessRules.validateOnboardingBaseline &&
+      input.eventType === CylinderEventType.ONBOARDING
+    ) {
       errors.push(...this.validateOnboardingBaseline(input));
     }
 
     if (this.businessRules.validateEventSequence) {
-      errors.push(...await this.validateEventSequence(input));
+      errors.push(...(await this.validateEventSequence(input)));
     }
 
     return errors;
@@ -75,40 +86,42 @@ export class CylinderTrackingValidator {
   /**
    * Validate basic required fields
    */
-  private validateBasicFields(input: CylinderTrackingInput): CylinderValidationError[] {
+  private validateBasicFields(
+    input: CylinderTrackingInput
+  ): CylinderValidationError[] {
     const errors: CylinderValidationError[] = [];
 
     if (!input.tenantId) {
       errors.push({
         field: 'tenantId',
-        message: 'Tenant ID is required'
+        message: 'Tenant ID is required',
       });
     }
 
     if (!input.cylinderSizeId) {
       errors.push({
         field: 'cylinderSizeId',
-        message: 'Cylinder Size ID is required'
+        message: 'Cylinder Size ID is required',
       });
     }
 
     if (!input.date) {
       errors.push({
         field: 'date',
-        message: 'Date is required'
+        message: 'Date is required',
       });
     } else if (input.date > new Date()) {
       errors.push({
         field: 'date',
         message: 'Date cannot be in the future',
-        value: input.date
+        value: input.date,
       });
     }
 
     if (!input.eventType) {
       errors.push({
         field: 'eventType',
-        message: 'Event type is required'
+        message: 'Event type is required',
       });
     }
 
@@ -118,33 +131,35 @@ export class CylinderTrackingValidator {
   /**
    * Validate tenant exists and is active
    */
-  private async validateTenant(tenantId: string): Promise<CylinderValidationError[]> {
+  private async validateTenant(
+    tenantId: string
+  ): Promise<CylinderValidationError[]> {
     const errors: CylinderValidationError[] = [];
 
     try {
       const tenant = await this.prisma.tenant.findUnique({
         where: { id: tenantId },
-        select: { isActive: true }
+        select: { isActive: true },
       });
 
       if (!tenant) {
         errors.push({
           field: 'tenantId',
           message: 'Tenant not found',
-          value: tenantId
+          value: tenantId,
         });
       } else if (!tenant.isActive) {
         errors.push({
           field: 'tenantId',
           message: 'Tenant is not active',
-          value: tenantId
+          value: tenantId,
         });
       }
     } catch (error) {
       errors.push({
         field: 'tenantId',
         message: 'Error validating tenant',
-        value: tenantId
+        value: tenantId,
       });
     }
 
@@ -155,7 +170,7 @@ export class CylinderTrackingValidator {
    * Validate cylinder size exists and belongs to tenant
    */
   private async validateCylinderSize(
-    tenantId: string, 
+    tenantId: string,
     cylinderSizeId: string
   ): Promise<CylinderValidationError[]> {
     const errors: CylinderValidationError[] = [];
@@ -163,33 +178,33 @@ export class CylinderTrackingValidator {
     try {
       const cylinderSize = await this.prisma.cylinderSize.findUnique({
         where: { id: cylinderSizeId },
-        select: { tenantId: true, isActive: true, size: true }
+        select: { tenantId: true, isActive: true, size: true },
       });
 
       if (!cylinderSize) {
         errors.push({
           field: 'cylinderSizeId',
           message: 'Cylinder size not found',
-          value: cylinderSizeId
+          value: cylinderSizeId,
         });
       } else if (cylinderSize.tenantId !== tenantId) {
         errors.push({
           field: 'cylinderSizeId',
           message: 'Cylinder size does not belong to this tenant',
-          value: cylinderSizeId
+          value: cylinderSizeId,
         });
       } else if (!cylinderSize.isActive) {
         errors.push({
           field: 'cylinderSizeId',
           message: 'Cylinder size is not active',
-          value: cylinderSize.size
+          value: cylinderSize.size,
         });
       }
     } catch (error) {
       errors.push({
         field: 'cylinderSizeId',
         message: 'Error validating cylinder size',
-        value: cylinderSizeId
+        value: cylinderSizeId,
       });
     }
 
@@ -200,8 +215,8 @@ export class CylinderTrackingValidator {
    * Validate product exists, belongs to tenant, and matches cylinder size
    */
   private async validateProduct(
-    tenantId: string, 
-    productId: string, 
+    tenantId: string,
+    productId: string,
     cylinderSizeId: string
   ): Promise<CylinderValidationError[]> {
     const errors: CylinderValidationError[] = [];
@@ -209,26 +224,26 @@ export class CylinderTrackingValidator {
     try {
       const product = await this.prisma.product.findUnique({
         where: { id: productId },
-        select: { 
-          tenantId: true, 
-          isActive: true, 
-          name: true, 
-          cylinderSizeId: true 
-        }
+        select: {
+          tenantId: true,
+          isActive: true,
+          name: true,
+          cylinderSizeId: true,
+        },
       });
 
       if (!product) {
         errors.push({
           field: 'productId',
           message: 'Product not found',
-          value: productId
+          value: productId,
         });
       } else {
         if (product.tenantId !== tenantId) {
           errors.push({
             field: 'productId',
             message: 'Product does not belong to this tenant',
-            value: productId
+            value: productId,
           });
         }
 
@@ -236,15 +251,16 @@ export class CylinderTrackingValidator {
           errors.push({
             field: 'productId',
             message: 'Product is not active',
-            value: product.name
+            value: product.name,
           });
         }
 
         if (product.cylinderSizeId !== cylinderSizeId) {
           errors.push({
             field: 'productId',
-            message: 'Product cylinder size does not match specified cylinder size',
-            value: `${product.name} (expected: ${cylinderSizeId}, actual: ${product.cylinderSizeId})`
+            message:
+              'Product cylinder size does not match specified cylinder size',
+            value: `${product.name} (expected: ${cylinderSizeId}, actual: ${product.cylinderSizeId})`,
           });
         }
       }
@@ -252,7 +268,7 @@ export class CylinderTrackingValidator {
       errors.push({
         field: 'productId',
         message: 'Error validating product',
-        value: productId
+        value: productId,
       });
     }
 
@@ -262,7 +278,9 @@ export class CylinderTrackingValidator {
   /**
    * Validate event-specific data
    */
-  private validateEventSpecificData(input: CylinderTrackingInput): CylinderValidationError[] {
+  private validateEventSpecificData(
+    input: CylinderTrackingInput
+  ): CylinderValidationError[] {
     const errors: CylinderValidationError[] = [];
 
     switch (input.eventType) {
@@ -270,7 +288,7 @@ export class CylinderTrackingValidator {
         if (!input.onboardingData) {
           errors.push({
             field: 'onboardingData',
-            message: 'Onboarding data is required for onboarding events'
+            message: 'Onboarding data is required for onboarding events',
           });
         } else {
           errors.push(...this.validateOnboardingData(input.onboardingData));
@@ -281,7 +299,7 @@ export class CylinderTrackingValidator {
         if (!input.salesData) {
           errors.push({
             field: 'salesData',
-            message: 'Sales data is required for sales events'
+            message: 'Sales data is required for sales events',
           });
         } else {
           errors.push(...this.validateSalesData(input.salesData));
@@ -292,7 +310,7 @@ export class CylinderTrackingValidator {
         if (!input.shipmentData) {
           errors.push({
             field: 'shipmentData',
-            message: 'Shipment data is required for shipment events'
+            message: 'Shipment data is required for shipment events',
           });
         } else {
           errors.push(...this.validateShipmentData(input.shipmentData));
@@ -313,7 +331,7 @@ export class CylinderTrackingValidator {
       errors.push({
         field: 'onboardingFullCylinders',
         message: 'Onboarding full cylinders cannot be negative',
-        value: data.onboardingFullCylinders
+        value: data.onboardingFullCylinders,
       });
     }
 
@@ -321,7 +339,7 @@ export class CylinderTrackingValidator {
       errors.push({
         field: 'onboardingEmptyCylinders',
         message: 'Onboarding empty cylinders cannot be negative',
-        value: data.onboardingEmptyCylinders
+        value: data.onboardingEmptyCylinders,
       });
     }
 
@@ -329,7 +347,7 @@ export class CylinderTrackingValidator {
       errors.push({
         field: 'onboardingCylinderReceivables',
         message: 'Onboarding cylinder receivables cannot be negative',
-        value: data.onboardingCylinderReceivables
+        value: data.onboardingCylinderReceivables,
       });
     }
 
@@ -346,7 +364,10 @@ export class CylinderTrackingValidator {
       errors.push({
         field: 'salesQuantity',
         message: 'Sales quantities cannot be negative',
-        value: { package: data.salesPackageQuantity, refill: data.salesRefillQuantity }
+        value: {
+          package: data.salesPackageQuantity,
+          refill: data.salesRefillQuantity,
+        },
       });
     }
 
@@ -354,7 +375,10 @@ export class CylinderTrackingValidator {
       errors.push({
         field: 'salesRevenue',
         message: 'Sales revenue cannot be negative',
-        value: { package: data.salesPackageRevenue, refill: data.salesRefillRevenue }
+        value: {
+          package: data.salesPackageRevenue,
+          refill: data.salesRefillRevenue,
+        },
       });
     }
 
@@ -362,7 +386,7 @@ export class CylinderTrackingValidator {
       errors.push({
         field: 'salesCashDeposited',
         message: 'Sales cash deposited cannot be negative',
-        value: data.salesCashDeposited
+        value: data.salesCashDeposited,
       });
     }
 
@@ -370,7 +394,7 @@ export class CylinderTrackingValidator {
       errors.push({
         field: 'salesCylinderDeposited',
         message: 'Sales cylinder deposited cannot be negative',
-        value: data.salesCylinderDeposited
+        value: data.salesCylinderDeposited,
       });
     }
 
@@ -387,14 +411,14 @@ export class CylinderTrackingValidator {
       data.shipmentIncomingFullQuantity,
       data.shipmentIncomingEmptyQuantity,
       data.shipmentOutgoingFullQuantity,
-      data.shipmentOutgoingEmptyQuantity
+      data.shipmentOutgoingEmptyQuantity,
     ];
 
-    if (quantities.some(q => q < 0)) {
+    if (quantities.some((q) => q < 0)) {
       errors.push({
         field: 'shipmentQuantities',
         message: 'Shipment quantities cannot be negative',
-        value: quantities
+        value: quantities,
       });
     }
 
@@ -402,7 +426,7 @@ export class CylinderTrackingValidator {
       errors.push({
         field: 'shipmentTotalCost',
         message: 'Shipment total cost cannot be negative',
-        value: data.shipmentTotalCost
+        value: data.shipmentTotalCost,
       });
     }
 
@@ -412,23 +436,31 @@ export class CylinderTrackingValidator {
   /**
    * Validate quantities according to business rules
    */
-  private validateQuantities(input: CylinderTrackingInput): CylinderValidationError[] {
+  private validateQuantities(
+    input: CylinderTrackingInput
+  ): CylinderValidationError[] {
     const errors: CylinderValidationError[] = [];
 
     if (this.businessRules.enforceNonNegativeInventory) {
-      if (input.inventoryData?.fullCylinders !== undefined && input.inventoryData.fullCylinders < 0) {
+      if (
+        input.inventoryData?.fullCylinders !== undefined &&
+        input.inventoryData.fullCylinders < 0
+      ) {
         errors.push({
           field: 'fullCylinders',
           message: 'Full cylinders inventory cannot be negative',
-          value: input.inventoryData.fullCylinders
+          value: input.inventoryData.fullCylinders,
         });
       }
 
-      if (input.inventoryData?.emptyCylinders !== undefined && input.inventoryData.emptyCylinders < 0) {
+      if (
+        input.inventoryData?.emptyCylinders !== undefined &&
+        input.inventoryData.emptyCylinders < 0
+      ) {
         errors.push({
           field: 'emptyCylinders',
           message: 'Empty cylinders inventory cannot be negative',
-          value: input.inventoryData.emptyCylinders
+          value: input.inventoryData.emptyCylinders,
         });
       }
     }
@@ -445,21 +477,24 @@ export class CylinderTrackingValidator {
     const errors: CylinderValidationError[] = [];
 
     // Check if total cylinders equals full + empty
-    if (input.inventoryData?.totalCylinders !== undefined &&
-        input.inventoryData?.fullCylinders !== undefined &&
-        input.inventoryData?.emptyCylinders !== undefined) {
-      
-      const calculatedTotal = input.inventoryData.fullCylinders + input.inventoryData.emptyCylinders;
+    if (
+      input.inventoryData?.totalCylinders !== undefined &&
+      input.inventoryData?.fullCylinders !== undefined &&
+      input.inventoryData?.emptyCylinders !== undefined
+    ) {
+      const calculatedTotal =
+        input.inventoryData.fullCylinders + input.inventoryData.emptyCylinders;
       if (input.inventoryData.totalCylinders !== calculatedTotal) {
         errors.push({
           field: 'totalCylinders',
-          message: 'Total cylinders must equal full cylinders plus empty cylinders',
+          message:
+            'Total cylinders must equal full cylinders plus empty cylinders',
           value: {
             provided: input.inventoryData.totalCylinders,
             calculated: calculatedTotal,
             full: input.inventoryData.fullCylinders,
-            empty: input.inventoryData.emptyCylinders
-          }
+            empty: input.inventoryData.emptyCylinders,
+          },
         });
       }
     }
@@ -470,27 +505,31 @@ export class CylinderTrackingValidator {
   /**
    * Validate onboarding baseline requirements
    */
-  private validateOnboardingBaseline(input: CylinderTrackingInput): CylinderValidationError[] {
+  private validateOnboardingBaseline(
+    input: CylinderTrackingInput
+  ): CylinderValidationError[] {
     const errors: CylinderValidationError[] = [];
 
     if (input.eventType === CylinderEventType.ONBOARDING) {
       if (!input.onboardingData?.onboardingDate) {
         errors.push({
           field: 'onboardingDate',
-          message: 'Onboarding date is required for onboarding events'
+          message: 'Onboarding date is required for onboarding events',
         });
       }
 
       // Ensure at least some data is being recorded
-      if (input.onboardingData &&
-          input.onboardingData.onboardingFullCylinders === 0 &&
-          input.onboardingData.onboardingEmptyCylinders === 0 &&
-          input.onboardingData.onboardingCylinderReceivables === 0) {
-        
+      if (
+        input.onboardingData &&
+        input.onboardingData.onboardingFullCylinders === 0 &&
+        input.onboardingData.onboardingEmptyCylinders === 0 &&
+        input.onboardingData.onboardingCylinderReceivables === 0
+      ) {
         errors.push({
           field: 'onboardingData',
-          message: 'Onboarding must record at least some cylinders or receivables',
-          value: input.onboardingData
+          message:
+            'Onboarding must record at least some cylinders or receivables',
+          value: input.onboardingData,
         });
       }
     }
@@ -512,15 +551,16 @@ export class CylinderTrackingValidator {
         where: {
           tenantId: input.tenantId,
           cylinderSizeId: input.cylinderSizeId,
-          eventType: CylinderEventType.ONBOARDING
-        }
+          // eventType: CylinderEventType.ONBOARDING, // Remove this property as it doesn't exist
+        },
       });
 
       if (!hasOnboarding && input.eventType !== CylinderEventType.ONBOARDING) {
         errors.push({
           field: 'eventType',
-          message: 'Onboarding must be completed before other cylinder tracking events',
-          value: input.eventType
+          message:
+            'Onboarding must be completed before other cylinder tracking events',
+          value: input.eventType,
         });
       }
 
@@ -528,11 +568,11 @@ export class CylinderTrackingValidator {
       if (hasOnboarding && input.eventType === CylinderEventType.ONBOARDING) {
         errors.push({
           field: 'eventType',
-          message: 'Onboarding has already been completed for this cylinder size',
-          value: input.cylinderSizeId
+          message:
+            'Onboarding has already been completed for this cylinder size',
+          value: input.cylinderSizeId,
         });
       }
-
     } catch (error) {
       // Non-critical validation error
       console.warn('Error validating event sequence:', error);
@@ -547,7 +587,7 @@ export class CylinderTrackingValidator {
   sanitizeInput(input: CylinderTrackingInput): CylinderTrackingInput {
     // Ensure dates are properly formatted
     const sanitized = { ...input };
-    
+
     if (sanitized.date) {
       sanitized.date = new Date(sanitized.date);
       sanitized.date.setHours(0, 0, 0, 0); // Normalize to start of day
@@ -557,27 +597,42 @@ export class CylinderTrackingValidator {
     if (sanitized.salesData) {
       sanitized.salesData = {
         ...sanitized.salesData,
-        salesPackageRevenue: Math.round((sanitized.salesData.salesPackageRevenue || 0) * 100) / 100,
-        salesRefillRevenue: Math.round((sanitized.salesData.salesRefillRevenue || 0) * 100) / 100,
-        salesTotalRevenue: Math.round((sanitized.salesData.salesTotalRevenue || 0) * 100) / 100,
-        salesCashDeposited: Math.round((sanitized.salesData.salesCashDeposited || 0) * 100) / 100,
-        salesDiscounts: Math.round((sanitized.salesData.salesDiscounts || 0) * 100) / 100,
-        salesNetRevenue: Math.round((sanitized.salesData.salesNetRevenue || 0) * 100) / 100
+        salesPackageRevenue:
+          Math.round((sanitized.salesData.salesPackageRevenue || 0) * 100) /
+          100,
+        salesRefillRevenue:
+          Math.round((sanitized.salesData.salesRefillRevenue || 0) * 100) / 100,
+        salesTotalRevenue:
+          Math.round((sanitized.salesData.salesTotalRevenue || 0) * 100) / 100,
+        salesCashDeposited:
+          Math.round((sanitized.salesData.salesCashDeposited || 0) * 100) / 100,
+        salesDiscounts:
+          Math.round((sanitized.salesData.salesDiscounts || 0) * 100) / 100,
+        salesNetRevenue:
+          Math.round((sanitized.salesData.salesNetRevenue || 0) * 100) / 100,
       };
     }
 
     if (sanitized.shipmentData) {
       sanitized.shipmentData = {
         ...sanitized.shipmentData,
-        shipmentTotalCost: Math.round((sanitized.shipmentData.shipmentTotalCost || 0) * 100) / 100
+        shipmentTotalCost:
+          Math.round((sanitized.shipmentData.shipmentTotalCost || 0) * 100) /
+          100,
       };
     }
 
     if (sanitized.receivablesData) {
       sanitized.receivablesData = {
         ...sanitized.receivablesData,
-        cashReceivablesChange: Math.round((sanitized.receivablesData.cashReceivablesChange || 0) * 100) / 100,
-        totalCashReceivables: Math.round((sanitized.receivablesData.totalCashReceivables || 0) * 100) / 100
+        cashReceivablesChange:
+          Math.round(
+            (sanitized.receivablesData.cashReceivablesChange || 0) * 100
+          ) / 100,
+        totalCashReceivables:
+          Math.round(
+            (sanitized.receivablesData.totalCashReceivables || 0) * 100
+          ) / 100,
       };
     }
 

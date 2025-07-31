@@ -469,7 +469,8 @@ export async function POST(request: NextRequest) {
             tenantId,
             driverId: validatedData.driverId,
             previousCashReceivables: previousReceivables.cashReceivables,
-            previousCylinderReceivables: previousReceivables.cylinderReceivables,
+            previousCylinderReceivables:
+              previousReceivables.cylinderReceivables,
           });
 
         // Store the calculated receivables in the database

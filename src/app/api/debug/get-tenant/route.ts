@@ -11,9 +11,9 @@ export async function GET(request: NextRequest) {
           select: {
             name: true,
             tenantId: true,
-          }
-        }
-      }
+          },
+        },
+      },
     });
 
     return NextResponse.json({
@@ -22,7 +22,6 @@ export async function GET(request: NextRequest) {
       driverTenantId: record?.driver?.tenantId,
       record,
     });
-
   } catch (error) {
     return NextResponse.json(
       { error: 'Failed to get tenant ID' },

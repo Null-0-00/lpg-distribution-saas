@@ -1262,8 +1262,8 @@ export default function AssetsPage() {
           <div className="bg-card w-full max-w-md rounded-lg p-6">
             <div className="mb-4 flex items-center justify-between">
               <h3 className="text-foreground text-lg font-semibold">
-                {editingItem ? t('edit') : t('addNew')}{' '}
-                {modalType === 'asset' ? t('asset') : t('liability')}
+                {editingItem ? t('edit') : 'Add New'}{' '}
+                {modalType === 'asset' ? 'Asset' : 'Liability'}
               </h3>
               <button
                 onClick={closeModal}
@@ -1313,7 +1313,7 @@ export default function AssetsPage() {
             <div className="space-y-4">
               <div>
                 <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  {modalType === 'asset' ? t('asset') : t('liability')} Name
+                  {modalType === 'asset' ? 'Asset' : 'Liability'} Name
                 </label>
                 <input
                   type="text"

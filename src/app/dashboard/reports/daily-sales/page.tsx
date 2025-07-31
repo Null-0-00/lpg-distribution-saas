@@ -191,17 +191,22 @@ export default function DailySalesReportPage() {
           setDepositsExpensesLoading(true);
         }
 
-        console.log('🔄 Starting progressive loading for daily sales report...');
+        console.log(
+          '🔄 Starting progressive loading for daily sales report...'
+        );
 
         // Phase 1: Load summary data first (fastest)
-        const reportResponse = await fetch(`/api/reports/daily-sales?date=${date}`, {
-          cache: isRefresh ? 'no-cache' : 'default',
-          headers: isRefresh
-            ? {
-                'Cache-Control': 'no-cache',
-              }
-            : {},
-        });
+        const reportResponse = await fetch(
+          `/api/reports/daily-sales?date=${date}`,
+          {
+            cache: isRefresh ? 'no-cache' : 'default',
+            headers: isRefresh
+              ? {
+                  'Cache-Control': 'no-cache',
+                }
+              : {},
+          }
+        );
 
         if (reportResponse.ok) {
           const data = await reportResponse.json();
@@ -210,13 +215,13 @@ export default function DailySalesReportPage() {
           console.log('✅ Phase 1 completed: Summary cards loaded');
 
           // Small delay for better UX
-          await new Promise(resolve => setTimeout(resolve, 200));
+          await new Promise((resolve) => setTimeout(resolve, 200));
           setReportTableLoading(false);
           console.log('✅ Phase 2 completed: Report table loaded');
 
           // Phase 2: Load cylinder receivables breakdown (slower)
           await fetchCylinderReceivablesBreakdown();
-          await new Promise(resolve => setTimeout(resolve, 200));
+          await new Promise((resolve) => setTimeout(resolve, 200));
           setDepositsExpensesLoading(false);
           console.log('✅ Phase 3 completed: Deposits & expenses loaded');
         } else {
@@ -413,7 +418,8 @@ export default function DailySalesReportPage() {
                     {t('totalSalesValue')}
                   </p>
                   <p className="text-foreground text-2xl font-bold">
-                    {reportData && formatCurrency(reportData.totals.totalSalesValue)}
+                    {reportData &&
+                      formatCurrency(reportData.totals.totalSalesValue)}
                   </p>
                 </div>
               </div>
@@ -426,7 +432,8 @@ export default function DailySalesReportPage() {
                     {t('totalDeposited')}
                   </p>
                   <p className="text-foreground text-2xl font-bold">
-                    {reportData && formatCurrency(reportData.totals.totalDeposited)}
+                    {reportData &&
+                      formatCurrency(reportData.totals.totalDeposited)}
                   </p>
                 </div>
               </div>
@@ -439,7 +446,8 @@ export default function DailySalesReportPage() {
                     {t('totalExpenses')}
                   </p>
                   <p className="text-foreground text-2xl font-bold">
-                    {reportData && formatCurrency(reportData.summary.totalExpenses)}
+                    {reportData &&
+                      formatCurrency(reportData.summary.totalExpenses)}
                   </p>
                 </div>
               </div>
@@ -452,7 +460,8 @@ export default function DailySalesReportPage() {
                     {t('availableCash')}
                   </p>
                   <p className="text-2xl font-bold text-green-600 dark:text-green-400">
-                    {reportData && formatCurrency(reportData.summary.availableCash)}
+                    {reportData &&
+                      formatCurrency(reportData.summary.availableCash)}
                   </p>
                 </div>
               </div>
@@ -460,7 +469,7 @@ export default function DailySalesReportPage() {
           </>
         )}
         {!summaryLoading && reportData && (
-          <div className="col-span-full flex items-center justify-center mt-4">
+          <div className="col-span-full mt-4 flex items-center justify-center">
             <div className="flex items-center text-green-600 dark:text-green-400">
               <CheckCircle className="mr-2 h-4 w-4" />
               <span className="text-sm font-medium">Summary loaded</span>
@@ -473,8 +482,8 @@ export default function DailySalesReportPage() {
       <div className="bg-card overflow-hidden rounded-lg shadow">
         {reportTableLoading ? (
           <div className="p-6">
-            <div className="border-border border-b px-6 py-4 mb-6">
-              <Skeleton className="h-6 w-48 mb-2" />
+            <div className="border-border mb-6 border-b px-6 py-4">
+              <Skeleton className="mb-2 h-6 w-48" />
             </div>
             <div className="space-y-4">
               <div className="space-y-3">
@@ -516,221 +525,225 @@ export default function DailySalesReportPage() {
             </div>
 
             <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-muted">
-              <tr>
-                <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
-                  {t('driver')}
-                </th>
-                <th className="px-6 py-3 text-center text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-300">
-                  {t('packageSalesQty')}
-                </th>
-                <th className="px-6 py-3 text-center text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-300">
-                  {t('refillSalesQty')}
-                </th>
-                <th className="px-6 py-3 text-center text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-300">
-                  {t('totalSalesQty')}
-                </th>
-                <th className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-300">
-                  {t('totalSalesValue')}
-                </th>
-                <th className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-300">
-                  {t('discount')}
-                </th>
-                <th className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-300">
-                  {t('totalDeposited')}
-                </th>
-                <th className="px-6 py-3 text-center text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-300">
-                  {t('totalCylindersReceivables')}
-                </th>
-                <th className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-300">
-                  {t('totalCashReceivables')}
-                </th>
-                <th className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-300">
-                  {t('changeInReceivablesCashCylinders')}
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-card divide-border divide-y">
-              {reportData.driverReports.map((driver) => (
-                <tr key={driver.driverId} className="hover:bg-muted/50">
-                  <td className="whitespace-nowrap px-6 py-4">
-                    <div className="flex items-center">
-                      <div>
-                        <div className="text-foreground text-sm font-medium">
-                          {driver.driverName}
-                        </div>
-                        <div className="text-muted-foreground text-xs">
-                          {t('retailDriver')}
-                        </div>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="text-foreground whitespace-nowrap px-6 py-4 text-center text-sm">
-                    {driver.packageSales}
-                  </td>
-                  <td className="text-foreground whitespace-nowrap px-6 py-4 text-center text-sm">
-                    {driver.refillSales}
-                  </td>
-                  <td className="text-foreground whitespace-nowrap px-6 py-4 text-center text-sm font-medium">
-                    {driver.totalSalesQty}
-                  </td>
-                  <td className="text-foreground whitespace-nowrap px-6 py-4 text-right text-sm">
-                    {formatCurrency(driver.totalSalesValue)}
-                  </td>
-                  <td className="text-foreground whitespace-nowrap px-6 py-4 text-right text-sm">
-                    {formatCurrency(driver.discount)}
-                  </td>
-                  <td className="text-foreground whitespace-nowrap px-6 py-4 text-right text-sm">
-                    {formatCurrency(driver.totalDeposited)}
-                  </td>
-                  <td className="whitespace-nowrap px-6 py-4 text-center text-sm">
-                    <div className="mb-1 text-sm font-bold text-orange-600 dark:text-orange-400">
-                      {driver.totalCylinderReceivables}
-                    </div>
-                    {driverReceivablesData[driver.driverId]
-                      ?.cylinderSizeBreakdown && (
-                      <div className="space-y-1">
-                        {Object.entries(
-                          driverReceivablesData[driver.driverId]
-                            .cylinderSizeBreakdown
-                        )
-                          .filter(([size, quantity]) => quantity > 0)
-                          .map(([size, quantity]) => (
-                            <div
-                              key={size}
-                              className="text-xs leading-tight text-gray-600 dark:text-gray-400"
-                            >
-                              <span className="font-medium">{size}:</span>
-                              <span className="ml-1 font-semibold text-orange-600">
-                                {quantity}
-                              </span>
+              <table className="w-full">
+                <thead className="bg-muted">
+                  <tr>
+                    <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                      {t('driver')}
+                    </th>
+                    <th className="px-6 py-3 text-center text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-300">
+                      {t('packageSalesQty')}
+                    </th>
+                    <th className="px-6 py-3 text-center text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-300">
+                      {t('refillSalesQty')}
+                    </th>
+                    <th className="px-6 py-3 text-center text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-300">
+                      {t('totalSalesQty')}
+                    </th>
+                    <th className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-300">
+                      {t('totalSalesValue')}
+                    </th>
+                    <th className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-300">
+                      {t('discount')}
+                    </th>
+                    <th className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-300">
+                      {t('totalDeposited')}
+                    </th>
+                    <th className="px-6 py-3 text-center text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-300">
+                      {t('totalCylindersReceivables')}
+                    </th>
+                    <th className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-300">
+                      {t('totalCashReceivables')}
+                    </th>
+                    <th className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-300">
+                      {t('changeInReceivablesCashCylinders')}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-card divide-border divide-y">
+                  {reportData.driverReports.map((driver) => (
+                    <tr key={driver.driverId} className="hover:bg-muted/50">
+                      <td className="whitespace-nowrap px-6 py-4">
+                        <div className="flex items-center">
+                          <div>
+                            <div className="text-foreground text-sm font-medium">
+                              {driver.driverName}
                             </div>
-                          ))}
-                      </div>
-                    )}
-                  </td>
-                  <td className="text-foreground whitespace-nowrap px-6 py-4 text-right text-sm">
-                    {formatCurrency(driver.totalCashReceivables)}
-                  </td>
-                  <td className="whitespace-nowrap px-6 py-4 text-right text-sm">
-                    <div className="flex flex-col text-xs">
-                      <span
-                        className={`font-medium ${
-                          driver.changeInCashReceivables > 0
-                            ? 'text-red-600 dark:text-red-400'
-                            : driver.changeInCashReceivables < 0
-                              ? 'text-green-600 dark:text-green-400'
-                              : 'text-foreground'
-                        }`}
-                      >
-                        {t('cash')}:{' '}
-                        {driver.changeInCashReceivables > 0 ? '+' : ''}
-                        {formatCurrency(driver.changeInCashReceivables)}
-                      </span>
-                      <span
-                        className={`font-medium ${
-                          driver.changeInCylinderReceivables > 0
-                            ? 'text-red-600 dark:text-red-400'
-                            : driver.changeInCylinderReceivables < 0
-                              ? 'text-green-600 dark:text-green-400'
-                              : 'text-foreground'
-                        }`}
-                      >
-                        {t('cylinders')}:{' '}
-                        {driver.changeInCylinderReceivables > 0 ? '+' : ''}
-                        {driver.changeInCylinderReceivables}
-                      </span>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-
-              {/* Totals Row */}
-              <tr className="bg-muted font-bold">
-                <td className="text-foreground whitespace-nowrap px-6 py-4 text-sm">
-                  {t('total').toUpperCase()}
-                </td>
-                <td className="text-foreground whitespace-nowrap px-6 py-4 text-center text-sm">
-                  {reportData.totals.packageSales}
-                </td>
-                <td className="text-foreground whitespace-nowrap px-6 py-4 text-center text-sm">
-                  {reportData.totals.refillSales}
-                </td>
-                <td className="text-foreground whitespace-nowrap px-6 py-4 text-center text-sm">
-                  {reportData.totals.totalSalesQty}
-                </td>
-                <td className="text-foreground whitespace-nowrap px-6 py-4 text-right text-sm">
-                  {formatCurrency(reportData.totals.totalSalesValue)}
-                </td>
-                <td className="text-foreground whitespace-nowrap px-6 py-4 text-right text-sm">
-                  {formatCurrency(reportData.totals.discount)}
-                </td>
-                <td className="text-foreground whitespace-nowrap px-6 py-4 text-right text-sm">
-                  {formatCurrency(reportData.totals.totalDeposited)}
-                </td>
-                <td className="whitespace-nowrap px-6 py-4 text-center text-sm">
-                  <div className="mb-1 text-sm font-bold text-orange-600 dark:text-orange-400">
-                    {reportData.totals.totalCylinderReceivables}
-                  </div>
-                  {Object.entries(cylinderReceivablesBreakdown).length > 0 && (
-                    <div className="space-y-1">
-                      {Object.entries(cylinderReceivablesBreakdown)
-                        .filter(([size, quantity]) => quantity > 0)
-                        .map(([size, quantity]) => (
-                          <div
-                            key={size}
-                            className="text-xs leading-tight text-gray-600 dark:text-gray-400"
-                          >
-                            <span className="font-medium">{size}:</span>
-                            <span className="ml-1 font-semibold text-orange-600">
-                              {quantity}
-                            </span>
+                            <div className="text-muted-foreground text-xs">
+                              {t('retailDriver')}
+                            </div>
                           </div>
-                        ))}
-                    </div>
-                  )}
-                </td>
-                <td className="text-foreground whitespace-nowrap px-6 py-4 text-right text-sm">
-                  {formatCurrency(reportData.totals.totalCashReceivables)}
-                </td>
-                <td className="whitespace-nowrap px-6 py-4 text-right text-sm">
-                  <div className="flex flex-col text-xs">
-                    <span
-                      className={`font-medium ${
-                        reportData.totals.changeInCashReceivables > 0
-                          ? 'text-red-600 dark:text-red-400'
-                          : reportData.totals.changeInCashReceivables < 0
-                            ? 'text-green-600 dark:text-green-400'
-                            : 'text-foreground'
-                      }`}
-                    >
-                      {t('cash')}:{' '}
-                      {reportData.totals.changeInCashReceivables > 0 ? '+' : ''}
-                      {formatCurrency(
-                        reportData.totals.changeInCashReceivables
+                        </div>
+                      </td>
+                      <td className="text-foreground whitespace-nowrap px-6 py-4 text-center text-sm">
+                        {driver.packageSales}
+                      </td>
+                      <td className="text-foreground whitespace-nowrap px-6 py-4 text-center text-sm">
+                        {driver.refillSales}
+                      </td>
+                      <td className="text-foreground whitespace-nowrap px-6 py-4 text-center text-sm font-medium">
+                        {driver.totalSalesQty}
+                      </td>
+                      <td className="text-foreground whitespace-nowrap px-6 py-4 text-right text-sm">
+                        {formatCurrency(driver.totalSalesValue)}
+                      </td>
+                      <td className="text-foreground whitespace-nowrap px-6 py-4 text-right text-sm">
+                        {formatCurrency(driver.discount)}
+                      </td>
+                      <td className="text-foreground whitespace-nowrap px-6 py-4 text-right text-sm">
+                        {formatCurrency(driver.totalDeposited)}
+                      </td>
+                      <td className="whitespace-nowrap px-6 py-4 text-center text-sm">
+                        <div className="mb-1 text-sm font-bold text-orange-600 dark:text-orange-400">
+                          {driver.totalCylinderReceivables}
+                        </div>
+                        {driverReceivablesData[driver.driverId]
+                          ?.cylinderSizeBreakdown && (
+                          <div className="space-y-1">
+                            {Object.entries(
+                              driverReceivablesData[driver.driverId]
+                                .cylinderSizeBreakdown
+                            )
+                              .filter(([size, quantity]) => quantity > 0)
+                              .map(([size, quantity]) => (
+                                <div
+                                  key={size}
+                                  className="text-xs leading-tight text-gray-600 dark:text-gray-400"
+                                >
+                                  <span className="font-medium">{size}:</span>
+                                  <span className="ml-1 font-semibold text-orange-600">
+                                    {quantity}
+                                  </span>
+                                </div>
+                              ))}
+                          </div>
+                        )}
+                      </td>
+                      <td className="text-foreground whitespace-nowrap px-6 py-4 text-right text-sm">
+                        {formatCurrency(driver.totalCashReceivables)}
+                      </td>
+                      <td className="whitespace-nowrap px-6 py-4 text-right text-sm">
+                        <div className="flex flex-col text-xs">
+                          <span
+                            className={`font-medium ${
+                              driver.changeInCashReceivables > 0
+                                ? 'text-red-600 dark:text-red-400'
+                                : driver.changeInCashReceivables < 0
+                                  ? 'text-green-600 dark:text-green-400'
+                                  : 'text-foreground'
+                            }`}
+                          >
+                            {t('cash')}:{' '}
+                            {driver.changeInCashReceivables > 0 ? '+' : ''}
+                            {formatCurrency(driver.changeInCashReceivables)}
+                          </span>
+                          <span
+                            className={`font-medium ${
+                              driver.changeInCylinderReceivables > 0
+                                ? 'text-red-600 dark:text-red-400'
+                                : driver.changeInCylinderReceivables < 0
+                                  ? 'text-green-600 dark:text-green-400'
+                                  : 'text-foreground'
+                            }`}
+                          >
+                            {t('cylinders')}:{' '}
+                            {driver.changeInCylinderReceivables > 0 ? '+' : ''}
+                            {driver.changeInCylinderReceivables}
+                          </span>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+
+                  {/* Totals Row */}
+                  <tr className="bg-muted font-bold">
+                    <td className="text-foreground whitespace-nowrap px-6 py-4 text-sm">
+                      {t('total').toUpperCase()}
+                    </td>
+                    <td className="text-foreground whitespace-nowrap px-6 py-4 text-center text-sm">
+                      {reportData.totals.packageSales}
+                    </td>
+                    <td className="text-foreground whitespace-nowrap px-6 py-4 text-center text-sm">
+                      {reportData.totals.refillSales}
+                    </td>
+                    <td className="text-foreground whitespace-nowrap px-6 py-4 text-center text-sm">
+                      {reportData.totals.totalSalesQty}
+                    </td>
+                    <td className="text-foreground whitespace-nowrap px-6 py-4 text-right text-sm">
+                      {formatCurrency(reportData.totals.totalSalesValue)}
+                    </td>
+                    <td className="text-foreground whitespace-nowrap px-6 py-4 text-right text-sm">
+                      {formatCurrency(reportData.totals.discount)}
+                    </td>
+                    <td className="text-foreground whitespace-nowrap px-6 py-4 text-right text-sm">
+                      {formatCurrency(reportData.totals.totalDeposited)}
+                    </td>
+                    <td className="whitespace-nowrap px-6 py-4 text-center text-sm">
+                      <div className="mb-1 text-sm font-bold text-orange-600 dark:text-orange-400">
+                        {reportData.totals.totalCylinderReceivables}
+                      </div>
+                      {Object.entries(cylinderReceivablesBreakdown).length >
+                        0 && (
+                        <div className="space-y-1">
+                          {Object.entries(cylinderReceivablesBreakdown)
+                            .filter(([size, quantity]) => quantity > 0)
+                            .map(([size, quantity]) => (
+                              <div
+                                key={size}
+                                className="text-xs leading-tight text-gray-600 dark:text-gray-400"
+                              >
+                                <span className="font-medium">{size}:</span>
+                                <span className="ml-1 font-semibold text-orange-600">
+                                  {quantity}
+                                </span>
+                              </div>
+                            ))}
+                        </div>
                       )}
-                    </span>
-                    <span
-                      className={`font-medium ${
-                        reportData.totals.changeInCylinderReceivables > 0
-                          ? 'text-red-600 dark:text-red-400'
-                          : reportData.totals.changeInCylinderReceivables < 0
-                            ? 'text-green-600 dark:text-green-400'
-                            : 'text-foreground'
-                      }`}
-                    >
-                      {t('cylinders')}:{' '}
-                      {reportData.totals.changeInCylinderReceivables > 0
-                        ? '+'
-                        : ''}
-                      {reportData.totals.changeInCylinderReceivables}
-                    </span>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+                    </td>
+                    <td className="text-foreground whitespace-nowrap px-6 py-4 text-right text-sm">
+                      {formatCurrency(reportData.totals.totalCashReceivables)}
+                    </td>
+                    <td className="whitespace-nowrap px-6 py-4 text-right text-sm">
+                      <div className="flex flex-col text-xs">
+                        <span
+                          className={`font-medium ${
+                            reportData.totals.changeInCashReceivables > 0
+                              ? 'text-red-600 dark:text-red-400'
+                              : reportData.totals.changeInCashReceivables < 0
+                                ? 'text-green-600 dark:text-green-400'
+                                : 'text-foreground'
+                          }`}
+                        >
+                          {t('cash')}:{' '}
+                          {reportData.totals.changeInCashReceivables > 0
+                            ? '+'
+                            : ''}
+                          {formatCurrency(
+                            reportData.totals.changeInCashReceivables
+                          )}
+                        </span>
+                        <span
+                          className={`font-medium ${
+                            reportData.totals.changeInCylinderReceivables > 0
+                              ? 'text-red-600 dark:text-red-400'
+                              : reportData.totals.changeInCylinderReceivables <
+                                  0
+                                ? 'text-green-600 dark:text-green-400'
+                                : 'text-foreground'
+                          }`}
+                        >
+                          {t('cylinders')}:{' '}
+                          {reportData.totals.changeInCylinderReceivables > 0
+                            ? '+'
+                            : ''}
+                          {reportData.totals.changeInCylinderReceivables}
+                        </span>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </>
         )}
@@ -748,14 +761,14 @@ export default function DailySalesReportPage() {
       <div className="bg-card rounded-lg shadow">
         {depositsExpensesLoading ? (
           <div className="p-6">
-            <div className="border-border border-b px-6 py-4 mb-6">
-              <Skeleton className="h-6 w-64 mb-2" />
+            <div className="border-border mb-6 border-b px-6 py-4">
+              <Skeleton className="mb-2 h-6 w-64" />
               <Skeleton className="h-4 w-80" />
             </div>
             <div className="grid grid-cols-1 gap-6 p-6 lg:grid-cols-2">
               {/* Deposits Skeleton */}
               <div>
-                <Skeleton className="h-5 w-20 mb-4" />
+                <Skeleton className="mb-4 h-5 w-20" />
                 <div className="space-y-3">
                   <div className="grid grid-cols-3 gap-4">
                     <Skeleton className="h-4 w-full" />
@@ -773,7 +786,7 @@ export default function DailySalesReportPage() {
               </div>
               {/* Expenses Skeleton */}
               <div>
-                <Skeleton className="h-5 w-20 mb-4" />
+                <Skeleton className="mb-4 h-5 w-20" />
                 <div className="space-y-3">
                   <div className="grid grid-cols-3 gap-4">
                     <Skeleton className="h-4 w-full" />
@@ -803,134 +816,134 @@ export default function DailySalesReportPage() {
             </div>
 
             <div className="grid grid-cols-1 gap-6 p-6 lg:grid-cols-2">
-          {/* Deposits Table */}
-          <div>
-            <h3 className="text-md text-foreground mb-4 font-medium">
-              {t('deposits')}
-            </h3>
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead className="bg-muted">
-                  <tr>
-                    <th className="text-muted-foreground px-3 py-2 text-left text-xs font-medium uppercase">
-                      {t('particulars')}
-                    </th>
-                    <th className="text-muted-foreground px-3 py-2 text-left text-xs font-medium uppercase">
-                      {t('description')}
-                    </th>
-                    <th className="text-muted-foreground px-3 py-2 text-right text-xs font-medium uppercase">
-                      {t('amount')}
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-border divide-y">
-                  {reportData.deposits &&
-                    reportData.deposits.map((deposit) => (
-                      <tr key={deposit.id} className="hover:bg-muted/50">
-                        <td className="text-foreground px-3 py-2 text-sm">
-                          {translateText(deposit.particulars) ||
-                            t('cashDepositsByDriver')}
+              {/* Deposits Table */}
+              <div>
+                <h3 className="text-md text-foreground mb-4 font-medium">
+                  {t('deposits')}
+                </h3>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead className="bg-muted">
+                      <tr>
+                        <th className="text-muted-foreground px-3 py-2 text-left text-xs font-medium uppercase">
+                          {t('particulars')}
+                        </th>
+                        <th className="text-muted-foreground px-3 py-2 text-left text-xs font-medium uppercase">
+                          {t('description')}
+                        </th>
+                        <th className="text-muted-foreground px-3 py-2 text-right text-xs font-medium uppercase">
+                          {t('amount')}
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-border divide-y">
+                      {reportData.deposits &&
+                        reportData.deposits.map((deposit) => (
+                          <tr key={deposit.id} className="hover:bg-muted/50">
+                            <td className="text-foreground px-3 py-2 text-sm">
+                              {translateText(deposit.particulars) ||
+                                t('cashDepositsByDriver')}
+                            </td>
+                            <td className="text-foreground px-3 py-2 text-sm">
+                              {deposit.description}
+                            </td>
+                            <td className="text-foreground px-3 py-2 text-right text-sm">
+                              {formatCurrency(deposit.amount)}
+                            </td>
+                          </tr>
+                        ))}
+                      {(!reportData.deposits ||
+                        reportData.deposits.length === 0) && (
+                        <tr>
+                          <td
+                            colSpan={3}
+                            className="text-muted-foreground px-3 py-4 text-center text-sm"
+                          >
+                            {t('noDepositsFound')}
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                    <tfoot className="bg-muted">
+                      <tr>
+                        <td
+                          colSpan={2}
+                          className="text-foreground px-3 py-2 text-sm font-medium"
+                        >
+                          {t('totalDepositsCalculated')}
                         </td>
-                        <td className="text-foreground px-3 py-2 text-sm">
-                          {deposit.description}
-                        </td>
-                        <td className="text-foreground px-3 py-2 text-right text-sm">
-                          {formatCurrency(deposit.amount)}
+                        <td className="text-foreground px-3 py-2 text-right text-sm font-bold">
+                          {formatCurrency(totalManualDeposits)}
                         </td>
                       </tr>
-                    ))}
-                  {(!reportData.deposits ||
-                    reportData.deposits.length === 0) && (
-                    <tr>
-                      <td
-                        colSpan={3}
-                        className="text-muted-foreground px-3 py-4 text-center text-sm"
-                      >
-                        {t('noDepositsFound')}
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-                <tfoot className="bg-muted">
-                  <tr>
-                    <td
-                      colSpan={2}
-                      className="text-foreground px-3 py-2 text-sm font-medium"
-                    >
-                      {t('totalDepositsCalculated')}
-                    </td>
-                    <td className="text-foreground px-3 py-2 text-right text-sm font-bold">
-                      {formatCurrency(totalManualDeposits)}
-                    </td>
-                  </tr>
-                </tfoot>
-              </table>
-            </div>
-          </div>
+                    </tfoot>
+                  </table>
+                </div>
+              </div>
 
-          {/* Expenses Table */}
-          <div>
-            <h3 className="text-md text-foreground mb-4 font-medium">
-              {t('expenses')}
-            </h3>
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead className="bg-muted">
-                  <tr>
-                    <th className="text-muted-foreground px-3 py-2 text-left text-xs font-medium uppercase">
-                      {t('particulars')}
-                    </th>
-                    <th className="text-muted-foreground px-3 py-2 text-left text-xs font-medium uppercase">
-                      {t('description')}
-                    </th>
-                    <th className="text-muted-foreground px-3 py-2 text-right text-xs font-medium uppercase">
-                      {t('amount')}
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-border divide-y">
-                  {reportData.expenses.map((expense) => (
-                    <tr key={expense.id} className="hover:bg-muted/50">
-                      <td className="text-foreground px-3 py-2 text-sm">
-                        {translateText(
-                          expense.category || expense.particulars
-                        ) || t('generalExpense')}
-                      </td>
-                      <td className="text-foreground px-3 py-2 text-sm">
-                        {expense.description}
-                      </td>
-                      <td className="text-foreground px-3 py-2 text-right text-sm">
-                        {formatCurrency(expense.amount)}
-                      </td>
-                    </tr>
-                  ))}
-                  {reportData.expenses.length === 0 && (
-                    <tr>
-                      <td
-                        colSpan={3}
-                        className="text-muted-foreground px-3 py-4 text-center text-sm"
-                      >
-                        {t('noExpensesFound')}
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-                <tfoot className="bg-muted">
-                  <tr>
-                    <td
-                      colSpan={2}
-                      className="text-foreground px-3 py-2 text-sm font-medium"
-                    >
-                      {t('totalExpensesCalculated')}
-                    </td>
-                    <td className="text-foreground px-3 py-2 text-right text-sm font-bold">
-                      {formatCurrency(totalExpensesCalculated)}
-                    </td>
-                  </tr>
-                </tfoot>
-              </table>
-            </div>
-          </div>
+              {/* Expenses Table */}
+              <div>
+                <h3 className="text-md text-foreground mb-4 font-medium">
+                  {t('expenses')}
+                </h3>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead className="bg-muted">
+                      <tr>
+                        <th className="text-muted-foreground px-3 py-2 text-left text-xs font-medium uppercase">
+                          {t('particulars')}
+                        </th>
+                        <th className="text-muted-foreground px-3 py-2 text-left text-xs font-medium uppercase">
+                          {t('description')}
+                        </th>
+                        <th className="text-muted-foreground px-3 py-2 text-right text-xs font-medium uppercase">
+                          {t('amount')}
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-border divide-y">
+                      {reportData.expenses.map((expense) => (
+                        <tr key={expense.id} className="hover:bg-muted/50">
+                          <td className="text-foreground px-3 py-2 text-sm">
+                            {translateText(
+                              expense.category || expense.particulars
+                            ) || t('generalExpense')}
+                          </td>
+                          <td className="text-foreground px-3 py-2 text-sm">
+                            {expense.description}
+                          </td>
+                          <td className="text-foreground px-3 py-2 text-right text-sm">
+                            {formatCurrency(expense.amount)}
+                          </td>
+                        </tr>
+                      ))}
+                      {reportData.expenses.length === 0 && (
+                        <tr>
+                          <td
+                            colSpan={3}
+                            className="text-muted-foreground px-3 py-4 text-center text-sm"
+                          >
+                            {t('noExpensesFound')}
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                    <tfoot className="bg-muted">
+                      <tr>
+                        <td
+                          colSpan={2}
+                          className="text-foreground px-3 py-2 text-sm font-medium"
+                        >
+                          {t('totalExpensesCalculated')}
+                        </td>
+                        <td className="text-foreground px-3 py-2 text-right text-sm font-bold">
+                          {formatCurrency(totalExpensesCalculated)}
+                        </td>
+                      </tr>
+                    </tfoot>
+                  </table>
+                </div>
+              </div>
             </div>
           </>
         )}
@@ -938,7 +951,9 @@ export default function DailySalesReportPage() {
           <div className="flex items-center justify-center p-4">
             <div className="flex items-center text-green-600 dark:text-green-400">
               <CheckCircle className="mr-2 h-4 w-4" />
-              <span className="text-sm font-medium">Deposits & expenses loaded</span>
+              <span className="text-sm font-medium">
+                Deposits & expenses loaded
+              </span>
             </div>
           </div>
         )}

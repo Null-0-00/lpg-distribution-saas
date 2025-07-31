@@ -305,15 +305,12 @@ async function calculateDailyReceivables(
       // Use most recent record's totals (could be yesterday or onboarding)
       previousCashTotal = previousRecord.totalCashReceivables;
       previousCylinderTotal = previousRecord.totalCylinderReceivables;
-      
-      console.log(
-        `📊 Found previous receivables for driver ${driver.id}:`,
-        {
-          date: previousRecord.date.toISOString().split('T')[0],
-          cash: previousCashTotal,
-          cylinders: previousCylinderTotal,
-        }
-      );
+
+      console.log(`📊 Found previous receivables for driver ${driver.id}:`, {
+        date: previousRecord.date.toISOString().split('T')[0],
+        cash: previousCashTotal,
+        cylinders: previousCylinderTotal,
+      });
     } else {
       console.log(`📊 No previous receivables found for driver ${driver.id}`);
     }
@@ -321,19 +318,17 @@ async function calculateDailyReceivables(
     // EXACT FORMULAS from updated requirements:
     // Today's Total = Previous Total (includes onboarding values) + Today's Changes
     const totalCashReceivables = previousCashTotal + cashReceivablesChange;
-    const totalCylinderReceivables = previousCylinderTotal + cylinderReceivablesChange;
-    
-    console.log(
-      `💰 Calculated receivables for driver ${driver.id}:`,
-      {
-        previousCash: previousCashTotal,
-        previousCylinders: previousCylinderTotal,
-        cashChange: cashReceivablesChange,
-        cylinderChange: cylinderReceivablesChange,
-        totalCash: totalCashReceivables,
-        totalCylinders: totalCylinderReceivables,
-      }
-    );
+    const totalCylinderReceivables =
+      previousCylinderTotal + cylinderReceivablesChange;
+
+    console.log(`💰 Calculated receivables for driver ${driver.id}:`, {
+      previousCash: previousCashTotal,
+      previousCylinders: previousCylinderTotal,
+      cashChange: cashReceivablesChange,
+      cylinderChange: cylinderReceivablesChange,
+      totalCash: totalCashReceivables,
+      totalCylinders: totalCylinderReceivables,
+    });
 
     // Upsert the receivable record
     try {

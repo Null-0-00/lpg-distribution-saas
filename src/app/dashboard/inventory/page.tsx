@@ -189,7 +189,9 @@ export default function InventoryPage() {
       const endDate = today.toISOString().split('T')[0];
 
       // PHASE 1: Load cylinder summary and basic inventory first (fastest)
-      console.log('📊 Phase 1: Loading cylinder summary and basic inventory...');
+      console.log(
+        '📊 Phase 1: Loading cylinder summary and basic inventory...'
+      );
       try {
         const [inventoryResponse, cylindersResponse] = await Promise.all([
           fetch(`/api/inventory?includeMovements=${includeMovements}`),
@@ -233,7 +235,6 @@ export default function InventoryPage() {
       } finally {
         setDailyTrackingLoading(false);
       }
-
     } catch (error) {
       console.error('Error in progressive loading:', error);
     } finally {

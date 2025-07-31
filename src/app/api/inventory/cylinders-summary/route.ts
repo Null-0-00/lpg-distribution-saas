@@ -28,7 +28,9 @@ export async function GET(request: NextRequest) {
     }
 
     const startTime = performance.now();
-    console.log('🔄 Creating REAL-TIME cylinder summary using live calculations...');
+    console.log(
+      '🔄 Creating REAL-TIME cylinder summary using live calculations...'
+    );
 
     // Get products for real-time inventory calculation
     const products = await prisma.product.findMany({
@@ -41,22 +43,25 @@ export async function GET(request: NextRequest) {
 
     // Initialize inventory calculator for real-time data
     const inventoryCalculator = new InventoryCalculator(prisma);
-    
+
     // Define today's date for receivables calculation
     const today = new Date();
     today.setHours(23, 59, 59, 999);
-    
-    console.log(`📊 Calculating real-time inventory for ${products.length} products`);
+
+    console.log(
+      `📊 Calculating real-time inventory for ${products.length} products`
+    );
 
     // Calculate real-time inventory levels for each product
     const productInventoryData = await Promise.all(
       products.map(async (product) => {
         try {
-          const currentLevels = await inventoryCalculator.getCurrentInventoryLevels(
-            tenantId,
-            product.id
-          );
-          
+          const currentLevels =
+            await inventoryCalculator.getCurrentInventoryLevels(
+              tenantId,
+              product.id
+            );
+
           return {
             product,
             fullCylinders: currentLevels.fullCylinders,
@@ -64,7 +69,10 @@ export async function GET(request: NextRequest) {
             totalCylinders: currentLevels.totalCylinders,
           };
         } catch (error) {
-          console.error(`Error calculating inventory for product ${product.id}:`, error);
+          console.error(
+            `Error calculating inventory for product ${product.id}:`,
+            error
+          );
           // Return zero values if calculation fails
           return {
             product,
@@ -76,7 +84,9 @@ export async function GET(request: NextRequest) {
       })
     );
 
-    console.log(`✅ Successfully calculated inventory for ${productInventoryData.length} products`);
+    console.log(
+      `✅ Successfully calculated inventory for ${productInventoryData.length} products`
+    );
 
     // Get receivables
     const latestReceivableRecords = await prisma.receivableRecord.findMany({
@@ -90,70 +100,87 @@ export async function GET(request: NextRequest) {
     });
 
     // Calculate cylinder totals by company-size combinations using REAL-TIME data
-    const fullCylindersByCompanySize = new Map<string, { company: string; size: string; quantity: number }>();
-    const emptyCylindersBySize = new Map<string, { size: string; quantity: number }>();
+    const fullCylindersByCompanySize = new Map<
+      string,
+      { company: string; size: string; quantity: number }
+    >();
+    const emptyCylindersBySize = new Map<
+      string,
+      { size: string; quantity: number }
+    >();
     let totalFullCylinders = 0;
     let totalEmptyCylinders = 0;
 
-    productInventoryData.forEach(({ product, fullCylinders, emptyCylinders }) => {
-      if (product.cylinderSize) {
-        const size = product.cylinderSize.size;
-        const companyName = product.company.name;
-        
-        totalFullCylinders += fullCylinders;
-        totalEmptyCylinders += emptyCylinders;
-        
-        // Add full cylinders by company-size combination (include zero values for completeness)
-        const key = `${companyName}-${size}`;
-        const existing = fullCylindersByCompanySize.get(key);
-        fullCylindersByCompanySize.set(key, {
-          company: companyName,
-          size,
-          quantity: (existing?.quantity || 0) + fullCylinders,
-        });
-        
-        // Add empty cylinders by size (include zero values for completeness)
-        const existing2 = emptyCylindersBySize.get(size);
-        emptyCylindersBySize.set(size, {
-          size,
-          quantity: (existing2?.quantity || 0) + emptyCylinders,
-        });
+    productInventoryData.forEach(
+      ({ product, fullCylinders, emptyCylinders }) => {
+        if (product.cylinderSize) {
+          const size = product.cylinderSize.size;
+          const companyName = product.company.name;
+
+          totalFullCylinders += fullCylinders;
+          totalEmptyCylinders += emptyCylinders;
+
+          // Add full cylinders by company-size combination (include zero values for completeness)
+          const key = `${companyName}-${size}`;
+          const existing = fullCylindersByCompanySize.get(key);
+          fullCylindersByCompanySize.set(key, {
+            company: companyName,
+            size,
+            quantity: (existing?.quantity || 0) + fullCylinders,
+          });
+
+          // Add empty cylinders by size (include zero values for completeness)
+          const existing2 = emptyCylindersBySize.get(size);
+          emptyCylindersBySize.set(size, {
+            size,
+            quantity: (existing2?.quantity || 0) + emptyCylinders,
+          });
+        }
       }
-    });
+    );
 
     // Format full cylinders data - now shows all company-size combinations
     const fullCylindersData = Array.from(fullCylindersByCompanySize.values());
-    
+
     console.log('📊 REAL-TIME full cylinders calculation details:', {
       totalProducts: products.length,
       totalProductInventoryData: productInventoryData.length,
-      fullCylindersByCompanySize: Array.from(fullCylindersByCompanySize.entries()),
+      fullCylindersByCompanySize: Array.from(
+        fullCylindersByCompanySize.entries()
+      ),
       totalFullCylinders,
       fullCylindersData,
-      calculationMethod: 'Real-time using InventoryCalculator.getCurrentInventoryLevels()',
+      calculationMethod:
+        'Real-time using InventoryCalculator.getCurrentInventoryLevels()',
     });
 
     // Format empty cylinders data
-    const emptyCylindersData = Array.from(emptyCylindersBySize.values()).map(item => ({
-      size: item.size,
-      emptyCylinders: item.quantity,
-      emptyCylindersInHand: item.quantity,
-    }));
+    const emptyCylindersData = Array.from(emptyCylindersBySize.values()).map(
+      (item) => ({
+        size: item.size,
+        emptyCylinders: item.quantity,
+        emptyCylindersInHand: item.quantity,
+      })
+    );
 
     // Calculate total receivables and breakdown by size
     const latestReceivablesByDriver = new Map<string, number>();
     latestReceivableRecords.forEach((record) => {
       if (!latestReceivablesByDriver.has(record.driverId)) {
-        latestReceivablesByDriver.set(record.driverId, record.totalCylinderReceivables);
+        latestReceivablesByDriver.set(
+          record.driverId,
+          record.totalCylinderReceivables
+        );
       }
     });
 
-    const totalCylinderReceivables = Array.from(latestReceivablesByDriver.values())
-      .reduce((sum, amount) => sum + amount, 0);
+    const totalCylinderReceivables = Array.from(
+      latestReceivablesByDriver.values()
+    ).reduce((sum, amount) => sum + amount, 0);
 
     // Calculate receivables breakdown by size using the same approach as daily inventory
     const cylinderReceivablesBySize = new Map<string, number>();
-    
+
     // Get all active retail drivers with receivables
     const activeDriversWithReceivables = await prisma.driver.findMany({
       where: {
@@ -201,9 +228,12 @@ export async function GET(request: NextRequest) {
           },
           select: {
             driverId: true,
+            quantity: true,
             cylindersDeposited: true,
             product: {
               select: {
+                name: true,
+                size: true,
                 cylinderSize: {
                   select: {
                     size: true,
@@ -218,23 +248,52 @@ export async function GET(request: NextRequest) {
       // Calculate receivables by size for each driver
       for (const driver of activeDriversWithReceivables) {
         if (driver.receivableRecords[0]?.totalCylinderReceivables > 0) {
-          const driverBaselines = allBaselineBreakdowns.filter(b => b.driverId === driver.id);
-          const driverSales = allSalesWithCylinders.filter(s => s.driverId === driver.id);
-          
-          const totalReceivables = driver.receivableRecords[0].totalCylinderReceivables;
-          const totalBaseline = driverBaselines.reduce((sum, b) => sum + b.baselineQuantity, 0);
-          
-          if (totalBaseline > 0) {
-            // Proportionally distribute receivables based on baseline quantities
-            for (const baseline of driverBaselines) {
-              if (baseline.cylinderSize && baseline.baselineQuantity > 0) {
-                const proportion = baseline.baselineQuantity / totalBaseline;
-                const sizeReceivables = Math.round(totalReceivables * proportion);
-                
-                const size = baseline.cylinderSize.size;
-                cylinderReceivablesBySize.set(size, (cylinderReceivablesBySize.get(size) || 0) + sizeReceivables);
+          const driverBaselines = allBaselineBreakdowns.filter(
+            (b) => b.driverId === driver.id
+          );
+          const driverSales = allSalesWithCylinders.filter(
+            (s) => s.driverId === driver.id
+          );
+
+          const totalReceivables =
+            driver.receivableRecords[0].totalCylinderReceivables;
+          const totalBaseline = driverBaselines.reduce(
+            (sum, b) => sum + b.baselineQuantity,
+            0
+          );
+
+          if (driverBaselines.length > 0) {
+            // EXACT calculation: Start with onboarding baseline breakdown by size
+            const sizeBreakdown: Record<string, number> = {};
+
+            // Initialize with onboarding baseline
+            driverBaselines.forEach((item) => {
+              const size = item.cylinderSize.size;
+              sizeBreakdown[size] = item.baselineQuantity;
+            });
+
+            // Add/subtract sales data by specific cylinder sizes
+            driverSales.forEach((sale) => {
+              const size =
+                sale.product?.cylinderSize?.size ||
+                sale.product?.size ||
+                'Unknown';
+              const receivablesChange =
+                (sale.quantity || 0) - (sale.cylindersDeposited || 0);
+
+              sizeBreakdown[size] =
+                (sizeBreakdown[size] || 0) + receivablesChange;
+            });
+
+            // Use only positive values from the cumulative calculation
+            Object.entries(sizeBreakdown).forEach(([size, quantity]) => {
+              if (quantity > 0) {
+                cylinderReceivablesBySize.set(
+                  size,
+                  (cylinderReceivablesBySize.get(size) || 0) + quantity
+                );
               }
-            }
+            });
           }
         }
       }
@@ -242,7 +301,7 @@ export async function GET(request: NextRequest) {
 
     // Create receivables breakdown object
     const receivablesBreakdown = Object.fromEntries(cylinderReceivablesBySize);
-    
+
     console.log('📊 Receivables breakdown calculated:', {
       totalCylinderReceivables,
       receivablesBreakdown,
@@ -262,7 +321,8 @@ export async function GET(request: NextRequest) {
       totalCylinderReceivables,
       receivablesBreakdown,
       lastUpdated: new Date().toISOString(),
-      dataSource: 'REAL-TIME calculation using InventoryCalculator.getCurrentInventoryLevels() with live business logic',
+      dataSource:
+        'REAL-TIME calculation using InventoryCalculator.getCurrentInventoryLevels() with live business logic',
       performanceMetrics: {
         queryTime: `${(endTime - startTime).toFixed(2)}ms`,
         cacheHit: false,
@@ -270,15 +330,21 @@ export async function GET(request: NextRequest) {
     };
 
     // Log performance metrics
-    performanceMonitor.logQuery('/api/inventory/cylinders-summary', endTime - startTime, {
-      tenantId,
-      cacheHit: false,
-    });
+    performanceMonitor.logQuery(
+      '/api/inventory/cylinders-summary',
+      endTime - startTime,
+      {
+        tenantId,
+        cacheHit: false,
+      }
+    );
 
     // Cache the result for 2 minutes
     await cache.set(cacheKey, responseData, 120);
 
-    console.log(`🎉 REAL-TIME cylinder summary completed in ${(endTime - startTime).toFixed(2)}ms with live data`);
+    console.log(
+      `🎉 REAL-TIME cylinder summary completed in ${(endTime - startTime).toFixed(2)}ms with live data`
+    );
 
     return NextResponse.json(responseData);
   } catch (error) {

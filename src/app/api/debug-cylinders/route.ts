@@ -161,8 +161,9 @@ export async function GET(request: NextRequest) {
       orderBy: { size: 'asc' },
     });
 
-    const totalReceivables = Array.from(cylinderReceivablesBySize.values())
-      .reduce((sum, val) => sum + val, 0);
+    const totalReceivables = Array.from(
+      cylinderReceivablesBySize.values()
+    ).reduce((sum, val) => sum + val, 0);
 
     const results: any[] = [];
 
@@ -189,7 +190,9 @@ export async function GET(request: NextRequest) {
           calculationMethod,
         });
       } else if (cylinderSizes.length > 0) {
-        emptyCylindersForSize = Math.floor(totalEmptyCylinders / cylinderSizes.length);
+        emptyCylindersForSize = Math.floor(
+          totalEmptyCylinders / cylinderSizes.length
+        );
         calculationMethod = 'equal_distribution';
 
         results.push({
@@ -206,13 +209,18 @@ export async function GET(request: NextRequest) {
       totalEmptyCylinders,
       totalReceivables,
       cylinderReceivablesBySize: Object.fromEntries(cylinderReceivablesBySize),
-      cylinderSizes: cylinderSizes.map(c => c.size),
+      cylinderSizes: cylinderSizes.map((c) => c.size),
       calculations: results,
-      summary: results.map(r => ({ size: r.size, emptyCylinders: r.flooredResult || r.equalDistribution })),
+      summary: results.map((r) => ({
+        size: r.size,
+        emptyCylinders: r.flooredResult || r.equalDistribution,
+      })),
     });
-
   } catch (error) {
     console.error('Debug cylinders error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
   }
 }

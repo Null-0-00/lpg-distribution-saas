@@ -8,7 +8,7 @@ export async function POST(request: NextRequest) {
     // Hardcode tenant ID for testing
     const tenantId = 'cmdqabjh00000ubs0gkdpyyx4';
 
-    // Get drivers for this tenant  
+    // Get drivers for this tenant
     const drivers = await prisma.driver.findMany({
       where: { tenantId, status: 'ACTIVE', driverType: 'RETAIL' },
       select: { id: true, name: true },
@@ -52,12 +52,12 @@ export async function POST(request: NextRequest) {
       let cylindersDeposited = 0;
       let refillQuantity = 0;
 
-      sales.forEach(sale => {
+      sales.forEach((sale) => {
         totalValue += sale.totalValue || 0;
         discount += sale.discount || 0;
         cashDeposited += sale.cashDeposited || 0;
         cylindersDeposited += sale.cylindersDeposited || 0;
-        
+
         if (sale.saleType === 'REFILL') {
           refillQuantity += sale.quantity || 0;
         }
@@ -90,15 +90,17 @@ export async function POST(request: NextRequest) {
           cashReceivablesChange: currentRecord.cashReceivablesChange,
           cylinderReceivablesChange: currentRecord.cylinderReceivablesChange,
           onboardingCashReceivables: currentRecord.onboardingCashReceivables,
-          onboardingCylinderReceivables: currentRecord.onboardingCylinderReceivables,
+          onboardingCylinderReceivables:
+            currentRecord.onboardingCylinderReceivables,
           totalCashReceivables: currentRecord.totalCashReceivables,
           totalCylinderReceivables: currentRecord.totalCylinderReceivables,
         });
 
         // Apply fixed formula
         const onboardingCash = currentRecord.onboardingCashReceivables || 0;
-        const onboardingCylinders = currentRecord.onboardingCylinderReceivables || 0;
-        
+        const onboardingCylinders =
+          currentRecord.onboardingCylinderReceivables || 0;
+
         // Get previous day's total (no previous day for 2025-07-30 in this case)
         const previousRecord = await prisma.receivableRecord.findFirst({
           where: {
@@ -110,17 +112,23 @@ export async function POST(request: NextRequest) {
         });
 
         const previousCashTotal = previousRecord?.totalCashReceivables || 0;
-        const previousCylinderTotal = previousRecord?.totalCylinderReceivables || 0;
+        const previousCylinderTotal =
+          previousRecord?.totalCylinderReceivables || 0;
 
         // CORRECTED FORMULA
-        const newTotalCash = cashReceivablesChange + onboardingCash + previousCashTotal;
-        const newTotalCylinders = cylinderReceivablesChange + onboardingCylinders + previousCylinderTotal;
+        const newTotalCash =
+          cashReceivablesChange + onboardingCash + previousCashTotal;
+        const newTotalCylinders =
+          cylinderReceivablesChange +
+          onboardingCylinders +
+          previousCylinderTotal;
 
         console.log(`Fixed formula calculation:`, {
           formula: `${cashReceivablesChange} + ${onboardingCash} + ${previousCashTotal} = ${newTotalCash}`,
           currentTotalCash: currentRecord.totalCashReceivables,
           newTotalCash,
-          isCorrect: Math.abs(newTotalCash - currentRecord.totalCashReceivables) < 0.01,
+          isCorrect:
+            Math.abs(newTotalCash - currentRecord.totalCashReceivables) < 0.01,
         });
 
         results.push({
@@ -148,7 +156,8 @@ export async function POST(request: NextRequest) {
             totalCylinders: newTotalCylinders,
           },
           formula: `${cashReceivablesChange} + ${onboardingCash} + ${previousCashTotal} = ${newTotalCash}`,
-          needsUpdate: Math.abs(newTotalCash - currentRecord.totalCashReceivables) > 0.01,
+          needsUpdate:
+            Math.abs(newTotalCash - currentRecord.totalCashReceivables) > 0.01,
         });
       } else {
         console.log(`No record found for ${driver.name} on 2025-07-30`);
@@ -167,13 +176,12 @@ export async function POST(request: NextRequest) {
       testDate: '2025-07-30',
       results,
     });
-
   } catch (error) {
     console.error('❌ Error testing recalculate:', error);
     return NextResponse.json(
-      { 
+      {
         error: 'Failed to test recalculate',
-        details: error instanceof Error ? error.message : 'Unknown error'
+        details: error instanceof Error ? error.message : 'Unknown error',
       },
       { status: 500 }
     );

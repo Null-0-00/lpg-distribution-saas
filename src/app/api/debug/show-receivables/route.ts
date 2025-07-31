@@ -11,18 +11,15 @@ export async function GET(request: NextRequest) {
         driver: {
           select: {
             name: true,
-          }
-        }
+          },
+        },
       },
-      orderBy: [
-        { driverId: 'asc' },
-        { date: 'asc' }
-      ],
+      orderBy: [{ driverId: 'asc' }, { date: 'asc' }],
     });
 
     console.log(`Found ${allRecords.length} receivables records`);
 
-    const formattedRecords = allRecords.map(record => ({
+    const formattedRecords = allRecords.map((record) => ({
       id: record.id,
       driverName: record.driver.name,
       date: record.date.toISOString().split('T')[0],
@@ -36,7 +33,7 @@ export async function GET(request: NextRequest) {
     }));
 
     // Group by driver for easier reading
-    const recordsByDriver = {};
+    const recordsByDriver: Record<string, typeof formattedRecords> = {};
     for (const record of formattedRecords) {
       if (!recordsByDriver[record.driverName]) {
         recordsByDriver[record.driverName] = [];
@@ -52,13 +49,12 @@ export async function GET(request: NextRequest) {
       recordsByDriver,
       allRecords: formattedRecords,
     });
-
   } catch (error) {
     console.error('❌ Error showing receivables:', error);
     return NextResponse.json(
-      { 
+      {
         error: 'Failed to show receivables',
-        details: error instanceof Error ? error.message : 'Unknown error'
+        details: error instanceof Error ? error.message : 'Unknown error',
       },
       { status: 500 }
     );

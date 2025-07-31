@@ -204,23 +204,29 @@ export default function ReceivablesPage() {
       const recalcInterval = 10 * 60 * 1000; // 10 minutes
       const lastRecalc = localStorage.getItem(lastRecalcKey);
       const now = Date.now();
-      
-      const shouldRecalculate = !lastRecalc || (now - parseInt(lastRecalc)) > recalcInterval;
-      
+
+      const shouldRecalculate =
+        !lastRecalc || now - parseInt(lastRecalc) > recalcInterval;
+
       if (shouldRecalculate) {
         console.log('🔄 Auto-recalculating receivables (cache expired)...');
         try {
-          const recalcResponse = await fetch('/api/receivables/recalculate?days=3', {
-            method: 'POST',
-          });
-          
+          const recalcResponse = await fetch(
+            '/api/receivables/recalculate?days=3',
+            {
+              method: 'POST',
+            }
+          );
+
           if (recalcResponse.ok) {
             const result = await recalcResponse.json();
             console.log('✅ Auto-recalculation completed:', result.message);
             console.log('⚡ Performance:', result.performance);
             localStorage.setItem(lastRecalcKey, now.toString());
           } else {
-            console.warn('⚠️ Auto-recalculation failed, continuing with existing data');
+            console.warn(
+              '⚠️ Auto-recalculation failed, continuing with existing data'
+            );
           }
         } catch (error) {
           console.warn('⚠️ Auto-recalculation error:', error);
@@ -228,11 +234,11 @@ export default function ReceivablesPage() {
       } else {
         console.log('✅ Skipping recalculation (cache still fresh)');
       }
-      
+
       // Then fetch the updated data
       await fetchReceivables();
     };
-    
+
     initializePage();
     fetchCylinderSizes();
   }, []);
@@ -885,8 +891,9 @@ export default function ReceivablesPage() {
                 {t('customerReceivablesManuallyManaged')}
               </li>
               <li>
-                • <strong>⚡ Smart Recalculation:</strong>{' '}
-                Receivables are efficiently recalculated with intelligent caching (10-minute intervals)
+                • <strong>⚡ Smart Recalculation:</strong> Receivables are
+                efficiently recalculated with intelligent caching (10-minute
+                intervals)
               </li>
               <li>
                 • <strong>{t('validation')}:</strong>{' '}

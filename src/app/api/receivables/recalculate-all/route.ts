@@ -11,18 +11,19 @@ export async function POST(request: NextRequest) {
 
     const tenantId = session.user.tenantId;
 
-    console.log(`🔄 Starting receivables recalculation for tenant: ${tenantId}`);
+    console.log(
+      `🔄 Starting receivables recalculation for tenant: ${tenantId}`
+    );
 
     // Get all receivables records ordered by driver and date
     const allRecords = await prisma.receivableRecord.findMany({
       where: { tenantId },
-      orderBy: [
-        { driverId: 'asc' },
-        { date: 'asc' }
-      ],
+      orderBy: [{ driverId: 'asc' }, { date: 'asc' }],
     });
 
-    console.log(`📊 Found ${allRecords.length} receivables records to recalculate`);
+    console.log(
+      `📊 Found ${allRecords.length} receivables records to recalculate`
+    );
 
     // Group records by driver
     const recordsByDriver = new Map<string, typeof allRecords>();
@@ -38,7 +39,9 @@ export async function POST(request: NextRequest) {
 
     // Process each driver's records in chronological order
     for (const [driverId, driverRecords] of recordsByDriver.entries()) {
-      console.log(`👤 Processing driver ${driverId} with ${driverRecords.length} records`);
+      console.log(
+        `👤 Processing driver ${driverId} with ${driverRecords.length} records`
+      );
 
       // Sort by date to ensure chronological order
       driverRecords.sort((a, b) => a.date.getTime() - b.date.getTime());
@@ -50,28 +53,29 @@ export async function POST(request: NextRequest) {
       for (const record of driverRecords) {
         try {
           // Check if this is the same date as previous record
-          const isSameDate = previousDate && 
+          const isSameDate =
+            previousDate &&
             record.date.toDateString() === previousDate.toDateString();
-          
+
           // Apply the correct formula:
           // For same date: totalCashReceivables = cashReceivablesChange + onboardingCashReceivables (no previous total)
           // For different date: totalCashReceivables = cashReceivablesChange + onboardingCashReceivables + PREVIOUS DAY'S totalCashReceivables
           const previousCashToAdd = isSameDate ? 0 : previousCashTotal;
           const previousCylinderToAdd = isSameDate ? 0 : previousCylinderTotal;
-          
-          const newTotalCash = 
-            record.cashReceivablesChange + 
-            (record.onboardingCashReceivables || 0) + 
+
+          const newTotalCash =
+            record.cashReceivablesChange +
+            (record.onboardingCashReceivables || 0) +
             previousCashToAdd;
 
-          const newTotalCylinders = 
-            record.cylinderReceivablesChange + 
-            (record.onboardingCylinderReceivables || 0) + 
+          const newTotalCylinders =
+            record.cylinderReceivablesChange +
+            (record.onboardingCylinderReceivables || 0) +
             previousCylinderToAdd;
 
           // Only update if values have changed
           if (
-            newTotalCash !== record.totalCashReceivables || 
+            newTotalCash !== record.totalCashReceivables ||
             newTotalCylinders !== record.totalCylinderReceivables
           ) {
             console.log(
@@ -82,7 +86,7 @@ export async function POST(request: NextRequest) {
                 oldCylinders: record.totalCylinderReceivables,
                 newCylinders: newTotalCylinders,
                 formula: `${record.cashReceivablesChange} + ${record.onboardingCashReceivables || 0} + ${previousCashToAdd}`,
-                sameDate: isSameDate
+                sameDate: isSameDate,
               }
             );
 
@@ -105,7 +109,6 @@ export async function POST(request: NextRequest) {
             previousCylinderTotal = newTotalCylinders;
           }
           previousDate = record.date;
-
         } catch (error) {
           console.error(`❌ Error updating record ${record.id}:`, error);
           errors.push({
@@ -118,7 +121,9 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    console.log(`✅ Receivables recalculation completed. Updated ${updatedCount} records.`);
+    console.log(
+      `✅ Receivables recalculation completed. Updated ${updatedCount} records.`
+    );
 
     return NextResponse.json({
       success: true,
@@ -131,13 +136,12 @@ export async function POST(request: NextRequest) {
       },
       errors: errors.length > 0 ? errors : undefined,
     });
-
   } catch (error) {
     console.error('❌ Receivables recalculation failed:', error);
     return NextResponse.json(
-      { 
+      {
         error: 'Failed to recalculate receivables',
-        details: error instanceof Error ? error.message : 'Unknown error'
+        details: error instanceof Error ? error.message : 'Unknown error',
       },
       { status: 500 }
     );

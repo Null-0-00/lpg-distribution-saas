@@ -907,12 +907,12 @@ export async function GET(request: NextRequest) {
 
     // OPTIMIZED: Pre-load all receivables data once instead of per-date queries
     const allReceivableRecords = await prisma.receivableRecord.findMany({
-      where: { 
+      where: {
         tenantId,
         date: {
           gte: rangeStart,
           lte: rangeEnd,
-        }
+        },
       },
       select: {
         driverId: true,
@@ -980,7 +980,8 @@ export async function GET(request: NextRequest) {
       // Calculate actual outstanding orders for this date
       const outstandingData = await getOutstandingOrdersForDate(date);
       const outstandingOrdersQty = outstandingData.totalOutstanding;
-      const outstandingPackageOrdersQty = outstandingData.totalPackageOutstanding;
+      const outstandingPackageOrdersQty =
+        outstandingData.totalPackageOutstanding;
       const outstandingRefillOrdersQty = outstandingData.totalRefillOutstanding;
       const outstandingOrdersProducts = outstandingData.outstandingProducts;
       const outstandingPackageOrdersProducts = outstandingData.packageProducts;
@@ -1096,52 +1097,56 @@ export async function GET(request: NextRequest) {
 
         if (driverIds.length > 0) {
           // Get baseline data for drivers with receivables (cached from earlier if possible)
-          const [allBaselineBreakdowns, allSalesWithCylinders] = await Promise.all([
-            prisma.driverCylinderSizeBaseline.findMany({
-              where: {
-                tenantId,
-                driverId: { in: driverIds },
-              },
-              select: {
-                driverId: true,
-                baselineQuantity: true,
-                cylinderSize: {
-                  select: {
-                    size: true,
+          const [allBaselineBreakdowns, allSalesWithCylinders] =
+            await Promise.all([
+              prisma.driverCylinderSizeBaseline.findMany({
+                where: {
+                  tenantId,
+                  driverId: { in: driverIds },
+                },
+                select: {
+                  driverId: true,
+                  baselineQuantity: true,
+                  cylinderSize: {
+                    select: {
+                      size: true,
+                    },
                   },
                 },
-              },
-            }),
-            prisma.sale.findMany({
-              where: {
-                tenantId,
-                driverId: { in: driverIds },
-                saleType: 'REFILL',
-                saleDate: {
-                  lte: new Date(date + 'T23:59:59.999Z'),
+              }),
+              prisma.sale.findMany({
+                where: {
+                  tenantId,
+                  driverId: { in: driverIds },
+                  saleType: 'REFILL',
+                  saleDate: {
+                    lte: new Date(date + 'T23:59:59.999Z'),
+                  },
                 },
-              },
-              select: {
-                driverId: true,
-                quantity: true,
-                cylindersDeposited: true,
-                product: {
-                  select: {
-                    name: true,
-                    size: true,
-                    cylinderSize: {
-                      select: {
-                        size: true,
+                select: {
+                  driverId: true,
+                  quantity: true,
+                  cylindersDeposited: true,
+                  product: {
+                    select: {
+                      name: true,
+                      size: true,
+                      cylinderSize: {
+                        select: {
+                          size: true,
+                        },
                       },
                     },
                   },
                 },
-              },
-            }),
-          ]);
+              }),
+            ]);
 
           // Group pre-loaded data by driver for efficient processing
-          const baselinesByDriver = new Map<string, typeof allBaselineBreakdowns>();
+          const baselinesByDriver = new Map<
+            string,
+            typeof allBaselineBreakdowns
+          >();
           const salesByDriver = new Map<string, typeof allSalesWithCylinders>();
 
           allBaselineBreakdowns.forEach((baseline) => {
@@ -1185,7 +1190,8 @@ export async function GET(request: NextRequest) {
                   const receivablesChange =
                     (sale.quantity || 0) - (sale.cylindersDeposited || 0);
 
-                  sizeBreakdown[size] = (sizeBreakdown[size] || 0) + receivablesChange;
+                  sizeBreakdown[size] =
+                    (sizeBreakdown[size] || 0) + receivablesChange;
                 });
 
                 // Use only positive values from the cumulative calculation
@@ -1200,7 +1206,8 @@ export async function GET(request: NextRequest) {
               } else {
                 // Fallback: use pre-loaded sales data
                 salesWithCylinders.forEach((sale) => {
-                  const size = sale.product?.size || sale.product?.name || 'Unknown';
+                  const size =
+                    sale.product?.size || sale.product?.name || 'Unknown';
                   const receivables =
                     (sale.quantity || 0) - (sale.cylindersDeposited || 0);
                   if (receivables > 0) {
@@ -1231,10 +1238,10 @@ export async function GET(request: NextRequest) {
           {
             emptyCylinderReceivables,
             distribution: Object.fromEntries(cylinderReceivablesBySize),
-            source: 'EXACT baseline + sales changes by SIZE with efficient batching',
+            source:
+              'EXACT baseline + sales changes by SIZE with efficient batching',
           }
         );
-        
       } catch (error) {
         console.warn(
           `Failed to calculate exact empty cylinder receivables for ${date}:`,
@@ -1242,12 +1249,14 @@ export async function GET(request: NextRequest) {
         );
         // Fallback to using the pre-loaded total
         emptyCylinderReceivables = totalReceivablesForRange;
-        
+
         // Simple proportional distribution by available cylinder sizes as fallback
         if (availableSizes.size > 0 && emptyCylinderReceivables > 0) {
-          const perSizeReceivables = Math.floor(emptyCylinderReceivables / availableSizes.size);
+          const perSizeReceivables = Math.floor(
+            emptyCylinderReceivables / availableSizes.size
+          );
           const remainder = emptyCylinderReceivables % availableSizes.size;
-          
+
           let index = 0;
           availableSizes.forEach((size: string) => {
             const amount = perSizeReceivables + (index < remainder ? 1 : 0);

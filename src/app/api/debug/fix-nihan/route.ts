@@ -9,21 +9,24 @@ export async function POST(request: NextRequest) {
     const nihanRecord = await prisma.receivableRecord.findFirst({
       where: {
         driver: {
-          name: 'NIHAN'
+          name: 'NIHAN',
         },
-        date: new Date('2025-07-30T00:00:00.000Z')
+        date: new Date('2025-07-30T00:00:00.000Z'),
       },
       include: {
         driver: {
           select: {
-            name: true
-          }
-        }
-      }
+            name: true,
+          },
+        },
+      },
     });
 
     if (!nihanRecord) {
-      return NextResponse.json({ error: 'NIHAN record not found' }, { status: 404 });
+      return NextResponse.json(
+        { error: 'NIHAN record not found' },
+        { status: 404 }
+      );
     }
 
     console.log('📊 Current NIHAN record:', {
@@ -36,25 +39,31 @@ export async function POST(request: NextRequest) {
 
     // Apply correct formula: totalCashReceivables = cashReceivablesChange + onboardingCashReceivables + previousTotal
     // For NIHAN on 2025-07-30: 0 + 1000 + 0 = 1000
-    const correctTotal = nihanRecord.cashReceivablesChange + (nihanRecord.onboardingCashReceivables || 0) + 0; // previousTotal = 0 for same day
+    const correctTotal =
+      nihanRecord.cashReceivablesChange +
+      (nihanRecord.onboardingCashReceivables || 0) +
+      0; // previousTotal = 0 for same day
 
     console.log('💰 Calculating correct total:', {
       cashReceivablesChange: nihanRecord.cashReceivablesChange,
       onboardingCashReceivables: nihanRecord.onboardingCashReceivables || 0,
       previousTotal: 0,
-      correctTotal: correctTotal
+      correctTotal: correctTotal,
     });
 
     // Update the record
     const updated = await prisma.receivableRecord.update({
       where: {
-        id: nihanRecord.id
+        id: nihanRecord.id,
       },
       data: {
         totalCashReceivables: correctTotal,
-        totalCylinderReceivables: nihanRecord.cylinderReceivablesChange + (nihanRecord.onboardingCylinderReceivables || 0) + 0,
+        totalCylinderReceivables:
+          nihanRecord.cylinderReceivablesChange +
+          (nihanRecord.onboardingCylinderReceivables || 0) +
+          0,
         calculatedAt: new Date(),
-      }
+      },
     });
 
     console.log('✅ Updated NIHAN record:', {
@@ -65,7 +74,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      message: 'Fixed NIHAN\'s receivables',
+      message: "Fixed NIHAN's receivables",
       before: {
         totalCashReceivables: nihanRecord.totalCashReceivables,
         totalCylinderReceivables: nihanRecord.totalCylinderReceivables,
@@ -77,15 +86,14 @@ export async function POST(request: NextRequest) {
         expectedCylinders: 15,
         correctCash: updated.totalCashReceivables === 1000,
         correctCylinders: updated.totalCylinderReceivables === 15,
-      }
+      },
     });
-
   } catch (error) {
     console.error('❌ Error fixing NIHAN record:', error);
     return NextResponse.json(
-      { 
+      {
         error: 'Failed to fix NIHAN record',
-        details: error instanceof Error ? error.message : 'Unknown error'
+        details: error instanceof Error ? error.message : 'Unknown error',
       },
       { status: 500 }
     );

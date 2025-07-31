@@ -60,11 +60,8 @@ export class ReceivablesCalculator {
     );
 
     // Check if there are onboarding receivables for today's date
-    const todaysOnboardingReceivables = await this.getTodaysOnboardingReceivables(
-      tenantId,
-      driverId,
-      date
-    );
+    const todaysOnboardingReceivables =
+      await this.getTodaysOnboardingReceivables(tenantId, driverId, date);
 
     console.log(
       `🎯 Today's onboarding receivables for driver ${driverId}:`,
@@ -86,50 +83,48 @@ export class ReceivablesCalculator {
     // totalCashReceivables = cashReceivablesChange + onboardingCashReceivables + PREVIOUS DAY'S totalCashReceivables
     const cashReceivablesChange = salesCashChange; // Only sales changes (not including onboarding)
     const cylinderReceivablesChange = salesCylinderChange; // Only sales changes (not including onboarding)
-    
-    const totalCashReceivables = 
-      cashReceivablesChange + 
-      todaysOnboardingReceivables.cash + 
+
+    const totalCashReceivables =
+      cashReceivablesChange +
+      todaysOnboardingReceivables.cash +
       previousCashReceivables;
-      
-    const totalCylinderReceivables = 
-      cylinderReceivablesChange + 
-      todaysOnboardingReceivables.cylinders + 
+
+    const totalCylinderReceivables =
+      cylinderReceivablesChange +
+      todaysOnboardingReceivables.cylinders +
       previousCylinderReceivables;
 
-    console.log(
-      `🧮 DETAILED RECEIVABLES CALCULATION for driver ${driverId}:`,
-      {
-        "STEP 1 - Previous (Yesterday)": {
-          previousCash: previousCashReceivables,
-          previousCylinders: previousCylinderReceivables,
-        },
-        "STEP 2 - Sales Changes": {
-          salesRevenue: salesRevenue.totalRevenue,
-          cashDeposited: salesRevenue.cashDeposited,
-          discounts: salesRevenue.discounts,
-          salesCashChange: salesCashChange,
-          salesCylinderChange: salesCylinderChange,
-        },
-        "STEP 3 - Today's Onboarding": {
-          onboardingCash: todaysOnboardingReceivables.cash,
-          onboardingCylinders: todaysOnboardingReceivables.cylinders,
-        },
-        "STEP 4 - FINAL CALCULATION": {
-          formula: "cashReceivablesChange + onboardingCashReceivables + previousDay's totalCashReceivables",
-          calculation: `${cashReceivablesChange} + ${todaysOnboardingReceivables.cash} + ${previousCashReceivables}`,
-          finalCash: totalCashReceivables,
-          finalCylinders: totalCylinderReceivables,
-        },
-        "EXPECTED FOR BABLU": {
-          onboarding: 2000,
-          sales: 5000,
-          expected: 7000,
-          actual: totalCashReceivables,
-          correct: totalCashReceivables === 7000 ? "✅ CORRECT" : "❌ WRONG"
-        }
-      }
-    );
+    console.log(`🧮 DETAILED RECEIVABLES CALCULATION for driver ${driverId}:`, {
+      'STEP 1 - Previous (Yesterday)': {
+        previousCash: previousCashReceivables,
+        previousCylinders: previousCylinderReceivables,
+      },
+      'STEP 2 - Sales Changes': {
+        salesRevenue: salesRevenue.totalRevenue,
+        cashDeposited: salesRevenue.cashDeposited,
+        discounts: salesRevenue.discounts,
+        salesCashChange: salesCashChange,
+        salesCylinderChange: salesCylinderChange,
+      },
+      "STEP 3 - Today's Onboarding": {
+        onboardingCash: todaysOnboardingReceivables.cash,
+        onboardingCylinders: todaysOnboardingReceivables.cylinders,
+      },
+      'STEP 4 - FINAL CALCULATION': {
+        formula:
+          "cashReceivablesChange + onboardingCashReceivables + previousDay's totalCashReceivables",
+        calculation: `${cashReceivablesChange} + ${todaysOnboardingReceivables.cash} + ${previousCashReceivables}`,
+        finalCash: totalCashReceivables,
+        finalCylinders: totalCylinderReceivables,
+      },
+      'EXPECTED FOR BABLU': {
+        onboarding: 2000,
+        sales: 5000,
+        expected: 7000,
+        actual: totalCashReceivables,
+        correct: totalCashReceivables === 7000 ? '✅ CORRECT' : '❌ WRONG',
+      },
+    });
 
     return {
       cashReceivablesChange,
@@ -164,8 +159,8 @@ export class ReceivablesCalculator {
         // Look for records with onboarding values
         OR: [
           { onboardingCashReceivables: { gt: 0 } },
-          { onboardingCylinderReceivables: { gt: 0 } }
-        ]
+          { onboardingCylinderReceivables: { gt: 0 } },
+        ],
       },
     });
 
@@ -319,7 +314,7 @@ export class ReceivablesCalculator {
 
     console.log(
       `🔍 All receivables records for driver ${driverId}:`,
-      allRecords.map(r => ({
+      allRecords.map((r) => ({
         id: r.id,
         date: r.date.toISOString().split('T')[0],
         totalCash: r.totalCashReceivables,
@@ -332,14 +327,15 @@ export class ReceivablesCalculator {
     );
 
     // Check for duplicate records for the same date (should not happen with unique constraint)
-    const todayRecords = allRecords.filter(r => 
-      r.date.toISOString().split('T')[0] === date.toISOString().split('T')[0]
+    const todayRecords = allRecords.filter(
+      (r) =>
+        r.date.toISOString().split('T')[0] === date.toISOString().split('T')[0]
     );
-    
+
     if (todayRecords.length > 1) {
       console.error(
         `⚠️ DUPLICATE RECORDS FOUND for driver ${driverId} on ${date.toISOString().split('T')[0]}:`,
-        todayRecords.map(r => ({
+        todayRecords.map((r) => ({
           id: r.id,
           onboardingCash: r.onboardingCashReceivables,
           totalCash: r.totalCashReceivables,
@@ -376,15 +372,17 @@ export class ReceivablesCalculator {
           cylinderChange: previousRecord.cylinderReceivablesChange,
         }
       );
-      
+
       return {
         cashReceivables: previousRecord.totalCashReceivables,
         cylinderReceivables: previousRecord.totalCylinderReceivables,
       };
     }
 
-    console.log(`📊 No previous (yesterday's) receivables found for driver ${driverId} - using zeros`);
-    
+    console.log(
+      `📊 No previous (yesterday's) receivables found for driver ${driverId} - using zeros`
+    );
+
     // If no records exist, return zeros (first day after onboarding)
     return {
       cashReceivables: 0,
@@ -427,13 +425,15 @@ export class ReceivablesCalculator {
 
     console.log(
       `🔍 Existing record check for driver ${driverId} on ${dateOnly.toISOString().split('T')[0]}:`,
-      existingRecord ? {
-        id: existingRecord.id,
-        onboardingCash: existingRecord.onboardingCashReceivables,
-        onboardingCylinders: existingRecord.onboardingCylinderReceivables,
-        currentTotalCash: existingRecord.totalCashReceivables,
-        currentTotalCylinders: existingRecord.totalCylinderReceivables,
-      } : "No existing record found"
+      existingRecord
+        ? {
+            id: existingRecord.id,
+            onboardingCash: existingRecord.onboardingCashReceivables,
+            onboardingCylinders: existingRecord.onboardingCylinderReceivables,
+            currentTotalCash: existingRecord.totalCashReceivables,
+            currentTotalCylinders: existingRecord.totalCylinderReceivables,
+          }
+        : 'No existing record found'
     );
 
     const result = await this.prisma.receivableRecord.upsert({
@@ -452,8 +452,10 @@ export class ReceivablesCalculator {
         totalCylinderReceivables: receivablesData.totalCylinderReceivables,
         calculatedAt: new Date(),
         // PRESERVE existing onboarding values - don't overwrite them
-        onboardingCashReceivables: existingRecord?.onboardingCashReceivables || 0,
-        onboardingCylinderReceivables: existingRecord?.onboardingCylinderReceivables || 0,
+        onboardingCashReceivables:
+          existingRecord?.onboardingCashReceivables || 0,
+        onboardingCylinderReceivables:
+          existingRecord?.onboardingCylinderReceivables || 0,
       },
       create: {
         tenantId,
@@ -469,13 +471,10 @@ export class ReceivablesCalculator {
       },
     });
 
-    console.log(
-      `✅ Receivables record saved with ID: ${result.id}`,
-      {
-        totalCash: result.totalCashReceivables,
-        totalCylinders: result.totalCylinderReceivables,
-      }
-    );
+    console.log(`✅ Receivables record saved with ID: ${result.id}`, {
+      totalCash: result.totalCashReceivables,
+      totalCylinders: result.totalCylinderReceivables,
+    });
   }
 
   /**

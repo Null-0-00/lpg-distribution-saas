@@ -21,14 +21,13 @@ export async function calculateEmptyCylindersBySize(
   tenantId: string,
   asOfDate: Date = new Date()
 ): Promise<EmptyCylinderBySize[]> {
-  
   // Set up dates
   const today = new Date(asOfDate);
   today.setHours(0, 0, 0, 0);
-  
+
   const yesterday = new Date(today);
   yesterday.setDate(yesterday.getDate() - 1);
-  
+
   // Get all active cylinder sizes
   const cylinderSizes = await prisma.cylinderSize.findMany({
     where: { tenantId, isActive: true },
@@ -42,13 +41,25 @@ export async function calculateEmptyCylindersBySize(
     const cylinderSizeId = cylinderSize.id;
 
     // 1. Get Yesterday's Empty Cylinders for this size
-    const yesterdayEmpty = await getYesterdayEmptyCylinders(tenantId, cylinderSizeId, yesterday);
+    const yesterdayEmpty = await getYesterdayEmptyCylinders(
+      tenantId,
+      cylinderSizeId,
+      yesterday
+    );
 
     // 2. Get Refill Sales for this size (today)
-    const refillSales = await getRefillSalesBySize(tenantId, cylinderSizeId, today);
+    const refillSales = await getRefillSalesBySize(
+      tenantId,
+      cylinderSizeId,
+      today
+    );
 
     // 3. Get Empty Cylinder Buy/Sell for this size (today)
-    const emptyBuySell = await getEmptyBuySellBySize(tenantId, cylinderSizeId, today);
+    const emptyBuySell = await getEmptyBuySellBySize(
+      tenantId,
+      cylinderSizeId,
+      today
+    );
 
     // 4. Apply the formula
     const todayEmpty = yesterdayEmpty + refillSales + emptyBuySell;
@@ -95,12 +106,12 @@ async function getYesterdayEmptyCylinders(
         date: yesterday,
       },
       select: {
-        totalQuantity: true,
+        quantity: true,
       },
     });
 
     if (emptyCylinderRecord) {
-      return emptyCylinderRecord.totalQuantity;
+      return emptyCylinderRecord.quantity;
     }
 
     // Fallback: calculate from sales and baseline data
@@ -111,9 +122,11 @@ async function getYesterdayEmptyCylinders(
     `;
 
     return baselineRecord[0]?.baseline || 0;
-
   } catch (error) {
-    console.error(`Error getting yesterday's empty cylinders for size ${cylinderSizeId}:`, error);
+    console.error(
+      `Error getting yesterday's empty cylinders for size ${cylinderSizeId}:`,
+      error
+    );
     return 0;
   }
 }
@@ -142,9 +155,11 @@ async function getRefillSalesBySize(
     `;
 
     return refillSales[0]?.total || 0;
-
   } catch (error) {
-    console.error(`Error getting refill sales for size ${cylinderSizeId}:`, error);
+    console.error(
+      `Error getting refill sales for size ${cylinderSizeId}:`,
+      error
+    );
     return 0;
   }
 }
@@ -161,10 +176,12 @@ async function getEmptyBuySellBySize(
     const endOfDay = new Date(today);
     endOfDay.setHours(23, 59, 59, 999);
 
-    const transactions = await prisma.$queryRaw<Array<{ 
-      shipment_type: string; 
-      total: number; 
-    }>>`
+    const transactions = await prisma.$queryRaw<
+      Array<{
+        shipment_type: string;
+        total: number;
+      }>
+    >`
       SELECT 
         sh.shipment_type,
         COALESCE(SUM(sh.quantity), 0) as total
@@ -182,7 +199,7 @@ async function getEmptyBuySellBySize(
     let incoming = 0;
     let outgoing = 0;
 
-    transactions.forEach(transaction => {
+    transactions.forEach((transaction) => {
       if (transaction.shipment_type === 'INCOMING_EMPTY') {
         incoming = transaction.total;
       } else if (transaction.shipment_type === 'OUTGOING_EMPTY') {
@@ -191,9 +208,11 @@ async function getEmptyBuySellBySize(
     });
 
     return incoming - outgoing; // Net change (positive = more empties, negative = less empties)
-
   } catch (error) {
-    console.error(`Error getting empty buy/sell for size ${cylinderSizeId}:`, error);
+    console.error(
+      `Error getting empty buy/sell for size ${cylinderSizeId}:`,
+      error
+    );
     return 0;
   }
 }
@@ -201,21 +220,38 @@ async function getEmptyBuySellBySize(
 /**
  * Get summary totals across all sizes
  */
-export function summarizeEmptyCylindersBySize(calculations: EmptyCylinderBySize[]) {
+export function summarizeEmptyCylindersBySize(
+  calculations: EmptyCylinderBySize[]
+) {
   return {
-    totalYesterdayEmpty: calculations.reduce((sum, calc) => sum + calc.yesterdayEmpty, 0),
-    totalRefillSales: calculations.reduce((sum, calc) => sum + calc.refillSales, 0),
-    totalEmptyBuySell: calculations.reduce((sum, calc) => sum + calc.emptyBuySell, 0),
-    totalTodayEmpty: calculations.reduce((sum, calc) => sum + calc.todayEmpty, 0),
-    bySize: calculations.reduce((acc, calc) => {
-      acc[calc.size] = {
-        yesterdayEmpty: calc.yesterdayEmpty,
-        refillSales: calc.refillSales,
-        emptyBuySell: calc.emptyBuySell,
-        todayEmpty: calc.todayEmpty,
-        formula: calc.formula,
-      };
-      return acc;
-    }, {} as Record<string, any>),
+    totalYesterdayEmpty: calculations.reduce(
+      (sum, calc) => sum + calc.yesterdayEmpty,
+      0
+    ),
+    totalRefillSales: calculations.reduce(
+      (sum, calc) => sum + calc.refillSales,
+      0
+    ),
+    totalEmptyBuySell: calculations.reduce(
+      (sum, calc) => sum + calc.emptyBuySell,
+      0
+    ),
+    totalTodayEmpty: calculations.reduce(
+      (sum, calc) => sum + calc.todayEmpty,
+      0
+    ),
+    bySize: calculations.reduce(
+      (acc, calc) => {
+        acc[calc.size] = {
+          yesterdayEmpty: calc.yesterdayEmpty,
+          refillSales: calc.refillSales,
+          emptyBuySell: calc.emptyBuySell,
+          todayEmpty: calc.todayEmpty,
+          formula: calc.formula,
+        };
+        return acc;
+      },
+      {} as Record<string, any>
+    ),
   };
 }

@@ -154,7 +154,7 @@ export async function POST(request: NextRequest) {
               data: {
                 tenantId,
                 productId: product.id,
-                cylinderSizeId: product.cylinderSizeId,
+                cylinderSizeId: product.cylinderSizeId!,
                 date: today,
                 fullCylinders: inventory.fullCylinders, // Shipment baseline for full cylinders
                 emptyCylinders: 0,
@@ -187,7 +187,7 @@ export async function POST(request: NextRequest) {
                     tenantId,
                     date: today,
                     productId: productWithSize.id,
-                    cylinderSizeId: productWithSize.cylinderSizeId,
+                    cylinderSizeId: productWithSize.cylinderSizeId!,
                   },
                 },
                 update: {
@@ -200,7 +200,7 @@ export async function POST(request: NextRequest) {
                 create: {
                   tenantId,
                   productId: productWithSize.id,
-                  cylinderSizeId: productWithSize.cylinderSizeId,
+                  cylinderSizeId: productWithSize.cylinderSizeId!,
                   date: today,
                   fullCylinders: 0,
                   emptyCylinders: emptyCylinder.quantity, // Shipment baseline for empty cylinders
@@ -418,7 +418,7 @@ export async function POST(request: NextRequest) {
                     tenantId,
                     date: today,
                     productId: productWithSize.id,
-                    cylinderSizeId: productWithSize.cylinderSizeId,
+                    cylinderSizeId: productWithSize.cylinderSizeId!,
                   },
                 },
                 update: {
@@ -427,7 +427,7 @@ export async function POST(request: NextRequest) {
                 create: {
                   tenantId,
                   productId: productWithSize.id,
-                  cylinderSizeId: productWithSize.cylinderSizeId,
+                  cylinderSizeId: productWithSize.cylinderSizeId!,
                   date: today,
                   fullCylinders: 0,
                   emptyCylinders: 0,

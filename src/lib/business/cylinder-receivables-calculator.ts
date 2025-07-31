@@ -54,19 +54,25 @@ export class CylinderReceivablesCalculator {
     const latestReceivablesByDriver = new Map<string, number>();
     activeDriversWithReceivables.forEach((driver) => {
       if (driver.receivableRecords[0]?.totalCylinderReceivables > 0) {
-        latestReceivablesByDriver.set(driver.id, driver.receivableRecords[0].totalCylinderReceivables);
+        latestReceivablesByDriver.set(
+          driver.id,
+          driver.receivableRecords[0].totalCylinderReceivables
+        );
       }
     });
 
-    const totalCylinderReceivables = Array.from(latestReceivablesByDriver.values())
-      .reduce((sum, amount) => sum + amount, 0);
+    const totalCylinderReceivables = Array.from(
+      latestReceivablesByDriver.values()
+    ).reduce((sum, amount) => sum + amount, 0);
 
     const cylinderReceivablesBySize = new Map<string, number>();
     const driverIds = Array.from(latestReceivablesByDriver.keys());
 
     if (driverIds.length > 0) {
-      console.log('🎯 Calculating EXACT receivables by size using sales transaction history...');
-      
+      console.log(
+        '🎯 Calculating EXACT receivables by size using sales transaction history...'
+      );
+
       // Get all refill sales for drivers with receivables to calculate exact size breakdown
       const refillSalesWithSizes = await prisma.sale.findMany({
         where: {
@@ -93,36 +99,54 @@ export class CylinderReceivablesCalculator {
       });
 
       // Calculate exact receivables by size for each driver based on sales history
-      for (const [driverId, totalReceivables] of latestReceivablesByDriver.entries()) {
-        const driverRefillSales = refillSalesWithSizes.filter(s => s.driverId === driverId);
-        
+      for (const [
+        driverId,
+        totalReceivables,
+      ] of latestReceivablesByDriver.entries()) {
+        const driverRefillSales = refillSalesWithSizes.filter(
+          (s) => s.driverId === driverId
+        );
+
         // Group sales by cylinder size to get exact breakdown
         const salesBySizeMap = new Map<string, number>();
         let totalRefillSales = 0;
-        
-        driverRefillSales.forEach(sale => {
+
+        driverRefillSales.forEach((sale) => {
           if (sale.product?.cylinderSize?.size && sale.cylindersDeposited > 0) {
             const size = sale.product.cylinderSize.size;
-            salesBySizeMap.set(size, (salesBySizeMap.get(size) || 0) + sale.cylindersDeposited);
+            salesBySizeMap.set(
+              size,
+              (salesBySizeMap.get(size) || 0) + sale.cylindersDeposited
+            );
             totalRefillSales += sale.cylindersDeposited;
           }
         });
-        
+
         // Distribute receivables exactly based on actual sales quantities by size
         if (totalRefillSales > 0) {
           salesBySizeMap.forEach((saleQuantity, size) => {
-            const exactReceivablesForSize = Math.round((saleQuantity / totalRefillSales) * totalReceivables);
-            cylinderReceivablesBySize.set(size, (cylinderReceivablesBySize.get(size) || 0) + exactReceivablesForSize);
+            const exactReceivablesForSize = Math.round(
+              (saleQuantity / totalRefillSales) * totalReceivables
+            );
+            cylinderReceivablesBySize.set(
+              size,
+              (cylinderReceivablesBySize.get(size) || 0) +
+                exactReceivablesForSize
+            );
           });
         }
       }
-      
-      console.log('🎯 EXACT receivables breakdown calculated from sales history:', {
-        driverCount: driverIds.length,
-        totalRefillTransactions: refillSalesWithSizes.length,
-        receivablesBySizes: Object.fromEntries(cylinderReceivablesBySize),
-        calculationMethod: 'EXACT distribution based on actual refill sales by size',
-      });
+
+      console.log(
+        '🎯 EXACT receivables breakdown calculated from sales history:',
+        {
+          driverCount: driverIds.length,
+          totalRefillTransactions: refillSalesWithSizes.length,
+          receivablesBySizes: Object.fromEntries(cylinderReceivablesBySize),
+          calculationMethod:
+            'EXACT distribution based on actual refill sales by size',
+        }
+      );
     }
 
     const receivablesBreakdown = Object.fromEntries(cylinderReceivablesBySize);
@@ -130,7 +154,8 @@ export class CylinderReceivablesCalculator {
     return {
       totalCylinderReceivables,
       receivablesBreakdown,
-      calculationMethod: 'EXACT distribution based on actual refill sales by size (not proportional baseline)',
+      calculationMethod:
+        'EXACT distribution based on actual refill sales by size (not proportional baseline)',
       debugInfo: {
         driverCount: driverIds.length,
         totalRefillTransactions: 0, // Will be set by calling function
@@ -146,9 +171,11 @@ export class CylinderReceivablesCalculator {
     receivablesBreakdown: Record<string, number>,
     availableSizes: Set<string> | string[]
   ): { size: string; quantity: number }[] {
-    const sizesArray = Array.isArray(availableSizes) ? availableSizes : Array.from(availableSizes);
-    
-    return sizesArray.map(size => ({
+    const sizesArray = Array.isArray(availableSizes)
+      ? availableSizes
+      : Array.from(availableSizes);
+
+    return sizesArray.map((size) => ({
       size,
       quantity: receivablesBreakdown[size] || 0,
     }));
@@ -162,7 +189,10 @@ export class CylinderReceivablesCalculator {
     breakdown2: Record<string, number>,
     tolerance: number = 0
   ): { matches: boolean; differences: Record<string, number> } {
-    const allSizes = new Set([...Object.keys(breakdown1), ...Object.keys(breakdown2)]);
+    const allSizes = new Set([
+      ...Object.keys(breakdown1),
+      ...Object.keys(breakdown2),
+    ]);
     const differences: Record<string, number> = {};
     let matches = true;
 
@@ -170,7 +200,7 @@ export class CylinderReceivablesCalculator {
       const value1 = breakdown1[size] || 0;
       const value2 = breakdown2[size] || 0;
       const diff = Math.abs(value1 - value2);
-      
+
       if (diff > tolerance) {
         matches = false;
         differences[size] = value2 - value1; // positive means breakdown2 is higher

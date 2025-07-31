@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
+import { getTranslation } from '@/lib/i18n/translations';
 
 export async function GET(request: NextRequest) {
   try {
@@ -11,6 +12,8 @@ export async function GET(request: NextRequest) {
     }
 
     const tenantId = session.user.tenantId;
+    // Get user's language preference - using 'bn' as default since language field doesn't exist in User model
+    const userLanguage = 'bn';
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const tomorrow = new Date(today);
@@ -207,7 +210,7 @@ export async function GET(request: NextRequest) {
     // Process recent activity
     const processedActivity = recentActivity.map((sale) => ({
       type: 'sale',
-      message: `${sale.driver?.name || 'Driver'} completed sale - ৳${sale.netValue}`,
+      message: `${sale.driver?.name || getTranslation(userLanguage, 'unknownDriver')} ${getTranslation(userLanguage, 'completedSale')}`,
       timestamp: sale.createdAt.toISOString(),
       amount: sale.netValue,
     }));

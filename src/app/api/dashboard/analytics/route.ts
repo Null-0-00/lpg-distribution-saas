@@ -175,7 +175,7 @@ export async function GET(request: NextRequest) {
     // Generate recent activity
     const recentActivity = recentSales.map((sale) => ({
       type: 'sale',
-      message: `${sale.driver.name} ${getTranslation(userLanguage, 'completedSale')} - ৳${sale.netValue.toLocaleString()}`,
+      message: `${sale.driver.name} ${getTranslation(userLanguage, 'completedSale')}`,
       timestamp: sale.saleDate.toISOString(),
       amount: sale.netValue,
     }));

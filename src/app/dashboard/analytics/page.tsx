@@ -1227,7 +1227,7 @@ export default function AnalyticsPage() {
                 {formatCurrency(analyticsData.overview.totalExpenses)}
               </p>
               <p className="text-muted-foreground text-xs">
-                {t('allExpenses')}
+                {t('monthlyExpenses')}
               </p>
             </div>
           </div>
@@ -1237,14 +1237,16 @@ export default function AnalyticsPage() {
           <div className="flex items-center">
             <Target className="h-8 w-8 text-green-500" />
             <div className="ml-4">
-              <p className="text-muted-foreground text-sm">{t('revenue')}</p>
+              <p className="text-muted-foreground text-sm">
+                {t('totalProfit')}
+              </p>
               <p
                 className={`text-2xl font-bold ${getProfitColor(analyticsData.overview.totalProfit)}`}
               >
                 {formatCurrency(analyticsData.overview.totalProfit)}
               </p>
               <p className="text-muted-foreground text-xs">
-                {t('totalProfit')}
+                {t('monthlyProfit')}
               </p>
             </div>
           </div>
@@ -1319,13 +1321,13 @@ export default function AnalyticsPage() {
                         {t('sellingPrice')}
                       </th>
                       <th className="text-muted-foreground px-6 py-3 text-right text-xs font-medium uppercase tracking-wider">
-                        {t('revenue')}/{t('unit')}
+                        {t('profit')}/{t('unit')}
                       </th>
                       <th className="text-muted-foreground px-6 py-3 text-right text-xs font-medium uppercase tracking-wider">
                         {t('quantity')}
                       </th>
                       <th className="text-muted-foreground px-6 py-3 text-right text-xs font-medium uppercase tracking-wider">
-                        {t('total')} {t('revenue')}
+                        {t('totalProfit')}
                       </th>
                     </tr>
                   </thead>
@@ -1390,6 +1392,41 @@ export default function AnalyticsPage() {
                         </td>
                       </tr>
                     ))}
+                    {/* Total Row for Refill Sales */}
+                    <tr className="bg-muted/30 border-primary border-t-2 font-semibold">
+                      <td className="text-foreground px-6 py-4 text-sm font-bold">
+                        {t('total')} ({t('refillSales')})
+                      </td>
+                      <td className="px-6 py-4 text-right text-sm">-</td>
+                      <td className="px-6 py-4 text-right text-sm">-</td>
+                      <td className="px-6 py-4 text-right text-sm">-</td>
+                      <td className="px-6 py-4 text-right text-sm">-</td>
+                      <td className="px-6 py-4 text-right text-sm">-</td>
+                      <td className="px-6 py-4 text-right text-sm">-</td>
+                      <td className="text-foreground px-6 py-4 text-right text-sm font-bold">
+                        {analyticsData.refillProducts.reduce(
+                          (sum, product) => sum + product.salesQuantity,
+                          0
+                        )}
+                      </td>
+                      <td className="px-6 py-4 text-right text-sm">
+                        <span
+                          className={`font-bold ${getProfitColor(
+                            analyticsData.refillProducts.reduce(
+                              (sum, product) => sum + product.totalProfit,
+                              0
+                            )
+                          )}`}
+                        >
+                          {formatCurrency(
+                            analyticsData.refillProducts.reduce(
+                              (sum, product) => sum + product.totalProfit,
+                              0
+                            )
+                          )}
+                        </span>
+                      </td>
+                    </tr>
                   </tbody>
                 </table>
               </div>
@@ -1434,13 +1471,13 @@ export default function AnalyticsPage() {
                         {t('sellingPrice')}
                       </th>
                       <th className="text-muted-foreground px-6 py-3 text-right text-xs font-medium uppercase tracking-wider">
-                        {t('revenue')}/{t('unit')}
+                        {t('profit')}/{t('unit')}
                       </th>
                       <th className="text-muted-foreground px-6 py-3 text-right text-xs font-medium uppercase tracking-wider">
                         {t('quantity')}
                       </th>
                       <th className="text-muted-foreground px-6 py-3 text-right text-xs font-medium uppercase tracking-wider">
-                        {t('total')} {t('revenue')}
+                        {t('totalProfit')}
                       </th>
                     </tr>
                   </thead>
@@ -1505,6 +1542,41 @@ export default function AnalyticsPage() {
                         </td>
                       </tr>
                     ))}
+                    {/* Total Row for Package Sales */}
+                    <tr className="bg-muted/30 border-primary border-t-2 font-semibold">
+                      <td className="text-foreground px-6 py-4 text-sm font-bold">
+                        {t('total')} ({t('packageSales')})
+                      </td>
+                      <td className="px-6 py-4 text-right text-sm">-</td>
+                      <td className="px-6 py-4 text-right text-sm">-</td>
+                      <td className="px-6 py-4 text-right text-sm">-</td>
+                      <td className="px-6 py-4 text-right text-sm">-</td>
+                      <td className="px-6 py-4 text-right text-sm">-</td>
+                      <td className="px-6 py-4 text-right text-sm">-</td>
+                      <td className="text-foreground px-6 py-4 text-right text-sm font-bold">
+                        {analyticsData.packageProducts.reduce(
+                          (sum, product) => sum + product.salesQuantity,
+                          0
+                        )}
+                      </td>
+                      <td className="px-6 py-4 text-right text-sm">
+                        <span
+                          className={`font-bold ${getProfitColor(
+                            analyticsData.packageProducts.reduce(
+                              (sum, product) => sum + product.totalProfit,
+                              0
+                            )
+                          )}`}
+                        >
+                          {formatCurrency(
+                            analyticsData.packageProducts.reduce(
+                              (sum, product) => sum + product.totalProfit,
+                              0
+                            )
+                          )}
+                        </span>
+                      </td>
+                    </tr>
                   </tbody>
                 </table>
               </div>

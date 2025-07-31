@@ -783,8 +783,11 @@ export interface Translations {
   individualDriverPerformanceMetrics: string;
   comparativeAnalysisRevenueByDriver: string;
   monthlyRevenue: string;
+  monthlyProfit: string;
+  monthlyExpenses: string;
   allExpenses: string;
   totalProfit: string;
+  profit: string;
   buyingPrice: string;
   commission: string;
   fixedCost: string;
@@ -2280,8 +2283,11 @@ const englishTranslations: Translations = {
   comparativeAnalysisRevenueByDriver:
     'চালক অনুযায়ী রাজস্বের তুলনামূলক বিশ্লেষণ',
   monthlyRevenue: 'Monthly Revenue',
+  monthlyProfit: 'Monthly Profit',
+  monthlyExpenses: 'Monthly Expenses',
   allExpenses: 'সমস্ত খরচ',
   totalProfit: 'মোট লাভ',
+  profit: 'Profit',
   buyingPrice: 'ক্রয়মূল্য',
   commission: 'Commission',
   fixedCost: 'Fixed Cost',
@@ -3604,8 +3610,11 @@ const bengaliTranslations: Translations = {
   comparativeAnalysisRevenueByDriver:
     'চালক অনুযায়ী রাজস্বের তুলনামূলক বিশ্লেষণ',
   monthlyRevenue: 'মাসিক আয়',
+  monthlyProfit: 'মাসিক লাভ',
+  monthlyExpenses: 'মাসিক খরচ',
   allExpenses: 'সমস্ত খরচ',
   totalProfit: 'মোট লাভ',
+  profit: 'লাভ',
   buyingPrice: 'ক্রয়মূল্য',
   commission: 'কমিশন',
   fixedCost: 'স্থির খরচ',

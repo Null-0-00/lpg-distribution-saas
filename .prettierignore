@@ -1,0 +1,9 @@
+# Ignore .bmad-core files
+.bmad-core/
+
+# Other generated or problematic files
+dist/
+build/
+node_modules/
+*.min.js
+*.min.css

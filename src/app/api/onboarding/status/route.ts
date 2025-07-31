@@ -10,21 +10,23 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const user = await prisma.user.findUnique({
-      where: { id: session.user.id },
+    const tenant = await prisma.tenant.findUnique({
+      where: { id: session.user.tenantId },
       select: {
         onboardingCompleted: true,
         onboardingCompletedAt: true,
+        onboardingCompletedBy: true,
       },
     });
 
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    if (!tenant) {
+      return NextResponse.json({ error: 'Tenant not found' }, { status: 404 });
     }
 
     return NextResponse.json({
-      completed: user.onboardingCompleted,
-      completedAt: user.onboardingCompletedAt,
+      completed: tenant.onboardingCompleted,
+      completedAt: tenant.onboardingCompletedAt,
+      completedBy: tenant.onboardingCompletedBy,
     });
   } catch (error) {
     console.error('Error checking onboarding status:', error);

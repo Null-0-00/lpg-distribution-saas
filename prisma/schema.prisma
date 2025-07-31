@@ -20,6 +20,9 @@ model Tenant {
   currency                      String                         @default("USD")
   timezone                      String                         @default("UTC")
   language                      String                         @default("en")
+  onboardingCompleted           Boolean                        @default(false)
+  onboardingCompletedAt         DateTime?
+  onboardingCompletedBy         String?                        // User ID who completed onboarding
   createdAt                     DateTime                       @default(now())
   updatedAt                     DateTime                       @updatedAt
   assets                        Asset[]

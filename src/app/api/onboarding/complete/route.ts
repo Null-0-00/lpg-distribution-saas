@@ -51,27 +51,27 @@ export async function POST(request: NextRequest) {
 
     console.log('Onboarding data received:', JSON.stringify(data, null, 2));
 
-    // Check if user has already completed onboarding
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
+    // Check if tenant has already completed onboarding
+    const tenant = await prisma.tenant.findUnique({
+      where: { id: tenantId },
       select: { onboardingCompleted: true },
     });
 
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    if (!tenant) {
+      return NextResponse.json({ error: 'Tenant not found' }, { status: 404 });
     }
 
-    if (user.onboardingCompleted) {
-      console.log('User has already completed onboarding:', userId);
+    if (tenant.onboardingCompleted) {
+      console.log('Tenant has already completed onboarding:', tenantId);
       return NextResponse.json(
         { error: 'Onboarding already completed. Cannot run onboarding again.' },
         { status: 400 }
       );
     }
 
-    console.log('User onboarding status:', {
-      userId,
-      onboardingCompleted: user.onboardingCompleted,
+    console.log('Tenant onboarding status:', {
+      tenantId,
+      onboardingCompleted: tenant.onboardingCompleted,
     });
 
     // Use transaction to ensure data consistency (with extended timeout for complex onboarding)
@@ -452,12 +452,13 @@ export async function POST(request: NextRequest) {
           );
         }
 
-        // 11. Mark user as onboarded
-        await tx.user.update({
-          where: { id: userId },
+        // 11. Mark tenant as onboarded
+        await tx.tenant.update({
+          where: { id: tenantId },
           data: {
             onboardingCompleted: true,
             onboardingCompletedAt: new Date(),
+            onboardingCompletedBy: userId, // Track which user completed the onboarding
           },
         });
       },

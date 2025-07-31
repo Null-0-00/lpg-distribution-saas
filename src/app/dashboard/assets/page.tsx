@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useSession } from 'next-auth/react';
 import {
   Building2,
@@ -77,6 +77,30 @@ interface LiabilitiesData {
   };
 }
 
+interface FullCylinderData {
+  company: string;
+  size: string;
+  quantity: number;
+}
+
+interface EmptyCylinderData {
+  size: string;
+  emptyCylinders: number;
+  emptyCylindersInHand: number;
+}
+
+interface CylindersSummaryData {
+  fullCylinders: FullCylinderData[];
+  emptyCylinders: EmptyCylinderData[];
+  totals: {
+    fullCylinders: number;
+    emptyCylinders: number;
+    emptyCylindersInHand: number;
+  };
+  totalCylinderReceivables: number;
+  lastUpdated: string;
+}
+
 export default function AssetsPage() {
   const { toast } = useToast();
   const { formatCurrency, t } = useSettings();
@@ -86,6 +110,8 @@ export default function AssetsPage() {
   const [assetsData, setAssetsData] = useState<AssetsData | null>(null);
   const [liabilitiesData, setLiabilitiesData] =
     useState<LiabilitiesData | null>(null);
+  const [cylindersSummaryData, setCylindersSummaryData] =
+    useState<CylindersSummaryData | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [editingAsset, setEditingAsset] = useState<string | null>(null);
@@ -94,6 +120,9 @@ export default function AssetsPage() {
   const [editingItem, setEditingItem] = useState<Asset | Liability | null>(
     null
   );
+  
+  // State for cylinder unit prices
+  const [cylinderUnitPrices, setCylinderUnitPrices] = useState<{[key: string]: number}>({});
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalType, setModalType] = useState<'asset' | 'liability'>('asset');
@@ -117,9 +146,10 @@ export default function AssetsPage() {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const [assetsResponse, liabilitiesResponse] = await Promise.all([
+      const [assetsResponse, liabilitiesResponse, cylindersResponse] = await Promise.all([
         fetch('/api/assets?includeAutoCalculated=true'),
         fetch('/api/liabilities'),
+        fetch('/api/inventory/cylinders-summary'),
       ]);
 
       if (assetsResponse.ok && liabilitiesResponse.ok) {
@@ -130,6 +160,11 @@ export default function AssetsPage() {
         setLiabilitiesData(liabilitiesData);
         setAssets(assetsData.assets || []);
         setLiabilities(liabilitiesData.liabilities || []);
+
+        if (cylindersResponse.ok) {
+          const cylindersData = await cylindersResponse.json();
+          setCylindersSummaryData(cylindersData);
+        }
       } else {
         throw new Error('Failed to fetch data');
       }
@@ -151,9 +186,46 @@ export default function AssetsPage() {
     setRefreshing(false);
   };
 
-  const totalAssets = assetsData?.totals.TOTAL || 0;
+  // Helper functions for cylinder calculations using useCallback
+  const getCylinderUnitPrice = useCallback((cylinderKey: string): number => {
+    return cylinderUnitPrices[cylinderKey] || 0;
+  }, [cylinderUnitPrices]);
+
+  const calculateCylinderValue = useCallback((quantity: number, cylinderKey: string): number => {
+    return quantity * (cylinderUnitPrices[cylinderKey] || 0);
+  }, [cylinderUnitPrices]);
+
+  const updateCylinderUnitPrice = useCallback((cylinderKey: string, unitPrice: number) => {
+    setCylinderUnitPrices(prev => ({
+      ...prev,
+      [cylinderKey]: unitPrice
+    }));
+  }, []);
+
+  // Calculate cylinder asset values
+  const totalCylinderAssets = useMemo(() => {
+    let total = 0;
+    
+    // Add full cylinders value
+    cylindersSummaryData?.fullCylinders?.forEach(item => {
+      const cylinderKey = `full-${item.company}-${item.size}`;
+      const unitPrice = cylinderUnitPrices[cylinderKey] || 0;
+      total += item.quantity * unitPrice;
+    });
+    
+    // Add empty cylinders value
+    cylindersSummaryData?.emptyCylinders?.forEach(item => {
+      const cylinderKey = `empty-${item.size}`;
+      const unitPrice = cylinderUnitPrices[cylinderKey] || 0;
+      total += item.emptyCylindersInHand * unitPrice;
+    });
+    
+    return total;
+  }, [cylindersSummaryData, cylinderUnitPrices]);
+
+  const totalAssets = (assetsData?.totals.TOTAL || 0) + totalCylinderAssets;
   const totalLiabilities = liabilitiesData?.totals.TOTAL || 0;
-  const netWorth = liabilitiesData?.ownerEquity.ownerEquity || 0;
+  const netWorth = totalAssets - totalLiabilities;
   const totalDepreciation = assets
     .filter(
       (asset) =>
@@ -347,6 +419,19 @@ export default function AssetsPage() {
 
   const handleSaveUnitValue = async (assetId: string) => {
     try {
+      // Check if this is a cylinder asset
+      if (assetId.startsWith('full-') || assetId.startsWith('empty-')) {
+        // Handle cylinder unit price update
+        updateCylinderUnitPrice(assetId, editingUnitValue);
+        toast({
+          title: t('success'),
+          description: t('unitValueUpdatedSuccessfully'),
+        });
+        setEditingAsset(null);
+        return;
+      }
+
+      // Handle regular asset unit price update
       const response = await fetch('/api/assets', {
         method: 'PUT',
         headers: {
@@ -580,6 +665,7 @@ export default function AssetsPage() {
               </tr>
             </thead>
             <tbody className="divide-border divide-y">
+              {/* Render regular assets */}
               {assets.map((asset) => {
                 // Calculate depreciation for each asset
                 const purchaseDate = asset.purchaseDate
@@ -728,7 +814,213 @@ export default function AssetsPage() {
                   </tr>
                 );
               })}
-              {assets.length === 0 && (
+              
+              {/* Render cylinder assets from inventory */}
+              {cylindersSummaryData?.fullCylinders?.map((item, index) => {
+                const cylinderKey = `full-${item.company}-${item.size}`;
+                const unitPrice = getCylinderUnitPrice(cylinderKey);
+                const totalValue = calculateCylinderValue(item.quantity, cylinderKey);
+                
+                return (
+                  <tr key={cylinderKey} className="hover:bg-muted/50">
+                    <td className="whitespace-nowrap px-6 py-4">
+                      <div className="text-foreground text-sm font-medium">
+                        Full Cylinders - {item.company} {item.size}
+                      </div>
+                      <div className="text-muted-foreground text-xs">
+                        Auto-calculated from inventory
+                      </div>
+                    </td>
+                    <td className="whitespace-nowrap px-6 py-4">
+                      <span className="inline-flex rounded-full px-2 py-1 text-xs font-semibold bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                        Current Asset
+                      </span>
+                      <div className="text-muted-foreground mt-1 text-xs">
+                        Inventory
+                      </div>
+                    </td>
+                    <td className="text-foreground whitespace-nowrap px-6 py-4 text-sm">
+                      {item.quantity}
+                    </td>
+                    <td className="text-foreground whitespace-nowrap px-6 py-4 text-sm">
+                      {isAdmin ? (
+                        editingAsset === cylinderKey ? (
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="number"
+                              value={editingUnitValue}
+                              onChange={(e) =>
+                                setEditingUnitValue(
+                                  parseFloat(e.target.value) || 0
+                                )
+                              }
+                              className="w-24 rounded border px-2 py-1 text-sm"
+                              step="0.01"
+                              placeholder="0"
+                            />
+                            <button
+                              onClick={() => handleSaveUnitValue(cylinderKey)}
+                              className="text-green-600 hover:text-green-800"
+                            >
+                              <Save className="h-4 w-4" />
+                            </button>
+                            <button
+                              onClick={handleCancelEdit}
+                              className="text-red-600 hover:text-red-800"
+                            >
+                              <XCircle className="h-4 w-4" />
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="flex items-center space-x-2">
+                            <span>
+                              {formatCurrency(unitPrice)}
+                            </span>
+                            <button
+                              onClick={() => {
+                                setEditingAsset(cylinderKey);
+                                setEditingUnitValue(unitPrice);
+                              }}
+                              className="text-blue-600 hover:text-blue-800"
+                            >
+                              <Edit className="h-4 w-4" />
+                            </button>
+                          </div>
+                        )
+                      ) : (
+                        <div>
+                          <span>{formatCurrency(unitPrice)}</span>
+                          {unitPrice === 0 && (
+                            <div className="text-muted-foreground text-xs">
+                              Set unit price
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </td>
+                    <td className="text-foreground whitespace-nowrap px-6 py-4 text-sm font-medium">
+                      {formatCurrency(totalValue)}
+                    </td>
+                    <td className="whitespace-nowrap px-6 py-4 text-sm text-red-600">
+                      {formatCurrency(0)}
+                    </td>
+                    <td className="whitespace-nowrap px-6 py-4 text-sm font-bold text-green-600">
+                      {formatCurrency(totalValue)}
+                    </td>
+                    {isAdmin && (
+                      <td className="whitespace-nowrap px-6 py-4 text-sm">
+                        <span className="text-xs text-blue-500">
+                          Editable
+                        </span>
+                      </td>
+                    )}
+                  </tr>
+                );
+              })}
+              
+              {cylindersSummaryData?.emptyCylinders?.map((item, index) => {
+                const cylinderKey = `empty-${item.size}`;
+                const unitPrice = getCylinderUnitPrice(cylinderKey);
+                const totalValue = calculateCylinderValue(item.emptyCylindersInHand, cylinderKey);
+                
+                return (
+                  <tr key={cylinderKey} className="hover:bg-muted/50">
+                    <td className="whitespace-nowrap px-6 py-4">
+                      <div className="text-foreground text-sm font-medium">
+                        Empty Cylinders - {item.size}
+                      </div>
+                      <div className="text-muted-foreground text-xs">
+                        Auto-calculated from inventory
+                      </div>
+                    </td>
+                    <td className="whitespace-nowrap px-6 py-4">
+                      <span className="inline-flex rounded-full px-2 py-1 text-xs font-semibold bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                        Current Asset
+                      </span>
+                      <div className="text-muted-foreground mt-1 text-xs">
+                        Inventory
+                      </div>
+                    </td>
+                    <td className="text-foreground whitespace-nowrap px-6 py-4 text-sm">
+                      {item.emptyCylindersInHand}
+                    </td>
+                    <td className="text-foreground whitespace-nowrap px-6 py-4 text-sm">
+                      {isAdmin ? (
+                        editingAsset === cylinderKey ? (
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="number"
+                              value={editingUnitValue}
+                              onChange={(e) =>
+                                setEditingUnitValue(
+                                  parseFloat(e.target.value) || 0
+                                )
+                              }
+                              className="w-24 rounded border px-2 py-1 text-sm"
+                              step="0.01"
+                              placeholder="0"
+                            />
+                            <button
+                              onClick={() => handleSaveUnitValue(cylinderKey)}
+                              className="text-green-600 hover:text-green-800"
+                            >
+                              <Save className="h-4 w-4" />
+                            </button>
+                            <button
+                              onClick={handleCancelEdit}
+                              className="text-red-600 hover:text-red-800"
+                            >
+                              <XCircle className="h-4 w-4" />
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="flex items-center space-x-2">
+                            <span>
+                              {formatCurrency(unitPrice)}
+                            </span>
+                            <button
+                              onClick={() => {
+                                setEditingAsset(cylinderKey);
+                                setEditingUnitValue(unitPrice);
+                              }}
+                              className="text-blue-600 hover:text-blue-800"
+                            >
+                              <Edit className="h-4 w-4" />
+                            </button>
+                          </div>
+                        )
+                      ) : (
+                        <div>
+                          <span>{formatCurrency(unitPrice)}</span>
+                          {unitPrice === 0 && (
+                            <div className="text-muted-foreground text-xs">
+                              Set unit price
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </td>
+                    <td className="text-foreground whitespace-nowrap px-6 py-4 text-sm font-medium">
+                      {formatCurrency(totalValue)}
+                    </td>
+                    <td className="whitespace-nowrap px-6 py-4 text-sm text-red-600">
+                      {formatCurrency(0)}
+                    </td>
+                    <td className="whitespace-nowrap px-6 py-4 text-sm font-bold text-green-600">
+                      {formatCurrency(totalValue)}
+                    </td>
+                    {isAdmin && (
+                      <td className="whitespace-nowrap px-6 py-4 text-sm">
+                        <span className="text-xs text-blue-500">
+                          Editable
+                        </span>
+                      </td>
+                    )}
+                  </tr>
+                );
+              })}
+              
+              {assets.length === 0 && (!cylindersSummaryData?.fullCylinders?.length && !cylindersSummaryData?.emptyCylinders?.length) && (
                 <tr>
                   <td
                     colSpan={isAdmin ? 8 : 7}
@@ -975,6 +1267,7 @@ export default function AssetsPage() {
           </div>
         </div>
       </div>
+
 
       {/* Asset Depreciation Management */}
       <div className="bg-card rounded-lg shadow">

@@ -368,75 +368,38 @@ async function calculateCurrentAssets(
       asOfDate
     );
 
-    if (currentInventory.fullCylinders > 0) {
-      const fullCylinderUnitValue = getCustomUnitValue(
-        'auto-full-cylinders',
-        500
-      ); // Default 500 BDT
-      const fullCylindersValue =
-        currentInventory.fullCylinders * fullCylinderUnitValue;
+    // 1. Full Cylinders removed - now using detailed breakdown by company/size in UI
 
-      assets.push({
-        id: 'auto-full-cylinders',
-        name: 'Full Cylinders',
-        category: AssetCategory.CURRENT_ASSET,
-        subCategory: 'Inventory',
-        originalValue: fullCylindersValue,
-        currentValue: fullCylindersValue,
-        description: `${currentInventory.fullCylinders} cylinders @ ${fullCylinderUnitValue} each`,
-        isAutoCalculated: true,
-        details: {
-          quantity: currentInventory.fullCylinders,
-          unitPrice: fullCylinderUnitValue,
-          date: asOfDate,
-          isEditable: true,
-        },
-        createdAt: asOfDate,
-        updatedAt: asOfDate,
-      });
-    }
+    // 2. Empty Cylinders removed - now using detailed breakdown by size in UI
 
-    // 2. Empty Cylinders (auto from inventory)
-    if (currentInventory.emptyCylinders > 0) {
-      const emptyCylinderUnitValue = getCustomUnitValue(
-        'auto-empty-cylinders',
-        100
-      ); // Default 100 BDT
-      const emptyCylindersValue =
-        currentInventory.emptyCylinders * emptyCylinderUnitValue;
-
-      assets.push({
-        id: 'auto-empty-cylinders',
-        name: 'Empty Cylinders',
-        category: AssetCategory.CURRENT_ASSET,
-        subCategory: 'Inventory',
-        originalValue: emptyCylindersValue,
-        currentValue: emptyCylindersValue,
-        description: `${currentInventory.emptyCylinders} empty cylinders @ ${emptyCylinderUnitValue} each`,
-        isAutoCalculated: true,
-        details: {
-          quantity: currentInventory.emptyCylinders,
-          unitPrice: emptyCylinderUnitValue,
-          date: asOfDate,
-          isEditable: true,
-        },
-        createdAt: asOfDate,
-        updatedAt: asOfDate,
-      });
-    }
-
-    // 3. Cash Receivables (auto from receivables)
-    const cashReceivables = await prisma.receivableRecord.aggregate({
+    // 3. Cash Receivables (using same formula as receivables page)
+    // Get latest receivable record for each ACTIVE driver
+    const driversWithReceivables = await prisma.driver.findMany({
       where: {
         tenantId,
-        date: { lte: asOfDate },
+        status: 'ACTIVE',
       },
-      _sum: {
-        totalCashReceivables: true,
+      select: {
+        id: true,
+        name: true,
+        receivableRecords: {
+          where: {
+            date: { lte: asOfDate },
+          },
+          orderBy: { date: 'desc' },
+          take: 1,
+          select: {
+            totalCashReceivables: true,
+          },
+        },
       },
     });
 
-    const totalCashReceivables = cashReceivables._sum.totalCashReceivables || 0;
+    // Sum cash receivables from latest record of each active driver
+    const totalCashReceivables = driversWithReceivables.reduce((sum, driver) => {
+      const latestRecord = driver.receivableRecords[0];
+      return sum + (latestRecord?.totalCashReceivables || 0);
+    }, 0);
     if (totalCashReceivables > 0) {
       assets.push({
         id: 'auto-cash-receivables',

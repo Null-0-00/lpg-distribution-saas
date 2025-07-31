@@ -273,8 +273,82 @@ export default function UsersPage() {
   if (loading) {
     return (
       <div className="space-y-6 p-6">
-        <div className="flex h-64 items-center justify-center">
-          <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-blue-600"></div>
+        {/* Header Skeleton */}
+        <div className="flex items-center justify-between">
+          <div>
+            <div className="bg-muted mb-2 h-8 w-48 animate-pulse rounded"></div>
+            <div className="bg-muted h-5 w-64 animate-pulse rounded"></div>
+          </div>
+          <div className="bg-muted h-10 w-32 animate-pulse rounded-lg"></div>
+        </div>
+
+        {/* Summary Cards Skeleton */}
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
+          {[...Array(4)].map((_, i) => (
+            <div
+              key={i}
+              className="bg-card border-border rounded-lg border p-6 shadow transition-colors"
+            >
+              <div className="flex items-center">
+                <div className="bg-muted h-8 w-8 animate-pulse rounded"></div>
+                <div className="ml-4 flex-1">
+                  <div className="bg-muted mb-2 h-4 w-20 animate-pulse rounded"></div>
+                  <div className="bg-muted h-8 w-16 animate-pulse rounded"></div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Users Table Skeleton */}
+        <div className="bg-card border-border rounded-lg border shadow transition-colors">
+          <div className="border-border flex items-center justify-between border-b px-6 py-4">
+            <div className="bg-muted h-6 w-32 animate-pulse rounded"></div>
+            <div className="flex space-x-2">
+              <div className="bg-muted h-8 w-20 animate-pulse rounded"></div>
+              <div className="bg-muted h-8 w-20 animate-pulse rounded"></div>
+            </div>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-muted">
+                <tr>
+                  {[...Array(7)].map((_, i) => (
+                    <th key={i} className="px-6 py-3">
+                      <div className="bg-background h-4 w-20 animate-pulse rounded"></div>
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody className="divide-border divide-y">
+                {[...Array(5)].map((_, rowIndex) => (
+                  <tr key={rowIndex}>
+                    {[...Array(7)].map((_, colIndex) => (
+                      <td key={colIndex} className="px-6 py-4">
+                        {colIndex === 0 ? (
+                          <div className="flex items-center space-x-3">
+                            <div className="bg-muted h-8 w-8 animate-pulse rounded-full"></div>
+                            <div>
+                              <div className="bg-muted mb-1 h-4 w-24 animate-pulse rounded"></div>
+                              <div className="bg-muted h-3 w-32 animate-pulse rounded"></div>
+                            </div>
+                          </div>
+                        ) : colIndex === 6 ? (
+                          <div className="flex space-x-2">
+                            <div className="bg-muted h-8 w-8 animate-pulse rounded"></div>
+                            <div className="bg-muted h-8 w-8 animate-pulse rounded"></div>
+                            <div className="bg-muted h-8 w-8 animate-pulse rounded"></div>
+                          </div>
+                        ) : (
+                          <div className="bg-muted h-4 w-16 animate-pulse rounded"></div>
+                        )}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     );

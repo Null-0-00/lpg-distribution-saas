@@ -374,25 +374,28 @@ export default function SalesPage() {
         {/* Header Skeleton */}
         <div className="flex items-center justify-between">
           <div>
-            <div className="h-8 w-48 bg-muted rounded animate-pulse mb-2"></div>
-            <div className="h-5 w-64 bg-muted rounded animate-pulse"></div>
+            <div className="bg-muted mb-2 h-8 w-48 animate-pulse rounded"></div>
+            <div className="bg-muted h-5 w-64 animate-pulse rounded"></div>
           </div>
           <div className="flex items-center space-x-2">
-            <div className="h-10 w-20 bg-muted rounded animate-pulse"></div>
-            <div className="h-10 w-32 bg-muted rounded animate-pulse"></div>
+            <div className="bg-muted h-10 w-20 animate-pulse rounded"></div>
+            <div className="bg-muted h-10 w-32 animate-pulse rounded"></div>
           </div>
         </div>
 
         {/* Stats Cards Skeleton */}
         <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
           {[...Array(4)].map((_, i) => (
-            <div key={i} className="bg-card border-border rounded-lg border p-6 shadow transition-colors">
+            <div
+              key={i}
+              className="bg-card border-border rounded-lg border p-6 shadow transition-colors"
+            >
               <div className="flex items-center">
-                <div className="h-8 w-8 bg-muted rounded animate-pulse"></div>
+                <div className="bg-muted h-8 w-8 animate-pulse rounded"></div>
                 <div className="ml-4 flex-1">
-                  <div className="h-4 w-20 bg-muted rounded animate-pulse mb-2"></div>
-                  <div className="h-8 w-16 bg-muted rounded animate-pulse mb-1"></div>
-                  <div className="h-3 w-24 bg-muted rounded animate-pulse"></div>
+                  <div className="bg-muted mb-2 h-4 w-20 animate-pulse rounded"></div>
+                  <div className="bg-muted mb-1 h-8 w-16 animate-pulse rounded"></div>
+                  <div className="bg-muted h-3 w-24 animate-pulse rounded"></div>
                 </div>
               </div>
             </div>
@@ -403,11 +406,11 @@ export default function SalesPage() {
         <div className="bg-card border-border rounded-lg border shadow transition-colors">
           <div className="border-border flex items-center justify-between border-b px-6 py-4">
             <div className="flex items-center space-x-4">
-              <div className="h-6 w-32 bg-muted rounded animate-pulse"></div>
+              <div className="bg-muted h-6 w-32 animate-pulse rounded"></div>
             </div>
             <div className="flex space-x-2">
-              <div className="h-8 w-20 bg-muted rounded animate-pulse"></div>
-              <div className="h-8 w-20 bg-muted rounded animate-pulse"></div>
+              <div className="bg-muted h-8 w-20 animate-pulse rounded"></div>
+              <div className="bg-muted h-8 w-20 animate-pulse rounded"></div>
             </div>
           </div>
           <div className="overflow-x-auto">
@@ -416,7 +419,7 @@ export default function SalesPage() {
                 <tr>
                   {[...Array(9)].map((_, i) => (
                     <th key={i} className="px-6 py-3">
-                      <div className="h-4 w-20 bg-background rounded animate-pulse"></div>
+                      <div className="bg-background h-4 w-20 animate-pulse rounded"></div>
                     </th>
                   ))}
                 </tr>
@@ -428,11 +431,11 @@ export default function SalesPage() {
                       <td key={colIndex} className="px-6 py-4">
                         {colIndex === 8 ? (
                           <div className="flex space-x-2">
-                            <div className="h-8 w-8 bg-muted rounded animate-pulse"></div>
-                            <div className="h-8 w-8 bg-muted rounded animate-pulse"></div>
+                            <div className="bg-muted h-8 w-8 animate-pulse rounded"></div>
+                            <div className="bg-muted h-8 w-8 animate-pulse rounded"></div>
                           </div>
                         ) : (
-                          <div className="h-4 w-16 bg-muted rounded animate-pulse"></div>
+                          <div className="bg-muted h-4 w-16 animate-pulse rounded"></div>
                         )}
                       </td>
                     ))}

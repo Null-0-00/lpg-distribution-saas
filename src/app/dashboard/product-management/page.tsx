@@ -472,8 +472,8 @@ export default function ProductManagementPage() {
         <div className="mx-auto max-w-7xl">
           {/* Header Skeleton */}
           <div className="mb-8">
-            <div className="h-9 w-64 bg-muted rounded animate-pulse mb-2"></div>
-            <div className="h-5 w-48 bg-muted rounded animate-pulse"></div>
+            <div className="bg-muted mb-2 h-9 w-64 animate-pulse rounded"></div>
+            <div className="bg-muted h-5 w-48 animate-pulse rounded"></div>
           </div>
 
           {/* Tabs Skeleton */}
@@ -481,8 +481,8 @@ export default function ProductManagementPage() {
             <nav className="-mb-px flex space-x-8">
               {[...Array(3)].map((_, i) => (
                 <div key={i} className="flex items-center space-x-2 px-1 py-4">
-                  <div className="h-5 w-5 bg-muted rounded animate-pulse"></div>
-                  <div className="h-5 w-20 bg-muted rounded animate-pulse"></div>
+                  <div className="bg-muted h-5 w-5 animate-pulse rounded"></div>
+                  <div className="bg-muted h-5 w-20 animate-pulse rounded"></div>
                 </div>
               ))}
             </nav>
@@ -493,9 +493,9 @@ export default function ProductManagementPage() {
             {/* Header with search and add button */}
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-4">
-                <div className="h-10 w-64 bg-muted rounded-md animate-pulse"></div>
+                <div className="bg-muted h-10 w-64 animate-pulse rounded-md"></div>
               </div>
-              <div className="h-10 w-32 bg-muted rounded-lg animate-pulse"></div>
+              <div className="bg-muted h-10 w-32 animate-pulse rounded-lg"></div>
             </div>
 
             {/* Cards Grid Skeleton */}
@@ -504,22 +504,22 @@ export default function ProductManagementPage() {
                 <div key={i} className="bg-card rounded-lg p-6 shadow-sm">
                   <div className="mb-4 flex items-start justify-between">
                     <div className="flex-1">
-                      <div className="h-6 w-32 bg-muted rounded animate-pulse mb-2"></div>
-                      <div className="h-4 w-24 bg-muted rounded animate-pulse"></div>
+                      <div className="bg-muted mb-2 h-6 w-32 animate-pulse rounded"></div>
+                      <div className="bg-muted h-4 w-24 animate-pulse rounded"></div>
                     </div>
-                    <div className="h-5 w-5 bg-muted rounded animate-pulse"></div>
+                    <div className="bg-muted h-5 w-5 animate-pulse rounded"></div>
                   </div>
                   <div className="space-y-2">
-                    <div className="h-4 w-40 bg-muted rounded animate-pulse"></div>
-                    <div className="h-4 w-36 bg-muted rounded animate-pulse"></div>
-                    <div className="h-4 w-28 bg-muted rounded animate-pulse"></div>
+                    <div className="bg-muted h-4 w-40 animate-pulse rounded"></div>
+                    <div className="bg-muted h-4 w-36 animate-pulse rounded"></div>
+                    <div className="bg-muted h-4 w-28 animate-pulse rounded"></div>
                   </div>
-                  <div className="mt-4 pt-4 border-t border-border">
+                  <div className="border-border mt-4 border-t pt-4">
                     <div className="flex items-center justify-between">
-                      <div className="h-4 w-20 bg-muted rounded animate-pulse"></div>
+                      <div className="bg-muted h-4 w-20 animate-pulse rounded"></div>
                       <div className="flex space-x-2">
-                        <div className="h-8 w-8 bg-muted rounded animate-pulse"></div>
-                        <div className="h-8 w-8 bg-muted rounded animate-pulse"></div>
+                        <div className="bg-muted h-8 w-8 animate-pulse rounded"></div>
+                        <div className="bg-muted h-8 w-8 animate-pulse rounded"></div>
                       </div>
                     </div>
                   </div>

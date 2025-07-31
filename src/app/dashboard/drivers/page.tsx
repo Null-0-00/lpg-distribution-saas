@@ -459,31 +459,31 @@ export default function DriversPage() {
               <thead className="bg-muted">
                 <tr>
                   <th className="px-6 py-3 text-left">
-                    <div className="h-4 w-16 rounded bg-gray-300 animate-pulse"></div>
+                    <div className="h-4 w-16 animate-pulse rounded bg-gray-300"></div>
                   </th>
                   <th className="px-6 py-3 text-left">
-                    <div className="h-4 w-12 rounded bg-gray-300 animate-pulse"></div>
+                    <div className="h-4 w-12 animate-pulse rounded bg-gray-300"></div>
                   </th>
                   <th className="px-6 py-3 text-left">
-                    <div className="h-4 w-20 rounded bg-gray-300 animate-pulse"></div>
+                    <div className="h-4 w-20 animate-pulse rounded bg-gray-300"></div>
                   </th>
                   <th className="px-6 py-3 text-left">
-                    <div className="h-4 w-24 rounded bg-gray-300 animate-pulse"></div>
+                    <div className="h-4 w-24 animate-pulse rounded bg-gray-300"></div>
                   </th>
                   <th className="px-6 py-3 text-left">
-                    <div className="h-4 w-16 rounded bg-gray-300 animate-pulse"></div>
+                    <div className="h-4 w-16 animate-pulse rounded bg-gray-300"></div>
                   </th>
                   <th className="px-6 py-3 text-left">
-                    <div className="h-4 w-14 rounded bg-gray-300 animate-pulse"></div>
+                    <div className="h-4 w-14 animate-pulse rounded bg-gray-300"></div>
                   </th>
                   <th className="px-6 py-3 text-left">
-                    <div className="h-4 w-18 rounded bg-gray-300 animate-pulse"></div>
+                    <div className="w-18 h-4 animate-pulse rounded bg-gray-300"></div>
                   </th>
                   <th className="px-6 py-3 text-left">
-                    <div className="h-4 w-18 rounded bg-gray-300 animate-pulse"></div>
+                    <div className="w-18 h-4 animate-pulse rounded bg-gray-300"></div>
                   </th>
                   <th className="px-6 py-3 text-left">
-                    <div className="h-4 w-14 rounded bg-gray-300 animate-pulse"></div>
+                    <div className="h-4 w-14 animate-pulse rounded bg-gray-300"></div>
                   </th>
                 </tr>
               </thead>
@@ -492,39 +492,39 @@ export default function DriversPage() {
                   <tr key={i}>
                     <td className="px-6 py-4">
                       <div className="flex items-center space-x-3">
-                        <div className="h-8 w-8 rounded-full bg-gray-300 animate-pulse"></div>
+                        <div className="h-8 w-8 animate-pulse rounded-full bg-gray-300"></div>
                         <div>
-                          <div className="h-4 w-20 rounded bg-gray-300 animate-pulse mb-1"></div>
-                          <div className="h-3 w-16 rounded bg-gray-300 animate-pulse"></div>
+                          <div className="mb-1 h-4 w-20 animate-pulse rounded bg-gray-300"></div>
+                          <div className="h-3 w-16 animate-pulse rounded bg-gray-300"></div>
                         </div>
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="h-4 w-16 rounded bg-gray-300 animate-pulse"></div>
+                      <div className="h-4 w-16 animate-pulse rounded bg-gray-300"></div>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="h-4 w-8 rounded bg-gray-300 animate-pulse"></div>
+                      <div className="h-4 w-8 animate-pulse rounded bg-gray-300"></div>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="h-4 w-8 rounded bg-gray-300 animate-pulse"></div>
+                      <div className="h-4 w-8 animate-pulse rounded bg-gray-300"></div>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="h-4 w-8 rounded bg-gray-300 animate-pulse"></div>
+                      <div className="h-4 w-8 animate-pulse rounded bg-gray-300"></div>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="h-4 w-16 rounded bg-gray-300 animate-pulse"></div>
+                      <div className="h-4 w-16 animate-pulse rounded bg-gray-300"></div>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="h-4 w-16 rounded bg-gray-300 animate-pulse"></div>
+                      <div className="h-4 w-16 animate-pulse rounded bg-gray-300"></div>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="h-4 w-16 rounded bg-gray-300 animate-pulse"></div>
+                      <div className="h-4 w-16 animate-pulse rounded bg-gray-300"></div>
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex space-x-2">
-                        <div className="h-6 w-6 rounded bg-gray-300 animate-pulse"></div>
-                        <div className="h-6 w-6 rounded bg-gray-300 animate-pulse"></div>
-                        <div className="h-6 w-6 rounded bg-gray-300 animate-pulse"></div>
+                        <div className="h-6 w-6 animate-pulse rounded bg-gray-300"></div>
+                        <div className="h-6 w-6 animate-pulse rounded bg-gray-300"></div>
+                        <div className="h-6 w-6 animate-pulse rounded bg-gray-300"></div>
                       </div>
                     </td>
                   </tr>
@@ -749,22 +749,22 @@ export default function DriversPage() {
               <thead className="bg-muted">
                 <tr>
                   <th className="px-6 py-3 text-left">
-                    <div className="h-4 w-12 rounded bg-gray-300 animate-pulse"></div>
+                    <div className="h-4 w-12 animate-pulse rounded bg-gray-300"></div>
                   </th>
                   <th className="px-6 py-3 text-left">
-                    <div className="h-4 w-16 rounded bg-gray-300 animate-pulse"></div>
+                    <div className="h-4 w-16 animate-pulse rounded bg-gray-300"></div>
                   </th>
                   <th className="px-6 py-3 text-left">
-                    <div className="h-4 w-24 rounded bg-gray-300 animate-pulse"></div>
+                    <div className="h-4 w-24 animate-pulse rounded bg-gray-300"></div>
                   </th>
                   <th className="px-6 py-3 text-left">
-                    <div className="h-4 w-20 rounded bg-gray-300 animate-pulse"></div>
+                    <div className="h-4 w-20 animate-pulse rounded bg-gray-300"></div>
                   </th>
                   <th className="px-6 py-3 text-left">
-                    <div className="h-4 w-16 rounded bg-gray-300 animate-pulse"></div>
+                    <div className="h-4 w-16 animate-pulse rounded bg-gray-300"></div>
                   </th>
                   <th className="px-6 py-3 text-left">
-                    <div className="h-4 w-18 rounded bg-gray-300 animate-pulse"></div>
+                    <div className="w-18 h-4 animate-pulse rounded bg-gray-300"></div>
                   </th>
                 </tr>
               </thead>
@@ -772,22 +772,22 @@ export default function DriversPage() {
                 {[1, 2, 3, 4, 5].map((i) => (
                   <tr key={i}>
                     <td className="px-6 py-4">
-                      <div className="h-4 w-18 rounded bg-gray-300 animate-pulse"></div>
+                      <div className="w-18 h-4 animate-pulse rounded bg-gray-300"></div>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="h-4 w-20 rounded bg-gray-300 animate-pulse"></div>
+                      <div className="h-4 w-20 animate-pulse rounded bg-gray-300"></div>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="h-4 w-8 rounded bg-gray-300 animate-pulse"></div>
+                      <div className="h-4 w-8 animate-pulse rounded bg-gray-300"></div>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="h-4 w-8 rounded bg-gray-300 animate-pulse"></div>
+                      <div className="h-4 w-8 animate-pulse rounded bg-gray-300"></div>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="h-4 w-8 rounded bg-gray-300 animate-pulse"></div>
+                      <div className="h-4 w-8 animate-pulse rounded bg-gray-300"></div>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="h-4 w-16 rounded bg-gray-300 animate-pulse"></div>
+                      <div className="h-4 w-16 animate-pulse rounded bg-gray-300"></div>
                     </td>
                   </tr>
                 ))}

@@ -58,8 +58,90 @@ export default function SettingsPage() {
   if (loading) {
     return (
       <div className="space-y-6 p-6">
-        <div className="flex h-64 items-center justify-center">
-          <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-blue-600"></div>
+        {/* Header Skeleton */}
+        <div className="flex items-center justify-between">
+          <div>
+            <div className="bg-muted mb-2 h-8 w-48 animate-pulse rounded"></div>
+            <div className="bg-muted h-5 w-80 animate-pulse rounded"></div>
+          </div>
+          <div className="bg-muted h-6 w-6 animate-pulse rounded"></div>
+        </div>
+
+        {/* Settings Form Skeleton */}
+        <div className="bg-card border-border rounded-lg border p-6 shadow transition-colors">
+          <div className="space-y-6">
+            {/* Section 1 - Currency Settings */}
+            <div>
+              <div className="mb-4 flex items-center space-x-2">
+                <div className="bg-muted h-5 w-5 animate-pulse rounded"></div>
+                <div className="bg-muted h-6 w-32 animate-pulse rounded"></div>
+              </div>
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <div>
+                  <div className="bg-muted mb-2 h-4 w-20 animate-pulse rounded"></div>
+                  <div className="bg-muted h-10 w-full animate-pulse rounded"></div>
+                </div>
+                <div>
+                  <div className="bg-muted mb-2 h-4 w-24 animate-pulse rounded"></div>
+                  <div className="bg-muted h-10 w-full animate-pulse rounded"></div>
+                </div>
+              </div>
+            </div>
+
+            {/* Section 2 - Regional Settings */}
+            <div>
+              <div className="mb-4 flex items-center space-x-2">
+                <div className="bg-muted h-5 w-5 animate-pulse rounded"></div>
+                <div className="bg-muted h-6 w-32 animate-pulse rounded"></div>
+              </div>
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <div>
+                  <div className="bg-muted mb-2 h-4 w-20 animate-pulse rounded"></div>
+                  <div className="bg-muted h-10 w-full animate-pulse rounded"></div>
+                </div>
+                <div>
+                  <div className="bg-muted mb-2 h-4 w-20 animate-pulse rounded"></div>
+                  <div className="bg-muted h-10 w-full animate-pulse rounded"></div>
+                </div>
+              </div>
+            </div>
+
+            {/* Section 3 - Display Settings */}
+            <div>
+              <div className="mb-4 flex items-center space-x-2">
+                <div className="bg-muted h-5 w-5 animate-pulse rounded"></div>
+                <div className="bg-muted h-6 w-32 animate-pulse rounded"></div>
+              </div>
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <div>
+                  <div className="bg-muted mb-2 h-4 w-24 animate-pulse rounded"></div>
+                  <div className="bg-muted h-10 w-full animate-pulse rounded"></div>
+                </div>
+                <div>
+                  <div className="bg-muted mb-2 h-4 w-28 animate-pulse rounded"></div>
+                  <div className="bg-muted h-10 w-full animate-pulse rounded"></div>
+                </div>
+              </div>
+            </div>
+
+            {/* Save Button Skeleton */}
+            <div className="flex justify-end pt-4">
+              <div className="bg-muted h-10 w-24 animate-pulse rounded"></div>
+            </div>
+          </div>
+        </div>
+
+        {/* Settings Preview Skeleton */}
+        <div className="bg-card border-border rounded-lg border p-6 shadow transition-colors">
+          <div className="bg-muted mb-4 h-6 w-32 animate-pulse rounded"></div>
+          <div className="space-y-3">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="flex items-center justify-between py-2">
+                <div className="bg-muted h-4 w-32 animate-pulse rounded"></div>
+                <div className="bg-muted h-4 w-24 animate-pulse rounded"></div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     );

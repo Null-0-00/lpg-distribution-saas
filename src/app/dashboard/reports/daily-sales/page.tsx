@@ -310,15 +310,15 @@ export default function DailySalesReportPage() {
         {/* Header Skeleton */}
         <div className="flex items-center justify-between">
           <div>
-            <div className="h-8 w-48 rounded bg-gray-300 animate-pulse mb-2"></div>
-            <div className="h-4 w-64 rounded bg-gray-300 animate-pulse"></div>
+            <div className="mb-2 h-8 w-48 animate-pulse rounded bg-gray-300"></div>
+            <div className="h-4 w-64 animate-pulse rounded bg-gray-300"></div>
           </div>
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-2">
-              <div className="h-5 w-5 rounded bg-gray-300 animate-pulse"></div>
-              <div className="h-10 w-32 rounded-lg bg-gray-300 animate-pulse"></div>
+              <div className="h-5 w-5 animate-pulse rounded bg-gray-300"></div>
+              <div className="h-10 w-32 animate-pulse rounded-lg bg-gray-300"></div>
             </div>
-            <div className="h-10 w-24 rounded-lg bg-gray-300 animate-pulse"></div>
+            <div className="h-10 w-24 animate-pulse rounded-lg bg-gray-300"></div>
           </div>
         </div>
 
@@ -327,10 +327,10 @@ export default function DailySalesReportPage() {
           {[1, 2, 3, 4].map((i) => (
             <div key={i} className="bg-card rounded-lg p-6 shadow">
               <div className="flex items-center">
-                <div className="h-8 w-8 rounded-full bg-gray-300 animate-pulse"></div>
+                <div className="h-8 w-8 animate-pulse rounded-full bg-gray-300"></div>
                 <div className="ml-4 space-y-2">
-                  <div className="h-4 w-20 rounded bg-gray-300 animate-pulse"></div>
-                  <div className="h-8 w-24 rounded bg-gray-300 animate-pulse"></div>
+                  <div className="h-4 w-20 animate-pulse rounded bg-gray-300"></div>
+                  <div className="h-8 w-24 animate-pulse rounded bg-gray-300"></div>
                 </div>
               </div>
             </div>
@@ -340,19 +340,25 @@ export default function DailySalesReportPage() {
         {/* Report Table Skeleton */}
         <div className="bg-card overflow-hidden rounded-lg shadow">
           <div className="border-border border-b px-6 py-4">
-            <div className="h-6 w-48 rounded bg-gray-300 animate-pulse"></div>
+            <div className="h-6 w-48 animate-pulse rounded bg-gray-300"></div>
           </div>
           <div className="p-6">
             <div className="space-y-4">
               <div className="grid grid-cols-10 gap-4">
                 {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((i) => (
-                  <div key={i} className="h-4 w-full rounded bg-gray-300 animate-pulse"></div>
+                  <div
+                    key={i}
+                    className="h-4 w-full animate-pulse rounded bg-gray-300"
+                  ></div>
                 ))}
               </div>
               {[1, 2, 3, 4, 5].map((i) => (
                 <div key={i} className="grid grid-cols-10 gap-4">
                   {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((j) => (
-                    <div key={j} className="h-4 w-full rounded bg-gray-300 animate-pulse"></div>
+                    <div
+                      key={j}
+                      className="h-4 w-full animate-pulse rounded bg-gray-300"
+                    ></div>
                   ))}
                 </div>
               ))}
@@ -363,23 +369,29 @@ export default function DailySalesReportPage() {
         {/* Deposits & Expenses Skeleton */}
         <div className="bg-card rounded-lg shadow">
           <div className="border-border border-b px-6 py-4">
-            <div className="h-6 w-64 rounded bg-gray-300 animate-pulse mb-2"></div>
-            <div className="h-4 w-80 rounded bg-gray-300 animate-pulse"></div>
+            <div className="mb-2 h-6 w-64 animate-pulse rounded bg-gray-300"></div>
+            <div className="h-4 w-80 animate-pulse rounded bg-gray-300"></div>
           </div>
           <div className="grid grid-cols-1 gap-6 p-6 lg:grid-cols-2">
             {[1, 2].map((i) => (
               <div key={i}>
-                <div className="h-5 w-20 rounded bg-gray-300 animate-pulse mb-4"></div>
+                <div className="mb-4 h-5 w-20 animate-pulse rounded bg-gray-300"></div>
                 <div className="space-y-3">
                   <div className="grid grid-cols-3 gap-4">
                     {[1, 2, 3].map((j) => (
-                      <div key={j} className="h-4 w-full rounded bg-gray-300 animate-pulse"></div>
+                      <div
+                        key={j}
+                        className="h-4 w-full animate-pulse rounded bg-gray-300"
+                      ></div>
                     ))}
                   </div>
                   {[1, 2, 3].map((j) => (
                     <div key={j} className="grid grid-cols-3 gap-4">
                       {[1, 2, 3].map((k) => (
-                        <div key={k} className="h-4 w-full rounded bg-gray-300 animate-pulse"></div>
+                        <div
+                          key={k}
+                          className="h-4 w-full animate-pulse rounded bg-gray-300"
+                        ></div>
                       ))}
                     </div>
                   ))}
@@ -392,13 +404,13 @@ export default function DailySalesReportPage() {
         {/* Available Cash Summary Skeleton */}
         <div className="bg-card rounded-lg p-6 shadow">
           <div className="text-center">
-            <div className="h-6 w-48 rounded bg-gray-300 animate-pulse mb-4 mx-auto"></div>
+            <div className="mx-auto mb-4 h-6 w-48 animate-pulse rounded bg-gray-300"></div>
             <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
               <div className="flex items-center justify-between">
-                <div className="h-6 w-40 rounded bg-gray-300 animate-pulse"></div>
-                <div className="h-10 w-32 rounded bg-gray-300 animate-pulse"></div>
+                <div className="h-6 w-40 animate-pulse rounded bg-gray-300"></div>
+                <div className="h-10 w-32 animate-pulse rounded bg-gray-300"></div>
               </div>
-              <div className="h-4 w-56 rounded bg-gray-300 animate-pulse mt-2 mx-auto"></div>
+              <div className="mx-auto mt-2 h-4 w-56 animate-pulse rounded bg-gray-300"></div>
             </div>
           </div>
         </div>

@@ -12,14 +12,9 @@ export async function GET(request: NextRequest) {
     }
 
     const tenantId = session.user.tenantId;
-    
-    // Get user's language preference
-    const user = await prisma.user.findUnique({
-      where: { id: session.user.id },
-      select: { language: true }
-    });
-    
-    const userLanguage = user?.language || 'bn';
+
+    // Get user's language preference - using 'bn' as default since language field doesn't exist in User model
+    const userLanguage = 'bn';
     const today = new Date();
 
     // Get last 7 days of sales data

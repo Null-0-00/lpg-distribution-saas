@@ -306,12 +306,15 @@ export default function DashboardPage() {
         {loading ? (
           <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-3">
             {[...Array(3)].map((_, i) => (
-              <div key={i} className="bg-card border-border rounded-lg border p-6 shadow-sm transition-colors">
+              <div
+                key={i}
+                className="bg-card border-border rounded-lg border p-6 shadow-sm transition-colors"
+              >
                 <div className="flex items-center">
-                  <div className="h-12 w-12 bg-muted rounded-lg animate-pulse"></div>
+                  <div className="bg-muted h-12 w-12 animate-pulse rounded-lg"></div>
                   <div className="ml-4 flex-1">
-                    <div className="h-4 w-24 bg-muted rounded animate-pulse mb-2"></div>
-                    <div className="h-8 w-32 bg-muted rounded animate-pulse"></div>
+                    <div className="bg-muted mb-2 h-4 w-24 animate-pulse rounded"></div>
+                    <div className="bg-muted h-8 w-32 animate-pulse rounded"></div>
                   </div>
                 </div>
               </div>
@@ -373,15 +376,18 @@ export default function DashboardPage() {
         {loading ? (
           <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
             {[...Array(8)].map((_, i) => (
-              <div key={i} className="bg-card border-border rounded-lg border p-6 shadow-sm transition-colors">
+              <div
+                key={i}
+                className="bg-card border-border rounded-lg border p-6 shadow-sm transition-colors"
+              >
                 <div className="mb-4 flex items-center justify-between">
-                  <div className="h-12 w-12 bg-muted rounded-lg animate-pulse"></div>
-                  <div className="h-5 w-16 bg-muted rounded-full animate-pulse"></div>
+                  <div className="bg-muted h-12 w-12 animate-pulse rounded-lg"></div>
+                  <div className="bg-muted h-5 w-16 animate-pulse rounded-full"></div>
                 </div>
-                <div className="h-6 w-32 bg-muted rounded animate-pulse mb-2"></div>
-                <div className="h-4 w-full bg-muted rounded animate-pulse mb-1"></div>
-                <div className="h-4 w-3/4 bg-muted rounded animate-pulse mb-3"></div>
-                <div className="h-4 w-24 bg-muted rounded animate-pulse"></div>
+                <div className="bg-muted mb-2 h-6 w-32 animate-pulse rounded"></div>
+                <div className="bg-muted mb-1 h-4 w-full animate-pulse rounded"></div>
+                <div className="bg-muted mb-3 h-4 w-3/4 animate-pulse rounded"></div>
+                <div className="bg-muted h-4 w-24 animate-pulse rounded"></div>
               </div>
             ))}
           </div>
@@ -438,10 +444,13 @@ export default function DashboardPage() {
         <div className="bg-card border-border mb-8 rounded-lg border p-6 shadow-sm transition-colors">
           {loading ? (
             <>
-              <div className="h-6 w-20 bg-muted rounded animate-pulse mb-4"></div>
+              <div className="bg-muted mb-4 h-6 w-20 animate-pulse rounded"></div>
               <div className="flex flex-wrap gap-3">
                 {[...Array(5)].map((_, i) => (
-                  <div key={i} className="h-10 w-32 bg-muted rounded-lg animate-pulse"></div>
+                  <div
+                    key={i}
+                    className="bg-muted h-10 w-32 animate-pulse rounded-lg"
+                  ></div>
                 ))}
               </div>
             </>
@@ -460,7 +469,9 @@ export default function DashboardPage() {
                 </button>
                 <button
                   className="inline-flex items-center rounded-lg bg-green-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-green-700 dark:bg-green-600 dark:hover:bg-green-700"
-                  onClick={() => (window.location.href = '/dashboard/inventory')}
+                  onClick={() =>
+                    (window.location.href = '/dashboard/inventory')
+                  }
                 >
                   <Package className="mr-2 h-4 w-4" />
                   {t('checkStock')}
@@ -474,7 +485,9 @@ export default function DashboardPage() {
                 </button>
                 <button
                   className="inline-flex items-center rounded-lg bg-orange-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-orange-700 dark:bg-orange-600 dark:hover:bg-orange-700"
-                  onClick={() => (window.location.href = '/dashboard/receivables')}
+                  onClick={() =>
+                    (window.location.href = '/dashboard/receivables')
+                  }
                 >
                   <CreditCard className="mr-2 h-4 w-4" />
                   {t('updatePayment')}
@@ -495,14 +508,17 @@ export default function DashboardPage() {
         <div className="bg-card border-border mb-8 rounded-lg border p-6 shadow-sm transition-colors">
           {loading ? (
             <>
-              <div className="h-6 w-32 bg-muted rounded animate-pulse mb-4"></div>
+              <div className="bg-muted mb-4 h-6 w-32 animate-pulse rounded"></div>
               <div className="space-y-3">
                 {[...Array(3)].map((_, i) => (
-                  <div key={i} className="bg-muted border-border flex items-center rounded-lg border p-3 transition-colors">
-                    <div className="mr-3 h-2 w-2 bg-background rounded-full animate-pulse"></div>
+                  <div
+                    key={i}
+                    className="bg-muted border-border flex items-center rounded-lg border p-3 transition-colors"
+                  >
+                    <div className="bg-background mr-3 h-2 w-2 animate-pulse rounded-full"></div>
                     <div className="flex-1">
-                      <div className="h-4 w-full bg-background rounded animate-pulse mb-1"></div>
-                      <div className="h-3 w-24 bg-background rounded animate-pulse"></div>
+                      <div className="bg-background mb-1 h-4 w-full animate-pulse rounded"></div>
+                      <div className="bg-background h-3 w-24 animate-pulse rounded"></div>
                     </div>
                   </div>
                 ))}
@@ -598,18 +614,24 @@ export default function DashboardPage() {
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
             {/* Sales Trend Skeleton */}
             <div className="bg-card border-border rounded-lg border p-6 shadow-sm transition-colors">
-              <div className="h-6 w-48 bg-muted rounded animate-pulse mb-4"></div>
+              <div className="bg-muted mb-4 h-6 w-48 animate-pulse rounded"></div>
               <div className="space-y-3">
                 <div className="grid grid-cols-7 gap-1 text-center">
                   {[...Array(7)].map((_, i) => (
-                    <div key={i} className="h-3 w-6 bg-muted rounded animate-pulse mx-auto"></div>
+                    <div
+                      key={i}
+                      className="bg-muted mx-auto h-3 w-6 animate-pulse rounded"
+                    ></div>
                   ))}
                 </div>
                 <div className="grid h-32 grid-cols-7 items-end gap-1">
                   {[...Array(7)].map((_, i) => (
                     <div key={i} className="flex flex-col items-center">
-                      <div className="w-full bg-muted rounded-t animate-pulse" style={{ height: `${Math.random() * 80 + 20}%` }}></div>
-                      <div className="mt-1 h-3 w-4 bg-muted rounded animate-pulse"></div>
+                      <div
+                        className="bg-muted w-full animate-pulse rounded-t"
+                        style={{ height: `${Math.random() * 80 + 20}%` }}
+                      ></div>
+                      <div className="bg-muted mt-1 h-3 w-4 animate-pulse rounded"></div>
                     </div>
                   ))}
                 </div>
@@ -618,20 +640,23 @@ export default function DashboardPage() {
 
             {/* Top Driver Performance Skeleton */}
             <div className="bg-card border-border rounded-lg border p-6 shadow-sm transition-colors">
-              <div className="h-6 w-40 bg-muted rounded animate-pulse mb-4"></div>
+              <div className="bg-muted mb-4 h-6 w-40 animate-pulse rounded"></div>
               <div className="space-y-3">
                 {[...Array(4)].map((_, i) => (
-                  <div key={i} className="bg-muted border-border flex items-center justify-between rounded-lg border p-3 transition-colors">
+                  <div
+                    key={i}
+                    className="bg-muted border-border flex items-center justify-between rounded-lg border p-3 transition-colors"
+                  >
                     <div className="flex items-center space-x-3">
-                      <div className="h-8 w-8 bg-background rounded-full animate-pulse"></div>
+                      <div className="bg-background h-8 w-8 animate-pulse rounded-full"></div>
                       <div>
-                        <div className="h-4 w-20 bg-background rounded animate-pulse mb-1"></div>
-                        <div className="h-3 w-32 bg-background rounded animate-pulse"></div>
+                        <div className="bg-background mb-1 h-4 w-20 animate-pulse rounded"></div>
+                        <div className="bg-background h-3 w-32 animate-pulse rounded"></div>
                       </div>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <div className="h-2 w-16 bg-background rounded-full animate-pulse"></div>
-                      <div className="h-3 w-8 bg-background rounded animate-pulse"></div>
+                      <div className="bg-background h-2 w-16 animate-pulse rounded-full"></div>
+                      <div className="bg-background h-3 w-8 animate-pulse rounded"></div>
                     </div>
                   </div>
                 ))}
@@ -665,27 +690,27 @@ export default function DashboardPage() {
                 </div>
 
                 <div className="grid h-32 grid-cols-7 items-end gap-1">
-                  {(analytics?.weekSalesData || [25, 30, 22, 35, 28, 40, 45]).map(
-                    (value, idx) => {
-                      const maxValue = Math.max(
-                        ...(analytics?.weekSalesData || [45])
-                      );
-                      const height = maxValue > 0 ? (value / maxValue) * 100 : 0;
-                      return (
-                        <div key={idx} className="flex flex-col items-center">
-                          <div
-                            className={`w-full rounded-t transition-all duration-300 ${
-                              idx === 6 ? 'bg-blue-500' : 'bg-muted-foreground'
-                            }`}
-                            style={{ height: `${height}%` }}
-                          ></div>
-                          <div className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                            {value}
-                          </div>
+                  {(
+                    analytics?.weekSalesData || [25, 30, 22, 35, 28, 40, 45]
+                  ).map((value, idx) => {
+                    const maxValue = Math.max(
+                      ...(analytics?.weekSalesData || [45])
+                    );
+                    const height = maxValue > 0 ? (value / maxValue) * 100 : 0;
+                    return (
+                      <div key={idx} className="flex flex-col items-center">
+                        <div
+                          className={`w-full rounded-t transition-all duration-300 ${
+                            idx === 6 ? 'bg-blue-500' : 'bg-muted-foreground'
+                          }`}
+                          style={{ height: `${height}%` }}
+                        ></div>
+                        <div className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                          {value}
                         </div>
-                      );
-                    }
-                  )}
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             </div>

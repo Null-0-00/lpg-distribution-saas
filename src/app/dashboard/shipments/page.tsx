@@ -1242,20 +1242,20 @@ export default function ShipmentsPage() {
               {[1, 2, 3, 4].map((i) => (
                 <div key={i} className="bg-card rounded-lg p-6 shadow">
                   {/* Header Skeleton */}
-                  <div className="flex items-center justify-between mb-4">
+                  <div className="mb-4 flex items-center justify-between">
                     <div className="flex items-center space-x-4">
-                      <div className="h-10 w-10 rounded-full bg-gray-300 animate-pulse"></div>
+                      <div className="h-10 w-10 animate-pulse rounded-full bg-gray-300"></div>
                       <div>
-                        <div className="h-5 w-32 rounded bg-gray-300 animate-pulse mb-2"></div>
-                        <div className="h-4 w-20 rounded bg-gray-300 animate-pulse"></div>
+                        <div className="mb-2 h-5 w-32 animate-pulse rounded bg-gray-300"></div>
+                        <div className="h-4 w-20 animate-pulse rounded bg-gray-300"></div>
                       </div>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <div className="h-6 w-16 rounded-full bg-gray-300 animate-pulse"></div>
+                      <div className="h-6 w-16 animate-pulse rounded-full bg-gray-300"></div>
                       <div className="flex space-x-1">
-                        <div className="h-8 w-8 rounded bg-gray-300 animate-pulse"></div>
-                        <div className="h-8 w-8 rounded bg-gray-300 animate-pulse"></div>
-                        <div className="h-8 w-8 rounded bg-gray-300 animate-pulse"></div>
+                        <div className="h-8 w-8 animate-pulse rounded bg-gray-300"></div>
+                        <div className="h-8 w-8 animate-pulse rounded bg-gray-300"></div>
+                        <div className="h-8 w-8 animate-pulse rounded bg-gray-300"></div>
                       </div>
                     </div>
                   </div>
@@ -1264,10 +1264,10 @@ export default function ShipmentsPage() {
                   <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
                     {[1, 2, 3, 4].map((j) => (
                       <div key={j} className="flex items-center space-x-2">
-                        <div className="h-4 w-4 rounded bg-gray-300 animate-pulse"></div>
+                        <div className="h-4 w-4 animate-pulse rounded bg-gray-300"></div>
                         <div>
-                          <div className="h-3 w-16 rounded bg-gray-300 animate-pulse mb-1"></div>
-                          <div className="h-4 w-20 rounded bg-gray-300 animate-pulse"></div>
+                          <div className="mb-1 h-3 w-16 animate-pulse rounded bg-gray-300"></div>
+                          <div className="h-4 w-20 animate-pulse rounded bg-gray-300"></div>
                         </div>
                       </div>
                     ))}
@@ -1275,20 +1275,23 @@ export default function ShipmentsPage() {
 
                   {/* Line Items Skeleton */}
                   <div className="mt-4 border-t pt-4">
-                    <div className="h-4 w-24 rounded bg-gray-300 animate-pulse mb-3"></div>
+                    <div className="mb-3 h-4 w-24 animate-pulse rounded bg-gray-300"></div>
                     <div className="space-y-2">
                       {[1, 2].map((k) => (
-                        <div key={k} className="flex items-center justify-between p-3 bg-muted rounded-lg">
+                        <div
+                          key={k}
+                          className="bg-muted flex items-center justify-between rounded-lg p-3"
+                        >
                           <div className="flex items-center space-x-3">
-                            <div className="h-4 w-4 rounded bg-gray-300 animate-pulse"></div>
+                            <div className="h-4 w-4 animate-pulse rounded bg-gray-300"></div>
                             <div>
-                              <div className="h-4 w-24 rounded bg-gray-300 animate-pulse mb-1"></div>
-                              <div className="h-3 w-16 rounded bg-gray-300 animate-pulse"></div>
+                              <div className="mb-1 h-4 w-24 animate-pulse rounded bg-gray-300"></div>
+                              <div className="h-3 w-16 animate-pulse rounded bg-gray-300"></div>
                             </div>
                           </div>
                           <div className="text-right">
-                            <div className="h-4 w-16 rounded bg-gray-300 animate-pulse mb-1"></div>
-                            <div className="h-3 w-12 rounded bg-gray-300 animate-pulse"></div>
+                            <div className="mb-1 h-4 w-16 animate-pulse rounded bg-gray-300"></div>
+                            <div className="h-3 w-12 animate-pulse rounded bg-gray-300"></div>
                           </div>
                         </div>
                       ))}

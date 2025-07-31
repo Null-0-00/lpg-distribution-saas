@@ -1006,16 +1006,16 @@ export default function ReceivablesPage() {
                   <div className="border-border bg-muted border-b px-6 py-4">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center">
-                        <div className="mr-2 h-5 w-5 rounded bg-gray-300 animate-pulse"></div>
-                        <div className="h-6 w-32 rounded bg-gray-300 animate-pulse"></div>
+                        <div className="mr-2 h-5 w-5 animate-pulse rounded bg-gray-300"></div>
+                        <div className="h-6 w-32 animate-pulse rounded bg-gray-300"></div>
                       </div>
                       <div className="flex items-center space-x-6">
-                        <div className="text-sm space-x-4 flex">
-                          <div className="h-4 w-40 rounded bg-gray-300 animate-pulse"></div>
-                          <div className="h-4 w-32 rounded bg-gray-300 animate-pulse"></div>
-                          <div className="h-4 w-24 rounded bg-gray-300 animate-pulse"></div>
+                        <div className="flex space-x-4 text-sm">
+                          <div className="h-4 w-40 animate-pulse rounded bg-gray-300"></div>
+                          <div className="h-4 w-32 animate-pulse rounded bg-gray-300"></div>
+                          <div className="h-4 w-24 animate-pulse rounded bg-gray-300"></div>
                         </div>
-                        <div className="h-8 w-24 rounded-md bg-gray-300 animate-pulse"></div>
+                        <div className="h-8 w-24 animate-pulse rounded-md bg-gray-300"></div>
                       </div>
                     </div>
                   </div>
@@ -1024,22 +1024,22 @@ export default function ReceivablesPage() {
                   <div className="grid grid-cols-1 gap-6 px-6 pb-6 lg:grid-cols-2">
                     {/* Cash Receivables Table Skeleton */}
                     <div>
-                      <div className="mb-3 h-5 w-32 rounded bg-gray-300 animate-pulse"></div>
+                      <div className="mb-3 h-5 w-32 animate-pulse rounded bg-gray-300"></div>
                       <div className="border-border overflow-x-auto rounded-lg border">
                         <table className="w-full">
                           <thead className="bg-muted">
                             <tr>
                               <th className="px-4 py-3">
-                                <div className="h-4 w-16 rounded bg-gray-300 animate-pulse"></div>
+                                <div className="h-4 w-16 animate-pulse rounded bg-gray-300"></div>
                               </th>
                               <th className="px-4 py-3">
-                                <div className="h-4 w-12 rounded bg-gray-300 animate-pulse"></div>
+                                <div className="h-4 w-12 animate-pulse rounded bg-gray-300"></div>
                               </th>
                               <th className="px-4 py-3">
-                                <div className="h-4 w-10 rounded bg-gray-300 animate-pulse"></div>
+                                <div className="h-4 w-10 animate-pulse rounded bg-gray-300"></div>
                               </th>
                               <th className="px-4 py-3">
-                                <div className="h-4 w-14 rounded bg-gray-300 animate-pulse"></div>
+                                <div className="h-4 w-14 animate-pulse rounded bg-gray-300"></div>
                               </th>
                             </tr>
                           </thead>
@@ -1047,19 +1047,19 @@ export default function ReceivablesPage() {
                             {[1, 2].map((j) => (
                               <tr key={j}>
                                 <td className="px-4 py-4">
-                                  <div className="h-4 w-20 rounded bg-gray-300 animate-pulse"></div>
+                                  <div className="h-4 w-20 animate-pulse rounded bg-gray-300"></div>
                                 </td>
                                 <td className="px-4 py-4">
-                                  <div className="h-4 w-16 rounded bg-gray-300 animate-pulse"></div>
+                                  <div className="h-4 w-16 animate-pulse rounded bg-gray-300"></div>
                                 </td>
                                 <td className="px-4 py-4">
-                                  <div className="h-4 w-18 rounded bg-gray-300 animate-pulse"></div>
+                                  <div className="w-18 h-4 animate-pulse rounded bg-gray-300"></div>
                                 </td>
                                 <td className="px-4 py-4">
                                   <div className="flex space-x-2">
-                                    <div className="h-4 w-8 rounded bg-gray-300 animate-pulse"></div>
-                                    <div className="h-4 w-4 rounded bg-gray-300 animate-pulse"></div>
-                                    <div className="h-4 w-4 rounded bg-gray-300 animate-pulse"></div>
+                                    <div className="h-4 w-8 animate-pulse rounded bg-gray-300"></div>
+                                    <div className="h-4 w-4 animate-pulse rounded bg-gray-300"></div>
+                                    <div className="h-4 w-4 animate-pulse rounded bg-gray-300"></div>
                                   </div>
                                 </td>
                               </tr>
@@ -1071,25 +1071,25 @@ export default function ReceivablesPage() {
 
                     {/* Cylinder Receivables Table Skeleton */}
                     <div>
-                      <div className="mb-3 h-5 w-36 rounded bg-gray-300 animate-pulse"></div>
+                      <div className="mb-3 h-5 w-36 animate-pulse rounded bg-gray-300"></div>
                       <div className="border-border overflow-x-auto rounded-lg border">
                         <table className="w-full">
                           <thead className="bg-muted">
                             <tr>
                               <th className="px-4 py-3">
-                                <div className="h-4 w-16 rounded bg-gray-300 animate-pulse"></div>
+                                <div className="h-4 w-16 animate-pulse rounded bg-gray-300"></div>
                               </th>
                               <th className="px-4 py-3">
-                                <div className="h-4 w-12 rounded bg-gray-300 animate-pulse"></div>
+                                <div className="h-4 w-12 animate-pulse rounded bg-gray-300"></div>
                               </th>
                               <th className="px-4 py-3">
-                                <div className="h-4 w-8 rounded bg-gray-300 animate-pulse"></div>
+                                <div className="h-4 w-8 animate-pulse rounded bg-gray-300"></div>
                               </th>
                               <th className="px-4 py-3">
-                                <div className="h-4 w-10 rounded bg-gray-300 animate-pulse"></div>
+                                <div className="h-4 w-10 animate-pulse rounded bg-gray-300"></div>
                               </th>
                               <th className="px-4 py-3">
-                                <div className="h-4 w-14 rounded bg-gray-300 animate-pulse"></div>
+                                <div className="h-4 w-14 animate-pulse rounded bg-gray-300"></div>
                               </th>
                             </tr>
                           </thead>
@@ -1097,22 +1097,22 @@ export default function ReceivablesPage() {
                             {[1, 2].map((j) => (
                               <tr key={j}>
                                 <td className="px-4 py-4">
-                                  <div className="h-4 w-20 rounded bg-gray-300 animate-pulse"></div>
+                                  <div className="h-4 w-20 animate-pulse rounded bg-gray-300"></div>
                                 </td>
                                 <td className="px-4 py-4">
-                                  <div className="h-4 w-8 rounded bg-gray-300 animate-pulse"></div>
+                                  <div className="h-4 w-8 animate-pulse rounded bg-gray-300"></div>
                                 </td>
                                 <td className="px-4 py-4">
-                                  <div className="h-4 w-10 rounded bg-gray-300 animate-pulse"></div>
+                                  <div className="h-4 w-10 animate-pulse rounded bg-gray-300"></div>
                                 </td>
                                 <td className="px-4 py-4">
-                                  <div className="h-4 w-18 rounded bg-gray-300 animate-pulse"></div>
+                                  <div className="w-18 h-4 animate-pulse rounded bg-gray-300"></div>
                                 </td>
                                 <td className="px-4 py-4">
                                   <div className="flex space-x-2">
-                                    <div className="h-4 w-10 rounded bg-gray-300 animate-pulse"></div>
-                                    <div className="h-4 w-4 rounded bg-gray-300 animate-pulse"></div>
-                                    <div className="h-4 w-4 rounded bg-gray-300 animate-pulse"></div>
+                                    <div className="h-4 w-10 animate-pulse rounded bg-gray-300"></div>
+                                    <div className="h-4 w-4 animate-pulse rounded bg-gray-300"></div>
+                                    <div className="h-4 w-4 animate-pulse rounded bg-gray-300"></div>
                                   </div>
                                 </td>
                               </tr>
@@ -1530,25 +1530,25 @@ export default function ReceivablesPage() {
                 <thead className="bg-muted">
                   <tr>
                     <th className="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500 dark:text-gray-300">
-                      <div className="h-4 w-12 rounded bg-gray-300 animate-pulse"></div>
+                      <div className="h-4 w-12 animate-pulse rounded bg-gray-300"></div>
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500 dark:text-gray-300">
-                      <div className="h-4 w-16 rounded bg-gray-300 animate-pulse"></div>
+                      <div className="h-4 w-16 animate-pulse rounded bg-gray-300"></div>
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500 dark:text-gray-300">
-                      <div className="h-4 w-14 rounded bg-gray-300 animate-pulse"></div>
+                      <div className="h-4 w-14 animate-pulse rounded bg-gray-300"></div>
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500 dark:text-gray-300">
-                      <div className="h-4 w-18 rounded bg-gray-300 animate-pulse"></div>
+                      <div className="w-18 h-4 animate-pulse rounded bg-gray-300"></div>
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500 dark:text-gray-300">
-                      <div className="h-4 w-10 rounded bg-gray-300 animate-pulse"></div>
+                      <div className="h-4 w-10 animate-pulse rounded bg-gray-300"></div>
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500 dark:text-gray-300">
-                      <div className="h-4 w-24 rounded bg-gray-300 animate-pulse"></div>
+                      <div className="h-4 w-24 animate-pulse rounded bg-gray-300"></div>
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500 dark:text-gray-300">
-                      <div className="h-4 w-10 rounded bg-gray-300 animate-pulse"></div>
+                      <div className="h-4 w-10 animate-pulse rounded bg-gray-300"></div>
                     </th>
                   </tr>
                 </thead>
@@ -1556,25 +1556,25 @@ export default function ReceivablesPage() {
                   {[1, 2, 3, 4, 5].map((i) => (
                     <tr key={i}>
                       <td className="px-6 py-4">
-                        <div className="h-4 w-20 rounded bg-gray-300 animate-pulse"></div>
+                        <div className="h-4 w-20 animate-pulse rounded bg-gray-300"></div>
                       </td>
                       <td className="px-6 py-4">
-                        <div className="h-6 w-16 rounded-full bg-gray-300 animate-pulse"></div>
+                        <div className="h-6 w-16 animate-pulse rounded-full bg-gray-300"></div>
                       </td>
                       <td className="px-6 py-4">
-                        <div className="h-4 w-16 rounded bg-gray-300 animate-pulse"></div>
+                        <div className="h-4 w-16 animate-pulse rounded bg-gray-300"></div>
                       </td>
                       <td className="px-6 py-4">
-                        <div className="h-4 w-20 rounded bg-gray-300 animate-pulse"></div>
+                        <div className="h-4 w-20 animate-pulse rounded bg-gray-300"></div>
                       </td>
                       <td className="px-6 py-4">
-                        <div className="h-6 w-12 rounded-full bg-gray-300 animate-pulse"></div>
+                        <div className="h-6 w-12 animate-pulse rounded-full bg-gray-300"></div>
                       </td>
                       <td className="px-6 py-4">
-                        <div className="h-4 w-16 rounded bg-gray-300 animate-pulse"></div>
+                        <div className="h-4 w-16 animate-pulse rounded bg-gray-300"></div>
                       </td>
                       <td className="px-6 py-4">
-                        <div className="h-4 w-14 rounded bg-gray-300 animate-pulse"></div>
+                        <div className="h-4 w-14 animate-pulse rounded bg-gray-300"></div>
                       </td>
                     </tr>
                   ))}

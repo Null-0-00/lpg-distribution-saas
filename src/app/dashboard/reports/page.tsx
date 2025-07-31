@@ -339,14 +339,14 @@ export default function ReportsPage() {
         {/* Header Skeleton */}
         <div className="flex items-center justify-between">
           <div>
-            <div className="h-8 w-48 bg-muted rounded animate-pulse mb-2"></div>
-            <div className="h-5 w-80 bg-muted rounded animate-pulse"></div>
+            <div className="bg-muted mb-2 h-8 w-48 animate-pulse rounded"></div>
+            <div className="bg-muted h-5 w-80 animate-pulse rounded"></div>
           </div>
           <div className="flex items-center space-x-4">
-            <div className="h-6 w-32 bg-muted rounded animate-pulse"></div>
-            <div className="h-10 w-32 bg-muted rounded animate-pulse"></div>
-            <div className="h-10 w-24 bg-muted rounded animate-pulse"></div>
-            <div className="h-10 w-32 bg-muted rounded animate-pulse"></div>
+            <div className="bg-muted h-6 w-32 animate-pulse rounded"></div>
+            <div className="bg-muted h-10 w-32 animate-pulse rounded"></div>
+            <div className="bg-muted h-10 w-24 animate-pulse rounded"></div>
+            <div className="bg-muted h-10 w-32 animate-pulse rounded"></div>
           </div>
         </div>
 
@@ -355,10 +355,10 @@ export default function ReportsPage() {
           {[...Array(4)].map((_, i) => (
             <div key={i} className="bg-card rounded-lg p-6 shadow">
               <div className="flex items-center">
-                <div className="h-8 w-8 bg-muted rounded animate-pulse"></div>
+                <div className="bg-muted h-8 w-8 animate-pulse rounded"></div>
                 <div className="ml-4 flex-1">
-                  <div className="h-4 w-24 bg-muted rounded animate-pulse mb-2"></div>
-                  <div className="h-8 w-32 bg-muted rounded animate-pulse"></div>
+                  <div className="bg-muted mb-2 h-4 w-24 animate-pulse rounded"></div>
+                  <div className="bg-muted h-8 w-32 animate-pulse rounded"></div>
                 </div>
               </div>
             </div>
@@ -371,26 +371,29 @@ export default function ReportsPage() {
             <div key={i} className="bg-card rounded-lg shadow">
               <div className="border-border flex items-center justify-between border-b px-6 py-4">
                 <div className="flex items-center space-x-3">
-                  <div className="h-8 w-8 bg-muted rounded animate-pulse"></div>
+                  <div className="bg-muted h-8 w-8 animate-pulse rounded"></div>
                   <div>
-                    <div className="h-6 w-32 bg-muted rounded animate-pulse mb-1"></div>
-                    <div className="h-4 w-48 bg-muted rounded animate-pulse"></div>
+                    <div className="bg-muted mb-1 h-6 w-32 animate-pulse rounded"></div>
+                    <div className="bg-muted h-4 w-48 animate-pulse rounded"></div>
                   </div>
                 </div>
-                <div className="h-8 w-20 bg-muted rounded animate-pulse"></div>
+                <div className="bg-muted h-8 w-20 animate-pulse rounded"></div>
               </div>
               <div className="p-6">
                 <div className="space-y-4">
                   {[...Array(6)].map((_, j) => (
-                    <div key={j} className="flex items-center justify-between py-2">
-                      <div className="h-4 w-40 bg-muted rounded animate-pulse"></div>
-                      <div className="h-4 w-20 bg-muted rounded animate-pulse"></div>
+                    <div
+                      key={j}
+                      className="flex items-center justify-between py-2"
+                    >
+                      <div className="bg-muted h-4 w-40 animate-pulse rounded"></div>
+                      <div className="bg-muted h-4 w-20 animate-pulse rounded"></div>
                     </div>
                   ))}
-                  <div className="border-t border-border pt-4">
+                  <div className="border-border border-t pt-4">
                     <div className="flex items-center justify-between">
-                      <div className="h-5 w-24 bg-muted rounded animate-pulse"></div>
-                      <div className="h-5 w-24 bg-muted rounded animate-pulse"></div>
+                      <div className="bg-muted h-5 w-24 animate-pulse rounded"></div>
+                      <div className="bg-muted h-5 w-24 animate-pulse rounded"></div>
                     </div>
                   </div>
                 </div>
@@ -402,20 +405,23 @@ export default function ReportsPage() {
         {/* Report Actions Skeleton */}
         <div className="bg-card rounded-lg p-6 shadow">
           <div className="mb-6">
-            <div className="h-6 w-32 bg-muted rounded animate-pulse mb-2"></div>
-            <div className="h-4 w-64 bg-muted rounded animate-pulse"></div>
+            <div className="bg-muted mb-2 h-6 w-32 animate-pulse rounded"></div>
+            <div className="bg-muted h-4 w-64 animate-pulse rounded"></div>
           </div>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
             {[...Array(3)].map((_, i) => (
-              <div key={i} className="border-border flex items-center justify-between rounded-lg border p-4">
+              <div
+                key={i}
+                className="border-border flex items-center justify-between rounded-lg border p-4"
+              >
                 <div className="flex items-center space-x-3">
-                  <div className="h-10 w-10 bg-muted rounded animate-pulse"></div>
+                  <div className="bg-muted h-10 w-10 animate-pulse rounded"></div>
                   <div>
-                    <div className="h-5 w-28 bg-muted rounded animate-pulse mb-1"></div>
-                    <div className="h-4 w-40 bg-muted rounded animate-pulse"></div>
+                    <div className="bg-muted mb-1 h-5 w-28 animate-pulse rounded"></div>
+                    <div className="bg-muted h-4 w-40 animate-pulse rounded"></div>
                   </div>
                 </div>
-                <div className="h-8 w-20 bg-muted rounded animate-pulse"></div>
+                <div className="bg-muted h-8 w-20 animate-pulse rounded"></div>
               </div>
             ))}
           </div>
@@ -556,7 +562,11 @@ export default function ReportsPage() {
                 <div className="grid grid-cols-2 gap-2">
                   <button
                     className="bg-muted text-muted-foreground hover:bg-muted flex items-center justify-center rounded-md px-2 py-2 text-xs"
-                    onClick={() => alert(`${t('view')} ${report.title} ${t('viewDetailsBelow')}`)}
+                    onClick={() =>
+                      alert(
+                        `${t('view')} ${report.title} ${t('viewDetailsBelow')}`
+                      )
+                    }
                   >
                     <FileText className="mr-1 h-3 w-3" />
                     {t('view')}
@@ -677,7 +687,9 @@ export default function ReportsPage() {
                   - {t('cylinderPurchases')}
                 </span>
                 <span className="text-foreground text-sm">
-                  {formatCurrency(incomeStatement.costOfGoodsSold.cylinderPurchases)}
+                  {formatCurrency(
+                    incomeStatement.costOfGoodsSold.cylinderPurchases
+                  )}
                 </span>
               </div>
 
@@ -719,11 +731,15 @@ export default function ReportsPage() {
                   - {t('maintenance')}
                 </span>
                 <span className="text-foreground text-xs">
-                  {formatCurrency(incomeStatement.operatingExpenses.maintenance)}
+                  {formatCurrency(
+                    incomeStatement.operatingExpenses.maintenance
+                  )}
                 </span>
               </div>
               <div className="ml-4 flex items-center justify-between py-1">
-                <span className="text-muted-foreground text-xs">- {t('rent')}</span>
+                <span className="text-muted-foreground text-xs">
+                  - {t('rent')}
+                </span>
                 <span className="text-foreground text-xs">
                   {formatCurrency(incomeStatement.operatingExpenses.rent)}
                 </span>
@@ -823,7 +839,9 @@ export default function ReportsPage() {
           <div className="p-6">
             <div className="space-y-4">
               <div>
-                <h4 className="text-foreground mb-2 font-medium">{t('assets')}</h4>
+                <h4 className="text-foreground mb-2 font-medium">
+                  {t('assets')}
+                </h4>
                 <div className="ml-4 space-y-2">
                   <div className="flex justify-between">
                     <span className="text-muted-foreground text-sm">

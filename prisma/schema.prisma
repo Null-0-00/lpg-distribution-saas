@@ -17,9 +17,9 @@ model Tenant {
   subscriptionPlan              SubscriptionPlan
   isActive                      Boolean                        @default(true)
   settings                      Json?
-  currency                      String                         @default("USD")
-  timezone                      String                         @default("UTC")
-  language                      String                         @default("en")
+  currency                      String                         @default("BDT")
+  timezone                      String                         @default("Asia/Dhaka")
+  language                      String                         @default("bn")
   onboardingCompleted           Boolean                        @default(false)
   onboardingCompletedAt         DateTime?
   onboardingCompletedBy         String?                        // User ID who completed onboarding

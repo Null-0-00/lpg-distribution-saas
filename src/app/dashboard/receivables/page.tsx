@@ -998,13 +998,132 @@ export default function ReceivablesPage() {
       {activeTab === 'receivables' && (
         <div className="space-y-4">
           {loading ? (
-            <div className="bg-card rounded-lg p-8 shadow">
-              <div className="flex items-center justify-center">
-                <div className="mr-3 h-8 w-8 animate-spin rounded-full border-b-2 border-blue-500"></div>
-                <span className="text-muted-foreground">
-                  Loading receivables...
-                </span>
-              </div>
+            <div className="space-y-4">
+              {/* Skeleton for driver cards */}
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="bg-card rounded-lg shadow">
+                  {/* Driver Header Skeleton */}
+                  <div className="border-border bg-muted border-b px-6 py-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center">
+                        <div className="mr-2 h-5 w-5 rounded bg-gray-300 animate-pulse"></div>
+                        <div className="h-6 w-32 rounded bg-gray-300 animate-pulse"></div>
+                      </div>
+                      <div className="flex items-center space-x-6">
+                        <div className="text-sm space-x-4 flex">
+                          <div className="h-4 w-40 rounded bg-gray-300 animate-pulse"></div>
+                          <div className="h-4 w-32 rounded bg-gray-300 animate-pulse"></div>
+                          <div className="h-4 w-24 rounded bg-gray-300 animate-pulse"></div>
+                        </div>
+                        <div className="h-8 w-24 rounded-md bg-gray-300 animate-pulse"></div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Tables Skeleton */}
+                  <div className="grid grid-cols-1 gap-6 px-6 pb-6 lg:grid-cols-2">
+                    {/* Cash Receivables Table Skeleton */}
+                    <div>
+                      <div className="mb-3 h-5 w-32 rounded bg-gray-300 animate-pulse"></div>
+                      <div className="border-border overflow-x-auto rounded-lg border">
+                        <table className="w-full">
+                          <thead className="bg-muted">
+                            <tr>
+                              <th className="px-4 py-3">
+                                <div className="h-4 w-16 rounded bg-gray-300 animate-pulse"></div>
+                              </th>
+                              <th className="px-4 py-3">
+                                <div className="h-4 w-12 rounded bg-gray-300 animate-pulse"></div>
+                              </th>
+                              <th className="px-4 py-3">
+                                <div className="h-4 w-10 rounded bg-gray-300 animate-pulse"></div>
+                              </th>
+                              <th className="px-4 py-3">
+                                <div className="h-4 w-14 rounded bg-gray-300 animate-pulse"></div>
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-border divide-y">
+                            {[1, 2].map((j) => (
+                              <tr key={j}>
+                                <td className="px-4 py-4">
+                                  <div className="h-4 w-20 rounded bg-gray-300 animate-pulse"></div>
+                                </td>
+                                <td className="px-4 py-4">
+                                  <div className="h-4 w-16 rounded bg-gray-300 animate-pulse"></div>
+                                </td>
+                                <td className="px-4 py-4">
+                                  <div className="h-4 w-18 rounded bg-gray-300 animate-pulse"></div>
+                                </td>
+                                <td className="px-4 py-4">
+                                  <div className="flex space-x-2">
+                                    <div className="h-4 w-8 rounded bg-gray-300 animate-pulse"></div>
+                                    <div className="h-4 w-4 rounded bg-gray-300 animate-pulse"></div>
+                                    <div className="h-4 w-4 rounded bg-gray-300 animate-pulse"></div>
+                                  </div>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+
+                    {/* Cylinder Receivables Table Skeleton */}
+                    <div>
+                      <div className="mb-3 h-5 w-36 rounded bg-gray-300 animate-pulse"></div>
+                      <div className="border-border overflow-x-auto rounded-lg border">
+                        <table className="w-full">
+                          <thead className="bg-muted">
+                            <tr>
+                              <th className="px-4 py-3">
+                                <div className="h-4 w-16 rounded bg-gray-300 animate-pulse"></div>
+                              </th>
+                              <th className="px-4 py-3">
+                                <div className="h-4 w-12 rounded bg-gray-300 animate-pulse"></div>
+                              </th>
+                              <th className="px-4 py-3">
+                                <div className="h-4 w-8 rounded bg-gray-300 animate-pulse"></div>
+                              </th>
+                              <th className="px-4 py-3">
+                                <div className="h-4 w-10 rounded bg-gray-300 animate-pulse"></div>
+                              </th>
+                              <th className="px-4 py-3">
+                                <div className="h-4 w-14 rounded bg-gray-300 animate-pulse"></div>
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-border divide-y">
+                            {[1, 2].map((j) => (
+                              <tr key={j}>
+                                <td className="px-4 py-4">
+                                  <div className="h-4 w-20 rounded bg-gray-300 animate-pulse"></div>
+                                </td>
+                                <td className="px-4 py-4">
+                                  <div className="h-4 w-8 rounded bg-gray-300 animate-pulse"></div>
+                                </td>
+                                <td className="px-4 py-4">
+                                  <div className="h-4 w-10 rounded bg-gray-300 animate-pulse"></div>
+                                </td>
+                                <td className="px-4 py-4">
+                                  <div className="h-4 w-18 rounded bg-gray-300 animate-pulse"></div>
+                                </td>
+                                <td className="px-4 py-4">
+                                  <div className="flex space-x-2">
+                                    <div className="h-4 w-10 rounded bg-gray-300 animate-pulse"></div>
+                                    <div className="h-4 w-4 rounded bg-gray-300 animate-pulse"></div>
+                                    <div className="h-4 w-4 rounded bg-gray-300 animate-pulse"></div>
+                                  </div>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           ) : driverReceivables.length === 0 ? (
             <div className="bg-card rounded-lg p-8 shadow">
@@ -1406,13 +1525,61 @@ export default function ReceivablesPage() {
           </div>
 
           {changesLoading ? (
-            <div className="px-6 py-8">
-              <div className="flex items-center justify-center">
-                <div className="mr-3 h-8 w-8 animate-spin rounded-full border-b-2 border-blue-500"></div>
-                <span className="text-muted-foreground">
-                  Loading changes...
-                </span>
-              </div>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-muted">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500 dark:text-gray-300">
+                      <div className="h-4 w-12 rounded bg-gray-300 animate-pulse"></div>
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500 dark:text-gray-300">
+                      <div className="h-4 w-16 rounded bg-gray-300 animate-pulse"></div>
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500 dark:text-gray-300">
+                      <div className="h-4 w-14 rounded bg-gray-300 animate-pulse"></div>
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500 dark:text-gray-300">
+                      <div className="h-4 w-18 rounded bg-gray-300 animate-pulse"></div>
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500 dark:text-gray-300">
+                      <div className="h-4 w-10 rounded bg-gray-300 animate-pulse"></div>
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500 dark:text-gray-300">
+                      <div className="h-4 w-24 rounded bg-gray-300 animate-pulse"></div>
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500 dark:text-gray-300">
+                      <div className="h-4 w-10 rounded bg-gray-300 animate-pulse"></div>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-border divide-y">
+                  {[1, 2, 3, 4, 5].map((i) => (
+                    <tr key={i}>
+                      <td className="px-6 py-4">
+                        <div className="h-4 w-20 rounded bg-gray-300 animate-pulse"></div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="h-6 w-16 rounded-full bg-gray-300 animate-pulse"></div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="h-4 w-16 rounded bg-gray-300 animate-pulse"></div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="h-4 w-20 rounded bg-gray-300 animate-pulse"></div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="h-6 w-12 rounded-full bg-gray-300 animate-pulse"></div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="h-4 w-16 rounded bg-gray-300 animate-pulse"></div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="h-4 w-14 rounded bg-gray-300 animate-pulse"></div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           ) : receivablesChanges.length === 0 ? (
             <div className="px-6 py-8 text-center text-gray-500 dark:text-gray-400">

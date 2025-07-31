@@ -2,6 +2,7 @@
 
 import { useSession } from 'next-auth/react';
 import { useState, useEffect } from 'react';
+import { useSettings } from '@/contexts/SettingsContext';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -35,6 +36,7 @@ interface DashboardStats {
 
 export default function DashboardPage() {
   const { data: session } = useSession();
+  const { t } = useSettings();
   const [stats, setStats] = useState<DashboardStats>({
     todaySales: 0,
     totalRevenue: 0,
@@ -167,7 +169,7 @@ export default function DashboardPage() {
       {/* Welcome Header */}
       <div className="mb-8 text-center">
         <h1 className="mb-2 text-3xl font-bold text-gray-900">
-          Welcome back, {session.user.name}
+          {t('welcomeBack')}, {session.user.name}
         </h1>
         <p className="text-gray-600">
           Here's an overview of your LPG distribution business

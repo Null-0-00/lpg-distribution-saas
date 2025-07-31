@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
+import { getTranslation } from '@/lib/i18n/translations';
 
 export async function GET(request: NextRequest) {
   try {
@@ -11,6 +12,14 @@ export async function GET(request: NextRequest) {
     }
 
     const tenantId = session.user.tenantId;
+    
+    // Get user's language preference
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { language: true }
+    });
+    
+    const userLanguage = user?.language || 'bn';
     const today = new Date();
 
     // Get last 7 days of sales data
@@ -143,14 +152,14 @@ export async function GET(request: NextRequest) {
       ...inventoryRecords.map((item) => ({
         type: 'low_stock',
         priority: 'high',
-        message: `Low stock alert: ${item.fullCylinders} full cylinders remaining`,
+        message: `${getTranslation(userLanguage, 'lowStockAlert')}: ${item.fullCylinders} ${getTranslation(userLanguage, 'fullCylindersRemaining')}`,
         timestamp: new Date().toISOString(),
         category: 'inventory',
       })),
       ...receivableRecords.map((payment) => ({
         type: 'payment_overdue',
         priority: 'medium',
-        message: `High receivables balance of ৳${payment.totalCashReceivables.toLocaleString()} - ${payment.driver.name}`,
+        message: `${getTranslation(userLanguage, 'highReceivablesBalance')} ৳${payment.totalCashReceivables.toLocaleString()} - ${payment.driver.name}`,
         timestamp: payment.date.toISOString(),
         category: 'finance',
       })),
@@ -162,7 +171,7 @@ export async function GET(request: NextRequest) {
       alerts.unshift({
         type: 'sales_milestone',
         priority: 'low',
-        message: `${topDriver.name} completed ${topDriver.sales} sales - daily target achieved!`,
+        message: `${topDriver.name} ${getTranslation(userLanguage, 'completedSales')} ${topDriver.sales} ${getTranslation(userLanguage, 'salesMilestone')}`,
         timestamp: new Date().toISOString(),
         category: 'achievement',
       });
@@ -171,7 +180,7 @@ export async function GET(request: NextRequest) {
     // Generate recent activity
     const recentActivity = recentSales.map((sale) => ({
       type: 'sale',
-      message: `${sale.driver.name} sold ${sale.quantity} ${sale.product.name} - ৳${sale.netValue.toLocaleString()}`,
+      message: `${sale.driver.name} ${getTranslation(userLanguage, 'completedSale')} - ৳${sale.netValue.toLocaleString()}`,
       timestamp: sale.saleDate.toISOString(),
       amount: sale.netValue,
     }));

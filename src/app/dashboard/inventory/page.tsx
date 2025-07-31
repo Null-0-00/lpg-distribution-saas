@@ -1104,7 +1104,12 @@ export default function InventoryPage() {
                             dailyInventoryData?.dailyInventory[0]?.outstandingRefillOrdersBySizes?.find(
                               (s: any) => s.size === item.size
                             )?.quantity || 0;
-                          return sum + correctEmptyCylindersInStock + receivablesForSize + outstandingShipmentsForSize;
+                          return (
+                            sum +
+                            correctEmptyCylindersInStock +
+                            receivablesForSize +
+                            outstandingShipmentsForSize
+                          );
                         },
                         0
                       ) || 0}

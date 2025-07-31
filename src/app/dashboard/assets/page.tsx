@@ -580,10 +580,143 @@ export default function AssetsPage() {
 
   if (loading) {
     return (
-      <div className="p-6">
-        <div className="flex h-64 items-center justify-center">
-          <div className="mr-3 h-8 w-8 animate-spin rounded-full border-b-2 border-blue-500"></div>
-          <span className="text-muted-foreground">{t('loadingData')}...</span>
+      <div className="space-y-6 p-6">
+        {/* Header Skeleton */}
+        <div className="flex items-center justify-between">
+          <div>
+            <div className="h-8 w-40 rounded bg-gray-300 animate-pulse mb-2"></div>
+            <div className="h-4 w-64 rounded bg-gray-300 animate-pulse"></div>
+          </div>
+          <div className="h-10 w-24 rounded-lg bg-gray-300 animate-pulse"></div>
+        </div>
+
+        {/* Summary Cards Skeleton */}
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="bg-card rounded-lg p-6 shadow">
+              <div className="flex items-center">
+                <div className="h-8 w-8 rounded-full bg-gray-300 animate-pulse"></div>
+                <div className="ml-4 space-y-2">
+                  <div className="h-4 w-20 rounded bg-gray-300 animate-pulse"></div>
+                  <div className="h-8 w-24 rounded bg-gray-300 animate-pulse"></div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Assets & Liabilities Tables Skeleton */}
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+          {/* Assets Table Skeleton */}
+          <div className="bg-card rounded-lg shadow">
+            <div className="px-6 py-4 border-b">
+              <div className="h-6 w-32 rounded bg-gray-300 animate-pulse mb-2"></div>
+              <div className="h-4 w-48 rounded bg-gray-300 animate-pulse"></div>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-muted">
+                  <tr>
+                    <th className="px-4 py-3">
+                      <div className="h-4 w-16 rounded bg-gray-300 animate-pulse"></div>
+                    </th>
+                    <th className="px-4 py-3">
+                      <div className="h-4 w-20 rounded bg-gray-300 animate-pulse"></div>
+                    </th>
+                    <th className="px-4 py-3">
+                      <div className="h-4 w-16 rounded bg-gray-300 animate-pulse"></div>
+                    </th>
+                    <th className="px-4 py-3">
+                      <div className="h-4 w-14 rounded bg-gray-300 animate-pulse"></div>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-border divide-y">
+                  {[1, 2, 3, 4, 5].map((i) => (
+                    <tr key={i}>
+                      <td className="px-4 py-4">
+                        <div className="h-4 w-24 rounded bg-gray-300 animate-pulse"></div>
+                      </td>
+                      <td className="px-4 py-4">
+                        <div className="h-4 w-16 rounded bg-gray-300 animate-pulse"></div>
+                      </td>
+                      <td className="px-4 py-4">
+                        <div className="h-4 w-20 rounded bg-gray-300 animate-pulse"></div>
+                      </td>
+                      <td className="px-4 py-4">
+                        <div className="flex space-x-2">
+                          <div className="h-6 w-6 rounded bg-gray-300 animate-pulse"></div>
+                          <div className="h-6 w-6 rounded bg-gray-300 animate-pulse"></div>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* Liabilities Table Skeleton */}
+          <div className="bg-card rounded-lg shadow">
+            <div className="px-6 py-4 border-b">
+              <div className="h-6 w-32 rounded bg-gray-300 animate-pulse mb-2"></div>
+              <div className="h-4 w-48 rounded bg-gray-300 animate-pulse"></div>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-muted">
+                  <tr>
+                    <th className="px-4 py-3">
+                      <div className="h-4 w-16 rounded bg-gray-300 animate-pulse"></div>
+                    </th>
+                    <th className="px-4 py-3">
+                      <div className="h-4 w-20 rounded bg-gray-300 animate-pulse"></div>
+                    </th>
+                    <th className="px-4 py-3">
+                      <div className="h-4 w-16 rounded bg-gray-300 animate-pulse"></div>
+                    </th>
+                    <th className="px-4 py-3">
+                      <div className="h-4 w-14 rounded bg-gray-300 animate-pulse"></div>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-border divide-y">
+                  {[1, 2, 3].map((i) => (
+                    <tr key={i}>
+                      <td className="px-4 py-4">
+                        <div className="h-4 w-24 rounded bg-gray-300 animate-pulse"></div>
+                      </td>
+                      <td className="px-4 py-4">
+                        <div className="h-4 w-16 rounded bg-gray-300 animate-pulse"></div>
+                      </td>
+                      <td className="px-4 py-4">
+                        <div className="h-4 w-20 rounded bg-gray-300 animate-pulse"></div>
+                      </td>
+                      <td className="px-4 py-4">
+                        <div className="flex space-x-2">
+                          <div className="h-6 w-6 rounded bg-gray-300 animate-pulse"></div>
+                          <div className="h-6 w-6 rounded bg-gray-300 animate-pulse"></div>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        {/* Owner's Equity Card Skeleton */}
+        <div className="bg-card rounded-lg p-6 shadow">
+          <div className="h-6 w-32 rounded bg-gray-300 animate-pulse mb-4"></div>
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="text-center">
+                <div className="h-4 w-20 rounded bg-gray-300 animate-pulse mb-2 mx-auto"></div>
+                <div className="h-8 w-24 rounded bg-gray-300 animate-pulse mx-auto"></div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     );

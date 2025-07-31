@@ -225,6 +225,90 @@ export interface Translations {
   thisYear: string;
   netProfit: string;
 
+  // Dashboard welcome message
+  welcomeBack: string;
+
+  // Dashboard activity messages
+  sold: string;
+  completedSale: string;
+  lowStockAlert: string;
+  fullCylindersRemaining: string;
+  highReceivablesBalance: string;
+  completedSales: string;
+  dailyTargetAchieved: string;
+  salesMilestone: string;
+  hoursAgo: string;
+  minutesAgo: string;
+
+  // Reports page hardcoded strings
+  customReportBuilderComingSoon: string;
+  exportCompleted: string;
+  exportFailed: string;
+  pleaseRetryAgain: string;
+  hasBeenEmailedToConfiguredRecipients: string;
+  emailFailed: string;
+  pleaseCheckEmailConfiguration: string;
+  viewDetailsBelow: string;
+  realTime: string;
+  autoValidated: string;
+  revenue: string;
+  packageSales: string;
+  refillSales: string;
+  costOfGoodsSold: string;
+  cylinderPurchases: string;
+  grossProfit: string;
+  operatingExpenses: string;
+  salaries: string;
+  fuelTransportation: string;
+  maintenance: string;
+  rent: string;
+  utilities: string;
+  otherExpenses: string;
+  netIncome: string;
+  profitMargin: string;
+  grossMargin: string;
+  assets: string;
+  currentAssets: string;
+  cashBank: string;
+  accountsReceivable: string;
+  inventoryAutoLinked: string;
+  fixedAssets: string;
+  vehicles: string;
+  equipment: string;
+  buildings: string;
+  totalAssets: string;
+  liabilitiesEquity: string;
+  currentLiabilities: string;
+  accountsPayable: string;
+  shortTermLoans: string;
+  longTermLiabilities: string;
+  longTermLoans: string;
+  ownerEquity: string;
+  retainedEarnings: string;
+  totalLiabEquity: string;
+  balanceCheck: string;
+  assetsEqualsLiabilitiesPlusEquity: string;
+  passed: string;
+  operatingActivities: string;
+  depreciation: string;
+  changeInReceivables: string;
+  changeInInventory: string;
+  changeInPayables: string;
+  operatingCashFlow: string;
+  investingActivities: string;
+  vehiclePurchases: string;
+  equipmentPurchases: string;
+  investingCashFlow: string;
+  financingActivities: string;
+  ownerDrawings: string;
+  loanRepayments: string;
+  financingCashFlow: string;
+  netChangeInCash: string;
+  cashAtBeginningOfPeriod: string;
+  cashAtEndOfPeriod: string;
+  operatingCashFlowIsPositive: string;
+  healthyBusinessOperations: string;
+
   customerRecords: string;
   statusBreakdown: string;
   noCashReceivables: string;
@@ -1641,9 +1725,9 @@ const englishTranslations: Translations = {
   exportReport: 'Export Report',
   exportReportFunctionality: 'রিপোর্ট এক্সপোর্ট সুবিধা',
 
-
   // Reports page specific
-  generateAndViewComprehensiveBusinessReports: 'Generate and view comprehensive business reports',
+  generateAndViewComprehensiveBusinessReports:
+    'Generate and view comprehensive business reports',
   thisWeek: 'This Week',
   thisQuarter: 'This Quarter',
   customReport: 'Custom Report',
@@ -1651,13 +1735,15 @@ const englishTranslations: Translations = {
   pdf: 'PDF',
   excel: 'Excel',
   last: 'Last',
-  assetsLiabilitiesAndEquityOverview: 'Assets, liabilities, and equity overview',
+  assetsLiabilitiesAndEquityOverview:
+    'Assets, liabilities, and equity overview',
   cashInflowsAndOutflowsTracking: 'Cash inflows and outflows tracking',
   detailedSalesPerformanceAnalysis: 'Detailed sales performance analysis',
   stockLevelsAndMovementAnalysis: 'Stock levels and movement analysis',
   individualDriverSalesAndEfficiency: 'Individual driver sales and efficiency',
   incomeStatementRealTime: 'Income Statement (Real-time)',
-  revenueByTypeDriverWithLiveCalculations: 'Revenue by type/driver with live calculations',
+  revenueByTypeDriverWithLiveCalculations:
+    'Revenue by type/driver with live calculations',
   costOfGoodsSold: 'Cost of Goods Sold',
   cylinderPurchases: 'Cylinder Purchases',
   grossProfit: 'Gross Profit',
@@ -1686,7 +1772,8 @@ const englishTranslations: Translations = {
   assetsEqualsLiabilitiesPlusEquity: 'Assets = Liabilities + Equity',
   passed: 'PASSED',
   cashFlowStatementRealTime: 'Cash Flow Statement (Real-time)',
-  operatingInvestingFinancingActivities: 'Operating, Investing & Financing Activities',
+  operatingInvestingFinancingActivities:
+    'Operating, Investing & Financing Activities',
   operatingActivities: 'Operating Activities',
   changeInReceivables: 'Change in Receivables',
   changeInInventory: 'Change in Inventory',
@@ -1713,6 +1800,89 @@ const englishTranslations: Translations = {
   inventoryReport: 'Inventory Report',
   thisYear: 'This Year',
   netProfit: 'Net Profit',
+
+  // Dashboard welcome message
+  welcomeBack: 'Welcome back',
+
+  // Dashboard activity messages
+  sold: 'sold',
+  completedSale: 'completed sale',
+  lowStockAlert: 'Low stock alert',
+  fullCylindersRemaining: 'full cylinders remaining',
+  highReceivablesBalance: 'High receivables balance of',
+  completedSales: 'completed',
+  dailyTargetAchieved: 'daily target achieved!',
+  salesMilestone: 'sales - daily target achieved!',
+  hoursAgo: 'hours ago',
+  minutesAgo: 'minutes ago',
+
+  // Reports page hardcoded strings
+  customReportBuilderComingSoon: 'Custom Report Builder coming soon!',
+  exportCompleted: 'export completed',
+  exportFailed: 'Export failed. Please try again.',
+  pleaseRetryAgain: 'Please try again',
+  hasBeenEmailedToConfiguredRecipients: 'has been emailed to configured recipients.',
+  emailFailed: 'Email failed. Please check email configuration.',
+  viewDetailsBelow: 'View details below',
+  realTime: 'Real-time',
+  autoValidated: 'Auto-validated',
+  revenue: 'REVENUE',
+  packageSales: 'Package Sales',
+  refillSales: 'Refill Sales',
+  costOfGoodsSold: 'COST OF GOODS SOLD',
+  cylinderPurchases: 'Cylinder Purchases',
+  grossProfit: 'GROSS PROFIT',
+  operatingExpenses: 'OPERATING EXPENSES',
+  salaries: 'Salaries',
+  fuelTransportation: 'Fuel & Transportation',
+  maintenance: 'Maintenance',
+  rent: 'Rent',
+  utilities: 'Utilities',
+  otherExpenses: 'Other Expenses',
+  netIncome: 'NET INCOME',
+  profitMargin: 'Profit Margin',
+  grossMargin: 'Gross Margin',
+  assets: 'ASSETS',
+  currentAssets: 'Current Assets',
+  cashBank: 'Cash & Bank',
+  accountsReceivable: 'Accounts Receivable',
+  inventoryAutoLinked: 'Inventory (Auto-linked)',
+  fixedAssets: 'Fixed Assets',
+  vehicles: 'Vehicles',
+  equipment: 'Equipment',
+  buildings: 'Buildings',
+  totalAssets: 'Total Assets',
+  liabilitiesEquity: 'LIABILITIES & EQUITY',
+  currentLiabilities: 'Current Liabilities',
+  accountsPayable: 'Accounts Payable',
+  shortTermLoans: 'Short-term Loans',
+  longTermLiabilities: 'Long-term Liabilities',
+  longTermLoans: 'Long-term Loans',
+  ownerEquity: 'Owner Equity',
+  retainedEarnings: 'Retained Earnings',
+  totalLiabEquity: 'Total Liab. & Equity',
+  balanceCheck: 'Balance Check',
+  assetsEqualsLiabilitiesPlusEquity: 'Assets = Liabilities + Equity',
+  passed: 'PASSED',
+  operatingActivities: 'Operating Activities',
+  depreciation: 'Depreciation',
+  changeInReceivables: 'Change in Receivables',
+  changeInInventory: 'Change in Inventory',
+  changeInPayables: 'Change in Payables',
+  operatingCashFlow: 'Operating Cash Flow',
+  investingActivities: 'Investing Activities',
+  vehiclePurchases: 'Vehicle Purchases',
+  equipmentPurchases: 'Equipment Purchases',
+  investingCashFlow: 'Investing Cash Flow',
+  financingActivities: 'Financing Activities',
+  ownerDrawings: 'Owner Drawings',
+  loanRepayments: 'Loan Repayments',
+  financingCashFlow: 'Financing Cash Flow',
+  netChangeInCash: 'Net Change in Cash',
+  cashAtBeginningOfPeriod: 'Cash at Beginning of Period',
+  cashAtEndOfPeriod: 'Cash at End of Period',
+  operatingCashFlowIsPositive: 'Operating cash flow is positive',
+  healthyBusinessOperations: 'healthy business operations',
 
   customerRecords: 'Customer Records',
   statusBreakdown: 'স্ট্যাটাস বিভাজন',
@@ -2943,9 +3113,9 @@ const bengaliTranslations: Translations = {
   exportReport: 'রিপোর্ট এক্সপোর্ট',
   exportReportFunctionality: 'রিপোর্ট এক্সপোর্ট সুবিধা',
 
-
   // Reports page specific
-  generateAndViewComprehensiveBusinessReports: 'ব্যাপক ব্যবসায়িক প্রতিবেদন তৈরি এবং দেখুন',
+  generateAndViewComprehensiveBusinessReports:
+    'ব্যাপক ব্যবসায়িক প্রতিবেদন তৈরি এবং দেখুন',
   thisWeek: 'এই সপ্তাহ',
   thisQuarter: 'এই ত্রৈমাসিক',
   customReport: 'কাস্টম রিপোর্ট',
@@ -2988,7 +3158,8 @@ const bengaliTranslations: Translations = {
   assetsEqualsLiabilitiesPlusEquity: 'সম্পদ = দায় + ইক্যুইটি',
   passed: 'পাস',
   cashFlowStatementRealTime: 'নগদ প্রবাহ বিবৃতি (রিয়েল-টাইম)',
-  operatingInvestingFinancingActivities: 'পরিচালনা, বিনিয়োগ ও অর্থায়ন কার্যক্রম',
+  operatingInvestingFinancingActivities:
+    'পরিচালনা, বিনিয়োগ ও অর্থায়ন কার্যক্রম',
   operatingActivities: 'পরিচালনা কার্যক্রম',
   changeInReceivables: 'প্রাপ্যের পরিবর্তন',
   changeInInventory: 'মজুদের পরিবর্তন',
@@ -3015,6 +3186,89 @@ const bengaliTranslations: Translations = {
   inventoryReport: 'মজুদ প্রতিবেদন',
   thisYear: 'এই বছর',
   netProfit: 'নিট লাভ',
+
+  // Dashboard welcome message
+  welcomeBack: 'স্বাগতম',
+
+  // Dashboard activity messages
+  sold: 'বিক্রি করেছেন',
+  completedSale: 'বিক্রয় সম্পন্ন',
+  lowStockAlert: 'কম স্টক সতর্কতা',
+  fullCylindersRemaining: 'পূর্ণ সিলিন্ডার অবশিষ্ট',
+  highReceivablesBalance: 'উচ্চ প্রাপ্য ব্যালেন্স',
+  completedSales: 'সম্পন্ন',
+  dailyTargetAchieved: 'দৈনিক লক্ষ্য অর্জিত!',
+  salesMilestone: 'বিক্রয় - দৈনিক লক্ষ্য অর্জিত!',
+  hoursAgo: 'ঘন্টা আগে',
+  minutesAgo: 'মিনিট আগে',
+
+  // Reports page hardcoded strings
+  customReportBuilderComingSoon: 'কাস্টম রিপোর্ট বিল্ডার শীঘ্রই আসছে!',
+  exportCompleted: 'এক্সপোর্ট সম্পন্ন',
+  exportFailed: 'এক্সপোর্ট ব্যর্থ। আবার চেষ্টা করুন।',
+  pleaseRetryAgain: 'আবার চেষ্টা করুন',
+  hasBeenEmailedToConfiguredRecipients: 'কনফিগার করা প্রাপকদের কাছে ইমেইল করা হয়েছে।',
+  emailFailed: 'ইমেইল ব্যর্থ। ইমেইল কনফিগারেশন চেক করুন।',
+  viewDetailsBelow: 'নিচে বিস্তারিত দেখুন',
+  realTime: 'রিয়েল-টাইম',
+  autoValidated: 'স্বয়ংক্রিয় যাচাই',
+  revenue: 'আয়',
+  packageSales: 'প্যাকেজ বিক্রয়',
+  refillSales: 'রিফিল বিক্রয়',
+  costOfGoodsSold: 'বিক্রীত পণ্যের খরচ',
+  cylinderPurchases: 'সিলিন্ডার ক্রয়',
+  grossProfit: 'মোট লাভ',
+  operatingExpenses: 'পরিচালনা খরচ',
+  salaries: 'বেতন',
+  fuelTransportation: 'জ্বালানি ও পরিবহন',
+  maintenance: 'রক্ষণাবেক্ষণ',
+  rent: 'ভাড়া',
+  utilities: 'ইউটিলিটি',
+  otherExpenses: 'অন্যান্য খরচ',
+  netIncome: 'নিট আয়',
+  profitMargin: 'লাভের মার্জিন',
+  grossMargin: 'মোট মার্জিন',
+  assets: 'সম্পদ',
+  currentAssets: 'চলতি সম্পদ',
+  cashBank: 'নগদ ও ব্যাংক',
+  accountsReceivable: 'প্রাপ্য হিসাব',
+  inventoryAutoLinked: 'মজুদ (স্বয়ংক্রিয় লিঙ্ক)',
+  fixedAssets: 'স্থায়ী সম্পদ',
+  vehicles: 'যানবাহন',
+  equipment: 'সরঞ্জাম',
+  buildings: 'ভবন',
+  totalAssets: 'মোট সম্পদ',
+  liabilitiesEquity: 'দায় ও ইক্যুইটি',
+  currentLiabilities: 'চলতি দায়',
+  accountsPayable: 'প্রদেয় হিসাব',
+  shortTermLoans: 'স্বল্পমেয়াদী ঋণ',
+  longTermLiabilities: 'দীর্ঘমেয়াদী দায়',
+  longTermLoans: 'দীর্ঘমেয়াদী ঋণ',
+  ownerEquity: 'মালিকের ইক্যুইটি',
+  retainedEarnings: 'সঞ্চিত আয়',
+  totalLiabEquity: 'মোট দায় ও ইক্যুইটি',
+  balanceCheck: 'ব্যালেন্স চেক',
+  assetsEqualsLiabilitiesPlusEquity: 'সম্পদ = দায় + ইক্যুইটি',
+  passed: 'পাস',
+  operatingActivities: 'পরিচালনা কার্যক্রম',
+  depreciation: 'অবচয়',
+  changeInReceivables: 'প্রাপ্যের পরিবর্তন',
+  changeInInventory: 'মজুদের পরিবর্তন',
+  changeInPayables: 'প্রদেয়ের পরিবর্তন',
+  operatingCashFlow: 'পরিচালনা নগদ প্রবাহ',
+  investingActivities: 'বিনিয়োগ কার্যক্রম',
+  vehiclePurchases: 'যানবাহন ক্রয়',
+  equipmentPurchases: 'সরঞ্জাম ক্রয়',
+  investingCashFlow: 'বিনিয়োগ নগদ প্রবাহ',
+  financingActivities: 'অর্থায়ন কার্যক্রম',
+  ownerDrawings: 'মালিকের উত্তোলন',
+  loanRepayments: 'ঋণ পরিশোধ',
+  financingCashFlow: 'অর্থায়ন নগদ প্রবাহ',
+  netChangeInCash: 'নগদের নিট পরিবর্তন',
+  cashAtBeginningOfPeriod: 'মেয়াদের শুরুতে নগদ',
+  cashAtEndOfPeriod: 'মেয়াদের শেষে নগদ',
+  operatingCashFlowIsPositive: 'পরিচালনা নগদ প্রবাহ ইতিবাচক',
+  healthyBusinessOperations: 'সুস্থ ব্যবসায়িক কার্যক্রম',
 
   customerRecords: 'গ্রাহক রেকর্ড',
   statusBreakdown: 'স্ট্যাটাস বিভাজন',
@@ -3569,7 +3823,7 @@ const bengaliTranslations: Translations = {
   detailedViewAndTrends: 'বিস্তারিত ভিউ এবং ট্রেন্ড',
   vsYesterday: 'গতকালের তুলনায়',
   lpgDistributor: 'এলপিজি পরিবেশক',
-  welcomeBack: 'স্বাগতম পিছনে',
+  welcomeBack: 'স্বাগতম',
   role: 'ভূমিকা',
   loadingDashboard: 'লোড হচ্ছে ড্যাশবোর্ড',
   fallbackDriverName1: 'ফলব্যাক চালক ১',

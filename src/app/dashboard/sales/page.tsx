@@ -370,10 +370,77 @@ export default function SalesPage() {
 
   if (loading) {
     return (
-      <div className="p-6">
-        <div className="flex h-64 items-center justify-center">
-          <div className="h-12 w-12 animate-spin rounded-full border-b-2 border-blue-600"></div>
-          <span className="ml-3">{t('loadingData')}...</span>
+      <div className="space-y-6 p-6">
+        {/* Header Skeleton */}
+        <div className="flex items-center justify-between">
+          <div>
+            <div className="h-8 w-48 bg-muted rounded animate-pulse mb-2"></div>
+            <div className="h-5 w-64 bg-muted rounded animate-pulse"></div>
+          </div>
+          <div className="flex items-center space-x-2">
+            <div className="h-10 w-20 bg-muted rounded animate-pulse"></div>
+            <div className="h-10 w-32 bg-muted rounded animate-pulse"></div>
+          </div>
+        </div>
+
+        {/* Stats Cards Skeleton */}
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="bg-card border-border rounded-lg border p-6 shadow transition-colors">
+              <div className="flex items-center">
+                <div className="h-8 w-8 bg-muted rounded animate-pulse"></div>
+                <div className="ml-4 flex-1">
+                  <div className="h-4 w-20 bg-muted rounded animate-pulse mb-2"></div>
+                  <div className="h-8 w-16 bg-muted rounded animate-pulse mb-1"></div>
+                  <div className="h-3 w-24 bg-muted rounded animate-pulse"></div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Sales Table Skeleton */}
+        <div className="bg-card border-border rounded-lg border shadow transition-colors">
+          <div className="border-border flex items-center justify-between border-b px-6 py-4">
+            <div className="flex items-center space-x-4">
+              <div className="h-6 w-32 bg-muted rounded animate-pulse"></div>
+            </div>
+            <div className="flex space-x-2">
+              <div className="h-8 w-20 bg-muted rounded animate-pulse"></div>
+              <div className="h-8 w-20 bg-muted rounded animate-pulse"></div>
+            </div>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-muted">
+                <tr>
+                  {[...Array(9)].map((_, i) => (
+                    <th key={i} className="px-6 py-3">
+                      <div className="h-4 w-20 bg-background rounded animate-pulse"></div>
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody className="divide-border divide-y">
+                {[...Array(5)].map((_, rowIndex) => (
+                  <tr key={rowIndex}>
+                    {[...Array(9)].map((_, colIndex) => (
+                      <td key={colIndex} className="px-6 py-4">
+                        {colIndex === 8 ? (
+                          <div className="flex space-x-2">
+                            <div className="h-8 w-8 bg-muted rounded animate-pulse"></div>
+                            <div className="h-8 w-8 bg-muted rounded animate-pulse"></div>
+                          </div>
+                        ) : (
+                          <div className="h-4 w-16 bg-muted rounded animate-pulse"></div>
+                        )}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     );

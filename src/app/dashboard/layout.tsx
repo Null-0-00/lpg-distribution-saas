@@ -233,7 +233,7 @@ export default function DashboardLayout({
                 </button>
                 <div className="ml-4 lg:ml-0">
                   <p className="text-muted-foreground text-sm">
-                    Welcome back, {session?.user?.name}
+                    {t('welcomeBack')}, {session?.user?.name}
                   </p>
                 </div>
               </div>

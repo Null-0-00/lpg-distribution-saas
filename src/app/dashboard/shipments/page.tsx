@@ -1237,11 +1237,65 @@ export default function ShipmentsPage() {
         {/* Card-based Shipments Display */}
         <div className="space-y-6">
           {loading ? (
-            <div className="p-8 text-center">
-              <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-b-2 border-blue-500"></div>
-              <p className="text-gray-600 dark:text-gray-400">
-                {t('loadingShipments')}
-              </p>
+            <div className="space-y-4">
+              {/* Skeleton for shipment cards */}
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="bg-card rounded-lg p-6 shadow">
+                  {/* Header Skeleton */}
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center space-x-4">
+                      <div className="h-10 w-10 rounded-full bg-gray-300 animate-pulse"></div>
+                      <div>
+                        <div className="h-5 w-32 rounded bg-gray-300 animate-pulse mb-2"></div>
+                        <div className="h-4 w-20 rounded bg-gray-300 animate-pulse"></div>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <div className="h-6 w-16 rounded-full bg-gray-300 animate-pulse"></div>
+                      <div className="flex space-x-1">
+                        <div className="h-8 w-8 rounded bg-gray-300 animate-pulse"></div>
+                        <div className="h-8 w-8 rounded bg-gray-300 animate-pulse"></div>
+                        <div className="h-8 w-8 rounded bg-gray-300 animate-pulse"></div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Details Grid Skeleton */}
+                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+                    {[1, 2, 3, 4].map((j) => (
+                      <div key={j} className="flex items-center space-x-2">
+                        <div className="h-4 w-4 rounded bg-gray-300 animate-pulse"></div>
+                        <div>
+                          <div className="h-3 w-16 rounded bg-gray-300 animate-pulse mb-1"></div>
+                          <div className="h-4 w-20 rounded bg-gray-300 animate-pulse"></div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Line Items Skeleton */}
+                  <div className="mt-4 border-t pt-4">
+                    <div className="h-4 w-24 rounded bg-gray-300 animate-pulse mb-3"></div>
+                    <div className="space-y-2">
+                      {[1, 2].map((k) => (
+                        <div key={k} className="flex items-center justify-between p-3 bg-muted rounded-lg">
+                          <div className="flex items-center space-x-3">
+                            <div className="h-4 w-4 rounded bg-gray-300 animate-pulse"></div>
+                            <div>
+                              <div className="h-4 w-24 rounded bg-gray-300 animate-pulse mb-1"></div>
+                              <div className="h-3 w-16 rounded bg-gray-300 animate-pulse"></div>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <div className="h-4 w-16 rounded bg-gray-300 animate-pulse mb-1"></div>
+                            <div className="h-3 w-12 rounded bg-gray-300 animate-pulse"></div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           ) : (
             <>

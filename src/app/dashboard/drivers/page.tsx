@@ -454,11 +454,83 @@ export default function DriversPage() {
           </p>
         </div>
         {performanceLoading ? (
-          <div className="p-8 text-center">
-            <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-b-2 border-blue-500"></div>
-            <p className="text-muted-foreground">
-              {t('loadingDriverPerformance')}
-            </p>
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-muted">
+                <tr>
+                  <th className="px-6 py-3 text-left">
+                    <div className="h-4 w-16 rounded bg-gray-300 animate-pulse"></div>
+                  </th>
+                  <th className="px-6 py-3 text-left">
+                    <div className="h-4 w-12 rounded bg-gray-300 animate-pulse"></div>
+                  </th>
+                  <th className="px-6 py-3 text-left">
+                    <div className="h-4 w-20 rounded bg-gray-300 animate-pulse"></div>
+                  </th>
+                  <th className="px-6 py-3 text-left">
+                    <div className="h-4 w-24 rounded bg-gray-300 animate-pulse"></div>
+                  </th>
+                  <th className="px-6 py-3 text-left">
+                    <div className="h-4 w-16 rounded bg-gray-300 animate-pulse"></div>
+                  </th>
+                  <th className="px-6 py-3 text-left">
+                    <div className="h-4 w-14 rounded bg-gray-300 animate-pulse"></div>
+                  </th>
+                  <th className="px-6 py-3 text-left">
+                    <div className="h-4 w-18 rounded bg-gray-300 animate-pulse"></div>
+                  </th>
+                  <th className="px-6 py-3 text-left">
+                    <div className="h-4 w-18 rounded bg-gray-300 animate-pulse"></div>
+                  </th>
+                  <th className="px-6 py-3 text-left">
+                    <div className="h-4 w-14 rounded bg-gray-300 animate-pulse"></div>
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-border divide-y">
+                {[1, 2, 3, 4, 5].map((i) => (
+                  <tr key={i}>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center space-x-3">
+                        <div className="h-8 w-8 rounded-full bg-gray-300 animate-pulse"></div>
+                        <div>
+                          <div className="h-4 w-20 rounded bg-gray-300 animate-pulse mb-1"></div>
+                          <div className="h-3 w-16 rounded bg-gray-300 animate-pulse"></div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="h-4 w-16 rounded bg-gray-300 animate-pulse"></div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="h-4 w-8 rounded bg-gray-300 animate-pulse"></div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="h-4 w-8 rounded bg-gray-300 animate-pulse"></div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="h-4 w-8 rounded bg-gray-300 animate-pulse"></div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="h-4 w-16 rounded bg-gray-300 animate-pulse"></div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="h-4 w-16 rounded bg-gray-300 animate-pulse"></div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="h-4 w-16 rounded bg-gray-300 animate-pulse"></div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex space-x-2">
+                        <div className="h-6 w-6 rounded bg-gray-300 animate-pulse"></div>
+                        <div className="h-6 w-6 rounded bg-gray-300 animate-pulse"></div>
+                        <div className="h-6 w-6 rounded bg-gray-300 animate-pulse"></div>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         ) : (
           <div className="overflow-x-auto">
@@ -673,12 +745,54 @@ export default function DriversPage() {
         </div>
         <div className="overflow-x-auto">
           {dailySalesLoading ? (
-            <div className="p-8 text-center">
-              <div className="flex items-center justify-center">
-                <div className="mr-3 h-6 w-6 animate-spin rounded-full border-b-2 border-blue-500"></div>
-                {t('loadingDailySalesData')}
-              </div>
-            </div>
+            <table className="w-full">
+              <thead className="bg-muted">
+                <tr>
+                  <th className="px-6 py-3 text-left">
+                    <div className="h-4 w-12 rounded bg-gray-300 animate-pulse"></div>
+                  </th>
+                  <th className="px-6 py-3 text-left">
+                    <div className="h-4 w-16 rounded bg-gray-300 animate-pulse"></div>
+                  </th>
+                  <th className="px-6 py-3 text-left">
+                    <div className="h-4 w-24 rounded bg-gray-300 animate-pulse"></div>
+                  </th>
+                  <th className="px-6 py-3 text-left">
+                    <div className="h-4 w-20 rounded bg-gray-300 animate-pulse"></div>
+                  </th>
+                  <th className="px-6 py-3 text-left">
+                    <div className="h-4 w-16 rounded bg-gray-300 animate-pulse"></div>
+                  </th>
+                  <th className="px-6 py-3 text-left">
+                    <div className="h-4 w-18 rounded bg-gray-300 animate-pulse"></div>
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-border divide-y">
+                {[1, 2, 3, 4, 5].map((i) => (
+                  <tr key={i}>
+                    <td className="px-6 py-4">
+                      <div className="h-4 w-18 rounded bg-gray-300 animate-pulse"></div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="h-4 w-20 rounded bg-gray-300 animate-pulse"></div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="h-4 w-8 rounded bg-gray-300 animate-pulse"></div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="h-4 w-8 rounded bg-gray-300 animate-pulse"></div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="h-4 w-8 rounded bg-gray-300 animate-pulse"></div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="h-4 w-16 rounded bg-gray-300 animate-pulse"></div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           ) : dailySales.length === 0 ? (
             <div className="text-muted-foreground p-8 text-center">
               {t('noDailySalesDataFound')} {dailySalesPeriod.monthName}{' '}

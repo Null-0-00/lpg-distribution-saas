@@ -102,7 +102,7 @@ interface CashFlowData {
 export default function ReportsPage() {
   const { t, formatCurrency } = useSettings();
   const [selectedPeriod, setSelectedPeriod] = useState('this_month');
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState(new Date());
   const [exportLoading, setExportLoading] = useState('');
 
@@ -227,10 +227,10 @@ export default function ReportsPage() {
 
       // In production, this would trigger actual PDF/Excel generation
       const filename = `${reportType}_${selectedPeriod}_${new Date().toISOString().split('T')[0]}.${format === 'pdf' ? 'pdf' : 'xlsx'}`;
-      alert(`${format.toUpperCase()} export completed: ${filename}`);
+      alert(`${format.toUpperCase()} ${t('exportCompleted')}: ${filename}`);
     } catch (error) {
       console.error('Export error:', error);
-      alert('Export failed. Please try again.');
+      alert(t('exportFailed'));
     } finally {
       setExportLoading('');
     }
@@ -240,10 +240,10 @@ export default function ReportsPage() {
   const handleEmailReport = async (reportType: string) => {
     try {
       await new Promise((resolve) => setTimeout(resolve, 1500));
-      alert(`${reportType} has been emailed to configured recipients.`);
+      alert(`${reportType} ${t('hasBeenEmailedToConfiguredRecipients')}`);
     } catch (error) {
       console.error('Email error:', error);
-      alert('Email failed. Please check email configuration.');
+      alert(t('emailFailed'));
     }
   };
 
@@ -333,6 +333,97 @@ export default function ReportsPage() {
     return colors[color] || 'bg-gray-100';
   };
 
+  if (loading) {
+    return (
+      <div className="space-y-6 p-6">
+        {/* Header Skeleton */}
+        <div className="flex items-center justify-between">
+          <div>
+            <div className="h-8 w-48 bg-muted rounded animate-pulse mb-2"></div>
+            <div className="h-5 w-80 bg-muted rounded animate-pulse"></div>
+          </div>
+          <div className="flex items-center space-x-4">
+            <div className="h-6 w-32 bg-muted rounded animate-pulse"></div>
+            <div className="h-10 w-32 bg-muted rounded animate-pulse"></div>
+            <div className="h-10 w-24 bg-muted rounded animate-pulse"></div>
+            <div className="h-10 w-32 bg-muted rounded animate-pulse"></div>
+          </div>
+        </div>
+
+        {/* Quick Financial Overview Skeleton */}
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="bg-card rounded-lg p-6 shadow">
+              <div className="flex items-center">
+                <div className="h-8 w-8 bg-muted rounded animate-pulse"></div>
+                <div className="ml-4 flex-1">
+                  <div className="h-4 w-24 bg-muted rounded animate-pulse mb-2"></div>
+                  <div className="h-8 w-32 bg-muted rounded animate-pulse"></div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Report Cards Skeleton */}
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+          {[...Array(3)].map((_, i) => (
+            <div key={i} className="bg-card rounded-lg shadow">
+              <div className="border-border flex items-center justify-between border-b px-6 py-4">
+                <div className="flex items-center space-x-3">
+                  <div className="h-8 w-8 bg-muted rounded animate-pulse"></div>
+                  <div>
+                    <div className="h-6 w-32 bg-muted rounded animate-pulse mb-1"></div>
+                    <div className="h-4 w-48 bg-muted rounded animate-pulse"></div>
+                  </div>
+                </div>
+                <div className="h-8 w-20 bg-muted rounded animate-pulse"></div>
+              </div>
+              <div className="p-6">
+                <div className="space-y-4">
+                  {[...Array(6)].map((_, j) => (
+                    <div key={j} className="flex items-center justify-between py-2">
+                      <div className="h-4 w-40 bg-muted rounded animate-pulse"></div>
+                      <div className="h-4 w-20 bg-muted rounded animate-pulse"></div>
+                    </div>
+                  ))}
+                  <div className="border-t border-border pt-4">
+                    <div className="flex items-center justify-between">
+                      <div className="h-5 w-24 bg-muted rounded animate-pulse"></div>
+                      <div className="h-5 w-24 bg-muted rounded animate-pulse"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Report Actions Skeleton */}
+        <div className="bg-card rounded-lg p-6 shadow">
+          <div className="mb-6">
+            <div className="h-6 w-32 bg-muted rounded animate-pulse mb-2"></div>
+            <div className="h-4 w-64 bg-muted rounded animate-pulse"></div>
+          </div>
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+            {[...Array(3)].map((_, i) => (
+              <div key={i} className="border-border flex items-center justify-between rounded-lg border p-4">
+                <div className="flex items-center space-x-3">
+                  <div className="h-10 w-10 bg-muted rounded animate-pulse"></div>
+                  <div>
+                    <div className="h-5 w-28 bg-muted rounded animate-pulse mb-1"></div>
+                    <div className="h-4 w-40 bg-muted rounded animate-pulse"></div>
+                  </div>
+                </div>
+                <div className="h-8 w-20 bg-muted rounded animate-pulse"></div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6 p-6">
       {/* Header */}
@@ -376,7 +467,7 @@ export default function ReportsPage() {
           </button>
           <button
             className="flex items-center rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
-            onClick={() => alert('Custom Report Builder coming soon!')}
+            onClick={() => alert(t('customReportBuilderComingSoon'))}
           >
             <FileText className="mr-2 h-4 w-4" />
             {t('customReport')}
@@ -465,7 +556,7 @@ export default function ReportsPage() {
                 <div className="grid grid-cols-2 gap-2">
                   <button
                     className="bg-muted text-muted-foreground hover:bg-muted flex items-center justify-center rounded-md px-2 py-2 text-xs"
-                    onClick={() => alert(`View ${report.title} details below`)}
+                    onClick={() => alert(`${t('view')} ${report.title} ${t('viewDetailsBelow')}`)}
                   >
                     <FileText className="mr-1 h-3 w-3" />
                     {t('view')}
@@ -515,10 +606,10 @@ export default function ReportsPage() {
           <div className="border-border flex items-center justify-between border-b px-6 py-4">
             <div>
               <h3 className="text-foreground text-lg font-semibold">
-                Income Statement (Real-time)
+                {t('incomeStatement')} ({t('realTime')})
               </h3>
               <p className="text-muted-foreground text-xs">
-                Revenue by type/driver with live calculations
+                {t('revenueByTypeDriverWithLiveCalculations')}
               </p>
             </div>
             <div className="flex space-x-2">
@@ -530,7 +621,7 @@ export default function ReportsPage() {
                 {exportLoading === 'income_statement-pdf' ? (
                   <RefreshCw className="h-3 w-3 animate-spin" />
                 ) : (
-                  'PDF'
+                  t('pdf')
                 )}
               </button>
               <button
@@ -541,7 +632,7 @@ export default function ReportsPage() {
                 {exportLoading === 'income_statement-excel' ? (
                   <RefreshCw className="h-3 w-3 animate-spin" />
                 ) : (
-                  'Excel'
+                  t('excel')
                 )}
               </button>
             </div>
@@ -550,7 +641,7 @@ export default function ReportsPage() {
             <div className="space-y-3">
               <div className="border-border flex items-center justify-between border-b py-2">
                 <span className="text-foreground text-sm font-medium">
-                  REVENUE
+                  {t('revenue')}
                 </span>
                 <span className="text-sm font-bold text-green-600">
                   ৳{incomeStatement.revenue.total.toLocaleString()}
@@ -558,121 +649,118 @@ export default function ReportsPage() {
               </div>
               <div className="border-border ml-4 flex items-center justify-between border-b py-2">
                 <span className="text-muted-foreground text-sm">
-                  - Package Sales
+                  - {t('packageSales')}
                 </span>
                 <span className="text-foreground text-sm">
-                  ৳{incomeStatement.revenue.packageSales.toLocaleString()}
+                  {formatCurrency(incomeStatement.revenue.packageSales)}
                 </span>
               </div>
               <div className="border-border ml-4 flex items-center justify-between border-b py-2">
                 <span className="text-muted-foreground text-sm">
-                  - Refill Sales
+                  - {t('refillSales')}
                 </span>
                 <span className="text-foreground text-sm">
-                  ৳{incomeStatement.revenue.refillSales.toLocaleString()}
+                  {formatCurrency(incomeStatement.revenue.refillSales)}
                 </span>
               </div>
 
               <div className="border-border flex items-center justify-between border-b py-2">
                 <span className="text-foreground text-sm font-medium">
-                  COST OF GOODS SOLD
+                  {t('costOfGoodsSold')}
                 </span>
                 <span className="text-sm font-bold text-red-600">
-                  ৳{incomeStatement.costOfGoodsSold.total.toLocaleString()}
+                  {formatCurrency(incomeStatement.costOfGoodsSold.total)}
                 </span>
               </div>
               <div className="border-border ml-4 flex items-center justify-between border-b py-2">
                 <span className="text-muted-foreground text-sm">
-                  - Cylinder Purchases
+                  - {t('cylinderPurchases')}
                 </span>
                 <span className="text-foreground text-sm">
-                  ৳
-                  {incomeStatement.costOfGoodsSold.cylinderPurchases.toLocaleString()}
+                  {formatCurrency(incomeStatement.costOfGoodsSold.cylinderPurchases)}
                 </span>
               </div>
 
               <div className="flex items-center justify-between border-b bg-blue-50 py-2 dark:bg-blue-900/20">
                 <span className="text-sm font-medium text-blue-900 dark:text-blue-200">
-                  GROSS PROFIT
+                  {t('grossProfit')}
                 </span>
                 <span className="text-sm font-bold text-blue-600">
-                  ৳{incomeStatement.grossProfit.toLocaleString()}
+                  {formatCurrency(incomeStatement.grossProfit)}
                 </span>
               </div>
 
               <div className="border-border flex items-center justify-between border-b py-2">
                 <span className="text-foreground text-sm font-medium">
-                  OPERATING EXPENSES
+                  {t('operatingExpenses')}
                 </span>
                 <span className="text-sm font-bold text-red-600">
-                  ৳{incomeStatement.operatingExpenses.total.toLocaleString()}
+                  {formatCurrency(incomeStatement.operatingExpenses.total)}
                 </span>
               </div>
               <div className="ml-4 flex items-center justify-between py-1">
                 <span className="text-muted-foreground text-xs">
-                  - Salaries
+                  - {t('salaries')}
                 </span>
                 <span className="text-foreground text-xs">
-                  ৳{incomeStatement.operatingExpenses.salaries.toLocaleString()}
+                  {formatCurrency(incomeStatement.operatingExpenses.salaries)}
                 </span>
               </div>
               <div className="ml-4 flex items-center justify-between py-1">
                 <span className="text-muted-foreground text-xs">
-                  - Fuel & Transportation
+                  - {t('fuelTransportation')}
                 </span>
                 <span className="text-foreground text-xs">
-                  ৳{incomeStatement.operatingExpenses.fuel.toLocaleString()}
+                  {formatCurrency(incomeStatement.operatingExpenses.fuel)}
                 </span>
               </div>
               <div className="ml-4 flex items-center justify-between py-1">
                 <span className="text-muted-foreground text-xs">
-                  - Maintenance
+                  - {t('maintenance')}
                 </span>
                 <span className="text-foreground text-xs">
-                  ৳
-                  {incomeStatement.operatingExpenses.maintenance.toLocaleString()}
+                  {formatCurrency(incomeStatement.operatingExpenses.maintenance)}
                 </span>
               </div>
               <div className="ml-4 flex items-center justify-between py-1">
-                <span className="text-muted-foreground text-xs">- Rent</span>
+                <span className="text-muted-foreground text-xs">- {t('rent')}</span>
                 <span className="text-foreground text-xs">
-                  ৳{incomeStatement.operatingExpenses.rent.toLocaleString()}
+                  {formatCurrency(incomeStatement.operatingExpenses.rent)}
                 </span>
               </div>
               <div className="ml-4 flex items-center justify-between py-1">
                 <span className="text-muted-foreground text-xs">
-                  - Utilities
+                  - {t('utilities')}
                 </span>
                 <span className="text-foreground text-xs">
-                  ৳
-                  {incomeStatement.operatingExpenses.utilities.toLocaleString()}
+                  {formatCurrency(incomeStatement.operatingExpenses.utilities)}
                 </span>
               </div>
               <div className="border-border ml-4 flex items-center justify-between border-b py-1">
                 <span className="text-muted-foreground text-xs">
-                  - Other Expenses
+                  - {t('otherExpenses')}
                 </span>
                 <span className="text-foreground text-xs">
-                  ৳{incomeStatement.operatingExpenses.other.toLocaleString()}
+                  {formatCurrency(incomeStatement.operatingExpenses.other)}
                 </span>
               </div>
 
               <div className="flex items-center justify-between bg-green-50 py-2 dark:bg-green-900/20">
                 <span className="text-sm font-bold text-green-900 dark:text-green-200">
-                  NET INCOME
+                  {t('netIncome')}
                 </span>
                 <span className="text-sm font-bold text-green-600">
-                  ৳{incomeStatement.netIncome.toLocaleString()}
+                  {formatCurrency(incomeStatement.netIncome)}
                 </span>
               </div>
 
               <div className="bg-muted mt-3 rounded p-2">
                 <div className="text-muted-foreground text-xs">
-                  Profit Margin:{' '}
+                  {t('profitMargin')}:{' '}
                   <span className="font-medium">
                     {quickStats.profitMargin.toFixed(1)}%
                   </span>{' '}
-                  | Gross Margin:{' '}
+                  | {t('grossMargin')}:{' '}
                   <span className="font-medium">
                     {(
                       (incomeStatement.grossProfit /
@@ -692,7 +780,7 @@ export default function ReportsPage() {
           <div className="border-border flex items-center justify-between border-b px-6 py-4">
             <div>
               <h3 className="text-foreground text-lg font-semibold">
-                Balance Sheet (Auto-validated)
+                {t('balanceSheet')} ({t('autoValidated')})
               </h3>
               <div className="mt-1 flex items-center">
                 {balanceSheet.isBalanced ? (
@@ -703,7 +791,7 @@ export default function ReportsPage() {
                 <span
                   className={`text-xs ${balanceSheet.isBalanced ? 'text-green-600' : 'text-red-600'}`}
                 >
-                  {balanceSheet.isBalanced ? 'Balanced' : 'Out of Balance'}
+                  {balanceSheet.isBalanced ? t('balanced') : t('outOfBalance')}
                 </span>
               </div>
             </div>
@@ -716,7 +804,7 @@ export default function ReportsPage() {
                 {exportLoading === 'balance_sheet-pdf' ? (
                   <RefreshCw className="h-3 w-3 animate-spin" />
                 ) : (
-                  'PDF'
+                  t('pdf')
                 )}
               </button>
               <button
@@ -727,7 +815,7 @@ export default function ReportsPage() {
                 {exportLoading === 'balance_sheet-excel' ? (
                   <RefreshCw className="h-3 w-3 animate-spin" />
                 ) : (
-                  'Excel'
+                  t('excel')
                 )}
               </button>
             </div>
@@ -735,7 +823,7 @@ export default function ReportsPage() {
           <div className="p-6">
             <div className="space-y-4">
               <div>
-                <h4 className="text-foreground mb-2 font-medium">ASSETS</h4>
+                <h4 className="text-foreground mb-2 font-medium">{t('assets')}</h4>
                 <div className="ml-4 space-y-2">
                   <div className="flex justify-between">
                     <span className="text-muted-foreground text-sm">

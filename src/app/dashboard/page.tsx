@@ -303,352 +303,463 @@ export default function DashboardPage() {
         )}
 
         {/* Quick Stats */}
-        <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-3">
-          <div className="bg-card border-border rounded-lg border p-6 shadow-sm transition-colors">
-            <div className="flex items-center">
-              <div className="rounded-lg bg-green-100 p-3 dark:bg-green-900">
-                <DollarSign className="h-6 w-6 text-green-600 dark:text-green-400" />
+        {loading ? (
+          <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-3">
+            {[...Array(3)].map((_, i) => (
+              <div key={i} className="bg-card border-border rounded-lg border p-6 shadow-sm transition-colors">
+                <div className="flex items-center">
+                  <div className="h-12 w-12 bg-muted rounded-lg animate-pulse"></div>
+                  <div className="ml-4 flex-1">
+                    <div className="h-4 w-24 bg-muted rounded animate-pulse mb-2"></div>
+                    <div className="h-8 w-32 bg-muted rounded animate-pulse"></div>
+                  </div>
+                </div>
               </div>
-              <div className="ml-4">
-                <p className="text-muted-foreground text-sm">
-                  {t('revenue')} {t('today')}
-                </p>
-                <p className="text-foreground text-2xl font-bold">
-                  {formatCurrency(stats.totalRevenue)}
-                </p>
+            ))}
+          </div>
+        ) : (
+          <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-3">
+            <div className="bg-card border-border rounded-lg border p-6 shadow-sm transition-colors">
+              <div className="flex items-center">
+                <div className="rounded-lg bg-green-100 p-3 dark:bg-green-900">
+                  <DollarSign className="h-6 w-6 text-green-600 dark:text-green-400" />
+                </div>
+                <div className="ml-4">
+                  <p className="text-muted-foreground text-sm">
+                    {t('revenue')} {t('today')}
+                  </p>
+                  <p className="text-foreground text-2xl font-bold">
+                    {formatCurrency(stats.totalRevenue)}
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
 
-          <div className="bg-card border-border rounded-lg border p-6 shadow-sm transition-colors">
-            <div className="flex items-center">
-              <div className="rounded-lg bg-blue-100 p-3 dark:bg-blue-900">
-                <TrendingUp className="h-6 w-6 text-blue-600 dark:text-blue-400" />
-              </div>
-              <div className="ml-4">
-                <p className="text-muted-foreground text-sm">
-                  {t('sales')} {t('today')}
-                </p>
-                <p className="text-foreground text-2xl font-bold">
-                  {stats.todaySales}
-                </p>
+            <div className="bg-card border-border rounded-lg border p-6 shadow-sm transition-colors">
+              <div className="flex items-center">
+                <div className="rounded-lg bg-blue-100 p-3 dark:bg-blue-900">
+                  <TrendingUp className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                </div>
+                <div className="ml-4">
+                  <p className="text-muted-foreground text-sm">
+                    {t('sales')} {t('today')}
+                  </p>
+                  <p className="text-foreground text-2xl font-bold">
+                    {stats.todaySales}
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
 
-          <div className="bg-card border-border rounded-lg border p-6 shadow-sm transition-colors">
-            <div className="flex items-center">
-              <div className="rounded-lg bg-orange-100 p-3 dark:bg-orange-900">
-                <Receipt className="h-6 w-6 text-orange-600 dark:text-orange-400" />
-              </div>
-              <div className="ml-4">
-                <p className="text-muted-foreground text-sm">
-                  {t('pending')} {t('tasks')}
-                </p>
-                <p className="text-foreground text-2xl font-bold">
-                  {stats.pendingApprovals + stats.lowStockAlerts}
-                </p>
+            <div className="bg-card border-border rounded-lg border p-6 shadow-sm transition-colors">
+              <div className="flex items-center">
+                <div className="rounded-lg bg-orange-100 p-3 dark:bg-orange-900">
+                  <Receipt className="h-6 w-6 text-orange-600 dark:text-orange-400" />
+                </div>
+                <div className="ml-4">
+                  <p className="text-muted-foreground text-sm">
+                    {t('pending')} {t('tasks')}
+                  </p>
+                  <p className="text-foreground text-2xl font-bold">
+                    {stats.pendingApprovals + stats.lowStockAlerts}
+                  </p>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        )}
 
         {/* Main Navigation Grid */}
-        <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
-          {navigationCards.map((card) => {
-            const Icon = card.icon;
-            return (
-              <div
-                key={card.href}
-                className={`bg-card border-border cursor-pointer rounded-lg border p-6 shadow-sm transition-all duration-200 hover:border-gray-300 hover:shadow-md dark:hover:border-gray-600 ${
-                  card.urgent
-                    ? 'border-red-500 bg-red-50 dark:bg-red-900/20'
-                    : ''
-                }`}
-                onClick={() => (window.location.href = card.href)}
-              >
+        {loading ? (
+          <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+            {[...Array(8)].map((_, i) => (
+              <div key={i} className="bg-card border-border rounded-lg border p-6 shadow-sm transition-colors">
                 <div className="mb-4 flex items-center justify-between">
-                  <div
-                    className={`rounded-lg p-3 ${card.bgColor} dark:${card.bgColor.replace('50', '900')}`}
-                  >
-                    <Icon
-                      className={`h-6 w-6 ${card.color} dark:${card.color.replace('600', '400')}`}
-                    />
-                  </div>
-                  {card.urgent && (
-                    <span className="rounded-full bg-red-100 px-2 py-1 text-xs font-medium text-red-800 dark:bg-red-900 dark:text-red-200">
-                      {t('urgent')}
-                    </span>
-                  )}
+                  <div className="h-12 w-12 bg-muted rounded-lg animate-pulse"></div>
+                  <div className="h-5 w-16 bg-muted rounded-full animate-pulse"></div>
                 </div>
-                <h3 className="text-foreground mb-2 text-lg font-semibold">
-                  {card.title}
-                </h3>
-                <p className="text-muted-foreground mb-3 text-sm">
-                  {card.description}
-                </p>
-                <p
-                  className={`text-sm font-medium ${
-                    card.urgent
-                      ? 'text-red-600 dark:text-red-400'
-                      : 'text-gray-700 dark:text-gray-300'
-                  }`}
-                >
-                  {card.stat}
-                </p>
+                <div className="h-6 w-32 bg-muted rounded animate-pulse mb-2"></div>
+                <div className="h-4 w-full bg-muted rounded animate-pulse mb-1"></div>
+                <div className="h-4 w-3/4 bg-muted rounded animate-pulse mb-3"></div>
+                <div className="h-4 w-24 bg-muted rounded animate-pulse"></div>
               </div>
-            );
-          })}
-        </div>
+            ))}
+          </div>
+        ) : (
+          <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+            {navigationCards.map((card) => {
+              const Icon = card.icon;
+              return (
+                <div
+                  key={card.href}
+                  className={`bg-card border-border cursor-pointer rounded-lg border p-6 shadow-sm transition-all duration-200 hover:border-gray-300 hover:shadow-md dark:hover:border-gray-600 ${
+                    card.urgent
+                      ? 'border-red-500 bg-red-50 dark:bg-red-900/20'
+                      : ''
+                  }`}
+                  onClick={() => (window.location.href = card.href)}
+                >
+                  <div className="mb-4 flex items-center justify-between">
+                    <div
+                      className={`rounded-lg p-3 ${card.bgColor} dark:${card.bgColor.replace('50', '900')}`}
+                    >
+                      <Icon
+                        className={`h-6 w-6 ${card.color} dark:${card.color.replace('600', '400')}`}
+                      />
+                    </div>
+                    {card.urgent && (
+                      <span className="rounded-full bg-red-100 px-2 py-1 text-xs font-medium text-red-800 dark:bg-red-900 dark:text-red-200">
+                        {t('urgent')}
+                      </span>
+                    )}
+                  </div>
+                  <h3 className="text-foreground mb-2 text-lg font-semibold">
+                    {card.title}
+                  </h3>
+                  <p className="text-muted-foreground mb-3 text-sm">
+                    {card.description}
+                  </p>
+                  <p
+                    className={`text-sm font-medium ${
+                      card.urgent
+                        ? 'text-red-600 dark:text-red-400'
+                        : 'text-gray-700 dark:text-gray-300'
+                    }`}
+                  >
+                    {card.stat}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
+        )}
 
         {/* Quick Actions */}
         <div className="bg-card border-border mb-8 rounded-lg border p-6 shadow-sm transition-colors">
-          <h3 className="text-foreground mb-4 text-lg font-semibold">
-            {t('actions')}
-          </h3>
-          <div className="flex flex-wrap gap-3">
-            <button
-              className="inline-flex items-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700"
-              onClick={() => (window.location.href = '/dashboard/sales')}
-            >
-              <TrendingUp className="mr-2 h-4 w-4" />
-              {t('newSale')}
-            </button>
-            <button
-              className="inline-flex items-center rounded-lg bg-green-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-green-700 dark:bg-green-600 dark:hover:bg-green-700"
-              onClick={() => (window.location.href = '/dashboard/inventory')}
-            >
-              <Package className="mr-2 h-4 w-4" />
-              {t('checkStock')}
-            </button>
-            <button
-              className="inline-flex items-center rounded-lg bg-purple-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-purple-700 dark:bg-purple-600 dark:hover:bg-purple-700"
-              onClick={() => (window.location.href = '/dashboard/expenses')}
-            >
-              <Receipt className="mr-2 h-4 w-4" />
-              {t('addExpense')}
-            </button>
-            <button
-              className="inline-flex items-center rounded-lg bg-orange-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-orange-700 dark:bg-orange-600 dark:hover:bg-orange-700"
-              onClick={() => (window.location.href = '/dashboard/receivables')}
-            >
-              <CreditCard className="mr-2 h-4 w-4" />
-              {t('updatePayment')}
-            </button>
-            <button
-              className="bg-muted hover:bg-muted/80 inline-flex items-center rounded-lg px-4 py-2 text-sm font-medium text-white transition-colors"
-              onClick={() => (window.location.href = '/dashboard/reports')}
-            >
-              <FileText className="mr-2 h-4 w-4" />
-              {t('viewReports')}
-            </button>
-          </div>
+          {loading ? (
+            <>
+              <div className="h-6 w-20 bg-muted rounded animate-pulse mb-4"></div>
+              <div className="flex flex-wrap gap-3">
+                {[...Array(5)].map((_, i) => (
+                  <div key={i} className="h-10 w-32 bg-muted rounded-lg animate-pulse"></div>
+                ))}
+              </div>
+            </>
+          ) : (
+            <>
+              <h3 className="text-foreground mb-4 text-lg font-semibold">
+                {t('actions')}
+              </h3>
+              <div className="flex flex-wrap gap-3">
+                <button
+                  className="inline-flex items-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700"
+                  onClick={() => (window.location.href = '/dashboard/sales')}
+                >
+                  <TrendingUp className="mr-2 h-4 w-4" />
+                  {t('newSale')}
+                </button>
+                <button
+                  className="inline-flex items-center rounded-lg bg-green-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-green-700 dark:bg-green-600 dark:hover:bg-green-700"
+                  onClick={() => (window.location.href = '/dashboard/inventory')}
+                >
+                  <Package className="mr-2 h-4 w-4" />
+                  {t('checkStock')}
+                </button>
+                <button
+                  className="inline-flex items-center rounded-lg bg-purple-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-purple-700 dark:bg-purple-600 dark:hover:bg-purple-700"
+                  onClick={() => (window.location.href = '/dashboard/expenses')}
+                >
+                  <Receipt className="mr-2 h-4 w-4" />
+                  {t('addExpense')}
+                </button>
+                <button
+                  className="inline-flex items-center rounded-lg bg-orange-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-orange-700 dark:bg-orange-600 dark:hover:bg-orange-700"
+                  onClick={() => (window.location.href = '/dashboard/receivables')}
+                >
+                  <CreditCard className="mr-2 h-4 w-4" />
+                  {t('updatePayment')}
+                </button>
+                <button
+                  className="bg-muted hover:bg-muted/80 inline-flex items-center rounded-lg px-4 py-2 text-sm font-medium text-white transition-colors"
+                  onClick={() => (window.location.href = '/dashboard/reports')}
+                >
+                  <FileText className="mr-2 h-4 w-4" />
+                  {t('viewReports')}
+                </button>
+              </div>
+            </>
+          )}
         </div>
 
         {/* Recent Activity */}
         <div className="bg-card border-border mb-8 rounded-lg border p-6 shadow-sm transition-colors">
-          <h3 className="text-foreground mb-4 text-lg font-semibold">
-            {t('recentActivity')}
-          </h3>
-          <div className="space-y-3">
-            {analytics?.recentActivity &&
-            analytics.recentActivity.length > 0 ? (
-              analytics.recentActivity.map((activity, index) => (
-                <div
-                  key={index}
-                  className="bg-muted border-border flex items-center rounded-lg border p-3 transition-colors"
-                >
-                  <div className="mr-3 h-2 w-2 rounded-full bg-blue-500"></div>
-                  <div className="flex-1">
-                    <p className="text-foreground text-sm">
-                      {activity.message}
-                      {activity.amount &&
-                        ` - ${formatCurrency(activity.amount)}`}
-                    </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
-                      <ClientTime
-                        timestamp={activity.timestamp}
-                        format="relative"
-                      />
-                    </p>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <>
-                {[
-                  {
-                    message: t('rahmanSoldCylinders'),
-                    amount: 2500,
-                    timestamp: new Date(
-                      Date.now() - 2 * 60 * 60 * 1000
-                    ).toISOString(),
-                    color: 'bg-blue-500',
-                  },
-                  {
-                    message: t('stockReplenished'),
-                    timestamp: new Date(
-                      Date.now() - 4 * 60 * 60 * 1000
-                    ).toISOString(),
-                    color: 'bg-green-500',
-                  },
-                  {
-                    message: t('paymentReceived'),
-                    amount: 15000,
-                    timestamp: new Date(
-                      Date.now() - 6 * 60 * 60 * 1000
-                    ).toISOString(),
-                    color: 'bg-purple-500',
-                  },
-                ].map((fallbackActivity, index) => (
-                  <div
-                    key={index}
-                    className="bg-muted border-border flex items-center rounded-lg border p-3 transition-colors"
-                  >
-                    <div
-                      className={`h-2 w-2 ${fallbackActivity.color} mr-3 rounded-full`}
-                    ></div>
+          {loading ? (
+            <>
+              <div className="h-6 w-32 bg-muted rounded animate-pulse mb-4"></div>
+              <div className="space-y-3">
+                {[...Array(3)].map((_, i) => (
+                  <div key={i} className="bg-muted border-border flex items-center rounded-lg border p-3 transition-colors">
+                    <div className="mr-3 h-2 w-2 bg-background rounded-full animate-pulse"></div>
                     <div className="flex-1">
-                      <p className="text-foreground text-sm">
-                        {fallbackActivity.message}
-                        {fallbackActivity.amount &&
-                          ` - ${formatCurrency(fallbackActivity.amount)}`}
-                      </p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
-                        <ClientTime
-                          timestamp={fallbackActivity.timestamp}
-                          format="relative"
-                        />
-                      </p>
+                      <div className="h-4 w-full bg-background rounded animate-pulse mb-1"></div>
+                      <div className="h-3 w-24 bg-background rounded animate-pulse"></div>
                     </div>
                   </div>
                 ))}
-              </>
-            )}
-          </div>
+              </div>
+            </>
+          ) : (
+            <>
+              <h3 className="text-foreground mb-4 text-lg font-semibold">
+                {t('recentActivity')}
+              </h3>
+              <div className="space-y-3">
+                {analytics?.recentActivity &&
+                analytics.recentActivity.length > 0 ? (
+                  analytics.recentActivity.map((activity, index) => (
+                    <div
+                      key={index}
+                      className="bg-muted border-border flex items-center rounded-lg border p-3 transition-colors"
+                    >
+                      <div className="mr-3 h-2 w-2 rounded-full bg-blue-500"></div>
+                      <div className="flex-1">
+                        <p className="text-foreground text-sm">
+                          {activity.message}
+                          {activity.amount &&
+                            ` - ${formatCurrency(activity.amount)}`}
+                        </p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                          <ClientTime
+                            timestamp={activity.timestamp}
+                            format="relative"
+                          />
+                        </p>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <>
+                    {[
+                      {
+                        message: t('rahmanSoldCylinders'),
+                        amount: 2500,
+                        timestamp: new Date(
+                          Date.now() - 2 * 60 * 60 * 1000
+                        ).toISOString(),
+                        color: 'bg-blue-500',
+                      },
+                      {
+                        message: t('stockReplenished'),
+                        timestamp: new Date(
+                          Date.now() - 4 * 60 * 60 * 1000
+                        ).toISOString(),
+                        color: 'bg-green-500',
+                      },
+                      {
+                        message: t('paymentReceived'),
+                        amount: 15000,
+                        timestamp: new Date(
+                          Date.now() - 6 * 60 * 60 * 1000
+                        ).toISOString(),
+                        color: 'bg-purple-500',
+                      },
+                    ].map((fallbackActivity, index) => (
+                      <div
+                        key={index}
+                        className="bg-muted border-border flex items-center rounded-lg border p-3 transition-colors"
+                      >
+                        <div
+                          className={`h-2 w-2 ${fallbackActivity.color} mr-3 rounded-full`}
+                        ></div>
+                        <div className="flex-1">
+                          <p className="text-foreground text-sm">
+                            {fallbackActivity.message}
+                            {fallbackActivity.amount &&
+                              ` - ${formatCurrency(fallbackActivity.amount)}`}
+                          </p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">
+                            <ClientTime
+                              timestamp={fallbackActivity.timestamp}
+                              format="relative"
+                            />
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </>
+                )}
+              </div>
+            </>
+          )}
         </div>
 
         {/* Performance Overview */}
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-          <div className="bg-card border-border rounded-lg border p-6 shadow-sm transition-colors">
-            <h3 className="text-foreground mb-4 text-lg font-semibold">
-              {t('salesTrend')} ({t('last7Days')})
-            </h3>
-            <div className="space-y-3">
-              <div className="grid grid-cols-7 gap-1 text-center">
-                {[
-                  t('mon'),
-                  t('tue'),
-                  t('wed'),
-                  t('thu'),
-                  t('fri'),
-                  t('sat'),
-                  t('sun'),
-                ].map((day, index) => (
-                  <div
-                    key={day}
-                    className="text-xs text-gray-500 dark:text-gray-400"
-                  >
-                    {day}
+        {loading ? (
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+            {/* Sales Trend Skeleton */}
+            <div className="bg-card border-border rounded-lg border p-6 shadow-sm transition-colors">
+              <div className="h-6 w-48 bg-muted rounded animate-pulse mb-4"></div>
+              <div className="space-y-3">
+                <div className="grid grid-cols-7 gap-1 text-center">
+                  {[...Array(7)].map((_, i) => (
+                    <div key={i} className="h-3 w-6 bg-muted rounded animate-pulse mx-auto"></div>
+                  ))}
+                </div>
+                <div className="grid h-32 grid-cols-7 items-end gap-1">
+                  {[...Array(7)].map((_, i) => (
+                    <div key={i} className="flex flex-col items-center">
+                      <div className="w-full bg-muted rounded-t animate-pulse" style={{ height: `${Math.random() * 80 + 20}%` }}></div>
+                      <div className="mt-1 h-3 w-4 bg-muted rounded animate-pulse"></div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Top Driver Performance Skeleton */}
+            <div className="bg-card border-border rounded-lg border p-6 shadow-sm transition-colors">
+              <div className="h-6 w-40 bg-muted rounded animate-pulse mb-4"></div>
+              <div className="space-y-3">
+                {[...Array(4)].map((_, i) => (
+                  <div key={i} className="bg-muted border-border flex items-center justify-between rounded-lg border p-3 transition-colors">
+                    <div className="flex items-center space-x-3">
+                      <div className="h-8 w-8 bg-background rounded-full animate-pulse"></div>
+                      <div>
+                        <div className="h-4 w-20 bg-background rounded animate-pulse mb-1"></div>
+                        <div className="h-3 w-32 bg-background rounded animate-pulse"></div>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <div className="h-2 w-16 bg-background rounded-full animate-pulse"></div>
+                      <div className="h-3 w-8 bg-background rounded animate-pulse"></div>
+                    </div>
                   </div>
                 ))}
               </div>
+            </div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+            <div className="bg-card border-border rounded-lg border p-6 shadow-sm transition-colors">
+              <h3 className="text-foreground mb-4 text-lg font-semibold">
+                {t('salesTrend')} ({t('last7Days')})
+              </h3>
+              <div className="space-y-3">
+                <div className="grid grid-cols-7 gap-1 text-center">
+                  {[
+                    t('mon'),
+                    t('tue'),
+                    t('wed'),
+                    t('thu'),
+                    t('fri'),
+                    t('sat'),
+                    t('sun'),
+                  ].map((day, index) => (
+                    <div
+                      key={day}
+                      className="text-xs text-gray-500 dark:text-gray-400"
+                    >
+                      {day}
+                    </div>
+                  ))}
+                </div>
 
-              <div className="grid h-32 grid-cols-7 items-end gap-1">
-                {(analytics?.weekSalesData || [25, 30, 22, 35, 28, 40, 45]).map(
-                  (value, idx) => {
-                    const maxValue = Math.max(
-                      ...(analytics?.weekSalesData || [45])
-                    );
-                    const height = maxValue > 0 ? (value / maxValue) * 100 : 0;
-                    return (
-                      <div key={idx} className="flex flex-col items-center">
-                        <div
-                          className={`w-full rounded-t transition-all duration-300 ${
-                            idx === 6 ? 'bg-blue-500' : 'bg-muted-foreground'
-                          }`}
-                          style={{ height: `${height}%` }}
-                        ></div>
-                        <div className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                          {value}
+                <div className="grid h-32 grid-cols-7 items-end gap-1">
+                  {(analytics?.weekSalesData || [25, 30, 22, 35, 28, 40, 45]).map(
+                    (value, idx) => {
+                      const maxValue = Math.max(
+                        ...(analytics?.weekSalesData || [45])
+                      );
+                      const height = maxValue > 0 ? (value / maxValue) * 100 : 0;
+                      return (
+                        <div key={idx} className="flex flex-col items-center">
+                          <div
+                            className={`w-full rounded-t transition-all duration-300 ${
+                              idx === 6 ? 'bg-blue-500' : 'bg-muted-foreground'
+                            }`}
+                            style={{ height: `${height}%` }}
+                          ></div>
+                          <div className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                            {value}
+                          </div>
                         </div>
+                      );
+                    }
+                  )}
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-card border-border rounded-lg border p-6 shadow-sm transition-colors">
+              <h3 className="text-foreground mb-4 text-lg font-semibold">
+                {t('topDriverPerformance')}
+              </h3>
+              <div className="space-y-3">
+                {(
+                  analytics?.topDrivers || [
+                    {
+                      name: t('fallbackDriverName1'),
+                      sales: 15,
+                      revenue: 7500,
+                      percentage: 100,
+                    },
+                    {
+                      name: t('fallbackDriverName2'),
+                      sales: 12,
+                      revenue: 6000,
+                      percentage: 80,
+                    },
+                    {
+                      name: t('fallbackDriverName3'),
+                      sales: 8,
+                      revenue: 4000,
+                      percentage: 53,
+                    },
+                    {
+                      name: t('fallbackDriverName4'),
+                      sales: 10,
+                      revenue: 5000,
+                      percentage: 67,
+                    },
+                  ]
+                ).map((driver, index) => (
+                  <div
+                    key={index}
+                    className="bg-muted border-border flex items-center justify-between rounded-lg border p-3 transition-colors"
+                  >
+                    <div className="flex items-center space-x-3">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900">
+                        <span className="text-xs font-bold text-blue-600 dark:text-blue-400">
+                          {index + 1}
+                        </span>
                       </div>
-                    );
-                  }
-                )}
+                      <div>
+                        <p className="text-foreground text-sm font-medium">
+                          {driver.name}
+                        </p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                          {driver.sales} {t('salesCount')} •{' '}
+                          {formatCurrency(driver.revenue)}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <div className="bg-muted h-2 w-16 rounded-full">
+                        <div
+                          className="h-2 rounded-full bg-green-500 transition-all duration-300"
+                          style={{ width: `${driver.percentage}%` }}
+                        ></div>
+                      </div>
+                      <span className="text-xs text-gray-500 dark:text-gray-400">
+                        {driver.percentage}%
+                      </span>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
-
-          <div className="bg-card border-border rounded-lg border p-6 shadow-sm transition-colors">
-            <h3 className="text-foreground mb-4 text-lg font-semibold">
-              {t('topDriverPerformance')}
-            </h3>
-            <div className="space-y-3">
-              {(
-                analytics?.topDrivers || [
-                  {
-                    name: t('fallbackDriverName1'),
-                    sales: 15,
-                    revenue: 7500,
-                    percentage: 100,
-                  },
-                  {
-                    name: t('fallbackDriverName2'),
-                    sales: 12,
-                    revenue: 6000,
-                    percentage: 80,
-                  },
-                  {
-                    name: t('fallbackDriverName3'),
-                    sales: 8,
-                    revenue: 4000,
-                    percentage: 53,
-                  },
-                  {
-                    name: t('fallbackDriverName4'),
-                    sales: 10,
-                    revenue: 5000,
-                    percentage: 67,
-                  },
-                ]
-              ).map((driver, index) => (
-                <div
-                  key={index}
-                  className="bg-muted border-border flex items-center justify-between rounded-lg border p-3 transition-colors"
-                >
-                  <div className="flex items-center space-x-3">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900">
-                      <span className="text-xs font-bold text-blue-600 dark:text-blue-400">
-                        {index + 1}
-                      </span>
-                    </div>
-                    <div>
-                      <p className="text-foreground text-sm font-medium">
-                        {driver.name}
-                      </p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
-                        {driver.sales} {t('salesCount')} •{' '}
-                        {formatCurrency(driver.revenue)}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <div className="bg-muted h-2 w-16 rounded-full">
-                      <div
-                        className="h-2 rounded-full bg-green-500 transition-all duration-300"
-                        style={{ width: `${driver.percentage}%` }}
-                      ></div>
-                    </div>
-                    <span className="text-xs text-gray-500 dark:text-gray-400">
-                      {driver.percentage}%
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
+        )}
 
         {/* Footer */}
         <div className="mt-8 text-center text-gray-500 dark:text-gray-400">

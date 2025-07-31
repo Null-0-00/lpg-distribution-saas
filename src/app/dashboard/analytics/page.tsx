@@ -384,11 +384,15 @@ export default function AnalyticsPage() {
       }
 
       // Save fixed cost structure
-      if (newEntry.fixedExpense > 0 || newEntry.fixedCostType === 'CALCULATED') {
-        const costPerUnit = newEntry.fixedCostType === 'CALCULATED' 
-          ? analyticsData?.overview.costPerUnit || 0 
-          : newEntry.fixedExpense;
-          
+      if (
+        newEntry.fixedExpense > 0 ||
+        newEntry.fixedCostType === 'CALCULATED'
+      ) {
+        const costPerUnit =
+          newEntry.fixedCostType === 'CALCULATED'
+            ? analyticsData?.overview.costPerUnit || 0
+            : newEntry.fixedExpense;
+
         await fetch('/api/fixed-cost-structures', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -673,8 +677,10 @@ export default function AnalyticsPage() {
                   </div>
                   <div>
                     <Label htmlFor="buying-price">
-                      Buying Price 
-                      <span className="text-xs text-muted-foreground ml-1">(Auto-calculated via FIFO)</span>
+                      Buying Price
+                      <span className="text-muted-foreground ml-1 text-xs">
+                        (Auto-calculated via FIFO)
+                      </span>
                     </Label>
                     <Input
                       id="buying-price"
@@ -714,7 +720,12 @@ export default function AnalyticsPage() {
                     <Select
                       value={newEntry.fixedCostType}
                       onValueChange={(value: 'MANUAL' | 'CALCULATED') =>
-                        setNewEntry({ ...newEntry, fixedCostType: value, fixedExpense: value === 'CALCULATED' ? 0 : newEntry.fixedExpense })
+                        setNewEntry({
+                          ...newEntry,
+                          fixedCostType: value,
+                          fixedExpense:
+                            value === 'CALCULATED' ? 0 : newEntry.fixedExpense,
+                        })
                       }
                     >
                       <SelectTrigger>
@@ -722,7 +733,9 @@ export default function AnalyticsPage() {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="MANUAL">Manual</SelectItem>
-                        <SelectItem value="CALCULATED">Automatic (ইউনিট প্রতি খরচ)</SelectItem>
+                        <SelectItem value="CALCULATED">
+                          Automatic (ইউনিট প্রতি খরচ)
+                        </SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -746,13 +759,19 @@ export default function AnalyticsPage() {
                   )}
                   {newEntry.fixedCostType === 'CALCULATED' && (
                     <div>
-                      <Label htmlFor="calculated-cost">Auto ইউনিট প্রতি খরচ</Label>
+                      <Label htmlFor="calculated-cost">
+                        Auto ইউনিট প্রতি খরচ
+                      </Label>
                       <Input
                         id="calculated-cost"
                         type="text"
-                        value={analyticsData ? `${analyticsData.overview.costPerUnit.toFixed(2)}` : '0.00'}
+                        value={
+                          analyticsData
+                            ? `${analyticsData.overview.costPerUnit.toFixed(2)}`
+                            : '0.00'
+                        }
                         disabled
-                        className="bg-muted cursor-not-allowed text-blue-600 font-medium"
+                        className="bg-muted cursor-not-allowed font-medium text-blue-600"
                         title="Automatically calculated from total expenses divided by total sales quantity"
                       />
                     </div>
@@ -762,8 +781,8 @@ export default function AnalyticsPage() {
                       onClick={saveEntry}
                       disabled={
                         !newEntry.productId ||
-                        (newEntry.commission === 0 && 
-                          newEntry.fixedCostType === 'MANUAL' && 
+                        (newEntry.commission === 0 &&
+                          newEntry.fixedCostType === 'MANUAL' &&
                           newEntry.fixedExpense === 0)
                       }
                       className="flex-1"
@@ -935,11 +954,15 @@ export default function AnalyticsPage() {
                                     <div className="font-medium">
                                       {formatCurrency(entry.fixedCost)}
                                     </div>
-                                    <div className="text-xs text-muted-foreground">
-                                      {entry.fixedCostType === 'CALCULATED' ? 'Auto' : 'Manual'}
+                                    <div className="text-muted-foreground text-xs">
+                                      {entry.fixedCostType === 'CALCULATED'
+                                        ? 'Auto'
+                                        : 'Manual'}
                                     </div>
                                   </div>
-                                ) : '-'}
+                                ) : (
+                                  '-'
+                                )}
                               </td>
                               <td className="text-foreground px-6 py-4 text-sm">
                                 <div className="max-w-xs">
@@ -1146,7 +1169,8 @@ export default function AnalyticsPage() {
                 রিফিল বিক্রয় বিশ্লেষণ (Refill Sales Analytics)
               </CardTitle>
               <CardDescription className="text-muted-foreground text-sm">
-                রিফিল বিক্রয়ের লাভজনকতা বিশ্লেষণ (Refill Sales Profitability Analysis)
+                রিফিল বিক্রয়ের লাভজনকতা বিশ্লেষণ (Refill Sales Profitability
+                Analysis)
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -1158,8 +1182,10 @@ export default function AnalyticsPage() {
                         {t('products')}
                       </th>
                       <th className="text-muted-foreground px-6 py-3 text-right text-xs font-medium uppercase tracking-wider">
-                        {t('buyingPrice')} 
-                        <span className="ml-1 text-[10px] text-blue-500 font-normal">(FIFO)</span>
+                        {t('buyingPrice')}
+                        <span className="ml-1 text-[10px] font-normal text-blue-500">
+                          (FIFO)
+                        </span>
                       </th>
                       <th className="text-muted-foreground px-6 py-3 text-right text-xs font-medium uppercase tracking-wider">
                         {t('commission')}
@@ -1201,10 +1227,12 @@ export default function AnalyticsPage() {
                           </div>
                         </td>
                         <td className="text-foreground whitespace-nowrap px-6 py-4 text-right text-sm">
-                          <span 
-                            title={product.fifoData ? 
-                              `FIFO Calculation:\nTotal Sold: ${product.fifoData.totalSoldQuantity} units\nTotal COGS: ${formatCurrency(product.fifoData.totalCOGS)}\nRemaining Inventory Value: ${formatCurrency(product.fifoData.remainingInventoryValue)}` : 
-                              'FIFO-calculated average buying price'}
+                          <span
+                            title={
+                              product.fifoData
+                                ? `FIFO Calculation:\nTotal Sold: ${product.fifoData.totalSoldQuantity} units\nTotal COGS: ${formatCurrency(product.fifoData.totalCOGS)}\nRemaining Inventory Value: ${formatCurrency(product.fifoData.remainingInventoryValue)}`
+                                : 'FIFO-calculated average buying price'
+                            }
                             className="cursor-help border-b border-dotted border-blue-400"
                           >
                             {formatCurrency(product.buyingPrice)}
@@ -1256,7 +1284,8 @@ export default function AnalyticsPage() {
                 প্যাকেজ বিক্রয় বিশ্লেষণ (Package Sales Analytics)
               </CardTitle>
               <CardDescription className="text-muted-foreground text-sm">
-                প্যাকেজ বিক্রয়ের লাভজনকতা বিশ্লেষণ (Package Sales Profitability Analysis)
+                প্যাকেজ বিক্রয়ের লাভজনকতা বিশ্লেষণ (Package Sales Profitability
+                Analysis)
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -1268,8 +1297,10 @@ export default function AnalyticsPage() {
                         {t('products')}
                       </th>
                       <th className="text-muted-foreground px-6 py-3 text-right text-xs font-medium uppercase tracking-wider">
-                        {t('buyingPrice')} 
-                        <span className="ml-1 text-[10px] text-blue-500 font-normal">(FIFO)</span>
+                        {t('buyingPrice')}
+                        <span className="ml-1 text-[10px] font-normal text-blue-500">
+                          (FIFO)
+                        </span>
                       </th>
                       <th className="text-muted-foreground px-6 py-3 text-right text-xs font-medium uppercase tracking-wider">
                         {t('commission')}
@@ -1311,10 +1342,12 @@ export default function AnalyticsPage() {
                           </div>
                         </td>
                         <td className="text-foreground whitespace-nowrap px-6 py-4 text-right text-sm">
-                          <span 
-                            title={product.fifoData ? 
-                              `FIFO Calculation:\nTotal Sold: ${product.fifoData.totalSoldQuantity} units\nTotal COGS: ${formatCurrency(product.fifoData.totalCOGS)}\nTotal Sales Revenue: ${formatCurrency(product.fifoData.totalSalesRevenue)}\nRemaining Inventory Value: ${formatCurrency(product.fifoData.remainingInventoryValue)}` : 
-                              'FIFO-calculated average buying price'}
+                          <span
+                            title={
+                              product.fifoData
+                                ? `FIFO Calculation:\nTotal Sold: ${product.fifoData.totalSoldQuantity} units\nTotal COGS: ${formatCurrency(product.fifoData.totalCOGS)}\nTotal Sales Revenue: ${formatCurrency(product.fifoData.totalSalesRevenue)}\nRemaining Inventory Value: ${formatCurrency(product.fifoData.remainingInventoryValue)}`
+                                : 'FIFO-calculated average buying price'
+                            }
                             className="cursor-help border-b border-dotted border-blue-400"
                           >
                             {formatCurrency(product.buyingPrice)}
@@ -1362,10 +1395,10 @@ export default function AnalyticsPage() {
           {/* Profit by Product Chart */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-white text-lg font-semibold">
+              <CardTitle className="text-lg font-semibold text-white">
                 {t('revenue')} {t('products')}
               </CardTitle>
-              <CardDescription className="text-white text-sm">
+              <CardDescription className="text-sm text-white">
                 {t('visualRepresentationProfitByProduct')}
               </CardDescription>
             </CardHeader>
@@ -1373,27 +1406,39 @@ export default function AnalyticsPage() {
               {/* Legend */}
               <div className="mb-4 flex items-center justify-center gap-6">
                 <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 rounded bg-green-500"></div>
-                  <span className="text-sm text-white">রিফিল বিক্রয় (Refill Sales)</span>
+                  <div className="h-4 w-4 rounded bg-green-500"></div>
+                  <span className="text-sm text-white">
+                    রিফিল বিক্রয় (Refill Sales)
+                  </span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 rounded bg-blue-500"></div>
-                  <span className="text-sm text-white">প্যাকেজ বিক্রয় (Package Sales)</span>
+                  <div className="h-4 w-4 rounded bg-blue-500"></div>
+                  <span className="text-sm text-white">
+                    প্যাকেজ বিক্রয় (Package Sales)
+                  </span>
                 </div>
               </div>
               <div className="h-96">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart
-                    data={[...analyticsData.refillProducts, ...analyticsData.packageProducts].map(product => ({
+                    data={[
+                      ...analyticsData.refillProducts,
+                      ...analyticsData.packageProducts,
+                    ].map((product) => ({
                       ...product,
                       displayName: `${product.product.name}`,
                       fullLabel: `${product.product.name} (${product.product.size}) - ${product.product.company}`,
-                      saleTypeLabel: product.saleType === 'REFILL' ? 'রিফিল' : 'প্যাকেজ',
-                      barColor: product.saleType === 'REFILL' ? '#10b981' : '#3b82f6' // Green for refill, blue for package
+                      saleTypeLabel:
+                        product.saleType === 'REFILL' ? 'রিফিল' : 'প্যাকেজ',
+                      barColor:
+                        product.saleType === 'REFILL' ? '#10b981' : '#3b82f6', // Green for refill, blue for package
                     }))}
                     margin={{ top: 20, right: 30, left: 20, bottom: 100 }}
                   >
-                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                    <CartesianGrid
+                      strokeDasharray="3 3"
+                      stroke="hsl(var(--border))"
+                    />
                     <XAxis
                       dataKey="displayName"
                       fontSize={10}
@@ -1410,8 +1455,12 @@ export default function AnalyticsPage() {
                     />
                     <Tooltip
                       formatter={(value, name, props) => [
-                        <span style={{ color: '#10b981' }}>{formatCurrency(Number(value))}</span>,
-                        <span style={{ color: '#3b82f6' }}>{`${props.payload.saleTypeLabel} ${t('revenue')}`}</span>,
+                        <span style={{ color: '#10b981' }}>
+                          {formatCurrency(Number(value))}
+                        </span>,
+                        <span
+                          style={{ color: '#3b82f6' }}
+                        >{`${props.payload.saleTypeLabel} ${t('revenue')}`}</span>,
                       ]}
                       labelFormatter={(label, payload) => {
                         if (payload && payload[0]) {
@@ -1422,7 +1471,9 @@ export default function AnalyticsPage() {
                             </span>
                           );
                         }
-                        return <span style={{ color: '#3b82f6' }}>{label}</span>;
+                        return (
+                          <span style={{ color: '#3b82f6' }}>{label}</span>
+                        );
                       }}
                       contentStyle={{
                         backgroundColor: 'hsl(var(--background))',
@@ -1437,10 +1488,15 @@ export default function AnalyticsPage() {
                       radius={[4, 4, 0, 0]}
                       name="Revenue"
                     >
-                      {[...analyticsData.refillProducts, ...analyticsData.packageProducts].map((entry, index) => (
-                        <Cell 
-                          key={`cell-${index}`} 
-                          fill={entry.saleType === 'REFILL' ? '#10b981' : '#3b82f6'} 
+                      {[
+                        ...analyticsData.refillProducts,
+                        ...analyticsData.packageProducts,
+                      ].map((entry, index) => (
+                        <Cell
+                          key={`cell-${index}`}
+                          fill={
+                            entry.saleType === 'REFILL' ? '#10b981' : '#3b82f6'
+                          }
                         />
                       ))}
                     </Bar>
@@ -1522,10 +1578,10 @@ export default function AnalyticsPage() {
             {/* Driver Revenue Chart */}
             <Card>
               <CardHeader>
-                <CardTitle className="text-white text-lg font-semibold">
+                <CardTitle className="text-lg font-semibold text-white">
                   {t('revenue')} {t('drivers')}
                 </CardTitle>
-                <CardDescription className="text-white text-sm">
+                <CardDescription className="text-sm text-white">
                   {t('comparativeAnalysisRevenueByDriver')}
                 </CardDescription>
               </CardHeader>
@@ -1537,7 +1593,10 @@ export default function AnalyticsPage() {
                       layout="horizontal"
                       margin={{ top: 20, right: 30, left: 80, bottom: 20 }}
                     >
-                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                      <CartesianGrid
+                        strokeDasharray="3 3"
+                        stroke="hsl(var(--border))"
+                      />
                       <XAxis
                         type="number"
                         tickFormatter={formatCurrency}
@@ -1553,11 +1612,17 @@ export default function AnalyticsPage() {
                       />
                       <Tooltip
                         formatter={(value) => [
-                          <span style={{ color: '#10b981' }}>{formatCurrency(Number(value))}</span>,
-                          <span style={{ color: '#3b82f6' }}>{t('revenue')}</span>,
+                          <span style={{ color: '#10b981' }}>
+                            {formatCurrency(Number(value))}
+                          </span>,
+                          <span style={{ color: '#3b82f6' }}>
+                            {t('revenue')}
+                          </span>,
                         ]}
                         labelFormatter={(label) => (
-                          <span style={{ color: '#3b82f6' }}>{`${t('driver')}: ${label}`}</span>
+                          <span
+                            style={{ color: '#3b82f6' }}
+                          >{`${t('driver')}: ${label}`}</span>
                         )}
                         contentStyle={{
                           backgroundColor: 'hsl(var(--background))',

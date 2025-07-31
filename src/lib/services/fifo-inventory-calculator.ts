@@ -53,21 +53,26 @@ export class FifoInventoryCalculator {
    * For refill sales: use gas price only (cylinders are returned)
    * For package sales: use total price (gas + cylinder)
    */
-  private extractPriceFromNotes(notes: string | null, saleType: 'REFILL' | 'PACKAGE'): number | null {
+  private extractPriceFromNotes(
+    notes: string | null,
+    saleType: 'REFILL' | 'PACKAGE'
+  ): number | null {
     if (!notes) return null;
 
     // Look for gas price pattern in notes
     const gasPriceMatch = notes.match(/Gas:\s*৳?(\d+(?:\.\d+)?)/i);
     const cylinderPriceMatch = notes.match(/Cylinder:\s*৳?(\d+(?:\.\d+)?)/i);
-    
+
     const gasPrice = gasPriceMatch ? parseFloat(gasPriceMatch[1]) : 0;
-    const cylinderPrice = cylinderPriceMatch ? parseFloat(cylinderPriceMatch[1]) : 0;
+    const cylinderPrice = cylinderPriceMatch
+      ? parseFloat(cylinderPriceMatch[1])
+      : 0;
 
     // For refill sales, use only gas price since cylinders are returned
     if (saleType === 'REFILL') {
       return gasPrice > 0 ? gasPrice : null;
     }
-    
+
     // For package sales, use total price (gas + cylinder)
     if (saleType === 'PACKAGE') {
       const totalPrice = gasPrice + cylinderPrice;
@@ -98,7 +103,7 @@ export class FifoInventoryCalculator {
     // Get all products for the tenant
     const products = await prisma.product.findMany({
       where: { tenantId: this.tenantId },
-      select: { id: true }
+      select: { id: true },
     });
 
     const results = new Map<string, FifoCalculationResult>();
@@ -180,18 +185,21 @@ export class FifoInventoryCalculator {
     });
 
     // Convert to our internal format
-    const shipmentRecords: ShipmentRecord[] = shipments.map(s => ({
+    const shipmentRecords: ShipmentRecord[] = shipments.map((s) => ({
       id: s.id,
       productId: s.productId,
       shipmentType: s.shipmentType,
       quantity: s.quantity,
-      unitCost: this.extractPriceFromNotes(s.notes, saleType) || s.unitCost || 0,
-      totalCost: (this.extractPriceFromNotes(s.notes, saleType) || s.unitCost || 0) * s.quantity,
+      unitCost:
+        this.extractPriceFromNotes(s.notes, saleType) || s.unitCost || 0,
+      totalCost:
+        (this.extractPriceFromNotes(s.notes, saleType) || s.unitCost || 0) *
+        s.quantity,
       shipmentDate: s.shipmentDate,
       remaining: s.quantity, // Initially, all quantity is remaining
     }));
 
-    const saleRecords: SaleRecord[] = sales.map(s => ({
+    const saleRecords: SaleRecord[] = sales.map((s) => ({
       id: s.id,
       productId: s.productId,
       quantity: s.quantity,
@@ -213,14 +221,16 @@ export class FifoInventoryCalculator {
     sales: SaleRecord[]
   ): FifoCalculationResult {
     // Create inventory batches from shipments
-    const inventoryBatches: FifoInventoryBatch[] = shipments.map(shipment => ({
-      shipmentId: shipment.id,
-      productId: shipment.productId,
-      unitCost: shipment.unitCost,
-      originalQuantity: shipment.quantity,
-      remainingQuantity: shipment.quantity,
-      shipmentDate: shipment.shipmentDate,
-    }));
+    const inventoryBatches: FifoInventoryBatch[] = shipments.map(
+      (shipment) => ({
+        shipmentId: shipment.id,
+        productId: shipment.productId,
+        unitCost: shipment.unitCost,
+        originalQuantity: shipment.quantity,
+        remainingQuantity: shipment.quantity,
+        shipmentDate: shipment.shipmentDate,
+      })
+    );
 
     let totalSoldQuantity = 0;
     let totalCOGS = 0;
@@ -240,13 +250,16 @@ export class FifoInventoryCalculator {
         if (batch.remainingQuantity <= 0) continue;
 
         // Take from this batch
-        const quantityToTake = Math.min(saleQuantityRemaining, batch.remainingQuantity);
+        const quantityToTake = Math.min(
+          saleQuantityRemaining,
+          batch.remainingQuantity
+        );
         const costForThisQuantity = quantityToTake * batch.unitCost;
 
         // Update totals
         totalCOGS += costForThisQuantity;
         allocatedQuantity += quantityToTake;
-        
+
         // Update batch and sale remaining quantities
         batch.remainingQuantity -= quantityToTake;
         saleQuantityRemaining -= quantityToTake;
@@ -255,33 +268,38 @@ export class FifoInventoryCalculator {
       // Calculate revenue based on allocated quantity
       // Use the sale's unit price for the portion that was actually allocated
       if (allocatedQuantity > 0) {
-        const revenueForAllocatedQuantity = (allocatedQuantity / sale.quantity) * sale.totalValue;
+        const revenueForAllocatedQuantity =
+          (allocatedQuantity / sale.quantity) * sale.totalValue;
         totalSalesRevenue += revenueForAllocatedQuantity;
       }
 
-      // If we still have sale quantity remaining but no inventory, 
+      // If we still have sale quantity remaining but no inventory,
       // this indicates insufficient inventory data or negative inventory
       if (saleQuantityRemaining > 0) {
         console.warn(
           `Product ${productId}: Sale quantity ${saleQuantityRemaining} could not be allocated to inventory batches. ` +
-          `This may indicate missing shipment data or negative inventory.`
+            `This may indicate missing shipment data or negative inventory.`
         );
       }
     }
 
     // Calculate remaining inventory value
     let remainingInventoryValue = 0;
-    const remainingBatches = inventoryBatches.filter(batch => batch.remainingQuantity > 0);
-    
+    const remainingBatches = inventoryBatches.filter(
+      (batch) => batch.remainingQuantity > 0
+    );
+
     for (const batch of remainingBatches) {
       remainingInventoryValue += batch.remainingQuantity * batch.unitCost;
     }
 
     // Calculate average buying price (COGS per unit sold)
-    const averageBuyingPrice = totalSoldQuantity > 0 ? totalCOGS / totalSoldQuantity : 0;
-    
+    const averageBuyingPrice =
+      totalSoldQuantity > 0 ? totalCOGS / totalSoldQuantity : 0;
+
     // Calculate average selling price (Total Sales Revenue per unit sold)
-    const averageSellingPrice = totalSoldQuantity > 0 ? totalSalesRevenue / totalSoldQuantity : 0;
+    const averageSellingPrice =
+      totalSoldQuantity > 0 ? totalSalesRevenue / totalSoldQuantity : 0;
 
     return {
       productId,
@@ -305,7 +323,7 @@ export class FifoInventoryCalculator {
     batches: FifoInventoryBatch[];
   }> {
     const now = new Date();
-    
+
     // Get all shipments for this product
     const shipments = await prisma.shipment.findMany({
       where: {
@@ -339,17 +357,20 @@ export class FifoInventoryCalculator {
       orderBy: { saleDate: 'asc' },
     });
 
-    const shipmentRecords: ShipmentRecord[] = shipments.map(s => ({
+    const shipmentRecords: ShipmentRecord[] = shipments.map((s) => ({
       id: s.id,
       productId: s.productId,
       shipmentType: s.shipmentType,
       quantity: s.quantity,
-      unitCost: this.extractPriceFromNotes(s.notes, 'REFILL') || s.unitCost || 0, // Use gas price only for inventory valuation
-      totalCost: (this.extractPriceFromNotes(s.notes, 'REFILL') || s.unitCost || 0) * s.quantity,
+      unitCost:
+        this.extractPriceFromNotes(s.notes, 'REFILL') || s.unitCost || 0, // Use gas price only for inventory valuation
+      totalCost:
+        (this.extractPriceFromNotes(s.notes, 'REFILL') || s.unitCost || 0) *
+        s.quantity,
       shipmentDate: s.shipmentDate,
     }));
 
-    const saleRecords: SaleRecord[] = sales.map(s => ({
+    const saleRecords: SaleRecord[] = sales.map((s) => ({
       id: s.id,
       productId: s.productId,
       quantity: s.quantity,
@@ -358,14 +379,21 @@ export class FifoInventoryCalculator {
       saleDate: s.saleDate,
     }));
 
-    const fifoResult = this.processFifoCalculation(productId, shipmentRecords, saleRecords);
+    const fifoResult = this.processFifoCalculation(
+      productId,
+      shipmentRecords,
+      saleRecords
+    );
 
     const totalQuantity = fifoResult.remainingInventoryBatches.reduce(
       (sum, batch) => sum + batch.remainingQuantity,
       0
     );
 
-    const averageCost = totalQuantity > 0 ? fifoResult.remainingInventoryValue / totalQuantity : 0;
+    const averageCost =
+      totalQuantity > 0
+        ? fifoResult.remainingInventoryValue / totalQuantity
+        : 0;
 
     return {
       totalQuantity,

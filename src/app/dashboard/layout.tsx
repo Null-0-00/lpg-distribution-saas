@@ -27,28 +27,42 @@ import { ThemeToggle } from '@/components/ui/ThemeToggle';
 import { useSettings } from '@/contexts/SettingsContext';
 import { Translations } from '@/lib/i18n/translations';
 
-const getNavigation = (t: (key: keyof Translations) => string) => [
+interface NavigationItem {
+  name: string;
+  href: string;
+  icon: any;
+  comingSoon?: boolean;
+}
+
+const getNavigation = (
+  t: (key: keyof Translations) => string
+): NavigationItem[] => [
   { name: t('dashboard'), href: '/dashboard', icon: Home },
-  { name: t('sales'), href: '/dashboard/sales', icon: TrendingUp },
-  { name: t('analytics'), href: '/dashboard/analytics', icon: Calculator },
   {
     name: t('dailySalesReport'),
     href: '/dashboard/reports/daily-sales',
     icon: BarChart3,
   },
   { name: t('inventory'), href: '/dashboard/inventory', icon: Package },
-  { name: t('shipments'), href: '/dashboard/shipments', icon: Ship },
-  { name: t('drivers'), href: '/dashboard/drivers', icon: Truck },
-  { name: t('users'), href: '/dashboard/users', icon: Users },
+  { name: t('analytics'), href: '/dashboard/analytics', icon: Calculator },
+  { name: t('sales'), href: '/dashboard/sales', icon: TrendingUp },
   { name: t('receivables'), href: '/dashboard/receivables', icon: CreditCard },
-  { name: t('assets'), href: '/dashboard/assets', icon: Building2 },
   { name: t('expenses'), href: '/dashboard/expenses', icon: Receipt },
-  { name: t('reports'), href: '/dashboard/reports', icon: FileText },
+  { name: t('shipments'), href: '/dashboard/shipments', icon: Ship },
+  { name: t('assets'), href: '/dashboard/assets', icon: Building2 },
+  { name: t('drivers'), href: '/dashboard/drivers', icon: Truck },
   {
     name: t('productManagement'),
     href: '/dashboard/product-management',
     icon: Package,
   },
+  {
+    name: t('reports'),
+    href: '/dashboard/reports',
+    icon: FileText,
+    comingSoon: true,
+  },
+  { name: t('users'), href: '/dashboard/users', icon: Users },
   { name: t('settings'), href: '/dashboard/settings', icon: Settings },
 ];
 
@@ -121,7 +135,7 @@ export default function DashboardLayout({
                 <Link
                   key={item.name}
                   href={item.href}
-                  className={`flex items-center rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+                  className={`flex items-center justify-between rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
                     isActive
                       ? 'bg-primary/10 text-primary'
                       : 'text-card-foreground hover:bg-muted'
@@ -129,8 +143,15 @@ export default function DashboardLayout({
                   onClick={() => setSidebarOpen(false)}
                   prefetch={true}
                 >
-                  <Icon className="mr-3 h-5 w-5" />
-                  {item.name}
+                  <div className="flex items-center">
+                    <Icon className="mr-3 h-5 w-5" />
+                    {item.name}
+                  </div>
+                  {item.comingSoon && (
+                    <span className="rounded-full bg-blue-100 px-2 py-1 text-xs font-medium text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                      {t('comingSoon')}
+                    </span>
+                  )}
                 </Link>
               );
             })}
@@ -164,15 +185,22 @@ export default function DashboardLayout({
                 <Link
                   key={item.name}
                   href={item.href}
-                  className={`flex items-center rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+                  className={`flex items-center justify-between rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
                     isActive
                       ? 'bg-primary/10 text-primary'
                       : 'text-card-foreground hover:bg-muted'
                   }`}
                   prefetch={true}
                 >
-                  <Icon className="mr-3 h-5 w-5" />
-                  {item.name}
+                  <div className="flex items-center">
+                    <Icon className="mr-3 h-5 w-5" />
+                    {item.name}
+                  </div>
+                  {item.comingSoon && (
+                    <span className="rounded-full bg-blue-100 px-2 py-1 text-xs font-medium text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                      {t('comingSoon')}
+                    </span>
+                  )}
                 </Link>
               );
             })}

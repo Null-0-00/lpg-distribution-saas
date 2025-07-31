@@ -13,6 +13,7 @@ import {
   CheckCircle,
   AlertCircle,
 } from 'lucide-react';
+import { useSettings } from '@/contexts/SettingsContext';
 
 // Financial Reports Engine with Real-time Data Integration
 interface IncomeStatementData {
@@ -99,6 +100,7 @@ interface CashFlowData {
 }
 
 export default function ReportsPage() {
+  const { t, formatCurrency } = useSettings();
   const [selectedPeriod, setSelectedPeriod] = useState('this_month');
   const [loading, setLoading] = useState(false);
   const [lastUpdated, setLastUpdated] = useState(new Date());
@@ -245,56 +247,56 @@ export default function ReportsPage() {
     }
   };
 
-  const [reportTypes] = useState([
+  const reportTypes = [
     {
       id: 'income_statement',
-      title: 'Income Statement',
-      description: 'Revenue, expenses, and profit analysis',
+      title: t('incomeStatement'),
+      description: t('revenueExpensesAndProfitAnalysis'),
       icon: TrendingUp,
       lastGenerated: '2024-01-15',
       color: 'blue',
     },
     {
       id: 'balance_sheet',
-      title: 'Balance Sheet',
-      description: 'Assets, liabilities, and equity overview',
+      title: t('balanceSheet'),
+      description: t('assetsLiabilitiesAndEquityOverview'),
       icon: BarChart3,
       lastGenerated: '2024-01-15',
       color: 'green',
     },
     {
       id: 'cash_flow',
-      title: 'Cash Flow Statement',
-      description: 'Cash inflows and outflows tracking',
+      title: t('cashFlowStatement'),
+      description: t('cashInflowsAndOutflowsTracking'),
       icon: PieChart,
       lastGenerated: '2024-01-15',
       color: 'purple',
     },
     {
       id: 'sales_report',
-      title: 'Sales Report',
-      description: 'Detailed sales performance analysis',
+      title: t('salesReport'),
+      description: t('detailedSalesPerformanceAnalysis'),
       icon: TrendingUp,
       lastGenerated: '2024-01-15',
       color: 'orange',
     },
     {
       id: 'inventory_report',
-      title: 'Inventory Report',
-      description: 'Stock levels and movement analysis',
+      title: t('inventoryReport'),
+      description: t('stockLevelsAndMovementAnalysis'),
       icon: BarChart3,
       lastGenerated: '2024-01-15',
       color: 'teal',
     },
     {
       id: 'driver_performance',
-      title: 'Driver Performance',
-      description: 'Individual driver sales and efficiency',
+      title: t('driverPerformance'),
+      description: t('individualDriverSalesAndEfficiency'),
       icon: PieChart,
       lastGenerated: '2024-01-15',
       color: 'red',
     },
-  ]);
+  ];
 
   // Calculate real-time quick stats from actual data
   const quickStats = {
@@ -337,28 +339,30 @@ export default function ReportsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-foreground text-2xl font-bold">
-            Financial Reports
+            {t('financialReports')}
           </h1>
           <p className="text-muted-foreground">
-            Generate and view comprehensive business reports
+            {t('generateAndViewComprehensiveBusinessReports')}
           </p>
         </div>
         <div className="flex items-center space-x-4">
           <div className="text-muted-foreground flex items-center space-x-2 text-sm">
             <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
-            <span>Last updated: {lastUpdated.toLocaleTimeString()}</span>
+            <span>
+              {t('lastUpdated')}: {lastUpdated.toLocaleTimeString()}
+            </span>
           </div>
           <select
             value={selectedPeriod}
             onChange={(e) => setSelectedPeriod(e.target.value)}
             className="text-foreground rounded-md border border-gray-300 bg-white px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700"
           >
-            <option value="today">Today</option>
-            <option value="this_week">This Week</option>
-            <option value="this_month">This Month</option>
-            <option value="last_month">Last Month</option>
-            <option value="this_quarter">This Quarter</option>
-            <option value="this_year">This Year</option>
+            <option value="today">{t('today')}</option>
+            <option value="this_week">{t('thisWeek')}</option>
+            <option value="this_month">{t('thisMonth')}</option>
+            <option value="last_month">{t('lastMonth')}</option>
+            <option value="this_quarter">{t('thisQuarter')}</option>
+            <option value="this_year">{t('thisYear')}</option>
           </select>
           <button
             onClick={loadFinancialData}
@@ -368,14 +372,14 @@ export default function ReportsPage() {
             <RefreshCw
               className={`mr-2 h-4 w-4 ${loading ? 'animate-spin' : ''}`}
             />
-            Refresh
+            {t('refresh')}
           </button>
           <button
             className="flex items-center rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
             onClick={() => alert('Custom Report Builder coming soon!')}
           >
             <FileText className="mr-2 h-4 w-4" />
-            Custom Report
+            {t('customReport')}
           </button>
         </div>
       </div>
@@ -386,9 +390,11 @@ export default function ReportsPage() {
           <div className="flex items-center">
             <TrendingUp className="h-8 w-8 text-green-500" />
             <div className="ml-4">
-              <p className="text-muted-foreground text-sm">Total Revenue</p>
+              <p className="text-muted-foreground text-sm">
+                {t('totalRevenue')}
+              </p>
               <p className="text-foreground text-2xl font-bold">
-                ৳{quickStats.totalRevenue.toLocaleString()}
+                {formatCurrency(quickStats.totalRevenue)}
               </p>
             </div>
           </div>
@@ -397,9 +403,11 @@ export default function ReportsPage() {
           <div className="flex items-center">
             <TrendingUp className="h-8 w-8 text-red-500" />
             <div className="ml-4">
-              <p className="text-muted-foreground text-sm">Total Expenses</p>
+              <p className="text-muted-foreground text-sm">
+                {t('totalExpenses')}
+              </p>
               <p className="text-foreground text-2xl font-bold">
-                ৳{quickStats.totalExpenses.toLocaleString()}
+                {formatCurrency(quickStats.totalExpenses)}
               </p>
             </div>
           </div>
@@ -408,9 +416,9 @@ export default function ReportsPage() {
           <div className="flex items-center">
             <TrendingUp className="h-8 w-8 text-blue-500" />
             <div className="ml-4">
-              <p className="text-muted-foreground text-sm">Net Profit</p>
+              <p className="text-muted-foreground text-sm">{t('netProfit')}</p>
               <p className="text-foreground text-2xl font-bold">
-                ৳{quickStats.netProfit.toLocaleString()}
+                {formatCurrency(quickStats.netProfit)}
               </p>
             </div>
           </div>
@@ -419,9 +427,11 @@ export default function ReportsPage() {
           <div className="flex items-center">
             <PieChart className="h-8 w-8 text-purple-500" />
             <div className="ml-4">
-              <p className="text-muted-foreground text-sm">Profit Margin</p>
+              <p className="text-muted-foreground text-sm">
+                {t('profitMargin')}
+              </p>
               <p className="text-foreground text-2xl font-bold">
-                {quickStats.profitMargin}%
+                {quickStats.profitMargin.toFixed(1)}%
               </p>
             </div>
           </div>
@@ -443,7 +453,7 @@ export default function ReportsPage() {
                     <Icon className={`h-6 w-6 ${getIconColor(report.color)}`} />
                   </div>
                   <span className="text-muted-foreground text-xs">
-                    Last: {report.lastGenerated}
+                    {t('last')}: {report.lastGenerated}
                   </span>
                 </div>
                 <h3 className="text-foreground mb-2 text-lg font-semibold">
@@ -458,7 +468,7 @@ export default function ReportsPage() {
                     onClick={() => alert(`View ${report.title} details below`)}
                   >
                     <FileText className="mr-1 h-3 w-3" />
-                    View
+                    {t('view')}
                   </button>
                   <button
                     className="flex items-center justify-center rounded-md bg-red-600 px-2 py-2 text-xs text-white hover:bg-red-700"
@@ -470,7 +480,7 @@ export default function ReportsPage() {
                     ) : (
                       <Download className="mr-1 h-3 w-3" />
                     )}
-                    PDF
+                    {t('pdf')}
                   </button>
                   <button
                     className="flex items-center justify-center rounded-md bg-green-600 px-2 py-2 text-xs text-white hover:bg-green-700"
@@ -482,14 +492,14 @@ export default function ReportsPage() {
                     ) : (
                       <Download className="mr-1 h-3 w-3" />
                     )}
-                    Excel
+                    {t('excel')}
                   </button>
                   <button
                     className="flex items-center justify-center rounded-md bg-blue-600 px-2 py-2 text-xs text-white hover:bg-blue-700"
                     onClick={() => handleEmailReport(report.title)}
                   >
                     <Mail className="mr-1 h-3 w-3" />
-                    Email
+                    {t('email')}
                   </button>
                 </div>
               </div>

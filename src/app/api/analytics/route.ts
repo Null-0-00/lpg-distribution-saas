@@ -33,11 +33,21 @@ export async function GET(request: NextRequest) {
 
     // Initialize FIFO calculator
     const fifoCalculator = new FifoInventoryCalculator(session.user.tenantId);
-    
+
     // Calculate FIFO-based buying and selling prices for both refill and package sales
     const [refillFifoResults, packageFifoResults] = await Promise.all([
-      fifoCalculator.calculateMonthlyFifoAnalytics(year, month, driverId, 'REFILL'),
-      fifoCalculator.calculateMonthlyFifoAnalytics(year, month, driverId, 'PACKAGE')
+      fifoCalculator.calculateMonthlyFifoAnalytics(
+        year,
+        month,
+        driverId,
+        'REFILL'
+      ),
+      fifoCalculator.calculateMonthlyFifoAnalytics(
+        year,
+        month,
+        driverId,
+        'PACKAGE'
+      ),
     ]);
 
     // Get all products for the tenant
@@ -118,9 +128,9 @@ export async function GET(request: NextRequest) {
       totalSalesQuantity > 0 ? totalExpenseAmount / totalSalesQuantity : 0;
 
     // Group sales by product and sale type
-    const refillSales = sales.filter(sale => sale.saleType === 'REFILL');
-    const packageSales = sales.filter(sale => sale.saleType === 'PACKAGE');
-    
+    const refillSales = sales.filter((sale) => sale.saleType === 'REFILL');
+    const packageSales = sales.filter((sale) => sale.saleType === 'PACKAGE');
+
     const createProductSalesMap = (salesData: any[]) => {
       return salesData.reduce(
         (acc, sale) => {
@@ -179,36 +189,52 @@ export async function GET(request: NextRequest) {
     });
 
     // Helper function to calculate analytics for a specific sale type
-    const calculateProductAnalytics = (product: any, fifoResults: Map<string, any>, productSalesMap: Record<string, any>, saleType: 'REFILL' | 'PACKAGE') => {
+    const calculateProductAnalytics = (
+      product: any,
+      fifoResults: Map<string, any>,
+      productSalesMap: Record<string, any>,
+      saleType: 'REFILL' | 'PACKAGE'
+    ) => {
       const productSale = productSalesMap[product.id];
       const commission =
         commissionStructures.find((c) => c.productId === product.id)
           ?.commission || 0;
-      const fixedCostStructure = fixedCostStructures.find((f) => f.productId === product.id);
+      const fixedCostStructure = fixedCostStructures.find(
+        (f) => f.productId === product.id
+      );
       let fixedCost = fixedCostStructure?.costPerUnit || 0;
-      
+
       // If the fixed cost type is CALCULATED, use the overall cost per unit
       if (fixedCostStructure?.costType === 'CALCULATED') {
         fixedCost = costPerUnit;
       }
 
       // Use global fixed cost if no product-specific cost
-      const globalFixedCostStructure = fixedCostStructures.find((f) => f.productId === null);
+      const globalFixedCostStructure = fixedCostStructures.find(
+        (f) => f.productId === null
+      );
       let globalFixedCost = globalFixedCostStructure?.costPerUnit || 0;
-      
+
       // If the global fixed cost type is CALCULATED, use the overall cost per unit
       if (globalFixedCostStructure?.costType === 'CALCULATED') {
         globalFixedCost = costPerUnit;
       }
-      
+
       const effectiveFixedCost = fixedCost || globalFixedCost;
 
       // Get FIFO-calculated buying and selling prices
       const fifoResult = fifoResults.get(product.id);
-      const buyingPrice = fifoResult?.averageBuyingPrice || product.costPrice || 0;
-      const sellingPrice = fifoResult?.averageSellingPrice || productSale?.latestPrice || product.currentPrice || 0;
-      const salesQuantity = fifoResult?.totalSoldQuantity || productSale?.totalQuantity || 0;
-      const revenue = fifoResult?.totalSalesRevenue || productSale?.totalRevenue || 0;
+      const buyingPrice =
+        fifoResult?.averageBuyingPrice || product.costPrice || 0;
+      const sellingPrice =
+        fifoResult?.averageSellingPrice ||
+        productSale?.latestPrice ||
+        product.currentPrice ||
+        0;
+      const salesQuantity =
+        fifoResult?.totalSoldQuantity || productSale?.totalQuantity || 0;
+      const revenue =
+        fifoResult?.totalSalesRevenue || productSale?.totalRevenue || 0;
 
       // Breakeven Price = Buying Price - Commission + Fixed Cost Per Unit
       const breakevenPrice = buyingPrice - commission + effectiveFixedCost;
@@ -244,12 +270,22 @@ export async function GET(request: NextRequest) {
     };
 
     // Calculate analytics for both refill and package sales
-    const refillProductAnalytics = products.map((product) => 
-      calculateProductAnalytics(product, refillFifoResults, refillProductSales, 'REFILL')
+    const refillProductAnalytics = products.map((product) =>
+      calculateProductAnalytics(
+        product,
+        refillFifoResults,
+        refillProductSales,
+        'REFILL'
+      )
     );
-    
-    const packageProductAnalytics = products.map((product) => 
-      calculateProductAnalytics(product, packageFifoResults, packageProductSales, 'PACKAGE')
+
+    const packageProductAnalytics = products.map((product) =>
+      calculateProductAnalytics(
+        product,
+        packageFifoResults,
+        packageProductSales,
+        'PACKAGE'
+      )
     );
 
     // Calculate overall analytics for both sale types
@@ -262,7 +298,7 @@ export async function GET(request: NextRequest) {
       0
     );
     const totalRevenue = refillTotalRevenue + packageTotalRevenue;
-    
+
     const refillTotalProfit = refillProductAnalytics.reduce(
       (sum, p) => sum + p.totalProfit,
       0
@@ -272,8 +308,9 @@ export async function GET(request: NextRequest) {
       0
     );
     const totalProfit = refillTotalProfit + packageTotalProfit;
-    
-    const profitMargin = totalRevenue > 0 ? (totalProfit / totalRevenue) * 100 : 0;
+
+    const profitMargin =
+      totalRevenue > 0 ? (totalProfit / totalRevenue) * 100 : 0;
 
     const analytics = {
       month,

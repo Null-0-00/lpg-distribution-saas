@@ -152,6 +152,79 @@ export interface Translations {
   comingSoon: string;
   exportReport: string;
   exportReportFunctionality: string;
+
+  // Reports page specific
+  generateAndViewComprehensiveBusinessReports: string;
+  thisWeek: string;
+  thisQuarter: string;
+  customReport: string;
+  revenueExpensesAndProfitAnalysis: string;
+  pdf: string;
+  excel: string;
+  last: string;
+  assetsLiabilitiesAndEquityOverview: string;
+  cashInflowsAndOutflowsTracking: string;
+  detailedSalesPerformanceAnalysis: string;
+  stockLevelsAndMovementAnalysis: string;
+  individualDriverSalesAndEfficiency: string;
+  incomeStatementRealTime: string;
+  revenueByTypeDriverWithLiveCalculations: string;
+  costOfGoodsSold: string;
+  cylinderPurchases: string;
+  grossProfit: string;
+  operatingExpenses: string;
+  fuelTransportation: string;
+  otherExpenses: string;
+  netIncome: string;
+  grossMargin: string;
+  balanceSheetAutoValidated: string;
+  balanced: string;
+  outOfBalance: string;
+  currentAssets: string;
+  cashBank: string;
+  inventoryAutoLinked: string;
+  fixedAssets: string;
+  buildings: string;
+  liabilitiesEquity: string;
+  currentLiabilities: string;
+  shortTermLoans: string;
+  longTermLiabilities: string;
+  longTermLoans: string;
+  ownerEquity: string;
+  retainedEarnings: string;
+  totalLiabEquity: string;
+  balanceCheck: string;
+  assetsEqualsLiabilitiesPlusEquity: string;
+  passed: string;
+  cashFlowStatementRealTime: string;
+  operatingInvestingFinancingActivities: string;
+  operatingActivities: string;
+  changeInReceivables: string;
+  changeInInventory: string;
+  changeInPayables: string;
+  operatingCashFlow: string;
+  investingActivities: string;
+  vehiclePurchases: string;
+  equipmentPurchases: string;
+  investingCashFlow: string;
+  financingActivities: string;
+  ownerDrawings: string;
+  loanRepayments: string;
+  financingCashFlow: string;
+  netChangeInCash: string;
+  cashAtBeginningOfPeriod: string;
+  cashAtEndOfPeriod: string;
+  operatingCashFlowIsPositive: string;
+  healthyBusinessOperations: string;
+
+  // Additional missing translations
+  incomeStatement: string;
+  cashFlowStatement: string;
+  salesReport: string;
+  inventoryReport: string;
+  thisYear: string;
+  netProfit: string;
+
   customerRecords: string;
   statusBreakdown: string;
   noCashReceivables: string;
@@ -1567,6 +1640,80 @@ const englishTranslations: Translations = {
   comingSoon: 'Coming Soon',
   exportReport: 'Export Report',
   exportReportFunctionality: 'রিপোর্ট এক্সপোর্ট সুবিধা',
+
+
+  // Reports page specific
+  generateAndViewComprehensiveBusinessReports: 'Generate and view comprehensive business reports',
+  thisWeek: 'This Week',
+  thisQuarter: 'This Quarter',
+  customReport: 'Custom Report',
+  revenueExpensesAndProfitAnalysis: 'Revenue, expenses, and profit analysis',
+  pdf: 'PDF',
+  excel: 'Excel',
+  last: 'Last',
+  assetsLiabilitiesAndEquityOverview: 'Assets, liabilities, and equity overview',
+  cashInflowsAndOutflowsTracking: 'Cash inflows and outflows tracking',
+  detailedSalesPerformanceAnalysis: 'Detailed sales performance analysis',
+  stockLevelsAndMovementAnalysis: 'Stock levels and movement analysis',
+  individualDriverSalesAndEfficiency: 'Individual driver sales and efficiency',
+  incomeStatementRealTime: 'Income Statement (Real-time)',
+  revenueByTypeDriverWithLiveCalculations: 'Revenue by type/driver with live calculations',
+  costOfGoodsSold: 'Cost of Goods Sold',
+  cylinderPurchases: 'Cylinder Purchases',
+  grossProfit: 'Gross Profit',
+  operatingExpenses: 'Operating Expenses',
+  fuelTransportation: 'Fuel & Transportation',
+  otherExpenses: 'Other Expenses',
+  netIncome: 'Net Income',
+  grossMargin: 'Gross Margin',
+  balanceSheetAutoValidated: 'Balance Sheet (Auto-validated)',
+  balanced: 'Balanced',
+  outOfBalance: 'Out of Balance',
+  currentAssets: 'Current Assets',
+  cashBank: 'Cash & Bank',
+  inventoryAutoLinked: 'Inventory (Auto-linked)',
+  fixedAssets: 'Fixed Assets',
+  buildings: 'Buildings',
+  liabilitiesEquity: 'Liabilities & Equity',
+  currentLiabilities: 'Current Liabilities',
+  shortTermLoans: 'Short-term Loans',
+  longTermLiabilities: 'Long-term Liabilities',
+  longTermLoans: 'Long-term Loans',
+  ownerEquity: 'Owner Equity',
+  retainedEarnings: 'Retained Earnings',
+  totalLiabEquity: 'Total Liab. & Equity',
+  balanceCheck: 'Balance Check',
+  assetsEqualsLiabilitiesPlusEquity: 'Assets = Liabilities + Equity',
+  passed: 'PASSED',
+  cashFlowStatementRealTime: 'Cash Flow Statement (Real-time)',
+  operatingInvestingFinancingActivities: 'Operating, Investing & Financing Activities',
+  operatingActivities: 'Operating Activities',
+  changeInReceivables: 'Change in Receivables',
+  changeInInventory: 'Change in Inventory',
+  changeInPayables: 'Change in Payables',
+  operatingCashFlow: 'Operating Cash Flow',
+  investingActivities: 'Investing Activities',
+  vehiclePurchases: 'Vehicle Purchases',
+  equipmentPurchases: 'Equipment Purchases',
+  investingCashFlow: 'Investing Cash Flow',
+  financingActivities: 'Financing Activities',
+  ownerDrawings: 'Owner Drawings',
+  loanRepayments: 'Loan Repayments',
+  financingCashFlow: 'Financing Cash Flow',
+  netChangeInCash: 'Net Change in Cash',
+  cashAtBeginningOfPeriod: 'Cash at Beginning of Period',
+  cashAtEndOfPeriod: 'Cash at End of Period',
+  operatingCashFlowIsPositive: 'Operating cash flow is positive',
+  healthyBusinessOperations: 'healthy business operations',
+
+  // Additional missing translations
+  incomeStatement: 'Income Statement',
+  cashFlowStatement: 'Cash Flow Statement',
+  salesReport: 'Sales Report',
+  inventoryReport: 'Inventory Report',
+  thisYear: 'This Year',
+  netProfit: 'Net Profit',
+
   customerRecords: 'Customer Records',
   statusBreakdown: 'স্ট্যাটাস বিভাজন',
   noReceivablesFound: 'No Receivables Found',
@@ -2795,6 +2942,80 @@ const bengaliTranslations: Translations = {
   comingSoon: 'শীঘ্রই আসছে',
   exportReport: 'রিপোর্ট এক্সপোর্ট',
   exportReportFunctionality: 'রিপোর্ট এক্সপোর্ট সুবিধা',
+
+
+  // Reports page specific
+  generateAndViewComprehensiveBusinessReports: 'ব্যাপক ব্যবসায়িক প্রতিবেদন তৈরি এবং দেখুন',
+  thisWeek: 'এই সপ্তাহ',
+  thisQuarter: 'এই ত্রৈমাসিক',
+  customReport: 'কাস্টম রিপোর্ট',
+  revenueExpensesAndProfitAnalysis: 'আয়, খরচ এবং লাভ বিশ্লেষণ',
+  pdf: 'পিডিএফ',
+  excel: 'এক্সেল',
+  last: 'শেষ',
+  assetsLiabilitiesAndEquityOverview: 'সম্পদ, দায় এবং ইক্যুইটি ওভারভিউ',
+  cashInflowsAndOutflowsTracking: 'নগদ আগমন এবং বহির্গমন ট্র্যাকিং',
+  detailedSalesPerformanceAnalysis: 'বিস্তারিত বিক্রয় কর্মক্ষমতা বিশ্লেষণ',
+  stockLevelsAndMovementAnalysis: 'স্টক স্তর এবং চলাচল বিশ্লেষণ',
+  individualDriverSalesAndEfficiency: 'ব্যক্তিগত চালক বিক্রয় এবং দক্ষতা',
+  incomeStatementRealTime: 'আয় বিবৃতি (রিয়েল-টাইম)',
+  revenueByTypeDriverWithLiveCalculations: 'লাইভ গণনা সহ ধরন/চালক অনুযায়ী আয়',
+  costOfGoodsSold: 'বিক্রীত পণ্যের খরচ',
+  cylinderPurchases: 'সিলিন্ডার ক্রয়',
+  grossProfit: 'মোট লাভ',
+  operatingExpenses: 'পরিচালনা খরচ',
+  fuelTransportation: 'জ্বালানি ও পরিবহন',
+  otherExpenses: 'অন্যান্য খরচ',
+  netIncome: 'নিট আয়',
+  grossMargin: 'মোট মার্জিন',
+  balanceSheetAutoValidated: 'ব্যালেন্স শীট (স্বয়ংক্রিয় যাচাই)',
+  balanced: 'সুষম',
+  outOfBalance: 'ভারসাম্যহীন',
+  currentAssets: 'চলতি সম্পদ',
+  cashBank: 'নগদ ও ব্যাংক',
+  inventoryAutoLinked: 'মজুদ (স্বয়ংক্রিয় লিঙ্ক)',
+  fixedAssets: 'স্থায়ী সম্পদ',
+  buildings: 'ভবন',
+  liabilitiesEquity: 'দায় ও ইক্যুইটি',
+  currentLiabilities: 'চলতি দায়',
+  shortTermLoans: 'স্বল্পমেয়াদী ঋণ',
+  longTermLiabilities: 'দীর্ঘমেয়াদী দায়',
+  longTermLoans: 'দীর্ঘমেয়াদী ঋণ',
+  ownerEquity: 'মালিকের ইক্যুইটি',
+  retainedEarnings: 'সঞ্চিত আয়',
+  totalLiabEquity: 'মোট দায় ও ইক্যুইটি',
+  balanceCheck: 'ব্যালেন্স চেক',
+  assetsEqualsLiabilitiesPlusEquity: 'সম্পদ = দায় + ইক্যুইটি',
+  passed: 'পাস',
+  cashFlowStatementRealTime: 'নগদ প্রবাহ বিবৃতি (রিয়েল-টাইম)',
+  operatingInvestingFinancingActivities: 'পরিচালনা, বিনিয়োগ ও অর্থায়ন কার্যক্রম',
+  operatingActivities: 'পরিচালনা কার্যক্রম',
+  changeInReceivables: 'প্রাপ্যের পরিবর্তন',
+  changeInInventory: 'মজুদের পরিবর্তন',
+  changeInPayables: 'প্রদেয়ের পরিবর্তন',
+  operatingCashFlow: 'পরিচালনা নগদ প্রবাহ',
+  investingActivities: 'বিনিয়োগ কার্যক্রম',
+  vehiclePurchases: 'যানবাহন ক্রয়',
+  equipmentPurchases: 'সরঞ্জাম ক্রয়',
+  investingCashFlow: 'বিনিয়োগ নগদ প্রবাহ',
+  financingActivities: 'অর্থায়ন কার্যক্রম',
+  ownerDrawings: 'মালিকের উত্তোলন',
+  loanRepayments: 'ঋণ পরিশোধ',
+  financingCashFlow: 'অর্থায়ন নগদ প্রবাহ',
+  netChangeInCash: 'নগদের নিট পরিবর্তন',
+  cashAtBeginningOfPeriod: 'মেয়াদের শুরুতে নগদ',
+  cashAtEndOfPeriod: 'মেয়াদের শেষে নগদ',
+  operatingCashFlowIsPositive: 'পরিচালনা নগদ প্রবাহ ইতিবাচক',
+  healthyBusinessOperations: 'সুস্থ ব্যবসায়িক কার্যক্রম',
+
+  // Additional missing translations
+  incomeStatement: 'আয় বিবৃতি',
+  cashFlowStatement: 'নগদ প্রবাহ বিবৃতি',
+  salesReport: 'বিক্রয় প্রতিবেদন',
+  inventoryReport: 'মজুদ প্রতিবেদন',
+  thisYear: 'এই বছর',
+  netProfit: 'নিট লাভ',
+
   customerRecords: 'গ্রাহক রেকর্ড',
   statusBreakdown: 'স্ট্যাটাস বিভাজন',
   noReceivablesFound: 'না প্রাপ্য পাওয়া গেছে',

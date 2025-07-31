@@ -1048,26 +1048,66 @@ export default function InventoryPage() {
                       মোট
                     </td>
                     <td className="text-foreground whitespace-nowrap px-4 py-3 text-sm font-bold">
-                      {dailyInventoryData?.dailyInventory[0]
-                        ?.emptyCylindersInStock ||
-                        dailyInventoryData?.dailyInventory[0]?.emptyCylinders ||
-                        0}
+                      {cylindersSummaryData.emptyCylinders?.reduce(
+                        (sum, item) => {
+                          const correctEmptyCylindersInStock =
+                            dailyInventoryData?.dailyInventory[0]?.emptyCylindersInStockBySizes?.find(
+                              (s: any) => s.size === item.size
+                            )?.quantity ||
+                            dailyInventoryData?.dailyInventory[0]?.emptyCylindersBySizes?.find(
+                              (s: any) => s.size === item.size
+                            )?.quantity ||
+                            0;
+                          return sum + correctEmptyCylindersInStock;
+                        },
+                        0
+                      ) || 0}
                     </td>
                     <td className="whitespace-nowrap px-4 py-3 text-sm font-bold text-orange-700 dark:text-orange-300">
-                      {cylindersSummaryData.totalCylinderReceivables || 0}
+                      {cylindersSummaryData.emptyCylinders?.reduce(
+                        (sum, item) => {
+                          const receivablesForSize =
+                            (cylindersSummaryData as any)
+                              .receivablesBreakdown?.[item.size] || 0;
+                          return sum + receivablesForSize;
+                        },
+                        0
+                      ) || 0}
                     </td>
                     <td className="whitespace-nowrap px-4 py-3 text-sm font-bold text-blue-700 dark:text-blue-300">
-                      {dailyInventoryData?.dailyInventory[0]
-                        ?.outstandingRefillOrders || 0}
+                      {cylindersSummaryData.emptyCylinders?.reduce(
+                        (sum, item) => {
+                          const outstandingShipmentsForSize =
+                            dailyInventoryData?.dailyInventory[0]?.outstandingRefillOrdersBySizes?.find(
+                              (s: any) => s.size === item.size
+                            )?.quantity || 0;
+                          return sum + outstandingShipmentsForSize;
+                        },
+                        0
+                      ) || 0}
                     </td>
                     <td className="whitespace-nowrap px-4 py-3 text-sm font-bold text-green-700 dark:text-green-300">
-                      {(dailyInventoryData?.dailyInventory[0]
-                        ?.emptyCylindersInStock ||
-                        dailyInventoryData?.dailyInventory[0]?.emptyCylinders ||
-                        0) +
-                        (cylindersSummaryData.totalCylinderReceivables || 0) +
-                        (dailyInventoryData?.dailyInventory[0]
-                          ?.outstandingRefillOrders || 0)}
+                      {cylindersSummaryData.emptyCylinders?.reduce(
+                        (sum, item) => {
+                          const correctEmptyCylindersInStock =
+                            dailyInventoryData?.dailyInventory[0]?.emptyCylindersInStockBySizes?.find(
+                              (s: any) => s.size === item.size
+                            )?.quantity ||
+                            dailyInventoryData?.dailyInventory[0]?.emptyCylindersBySizes?.find(
+                              (s: any) => s.size === item.size
+                            )?.quantity ||
+                            0;
+                          const receivablesForSize =
+                            (cylindersSummaryData as any)
+                              .receivablesBreakdown?.[item.size] || 0;
+                          const outstandingShipmentsForSize =
+                            dailyInventoryData?.dailyInventory[0]?.outstandingRefillOrdersBySizes?.find(
+                              (s: any) => s.size === item.size
+                            )?.quantity || 0;
+                          return sum + correctEmptyCylindersInStock + receivablesForSize + outstandingShipmentsForSize;
+                        },
+                        0
+                      ) || 0}
                     </td>
                   </tr>
                 </tfoot>

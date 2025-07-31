@@ -52,12 +52,25 @@ export async function GET(request: NextRequest) {
         },
       }),
 
-      prisma.receivableRecord.findFirst({
-        where: { tenantId },
-        orderBy: { date: 'desc' },
+      // Get sum of latest cash receivables from all active retail drivers
+      prisma.driver.findMany({
+        where: {
+          tenantId,
+          status: 'ACTIVE',
+          driverType: 'RETAIL',
+        },
         select: {
-          totalCashReceivables: true,
-          totalCylinderReceivables: true,
+          id: true,
+          receivableRecords: {
+            select: {
+              totalCashReceivables: true,
+              totalCylinderReceivables: true,
+            },
+            take: 1,
+            orderBy: {
+              date: 'desc',
+            },
+          },
         },
       }),
 
@@ -202,8 +215,13 @@ export async function GET(request: NextRequest) {
         todaySales: todaysSales,
         totalRevenue: totalRevenue._sum.netValue || 0,
         pendingReceivables: pendingReceivables
-          ? pendingReceivables.totalCashReceivables +
-            pendingReceivables.totalCylinderReceivables
+          ? pendingReceivables
+              .filter((driver) => driver.receivableRecords.length > 0)
+              .reduce(
+                (sum, driver) =>
+                  sum + driver.receivableRecords[0].totalCashReceivables,
+                0
+              )
           : 0,
         lowStockAlerts,
         pendingApprovals,

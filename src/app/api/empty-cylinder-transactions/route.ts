@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
+import { CylinderInventoryValidator } from '@/lib/services/cylinder-inventory-validator';
 
 export async function GET(request: NextRequest) {
   try {
@@ -216,19 +217,51 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Product not found' }, { status: 404 });
     }
 
-    // For SELL transactions, check if we have enough empty cylinders
+    // For SELL transactions, validate cylinder inventory using comprehensive validator
     if (transactionType === 'SELL') {
-      const currentInventory = await getCurrentEmptyInventory(
+      const cylinderValidator = new CylinderInventoryValidator(prisma);
+
+      // Get product cylinder size for validation
+      const productWithSize = await prisma.product.findFirst({
+        where: { id: productId, tenantId },
+        include: { cylinderSize: true },
+      });
+
+      if (!productWithSize || !productWithSize.cylinderSize) {
+        return NextResponse.json(
+          { error: 'Product not found or missing cylinder size information' },
+          { status: 404 }
+        );
+      }
+
+      const validation = await cylinderValidator.validateShipmentInventory({
         tenantId,
-        productId
-      );
-      if (currentInventory < quantity) {
+        shipmentType: 'OUTGOING_EMPTY',
+        lineItems: [
+          {
+            productId,
+            cylinderSize: productWithSize.cylinderSize.size,
+            quantity,
+          },
+        ],
+        shipmentDate: transactionDate ? new Date(transactionDate) : new Date(),
+      });
+
+      if (!validation.isValid) {
         return NextResponse.json(
           {
-            error: `Insufficient empty cylinder inventory. Available: ${currentInventory}, Required: ${quantity}`,
+            error: 'Insufficient empty cylinder inventory for sale',
+            details: validation.errors,
+            warnings: validation.warnings,
+            inventoryDetails: validation.inventoryDetails,
           },
           { status: 400 }
         );
+      }
+
+      // Log warnings if any
+      if (validation.warnings.length > 0) {
+        console.warn('Empty cylinder sale warnings:', validation.warnings);
       }
     }
 
@@ -301,25 +334,3 @@ export async function POST(request: NextRequest) {
   }
 }
 
-async function getCurrentEmptyInventory(
-  tenantId: string,
-  productId: string
-): Promise<number> {
-  const movements = await prisma.inventoryMovement.findMany({
-    where: {
-      tenantId,
-      productId,
-      type: {
-        in: ['EMPTY_CYLINDER_BUY', 'EMPTY_CYLINDER_SELL'],
-      },
-    },
-  });
-
-  return movements.reduce((total, movement) => {
-    const change =
-      movement.type === 'EMPTY_CYLINDER_BUY'
-        ? movement.quantity
-        : -movement.quantity;
-    return total + change;
-  }, 0);
-}

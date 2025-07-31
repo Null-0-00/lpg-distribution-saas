@@ -285,7 +285,9 @@ export default function AssetsPage() {
     return translations[name] || name;
   };
 
-  const translateAssetDescription = (description: string | undefined): string => {
+  const translateAssetDescription = (
+    description: string | undefined
+  ): string => {
     if (!description) return '';
     const translations: { [key: string]: string } = {
       'Outstanding cash receivables from drivers': t(

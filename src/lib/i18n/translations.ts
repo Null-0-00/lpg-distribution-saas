@@ -5,7 +5,7 @@ import {
   TranslationError,
   TranslationErrorType,
   ValidationResult,
-  ConsistencyReport
+  ConsistencyReport,
 } from './translation-validator';
 
 export interface Translations {
@@ -244,6 +244,15 @@ export interface Translations {
   emptyCylinders: string;
   emptyCylindersBuySell: string;
   emptyCylindersInHand: string;
+  
+  // Inventory validation messages
+  checkingInventory: string;
+  inventoryAvailable: string;
+  usingAllAvailable: string;
+  only: string;
+  availableText: string;
+  purchasing: string;
+  selling: string;
   emptyCylinderReceivables: string;
   emptyCylindersReceivable: string;
   emptyCylindersInStock: string;
@@ -1218,11 +1227,12 @@ export interface Translations {
   availableForRefill: string;
   noFullCylindersAvailable: string;
   noEmptyCylindersAvailable: string;
+  noEmptyCylindersOfSizeAvailable: string;
   automatedInventoryCalculationsForCylinders: string;
 }
 
 const englishTranslations: Translations = {
-  // Navigation
+// Navigation
   dashboard: 'Dashboard',
   sales: 'Sales',
   drivers: 'Drivers',
@@ -1644,6 +1654,15 @@ const englishTranslations: Translations = {
   emptyCylinders: 'খালি সিলিন্ডার',
   emptyCylindersBuySell: 'খালি সিলিন্ডার ক্রয়/বিক্রয়',
   emptyCylindersInHand: 'স্টকে খালি সিলিন্ডার',
+  
+  // Inventory validation messages
+  checkingInventory: 'Checking inventory...',
+  inventoryAvailable: 'available',
+  usingAllAvailable: 'Using all available cylinders',
+  only: 'Only',
+  availableText: 'available',
+  purchasing: 'Purchasing...',
+  selling: 'Selling...',
   emptyCylinderReceivables: 'Empty Cylinder Receivables',
   emptyCylindersReceivable: 'Empty Cylinders Receivable',
   emptyCylindersInStock: 'Empty Cylinders In Stock',
@@ -2328,6 +2347,7 @@ const englishTranslations: Translations = {
   availableForRefill: 'Available for Refill',
   noFullCylindersAvailable: 'No full cylinders available',
   noEmptyCylindersAvailable: 'No empty cylinders available',
+  noEmptyCylindersOfSizeAvailable: 'No empty cylinders of size {size} available',
   automatedInventoryCalculationsForCylinders:
     'Automated inventory calculations for cylinders',
   asset: 'Asset',
@@ -2337,12 +2357,14 @@ const englishTranslations: Translations = {
   editable: 'Editable',
   autoCalculatedCurrentAssets: 'Auto-Calculated Current Assets',
   noAutoCalculatedAssetsFound: 'No auto-calculated current assets found.',
-  autoCalculatedAssetsDescription: 'Auto-calculated assets like inventory and receivables will appear here.',
+  autoCalculatedAssetsDescription:
+    'Auto-calculated assets like inventory and receivables will appear here.',
   updated: 'updated',
   successfully: 'successfully',
   failedToUpdateCreateEntry: 'Failed to update/create entry',
   assetPlaceholder: 'e.g., Vehicles, Equipment, Inventory',
-  realTimeValuesLinkedToBusinessOperations: 'Real-time values linked to business operations',
+  realTimeValuesLinkedToBusinessOperations:
+    'Real-time values linked to business operations',
   balanceSheetSummary: 'Balance Sheet Summary',
   totalAssets: 'Total Assets',
   totalLiabilities: 'Total Liabilities',
@@ -2354,7 +2376,8 @@ const englishTranslations: Translations = {
   cashReceivablesAsset: 'Cash Receivables',
   cashInHandAsset: 'Cash in Hand',
   assetDepreciationSchedule: 'Asset Depreciation Schedule',
-  assetsWithDepreciationRates: 'Assets with depreciation rates and accumulated depreciation',
+  assetsWithDepreciationRates:
+    'Assets with depreciation rates and accumulated depreciation',
   originalCost: 'Original Cost',
   depreciationMethod: 'Depreciation Method',
   annualRate: 'Annual Rate',
@@ -2362,12 +2385,15 @@ const englishTranslations: Translations = {
   accumulated: 'Accumulated',
   currentValue: 'Current Value',
   noAssetsWithDepreciationFound: 'No assets with depreciation found.',
-  addAssetsWithPurchaseDates: 'Add assets with purchase dates and depreciation rates to see their depreciation schedule.',
+  addAssetsWithPurchaseDates:
+    'Add assets with purchase dates and depreciation rates to see their depreciation schedule.',
   addDepreciableAsset: 'Add Depreciable Asset',
   loan: 'Loan',
-  outstandingCashReceivablesFromDrivers: 'Outstanding cash receivables from drivers',
+  outstandingCashReceivablesFromDrivers:
+    'Outstanding cash receivables from drivers',
   cashInHand: 'Cash in Hand',
-  availableCashCalculatedFromDeposits: 'Available cash calculated from deposits minus expenses'
+  availableCashCalculatedFromDeposits:
+    'Available cash calculated from deposits minus expenses',
 
 };
 
@@ -2676,9 +2702,8 @@ const bengaliTranslations: Translations = {
   addNewLiabilityToRecords: 'আপনার কোম্পানির রেকর্ডে একটি নতুন দায় যোগ করুন',
 
   // Asset descriptions
-  outstandingCashReceivablesFromDrivers: 'চালকদের কাছ থেকে বকেয়া নগদ প্রাপ্য',
+
   cashInHand: 'হাতে নগদ',
-  availableCashCalculatedFromDeposits: 'জমা থেকে খরচ বিয়োগ করে গণনা করা উপলব্ধ নগদ',
 
   // Depreciation schedule
   assetDepreciationSchedule: 'সম্পদ অবচয় তালিকা',
@@ -2702,17 +2727,8 @@ const bengaliTranslations: Translations = {
   // Asset name translations
   cashReceivablesAsset: 'নগদ প্রাপ্য',
   cashInHandAsset: 'হাতে নগদ',
-  receivables: 'প্রাপ্য',
-  inventory: 'মজুদ',
-  active: 'সক্রিয়',
-  cash: 'নগদ',
-  cashReceivables: 'নগদ প্রাপ্য',
-  created: 'তৈরি করা হয়েছে',
-  autoCalculated: 'স্বয়ংক্রিয় গণনা',
-  addAsset: 'সম্পদ যোগ করুন',
-  addLiability: 'দায় যোগ করুন',
-  purchaseDate: 'ক্রয়ের তারিখ',
-  monthlyPayment: 'মাসিক পরিশোধ', assetDeletedSuccessfully: 'সম্পদ সফলভাবে মুছে ফেলা হয়েছে!',
+
+  assetDeletedSuccessfully: 'সম্পদ সফলভাবে মুছে ফেলা হয়েছে!',
   liabilityDeletedSuccessfully: 'দায় সফলভাবে মুছে ফেলা হয়েছে!',
   unitValueUpdatedSuccessfully: 'ইউনিট মূল্য সফলভাবে আপডেট হয়েছে!',
   assetCreatedSuccessfully: 'সম্পদ সফলভাবে তৈরি হয়েছে!',
@@ -3550,18 +3566,42 @@ const bengaliTranslations: Translations = {
   availableForRefill: 'রিফিলের জন্য উপলব্ধ',
   noFullCylindersAvailable: 'কোনো পূর্ণ সিলিন্ডার উপলব্ধ নেই',
   noEmptyCylindersAvailable: 'কোনো খালি সিলিন্ডার উপলব্ধ নেই',
+  noEmptyCylindersOfSizeAvailable: '{size} সাইজের কোনো খালি সিলিন্ডার উপলব্ধ নেই',
   automatedInventoryCalculationsForCylinders:
     'সিলিন্ডারের জন্য স্বয়ংক্রিয় মজুদ গণনা',
+  
+  // Missing asset-related keys
+  receivables: 'প্রাপ্য',
+  inventory: 'মজুদ',
+  active: 'সক্রিয়',
+  cash: 'নগদ',
+  cashReceivables: 'নগদ প্রাপ্য',
+  created: 'তৈরি করা হয়েছে',
+  autoCalculated: 'স্বয়ংক্রিয় গণনা',
+  addAsset: 'সম্পদ যোগ করুন',
+  addLiability: 'দায় যোগ করুন',
+  purchaseDate: 'ক্রয়ের তারিখ',
+  monthlyPayment: 'মাসিক পরিশোধ',
+  outstandingCashReceivablesFromDrivers: 'চালকদের কাছ থেকে বকেয়া নগদ প্রাপ্য',
+  availableCashCalculatedFromDeposits: 'জমা থেকে খরচ বিয়োগ করে গণনা করা উপলব্ধ নগদ',
   emptyCylinders: 'খালি সিলিন্ডার',
-  fullCylinders: 'পূর্ণ সিলিন্ডার'
+  fullCylinders: 'পূর্ণ সিলিন্ডার',
 
+  // Inventory validation messages
+  checkingInventory: 'স্টক পরীক্ষা করা হচ্ছে...',
+  inventoryAvailable: 'উপলব্ধ',
+  usingAllAvailable: 'সব উপলব্ধ সিলিন্ডার ব্যবহার করা হবে',
+  only: 'মাত্র',
+  availableText: 'উপলব্ধ',
+  purchasing: 'ক্রয় করা হচ্ছে...',
+  selling: 'বিক্রয় করা হচ্ছে...',
 };
 
 const translationMap: Record<string, Translations> = {
   en: englishTranslations,
   bn: bengaliTranslations,
   'en-US': englishTranslations,
-  'bn-BD': bengaliTranslations
+  'bn-BD': bengaliTranslations,
 };
 
 // Initialize enhanced translation system
@@ -3609,7 +3649,7 @@ export function validateTranslationCompleteness(language: string): {
     missingKeys,
     totalKeys: allKeys.length,
     translatedKeys,
-    completionPercentage: Math.round((translatedKeys / allKeys.length) * 100)
+    completionPercentage: Math.round((translatedKeys / allKeys.length) * 100),
   };
 }
 
@@ -3675,13 +3715,13 @@ export {
   TranslationValidator,
   TranslationFallbackSystem,
   translationLogger,
-  TranslationErrorType
+  TranslationErrorType,
 } from './translation-validator';
 
 export type {
   TranslationError,
   ValidationResult,
-  ConsistencyReport
+  ConsistencyReport,
 } from './translation-validator';
 
 // Export default translations for backward compatibility

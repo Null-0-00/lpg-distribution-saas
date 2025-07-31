@@ -13,23 +13,25 @@ console.log('1. Removing duplicate properties in Bengali translations...\n');
 const duplicatesToRemove = [
   {
     key: 'outstandingCashReceivablesFromDrivers',
-    pattern: /\s+outstandingCashReceivablesFromDrivers:\s*'[^']*',?\s*\n/g
+    pattern: /\s+outstandingCashReceivablesFromDrivers:\s*'[^']*',?\s*\n/g,
   },
   {
-    key: 'availableCashCalculatedFromDeposits', 
-    pattern: /\s+availableCashCalculatedFromDeposits:\s*'[^']*',?\s*\n/g
+    key: 'availableCashCalculatedFromDeposits',
+    pattern: /\s+availableCashCalculatedFromDeposits:\s*'[^']*',?\s*\n/g,
   },
   {
     key: 'cashInHand',
-    pattern: /\s+cashInHand:\s*'[^']*',?\s*\n/g
-  }
+    pattern: /\s+cashInHand:\s*'[^']*',?\s*\n/g,
+  },
 ];
 
 duplicatesToRemove.forEach(({ key, pattern }) => {
   const matches = content.match(pattern);
   if (matches && matches.length > 1) {
-    console.log(`✅ Found ${matches.length} instances of '${key}' - keeping first, removing duplicates`);
-    
+    console.log(
+      `✅ Found ${matches.length} instances of '${key}' - keeping first, removing duplicates`
+    );
+
     let count = 0;
     content = content.replace(pattern, (match) => {
       count++;
@@ -46,24 +48,26 @@ duplicatesToRemove.forEach(({ key, pattern }) => {
 console.log('\n2. Adding missing keys to Bengali translations...\n');
 
 // Find the Bengali translations object
-const bengaliMatch = content.match(/(const bengaliTranslations: Translations = \{)([\s\S]*?)(\n\};)/);
+const bengaliMatch = content.match(
+  /(const bengaliTranslations: Translations = \{)([\s\S]*?)(\n\};)/
+);
 
 if (bengaliMatch) {
   let bengaliContent = bengaliMatch[2];
-  
+
   // Add missing keys
   const missingKeys = [
     { key: 'emptyCylinders', value: 'খালি সিলিন্ডার' },
-    { key: 'fullCylinders', value: 'পূর্ণ সিলিন্ডার' }
+    { key: 'fullCylinders', value: 'পূর্ণ সিলিন্ডার' },
   ];
-  
+
   missingKeys.forEach(({ key, value }) => {
     if (!bengaliContent.includes(`${key}:`)) {
       console.log(`✅ Adding missing key '${key}' to Bengali translations`);
       bengaliContent = bengaliContent.trim() + `,\n  ${key}: '${value}'`;
     }
   });
-  
+
   // Replace the Bengali translations section
   content = content.replace(
     /(const bengaliTranslations: Translations = \{)([\s\S]*?)(\n\};)/,

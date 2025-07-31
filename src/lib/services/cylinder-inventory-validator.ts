@@ -194,16 +194,17 @@ export class CylinderInventoryValidator {
     for (const size of cylinderSizes) {
       // Calculate empty cylinders by aggregating across all products of this size
       let totalEmptyCylinders = 0;
-      
-      const productsOfThisSize = products.filter(p => 
-        p.cylinderSize && p.cylinderSize.size === size.size
+
+      const productsOfThisSize = products.filter(
+        (p) => p.cylinderSize && p.cylinderSize.size === size.size
       );
-      
+
       for (const product of productsOfThisSize) {
-        const realTimeInventory = await this.inventoryCalculator.getCurrentInventoryLevels(
-          tenantId,
-          product.id
-        );
+        const realTimeInventory =
+          await this.inventoryCalculator.getCurrentInventoryLevels(
+            tenantId,
+            product.id
+          );
         totalEmptyCylinders += realTimeInventory.emptyCylinders;
       }
 

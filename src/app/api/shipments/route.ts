@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import { ShipmentType, ShipmentStatus, MovementType } from '@prisma/client';
+import { CylinderInventoryValidator } from '@/lib/services/cylinder-inventory-validator';
 
 export async function GET(request: NextRequest) {
   try {
@@ -168,6 +169,63 @@ export async function POST(request: NextRequest) {
         driverName = driver.name;
       }
 
+      // Initialize cylinder inventory validator
+      const cylinderValidator = new CylinderInventoryValidator(prisma);
+
+      // Validate cylinder inventory for refill purchases
+      const refillLineItems = lineItems.filter(
+        (item: any) => item.purchaseType === 'REFILL'
+      );
+
+      if (refillLineItems.length > 0) {
+        // Prepare validation request for refill purchases
+        const validationLineItems = [];
+        
+        for (const item of refillLineItems) {
+          const product = await prisma.product.findFirst({
+            where: { id: item.productId, tenantId },
+            include: { cylinderSize: true },
+          });
+
+          if (!product || !product.cylinderSize) {
+            return NextResponse.json(
+              { error: `Product not found or missing cylinder size: ${item.productId}` },
+              { status: 404 }
+            );
+          }
+
+          validationLineItems.push({
+            productId: item.productId,
+            cylinderSize: product.cylinderSize.size,
+            quantity: item.quantity,
+          });
+        }
+
+        const validation = await cylinderValidator.validateShipmentInventory({
+          tenantId,
+          shipmentType: 'INCOMING_FULL',
+          lineItems: validationLineItems,
+          shipmentDate: new Date(shipmentDate),
+        });
+
+        if (!validation.isValid) {
+          return NextResponse.json(
+            {
+              error: 'Insufficient cylinder inventory for refill purchases',
+              details: validation.errors,
+              warnings: validation.warnings,
+              inventoryDetails: validation.inventoryDetails,
+            },
+            { status: 400 }
+          );
+        }
+
+        // Include warnings in response if validation passed but has warnings
+        if (validation.warnings.length > 0) {
+          console.warn('Refill purchase warnings:', validation.warnings);
+        }
+      }
+
       // Create shipments for each line item
       const createdShipments = [];
 
@@ -295,6 +353,9 @@ export async function POST(request: NextRequest) {
     const tenantId = session.user.tenantId;
     const userId = session.user.id;
 
+    // Initialize cylinder inventory validator for empty cylinder transactions
+    const cylinderValidator = new CylinderInventoryValidator(prisma);
+
     // Verify company and product/cylinderSize belong to tenant
     const verificationPromises = [];
 
@@ -372,6 +433,65 @@ export async function POST(request: NextRequest) {
 
     if (companyId && !company) {
       return NextResponse.json({ error: 'Company not found' }, { status: 404 });
+    }
+
+    // Validate inventory for empty cylinder transactions
+    if (isEmptyTransaction && shipmentType === 'OUTGOING_EMPTY') {
+      // Get the cylinder size for validation
+      let cylinderSizeForValidation: string;
+      
+      if (cylinderSize) {
+        cylinderSizeForValidation = (cylinderSize as any).size;
+      } else if (product) {
+        // Get cylinder size from product
+        const productWithSize = await prisma.product.findFirst({
+          where: { id: actualProductId, tenantId },
+          include: { cylinderSize: true },
+        });
+        
+        if (!productWithSize || !productWithSize.cylinderSize) {
+          return NextResponse.json(
+            { error: 'Product missing cylinder size information for validation' },
+            { status: 404 }
+          );
+        }
+        cylinderSizeForValidation = productWithSize.cylinderSize.size;
+      } else {
+        return NextResponse.json(
+          { error: 'Cannot determine cylinder size for validation' },
+          { status: 400 }
+        );
+      }
+
+      const validation = await cylinderValidator.validateShipmentInventory({
+        tenantId,
+        shipmentType: 'OUTGOING_EMPTY',
+        lineItems: [
+          {
+            productId: actualProductId,
+            cylinderSize: cylinderSizeForValidation,
+            quantity,
+          },
+        ],
+        shipmentDate: shipmentDate ? new Date(shipmentDate) : new Date(),
+      });
+
+      if (!validation.isValid) {
+        return NextResponse.json(
+          {
+            error: 'Insufficient empty cylinder inventory for shipment',
+            details: validation.errors,
+            warnings: validation.warnings,
+            inventoryDetails: validation.inventoryDetails,
+          },
+          { status: 400 }
+        );
+      }
+
+      // Log warnings if any
+      if (validation.warnings.length > 0) {
+        console.warn('Empty cylinder shipment warnings:', validation.warnings);
+      }
     }
 
     const totalCost = unitCost ? unitCost * quantity : null;

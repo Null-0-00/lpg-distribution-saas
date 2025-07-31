@@ -5,7 +5,7 @@ import {
   TranslationError,
   TranslationErrorType,
   ValidationResult,
-  ConsistencyReport,
+  ConsistencyReport
 } from './translation-validator';
 
 export interface Translations {
@@ -1130,8 +1130,68 @@ export interface Translations {
   longTermLiability: string;
   editLiability: string;
   deleteLiability: string;
-  editAssetTitle: string;
+
+  // Additional assets page translations
+  asset: string;
+  liabilityWord: string;
+  autoCalculated: string;
+  autoCalculatedFromInventory: string;
+
+  setUnitPrice: string;
+  editable: string;
+  autoCalculatedCurrentAssets: string;
+  noAutoCalculatedAssetsFound: string;
+  autoCalculatedAssetsDescription: string;
+  updated: string;
+
+  successfully: string;
+  failedToUpdateCreateEntry: string;
+  assetPlaceholder: string;
+  realTimeValuesLinkedToBusinessOperations: string;
+
+  // Balance Sheet and Quick Actions
+  balanceSheetSummary: string;
+  totalAssets: string;
+  totalLiabilities: string;
+  netEquity: string;
+  quickAddAsset: string;
+  addNewAssetToPortfolio: string;
+  addAsset: string;
+  quickAddLiability: string;
+  addNewLiabilityToRecords: string;
   addLiability: string;
+
+  // Asset descriptions
+
+  outstandingCashReceivablesFromDrivers: string;
+
+  cashInHand: string;
+  availableCashCalculatedFromDeposits: string;
+
+  // Depreciation schedule
+  assetDepreciationSchedule: string;
+  assetsWithDepreciationRates: string;
+  originalCost: string;
+  purchaseDate: string;
+  depreciationMethod: string;
+  annualRate: string;
+  yearsOwned: string;
+  accumulated: string;
+  currentValue: string;
+  noAssetsWithDepreciationFound: string;
+  addAssetsWithPurchaseDates: string;
+  addDepreciableAsset: string;
+
+  // Other missing translations
+
+  loan: string;
+
+  // Asset name translations
+  cashReceivablesAsset: string;
+  cashInHandAsset: string;
+
+  editAssetTitle: string;
+
   editLiabilityTitle: string;
   enterAssetName: string;
   enterLiabilityName: string;
@@ -1142,13 +1202,12 @@ export interface Translations {
   assetUpdatedSuccessfully: string;
   liabilityUpdatedSuccessfully: string;
   liabilityCreatedSuccessfully: string;
-  purchaseDate: string;
+
   depreciationRate: string;
   subCategory: string;
-  autoCalculated: string;
+
   noAssetsFound: string;
   noLiabilitiesFound: string;
-  addAsset: string;
 
   // Missing inventory page translations
   trackAndManageYourCylinderInventory: string;
@@ -2034,7 +2093,7 @@ const englishTranslations: Translations = {
   last15Minutes: 'শেষ ১৫ মিনিট',
   targetProgress: 'লক্ষ্যের অগ্রগতি',
   performanceIndicators: 'পারফরম্যান্স সূচক',
-  inventoryHealth: 'ইনভেন্টরি পরিস্থিতি',
+  inventoryHealth: 'মজুদ পরিস্থিতি',
   attentionNeeded: 'মনোযোগ প্রয়োজন',
   good: 'Good',
   collectionRate: 'সংগ্রহের হার',
@@ -2271,6 +2330,45 @@ const englishTranslations: Translations = {
   noEmptyCylindersAvailable: 'No empty cylinders available',
   automatedInventoryCalculationsForCylinders:
     'Automated inventory calculations for cylinders',
+  asset: 'Asset',
+  liabilityWord: 'Liability',
+  autoCalculatedFromInventory: 'Auto-calculated from inventory',
+  setUnitPrice: 'Set unit price',
+  editable: 'Editable',
+  autoCalculatedCurrentAssets: 'Auto-Calculated Current Assets',
+  noAutoCalculatedAssetsFound: 'No auto-calculated current assets found.',
+  autoCalculatedAssetsDescription: 'Auto-calculated assets like inventory and receivables will appear here.',
+  updated: 'updated',
+  successfully: 'successfully',
+  failedToUpdateCreateEntry: 'Failed to update/create entry',
+  assetPlaceholder: 'e.g., Vehicles, Equipment, Inventory',
+  realTimeValuesLinkedToBusinessOperations: 'Real-time values linked to business operations',
+  balanceSheetSummary: 'Balance Sheet Summary',
+  totalAssets: 'Total Assets',
+  totalLiabilities: 'Total Liabilities',
+  netEquity: 'Net Equity',
+  quickAddAsset: 'Quick Add Asset',
+  addNewAssetToPortfolio: 'Add a new asset to your company portfolio',
+  quickAddLiability: 'Quick Add Liability',
+  addNewLiabilityToRecords: 'Add a new liability to your company records',
+  cashReceivablesAsset: 'Cash Receivables',
+  cashInHandAsset: 'Cash in Hand',
+  assetDepreciationSchedule: 'Asset Depreciation Schedule',
+  assetsWithDepreciationRates: 'Assets with depreciation rates and accumulated depreciation',
+  originalCost: 'Original Cost',
+  depreciationMethod: 'Depreciation Method',
+  annualRate: 'Annual Rate',
+  yearsOwned: 'Years Owned',
+  accumulated: 'Accumulated',
+  currentValue: 'Current Value',
+  noAssetsWithDepreciationFound: 'No assets with depreciation found.',
+  addAssetsWithPurchaseDates: 'Add assets with purchase dates and depreciation rates to see their depreciation schedule.',
+  addDepreciableAsset: 'Add Depreciable Asset',
+  loan: 'Loan',
+  outstandingCashReceivablesFromDrivers: 'Outstanding cash receivables from drivers',
+  cashInHand: 'Cash in Hand',
+  availableCashCalculatedFromDeposits: 'Available cash calculated from deposits minus expenses'
+
 };
 
 const bengaliTranslations: Translations = {
@@ -2279,11 +2377,11 @@ const bengaliTranslations: Translations = {
   sales: 'বিক্রয়',
   drivers: 'চালক',
   shipments: 'চালান',
-  receivables: 'বাকি',
+
   assets: 'সম্পদ',
   expenses: 'খরচ',
   settings: 'সেটিংস',
-  inventory: 'মজুদ',
+
   users: 'ব্যবহারকারী',
   reports: 'রিপোর্ট',
   productManagement: 'পণ্য ব্যবস্থাপনা',
@@ -2392,7 +2490,7 @@ const bengaliTranslations: Translations = {
   status: 'অবস্থা',
   type: 'ধরন',
   category: 'বিভাগ',
-  active: 'সক্রিয়',
+
   inactive: 'নিষ্ক্রিয়',
   editCompany: 'কোম্পানি সম্পাদনা',
   deleteCompany: 'কোম্পানি মুছুন',
@@ -2535,7 +2633,7 @@ const bengaliTranslations: Translations = {
   unitValue: 'একক মূল্য',
   netValue: 'নেট মূল্য',
   liability: 'দায়',
-  monthlyPayment: 'মাসিক পরিশোধ',
+
   fixedAsset: 'স্থায়ী সম্পদ',
   currentAsset: 'চলতি সম্পদ',
   currentLiability: 'চলতি দায়',
@@ -2544,7 +2642,77 @@ const bengaliTranslations: Translations = {
   deleteAsset: 'সম্পদ মুছুন',
   editLiability: 'দায় সম্পাদনা',
   deleteLiability: 'দায় মুছুন',
-  assetDeletedSuccessfully: 'সম্পদ সফলভাবে মুছে ফেলা হয়েছে!',
+
+  // Additional assets page translations
+  asset: 'সম্পদ',
+  liabilityWord: 'দায়',
+
+  autoCalculatedFromInventory: 'মজুদ থেকে স্বয়ংক্রিয় গণনা',
+
+  setUnitPrice: 'একক মূল্য নির্ধারণ করুন',
+  editable: 'সম্পাদনাযোগ্য',
+  autoCalculatedCurrentAssets: 'স্বয়ংক্রিয় গণনাকৃত চলতি সম্পদ',
+  noAutoCalculatedAssetsFound: 'কোনো স্বয়ংক্রিয় গণনাকৃত সম্পদ পাওয়া যায়নি।',
+  autoCalculatedAssetsDescription:
+    'মজুদ এবং প্রাপ্যের মতো স্বয়ংক্রিয় গণনাকৃত সম্পদ এখানে প্রদর্শিত হবে।',
+  updated: 'আপডেট করা হয়েছে',
+
+  successfully: 'সফলভাবে',
+  failedToUpdateCreateEntry: 'এন্ট্রি আপডেট/তৈরি করতে ব্যর্থ',
+  assetPlaceholder: 'যেমন, যানবাহন, সরঞ্জাম, মজুদ',
+  realTimeValuesLinkedToBusinessOperations:
+    'ব্যবসায়িক কার্যক্রমের সাথে সংযুক্ত রিয়েল-টাইম মান',
+
+  // Balance Sheet and Quick Actions
+  balanceSheetSummary: 'ব্যালেন্স শীট সারাংশ',
+  totalAssets: 'মোট সম্পদ',
+  totalLiabilities: 'মোট দায়',
+  netEquity: 'নেট ইক্যুইটি',
+  quickAddAsset: 'দ্রুত সম্পদ যোগ',
+  addNewAssetToPortfolio:
+    'আপনার কোম্পানির পোর্টফোলিওতে একটি নতুন সম্পদ যোগ করুন',
+
+  quickAddLiability: 'দ্রুত দায় যোগ',
+  addNewLiabilityToRecords: 'আপনার কোম্পানির রেকর্ডে একটি নতুন দায় যোগ করুন',
+
+  // Asset descriptions
+  outstandingCashReceivablesFromDrivers: 'চালকদের কাছ থেকে বকেয়া নগদ প্রাপ্য',
+  cashInHand: 'হাতে নগদ',
+  availableCashCalculatedFromDeposits: 'জমা থেকে খরচ বিয়োগ করে গণনা করা উপলব্ধ নগদ',
+
+  // Depreciation schedule
+  assetDepreciationSchedule: 'সম্পদ অবচয় তালিকা',
+  assetsWithDepreciationRates: 'অবচয় হার এবং সঞ্চিত অবচয় সহ সম্পদ',
+  originalCost: 'মূল খরচ',
+
+  depreciationMethod: 'অবচয় পদ্ধতি',
+  annualRate: 'বার্ষিক হার',
+  yearsOwned: 'মালিকানার বছর',
+  accumulated: 'সঞ্চিত',
+  currentValue: 'বর্তমান মূল্য',
+  noAssetsWithDepreciationFound: 'অবচয় সহ কোনো সম্পদ পাওয়া যায়নি।',
+  addAssetsWithPurchaseDates:
+    'তাদের অবচয় তালিকা দেখতে ক্রয়ের তারিখ এবং অবচয় হার সহ সম্পদ যোগ করুন।',
+  addDepreciableAsset: 'অবচয়যোগ্য সম্পদ যোগ করুন',
+
+  // Other missing translations
+
+  loan: 'ঋণ',
+
+  // Asset name translations
+  cashReceivablesAsset: 'নগদ প্রাপ্য',
+  cashInHandAsset: 'হাতে নগদ',
+  receivables: 'প্রাপ্য',
+  inventory: 'মজুদ',
+  active: 'সক্রিয়',
+  cash: 'নগদ',
+  cashReceivables: 'নগদ প্রাপ্য',
+  created: 'তৈরি করা হয়েছে',
+  autoCalculated: 'স্বয়ংক্রিয় গণনা',
+  addAsset: 'সম্পদ যোগ করুন',
+  addLiability: 'দায় যোগ করুন',
+  purchaseDate: 'ক্রয়ের তারিখ',
+  monthlyPayment: 'মাসিক পরিশোধ', assetDeletedSuccessfully: 'সম্পদ সফলভাবে মুছে ফেলা হয়েছে!',
   liabilityDeletedSuccessfully: 'দায় সফলভাবে মুছে ফেলা হয়েছে!',
   unitValueUpdatedSuccessfully: 'ইউনিট মূল্য সফলভাবে আপডেট হয়েছে!',
   assetCreatedSuccessfully: 'সম্পদ সফলভাবে তৈরি হয়েছে!',
@@ -2565,18 +2733,18 @@ const bengaliTranslations: Translations = {
     'দেনা আপডেট করতে ব্যর্থ। অনুগ্রহ করে আবার চেষ্টা করুন।',
   areYouSureDeleteAsset: 'আপনি কি নিশ্চিত যে এই সম্পদটি মুছে ফেলতে চান?',
   areYouSureDeleteLiability: 'আপনি কি নিশ্চিত যে এই দায়টি মুছে ফেলতে চান?',
-  purchaseDate: 'ক্রয়ের তারিখ',
+
   depreciationRate: 'অবচয়ের হার',
   subCategory: 'উপ-বিভাগ',
-  autoCalculated: 'স্বয়ংক্রিয়ভাবে গণনা করা',
+
   auto: 'স্বয়ংক্রিয়',
   noAssetsFound:
     'কোনো সম্পদ পাওয়া যায়নি। শুরু করতে "সম্পদ/দায় যোগ করুন" ক্লিক করুন।',
   noLiabilitiesFound:
     'কোনো দায় পাওয়া যায়নি। শুরু করতে "সম্পদ/দায় যোগ করুন" ক্লিক করুন।',
-  addAsset: 'সম্পদ যোগ করুন',
+
   editAssetTitle: 'সম্পদ সম্পাদনা করুন',
-  addLiability: 'দেনা যোগ করুন',
+
   editLiabilityTitle: 'দেনা সম্পাদনা করুন',
   enterAssetName: 'সম্পদের নাম লিখুন',
   enterLiabilityName: 'দেনার নাম লিখুন',
@@ -2595,7 +2763,7 @@ const bengaliTranslations: Translations = {
   cylinder: 'সিলিন্ডার',
   cylinders: 'সিলিন্ডার',
   products: 'পণ্য',
-  cash: 'নগদ',
+
   cashDepositsByDriver: 'চালক অনুযায়ী নগদ জমা',
   includesReceivablePayments: 'প্রাপ্য পেমেন্ট অন্তর্ভুক্ত',
   driverExpense: 'চালক খরচ',
@@ -2649,7 +2817,7 @@ const bengaliTranslations: Translations = {
   assignedArea: 'নির্ধারিত এলাকা',
   balanceSheet: 'ব্যালেন্স শিট',
   businessFormulaImplementation: 'ব্যবসায়িক ফর্মুলা প্রয়োগ',
-  cashReceivables: 'নগদ প্রাপ্য',
+
   changesLog: 'পরিবর্তন লগ',
   checkStock: 'চেক স্টক',
   clear: 'পরিষ্কার',
@@ -2695,7 +2863,7 @@ const bengaliTranslations: Translations = {
   emailAddress: 'ই-মেইল ঠিকানা',
   emergencyContact: 'জরুরী যোগাযোগ',
   emptyCylinderInventoryAvailability: 'খালি সিলিন্ডারের মজুদ প্রাপ্যতা',
-  emptyCylinders: 'খালি সিলিন্ডার',
+
   emptyCylindersBuySell: 'খালি সিলিন্ডার ক্রয়/বিক্রয়',
   emptyCylindersInHand: 'স্টকে খালি সিলিন্ডার',
   emptyCylinderReceivables: 'খালি সিলিন্ডার বাকি',
@@ -2733,7 +2901,7 @@ const bengaliTranslations: Translations = {
   fri: 'শুক্র',
   from: 'থেকে',
   fullAccess: 'পূর্ণ অ্যাক্সেস',
-  fullCylinders: 'ভরা সিলিন্ডার',
+
   fullName: 'পূর্ণ নাম',
   generalSettings: 'সাধারণ সেটিংস',
   getStartedByAddingFirstExpense: 'আপনার প্রথম খরচ যোগ করে শুরু করুন।',
@@ -3147,7 +3315,7 @@ const bengaliTranslations: Translations = {
   last15Minutes: 'শেষ ১৫ মিনিট',
   targetProgress: 'লক্ষ্যের অগ্রগতি',
   performanceIndicators: 'পারফরম্যান্স সূচক',
-  inventoryHealth: 'ইনভেন্টরি পরিস্থিতি',
+  inventoryHealth: 'মজুদ পরিস্থিতি',
   attentionNeeded: 'মনোযোগ প্রয়োজন',
   good: 'ভাল',
   collectionRate: 'সংগ্রহের হার',
@@ -3369,13 +3537,13 @@ const bengaliTranslations: Translations = {
   totalStock: 'মোট স্টক',
   companies: 'কোম্পানিসমূহ',
   searchProducts: 'অনুসন্ধান পণ্য',
-  created: 'তৈরি হয়েছে',
+
   cylinderSizeDeletedSuccessfully: 'সিলিন্ডারের মাপ সফলভাবে মুছে ফেলা হয়েছে।',
 
   // Missing inventory page translations
   trackAndManageYourCylinderInventory:
-    'আপনার সিলিন্ডার ইনভেন্টরি ট্র্যাক এবং পরিচালনা করুন',
-  noInventoryDataAvailable: 'কোনো ইনভেন্টরি ডেটা উপলব্ধ নেই',
+    'আপনার সিলিন্ডার মজুদ ট্র্যাক এবং পরিচালনা করুন',
+  noInventoryDataAvailable: 'কোনো মজুদ ডেটা উপলব্ধ নেই',
   hideMovements: 'মুভমেন্ট লুকান',
   showMovements: 'মুভমেন্ট দেখান',
   fromDrivers: 'চালকদের থেকে',
@@ -3383,14 +3551,17 @@ const bengaliTranslations: Translations = {
   noFullCylindersAvailable: 'কোনো পূর্ণ সিলিন্ডার উপলব্ধ নেই',
   noEmptyCylindersAvailable: 'কোনো খালি সিলিন্ডার উপলব্ধ নেই',
   automatedInventoryCalculationsForCylinders:
-    'সিলিন্ডারের জন্য স্বয়ংক্রিয় ইনভেন্টরি গণনা',
+    'সিলিন্ডারের জন্য স্বয়ংক্রিয় মজুদ গণনা',
+  emptyCylinders: 'খালি সিলিন্ডার',
+  fullCylinders: 'পূর্ণ সিলিন্ডার'
+
 };
 
 const translationMap: Record<string, Translations> = {
   en: englishTranslations,
   bn: bengaliTranslations,
   'en-US': englishTranslations,
-  'bn-BD': bengaliTranslations,
+  'bn-BD': bengaliTranslations
 };
 
 // Initialize enhanced translation system
@@ -3438,7 +3609,7 @@ export function validateTranslationCompleteness(language: string): {
     missingKeys,
     totalKeys: allKeys.length,
     translatedKeys,
-    completionPercentage: Math.round((translatedKeys / allKeys.length) * 100),
+    completionPercentage: Math.round((translatedKeys / allKeys.length) * 100)
   };
 }
 
@@ -3504,13 +3675,13 @@ export {
   TranslationValidator,
   TranslationFallbackSystem,
   translationLogger,
-  TranslationErrorType,
+  TranslationErrorType
 } from './translation-validator';
 
 export type {
   TranslationError,
   ValidationResult,
-  ConsistencyReport,
+  ConsistencyReport
 } from './translation-validator';
 
 // Export default translations for backward compatibility

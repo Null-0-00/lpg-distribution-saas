@@ -120,9 +120,11 @@ export default function AssetsPage() {
   const [editingItem, setEditingItem] = useState<Asset | Liability | null>(
     null
   );
-  
+
   // State for cylinder unit prices
-  const [cylinderUnitPrices, setCylinderUnitPrices] = useState<{[key: string]: number}>({});
+  const [cylinderUnitPrices, setCylinderUnitPrices] = useState<{
+    [key: string]: number;
+  }>({});
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalType, setModalType] = useState<'asset' | 'liability'>('asset');
@@ -146,11 +148,12 @@ export default function AssetsPage() {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const [assetsResponse, liabilitiesResponse, cylindersResponse] = await Promise.all([
-        fetch('/api/assets?includeAutoCalculated=true'),
-        fetch('/api/liabilities'),
-        fetch('/api/inventory/cylinders-summary'),
-      ]);
+      const [assetsResponse, liabilitiesResponse, cylindersResponse] =
+        await Promise.all([
+          fetch('/api/assets?includeAutoCalculated=true'),
+          fetch('/api/liabilities'),
+          fetch('/api/inventory/cylinders-summary'),
+        ]);
 
       if (assetsResponse.ok && liabilitiesResponse.ok) {
         const assetsData = await assetsResponse.json();
@@ -187,39 +190,48 @@ export default function AssetsPage() {
   };
 
   // Helper functions for cylinder calculations using useCallback
-  const getCylinderUnitPrice = useCallback((cylinderKey: string): number => {
-    return cylinderUnitPrices[cylinderKey] || 0;
-  }, [cylinderUnitPrices]);
+  const getCylinderUnitPrice = useCallback(
+    (cylinderKey: string): number => {
+      return cylinderUnitPrices[cylinderKey] || 0;
+    },
+    [cylinderUnitPrices]
+  );
 
-  const calculateCylinderValue = useCallback((quantity: number, cylinderKey: string): number => {
-    return quantity * (cylinderUnitPrices[cylinderKey] || 0);
-  }, [cylinderUnitPrices]);
+  const calculateCylinderValue = useCallback(
+    (quantity: number, cylinderKey: string): number => {
+      return quantity * (cylinderUnitPrices[cylinderKey] || 0);
+    },
+    [cylinderUnitPrices]
+  );
 
-  const updateCylinderUnitPrice = useCallback((cylinderKey: string, unitPrice: number) => {
-    setCylinderUnitPrices(prev => ({
-      ...prev,
-      [cylinderKey]: unitPrice
-    }));
-  }, []);
+  const updateCylinderUnitPrice = useCallback(
+    (cylinderKey: string, unitPrice: number) => {
+      setCylinderUnitPrices((prev) => ({
+        ...prev,
+        [cylinderKey]: unitPrice,
+      }));
+    },
+    []
+  );
 
   // Calculate cylinder asset values
   const totalCylinderAssets = useMemo(() => {
     let total = 0;
-    
+
     // Add full cylinders value
-    cylindersSummaryData?.fullCylinders?.forEach(item => {
+    cylindersSummaryData?.fullCylinders?.forEach((item) => {
       const cylinderKey = `full-${item.company}-${item.size}`;
       const unitPrice = cylinderUnitPrices[cylinderKey] || 0;
       total += item.quantity * unitPrice;
     });
-    
+
     // Add empty cylinders value
-    cylindersSummaryData?.emptyCylinders?.forEach(item => {
+    cylindersSummaryData?.emptyCylinders?.forEach((item) => {
       const cylinderKey = `empty-${item.size}`;
       const unitPrice = cylinderUnitPrices[cylinderKey] || 0;
       total += item.emptyCylindersInHand * unitPrice;
     });
-    
+
     return total;
   }, [cylindersSummaryData, cylinderUnitPrices]);
 
@@ -252,6 +264,39 @@ export default function AssetsPage() {
     }, 0);
 
   const isAdmin = session?.user?.role === 'ADMIN';
+
+  // Helper function to translate asset names and descriptions
+  const translateAssetName = (name: string): string => {
+    const translations: { [key: string]: string } = {
+      'Cash Receivables': t('cashReceivablesAsset'),
+      'Cash in Hand': t('cashInHandAsset'),
+    };
+
+    // Handle cylinder names with dynamic company and size
+    if (name.startsWith('Full Cylinders - ')) {
+      const parts = name.replace('Full Cylinders - ', '');
+      return `${t('fullCylinders')} - ${parts}`;
+    }
+    if (name.startsWith('Empty Cylinders - ')) {
+      const parts = name.replace('Empty Cylinders - ', '');
+      return `${t('emptyCylinders')} - ${parts}`;
+    }
+
+    return translations[name] || name;
+  };
+
+  const translateAssetDescription = (description: string | undefined): string => {
+    if (!description) return '';
+    const translations: { [key: string]: string } = {
+      'Outstanding cash receivables from drivers': t(
+        'outstandingCashReceivablesFromDrivers'
+      ),
+      'Available cash calculated from deposits minus expenses': t(
+        'availableCashCalculatedFromDeposits'
+      ),
+    };
+    return translations[description] || description;
+  };
 
   const getCategoryColor = (category: string) => {
     const colors: { [key: string]: string } = {
@@ -361,15 +406,13 @@ export default function AssetsPage() {
       if (response.ok) {
         toast({
           title: t('success'),
-          description: `${modalType === 'asset' ? 'Asset' : 'Liability'} ${isEditing ? 'updated' : 'created'} successfully!`,
+          description: `${modalType === 'asset' ? t('asset') : t('liabilityWord')} ${isEditing ? t('updated') : t('created')} ${t('successfully')}!`,
         });
         closeModal();
         fetchData(); // refresh the data
       } else {
         const error = await response.json();
-        throw new Error(
-          error.message || `Failed to ${isEditing ? 'update' : 'create'} entry`
-        );
+        throw new Error(error.message || t('failedToUpdateCreateEntry'));
       }
     } catch (error) {
       console.error(
@@ -699,11 +742,11 @@ export default function AssetsPage() {
                   <tr key={asset.id} className="hover:bg-muted/50">
                     <td className="whitespace-nowrap px-6 py-4">
                       <div className="text-foreground text-sm font-medium">
-                        {asset.name}
+                        {translateAssetName(asset.name)}
                       </div>
                       {asset.description && (
                         <div className="text-muted-foreground text-xs">
-                          {asset.description}
+                          {translateAssetDescription(asset.description)}
                         </div>
                       )}
                     </td>
@@ -806,7 +849,7 @@ export default function AssetsPage() {
                         )}
                         {asset.isAutoCalculated && (
                           <span className="text-xs text-gray-500">
-                            Auto-calculated
+                            {t('autoCalculated')}
                           </span>
                         )}
                       </td>
@@ -814,29 +857,32 @@ export default function AssetsPage() {
                   </tr>
                 );
               })}
-              
+
               {/* Render cylinder assets from inventory */}
               {cylindersSummaryData?.fullCylinders?.map((item, index) => {
                 const cylinderKey = `full-${item.company}-${item.size}`;
                 const unitPrice = getCylinderUnitPrice(cylinderKey);
-                const totalValue = calculateCylinderValue(item.quantity, cylinderKey);
-                
+                const totalValue = calculateCylinderValue(
+                  item.quantity,
+                  cylinderKey
+                );
+
                 return (
                   <tr key={cylinderKey} className="hover:bg-muted/50">
                     <td className="whitespace-nowrap px-6 py-4">
                       <div className="text-foreground text-sm font-medium">
-                        Full Cylinders - {item.company} {item.size}
+                        {t('fullCylinders')} - {item.company} {item.size}
                       </div>
                       <div className="text-muted-foreground text-xs">
-                        Auto-calculated from inventory
+                        {t('autoCalculatedFromInventory')}
                       </div>
                     </td>
                     <td className="whitespace-nowrap px-6 py-4">
-                      <span className="inline-flex rounded-full px-2 py-1 text-xs font-semibold bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
-                        Current Asset
+                      <span className="inline-flex rounded-full bg-blue-100 px-2 py-1 text-xs font-semibold text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                        {t('currentAsset')}
                       </span>
                       <div className="text-muted-foreground mt-1 text-xs">
-                        Inventory
+                        {t('inventory')}
                       </div>
                     </td>
                     <td className="text-foreground whitespace-nowrap px-6 py-4 text-sm">
@@ -873,9 +919,7 @@ export default function AssetsPage() {
                           </div>
                         ) : (
                           <div className="flex items-center space-x-2">
-                            <span>
-                              {formatCurrency(unitPrice)}
-                            </span>
+                            <span>{formatCurrency(unitPrice)}</span>
                             <button
                               onClick={() => {
                                 setEditingAsset(cylinderKey);
@@ -892,7 +936,7 @@ export default function AssetsPage() {
                           <span>{formatCurrency(unitPrice)}</span>
                           {unitPrice === 0 && (
                             <div className="text-muted-foreground text-xs">
-                              Set unit price
+                              {t('setUnitPrice')}
                             </div>
                           )}
                         </div>
@@ -910,35 +954,38 @@ export default function AssetsPage() {
                     {isAdmin && (
                       <td className="whitespace-nowrap px-6 py-4 text-sm">
                         <span className="text-xs text-blue-500">
-                          Editable
+                          {t('editable')}
                         </span>
                       </td>
                     )}
                   </tr>
                 );
               })}
-              
+
               {cylindersSummaryData?.emptyCylinders?.map((item, index) => {
                 const cylinderKey = `empty-${item.size}`;
                 const unitPrice = getCylinderUnitPrice(cylinderKey);
-                const totalValue = calculateCylinderValue(item.emptyCylindersInHand, cylinderKey);
-                
+                const totalValue = calculateCylinderValue(
+                  item.emptyCylindersInHand,
+                  cylinderKey
+                );
+
                 return (
                   <tr key={cylinderKey} className="hover:bg-muted/50">
                     <td className="whitespace-nowrap px-6 py-4">
                       <div className="text-foreground text-sm font-medium">
-                        Empty Cylinders - {item.size}
+                        {t('emptyCylinders')} - {item.size}
                       </div>
                       <div className="text-muted-foreground text-xs">
-                        Auto-calculated from inventory
+                        {t('autoCalculatedFromInventory')}
                       </div>
                     </td>
                     <td className="whitespace-nowrap px-6 py-4">
-                      <span className="inline-flex rounded-full px-2 py-1 text-xs font-semibold bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
-                        Current Asset
+                      <span className="inline-flex rounded-full bg-blue-100 px-2 py-1 text-xs font-semibold text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                        {t('currentAsset')}
                       </span>
                       <div className="text-muted-foreground mt-1 text-xs">
-                        Inventory
+                        {t('inventory')}
                       </div>
                     </td>
                     <td className="text-foreground whitespace-nowrap px-6 py-4 text-sm">
@@ -975,9 +1022,7 @@ export default function AssetsPage() {
                           </div>
                         ) : (
                           <div className="flex items-center space-x-2">
-                            <span>
-                              {formatCurrency(unitPrice)}
-                            </span>
+                            <span>{formatCurrency(unitPrice)}</span>
                             <button
                               onClick={() => {
                                 setEditingAsset(cylinderKey);
@@ -994,7 +1039,7 @@ export default function AssetsPage() {
                           <span>{formatCurrency(unitPrice)}</span>
                           {unitPrice === 0 && (
                             <div className="text-muted-foreground text-xs">
-                              Set unit price
+                              {t('setUnitPrice')}
                             </div>
                           )}
                         </div>
@@ -1012,25 +1057,27 @@ export default function AssetsPage() {
                     {isAdmin && (
                       <td className="whitespace-nowrap px-6 py-4 text-sm">
                         <span className="text-xs text-blue-500">
-                          Editable
+                          {t('editable')}
                         </span>
                       </td>
                     )}
                   </tr>
                 );
               })}
-              
-              {assets.length === 0 && (!cylindersSummaryData?.fullCylinders?.length && !cylindersSummaryData?.emptyCylinders?.length) && (
-                <tr>
-                  <td
-                    colSpan={isAdmin ? 8 : 7}
-                    className="text-muted-foreground px-6 py-4 text-center"
-                  >
-                    No assets found. Click "{t('addAssetsLiabilities')}" to get
-                    started.
-                  </td>
-                </tr>
-              )}
+
+              {assets.length === 0 &&
+                !cylindersSummaryData?.fullCylinders?.length &&
+                !cylindersSummaryData?.emptyCylinders?.length && (
+                  <tr>
+                    <td
+                      colSpan={isAdmin ? 8 : 7}
+                      className="text-muted-foreground px-6 py-4 text-center"
+                    >
+                      No assets found. Click "{t('addAssetsLiabilities')}" to
+                      get started.
+                    </td>
+                  </tr>
+                )}
             </tbody>
           </table>
         </div>
@@ -1101,11 +1148,11 @@ export default function AssetsPage() {
                       : t('notAvailable')}
                   </td>
                   <td className="text-foreground whitespace-nowrap px-6 py-4 text-sm">
-                    N/A
+                    {t('notAvailable')}
                   </td>
                   <td className="whitespace-nowrap px-6 py-4">
                     <span className="inline-flex rounded-full bg-green-100 px-2 py-1 text-xs font-semibold text-green-800 dark:bg-green-900 dark:text-green-200">
-                      ACTIVE
+                      {t('active').toUpperCase()}
                     </span>
                   </td>
                   {isAdmin && (
@@ -1149,12 +1196,12 @@ export default function AssetsPage() {
       {/* Balance Sheet Summary */}
       <div className="bg-card rounded-lg p-6 shadow">
         <h3 className="text-foreground mb-4 text-lg font-semibold">
-          Balance Sheet Summary
+          {t('balanceSheetSummary')}
         </h3>
         <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
           <div className="rounded-lg bg-green-50 p-4 text-center dark:bg-green-900/20">
             <h4 className="font-semibold text-green-800 dark:text-green-200">
-              Total Assets
+              {t('totalAssets')}
             </h4>
             <p className="text-2xl font-bold text-green-600">
               {formatCurrency(totalAssets)}
@@ -1162,7 +1209,7 @@ export default function AssetsPage() {
           </div>
           <div className="rounded-lg bg-red-50 p-4 text-center dark:bg-red-900/20">
             <h4 className="font-semibold text-red-800 dark:text-red-200">
-              Total Liabilities
+              {t('totalLiabilities')}
             </h4>
             <p className="text-2xl font-bold text-red-600">
               {formatCurrency(totalLiabilities)}
@@ -1170,7 +1217,7 @@ export default function AssetsPage() {
           </div>
           <div className="rounded-lg bg-blue-50 p-4 text-center dark:bg-blue-900/20">
             <h4 className="font-semibold text-blue-800 dark:text-blue-200">
-              Net Equity
+              {t('netEquity')}
             </h4>
             <p className="text-2xl font-bold text-blue-600">
               {formatCurrency(netWorth)}
@@ -1184,44 +1231,44 @@ export default function AssetsPage() {
         {/* Add New Asset */}
         <div className="bg-card rounded-lg p-6 shadow">
           <h3 className="text-foreground mb-4 text-lg font-semibold">
-            Quick Add Asset
+            {t('quickAddAsset')}
           </h3>
           <p className="text-muted-foreground mb-4">
-            Add a new asset to your company portfolio
+            {t('addNewAssetToPortfolio')}
           </p>
           <button
             onClick={() => openModal('asset')}
             className="w-full rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
           >
-            Add Asset
+            {t('addAsset')}
           </button>
         </div>
 
         {/* Add New Liability */}
         <div className="bg-card rounded-lg p-6 shadow">
           <h3 className="text-foreground mb-4 text-lg font-semibold">
-            Quick Add Liability
+            {t('quickAddLiability')}
           </h3>
           <p className="text-muted-foreground mb-4">
-            Add a new liability to your company records
+            {t('addNewLiabilityToRecords')}
           </p>
           <button
             onClick={() => openModal('liability')}
             className="w-full rounded-md bg-red-600 px-4 py-2 text-white hover:bg-red-700"
           >
-            Add Liability
+            {t('addLiability')}
           </button>
         </div>
       </div>
 
-      {/* Auto-Calculated Current Assets */}
+      {/* {t('autoCalculatedCurrentAssets')} */}
       <div className="bg-card rounded-lg shadow">
         <div className="border-border border-b px-6 py-4">
           <h3 className="text-foreground text-lg font-semibold">
-            Auto-Calculated Current Assets
+            {t('autoCalculatedCurrentAssets')}
           </h3>
           <p className="text-muted-foreground text-sm">
-            Real-time values linked to business operations
+            {t('realTimeValuesLinkedToBusinessOperations')}
           </p>
         </div>
         <div className="p-6">
@@ -1235,7 +1282,7 @@ export default function AssetsPage() {
               >
                 <div className="mb-2 flex items-center justify-between">
                   <h4 className="font-medium text-blue-900 dark:text-blue-200">
-                    {asset.name}
+                    {translateAssetName(asset.name)}
                   </h4>
                   <Package className="h-5 w-5 text-blue-600" />
                 </div>
@@ -1246,7 +1293,7 @@ export default function AssetsPage() {
                   {asset.subCategory}
                 </div>
                 <div className="mt-1 text-xs text-blue-600 dark:text-blue-400">
-                  {asset.description}
+                  {translateAssetDescription(asset.description)}
                 </div>
               </div>
             ))}
@@ -1257,10 +1304,9 @@ export default function AssetsPage() {
               assetsData?.categorized.CURRENT.length === 0) && (
               <div className="text-muted-foreground col-span-full py-8 text-center">
                 <Package className="mx-auto mb-4 h-12 w-12 text-gray-300" />
-                <p>No auto-calculated current assets found.</p>
+                <p>{t('noAutoCalculatedAssetsFound')}</p>
                 <p className="text-sm">
-                  Auto-calculated assets like inventory and receivables will
-                  appear here.
+                  {t('autoCalculatedAssetsDescription')}
                 </p>
               </div>
             )}
@@ -1268,15 +1314,14 @@ export default function AssetsPage() {
         </div>
       </div>
 
-
       {/* Asset Depreciation Management */}
       <div className="bg-card rounded-lg shadow">
         <div className="border-border border-b px-6 py-4">
           <h3 className="text-foreground text-lg font-semibold">
-            Asset Depreciation Schedule
+            {t('assetDepreciationSchedule')}
           </h3>
           <p className="text-muted-foreground text-sm">
-            Assets with depreciation rates and accumulated depreciation
+            {t('assetsWithDepreciationRates')}
           </p>
         </div>
         <div className="overflow-x-auto">
@@ -1287,22 +1332,22 @@ export default function AssetsPage() {
                   Asset
                 </th>
                 <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase">
-                  Original Cost
+                  {t('originalCost')}
                 </th>
                 <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase">
-                  Purchase Date
+                  {t('purchaseDate')}
                 </th>
                 <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase">
-                  Depreciation Method
+                  {t('depreciationMethod')}
                 </th>
                 <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase">
-                  Annual Rate
+                  {t('annualRate')}
                 </th>
                 <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase">
-                  Years Owned
+                  {t('yearsOwned')}
                 </th>
                 <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase">
-                  Accumulated
+                  {t('accumulated')}
                 </th>
                 <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase">
                   Current Value
@@ -1349,7 +1394,7 @@ export default function AssetsPage() {
                     <tr key={asset.id} className="hover:bg-muted/50">
                       <td className="whitespace-nowrap px-6 py-4">
                         <div className="text-foreground text-sm font-medium">
-                          {asset.name}
+                          {translateAssetName(asset.name)}
                         </div>
                         {asset.subCategory && (
                           <div className="text-muted-foreground text-xs">
@@ -1421,17 +1466,16 @@ export default function AssetsPage() {
                   >
                     <div className="flex flex-col items-center space-y-2">
                       <Package className="h-12 w-12 text-gray-300" />
-                      <p>No assets with depreciation found.</p>
+                      <p>{t('noAssetsWithDepreciationFound')}</p>
                       <p className="text-sm">
-                        Add assets with purchase dates and depreciation rates to
-                        see their depreciation schedule.
+                        {t('addAssetsWithPurchaseDates')}
                       </p>
                       {isAdmin && (
                         <button
                           onClick={() => openModal('asset')}
                           className="mt-2 rounded-md bg-blue-600 px-4 py-2 text-sm text-white hover:bg-blue-700"
                         >
-                          Add Depreciable Asset
+                          {t('addDepreciableAsset')}
                         </button>
                       )}
                     </div>
@@ -1451,7 +1495,7 @@ export default function AssetsPage() {
             <div className="grid grid-cols-1 gap-4 text-sm md:grid-cols-3">
               <div className="text-center">
                 <span className="text-muted-foreground">
-                  Total Original Cost:
+                  {t('originalCost')}:
                 </span>
                 <div className="text-foreground font-semibold">
                   {formatCurrency(
@@ -1632,8 +1676,8 @@ export default function AssetsPage() {
                 >
                   {modalType === 'asset' ? (
                     <>
-                      <option value="FIXED_ASSET">Fixed Asset</option>
-                      <option value="CURRENT_ASSET">Current Asset</option>
+                      <option value="FIXED_ASSET">{t('fixedAsset')}</option>
+                      <option value="CURRENT_ASSET">{t('currentAsset')}</option>
                     </>
                   ) : (
                     <>
@@ -1664,7 +1708,7 @@ export default function AssetsPage() {
                         })
                       }
                       className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-                      placeholder="e.g., Vehicles, Equipment, Inventory"
+                      placeholder={t('assetPlaceholder')}
                     />
                   </div>
                   <div>

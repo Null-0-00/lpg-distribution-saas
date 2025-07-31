@@ -396,10 +396,13 @@ async function calculateCurrentAssets(
     });
 
     // Sum cash receivables from latest record of each active driver
-    const totalCashReceivables = driversWithReceivables.reduce((sum, driver) => {
-      const latestRecord = driver.receivableRecords[0];
-      return sum + (latestRecord?.totalCashReceivables || 0);
-    }, 0);
+    const totalCashReceivables = driversWithReceivables.reduce(
+      (sum, driver) => {
+        const latestRecord = driver.receivableRecords[0];
+        return sum + (latestRecord?.totalCashReceivables || 0);
+      },
+      0
+    );
     if (totalCashReceivables > 0) {
       assets.push({
         id: 'auto-cash-receivables',

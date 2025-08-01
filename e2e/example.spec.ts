@@ -23,9 +23,9 @@ test('dashboard requires authentication', async ({ page }) => {
 
   // Wait for any redirects or authentication checks to complete
   await page.waitForLoadState('networkidle');
-  
+
   const currentUrl = page.url();
-  
+
   // Either should redirect to auth page OR not show protected dashboard content
   if (currentUrl.includes('/auth')) {
     // Successfully redirected to auth page
@@ -35,13 +35,16 @@ test('dashboard requires authentication', async ({ page }) => {
     // The dashboard page returns null for unauthenticated users, so sensitive content should not be visible
     const hasSensitiveContent = await Promise.all([
       page.locator('text=Revenue').count(),
-      page.locator('text=Sales Management').count(), 
+      page.locator('text=Sales Management').count(),
       page.locator('text=Quick Actions').count(),
-      page.locator('text=Recent Activity').count()
+      page.locator('text=Recent Activity').count(),
     ]);
-    
-    const totalSensitiveElements = hasSensitiveContent.reduce((sum, count) => sum + count, 0);
-    
+
+    const totalSensitiveElements = hasSensitiveContent.reduce(
+      (sum, count) => sum + count,
+      0
+    );
+
     // Should not show sensitive dashboard content to unauthenticated users
     expect(totalSensitiveElements).toBe(0);
   }

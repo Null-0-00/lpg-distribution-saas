@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
+import { validateTenantAccess } from '@/lib/auth/tenant-guard';
 
 export async function GET(
   request: NextRequest,
@@ -9,14 +10,12 @@ export async function GET(
   try {
     const session = await auth();
     const { id } = await params;
-    if (!session) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    const tenantId = validateTenantAccess(session);
 
     const purchaseOrder = await prisma.purchaseOrder.findFirst({
       where: {
         id: id,
-        tenantId: session.user.tenantId,
+        tenantId,
       },
       include: {
         company: true,
@@ -58,9 +57,8 @@ export async function PUT(
   try {
     const session = await auth();
     const { id } = await params;
-    if (!session) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    const tenantId = validateTenantAccess(session);
+    const userId = session!.user.id;
 
     const data = await request.json();
     const {
@@ -71,9 +69,6 @@ export async function PUT(
       priority,
       items,
     } = data;
-
-    const tenantId = session.user.tenantId;
-    const userId = session.user.id;
 
     // Get existing purchase order
     const existingPO = await prisma.purchaseOrder.findFirst({
@@ -228,11 +223,7 @@ export async function DELETE(
   try {
     const session = await auth();
     const { id } = await params;
-    if (!session) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const tenantId = session.user.tenantId;
+    const tenantId = validateTenantAccess(session);
 
     // Check if purchase order exists
     const purchaseOrder = await prisma.purchaseOrder.findFirst({

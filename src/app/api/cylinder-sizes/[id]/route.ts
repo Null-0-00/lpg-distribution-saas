@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
+import { validateTenantAccess } from '@/lib/auth/tenant-guard';
 
 export async function PUT(
   request: NextRequest,
@@ -8,11 +9,7 @@ export async function PUT(
 ) {
   try {
     const session = await auth();
-    if (!session?.user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const { tenantId } = session.user;
+    const tenantId = validateTenantAccess(session);
     const { id } = await params;
     const data = await request.json();
     const { size, description, isActive } = data;
@@ -80,11 +77,7 @@ export async function DELETE(
 ) {
   try {
     const session = await auth();
-    if (!session?.user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const { tenantId } = session.user;
+    const tenantId = validateTenantAccess(session);
     const { id } = await params;
 
     // Check if cylinder size exists and belongs to tenant

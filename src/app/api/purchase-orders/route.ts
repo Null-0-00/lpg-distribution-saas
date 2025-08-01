@@ -1,13 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
+import { validateTenantAccess } from '@/lib/auth/tenant-guard';
 
 export async function GET(request: NextRequest) {
   try {
     const session = await auth();
-    if (!session) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    const tenantId = validateTenantAccess(session);
 
     const { searchParams } = new URL(request.url);
     const status = searchParams.get('status');
@@ -16,8 +15,6 @@ export async function GET(request: NextRequest) {
     const endDate = searchParams.get('endDate');
     const limit = parseInt(searchParams.get('limit') || '50');
     const offset = parseInt(searchParams.get('offset') || '0');
-
-    const tenantId = session.user.tenantId;
 
     const whereClause: any = { tenantId };
 
@@ -104,9 +101,8 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const session = await auth();
-    if (!session) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    const tenantId = validateTenantAccess(session);
+    const userId = session!.user.id;
 
     const data = await request.json();
     const {
@@ -151,9 +147,6 @@ export async function POST(request: NextRequest) {
         );
       }
     }
-
-    const tenantId = session.user.tenantId;
-    const userId = session.user.id;
 
     // Verify company belongs to tenant
     const company = await prisma.company.findFirst({

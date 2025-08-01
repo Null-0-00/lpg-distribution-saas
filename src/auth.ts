@@ -70,6 +70,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                   id: true,
                   name: true,
                   isActive: true,
+                  approvalStatus: true,
                 },
               },
             },
@@ -80,6 +81,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             email: credentials.email,
             userActive: user?.isActive,
             tenantActive: user?.tenant?.isActive,
+            tenantApprovalStatus: user?.tenant?.approvalStatus,
           });
 
           if (!user) {
@@ -87,17 +89,35 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             return null; // Return null instead of throwing
           }
 
-          if (!user.isActive) {
-            console.log('❌ User account deactivated:', user.email);
-            return null; // Return null instead of throwing
-          }
+          // Allow SUPER_ADMIN users to login regardless of tenant status
+          if (user.role === 'SUPER_ADMIN') {
+            console.log('✅ Super admin login allowed');
+          } else {
+            // Check user activation
+            if (!user.isActive) {
+              console.log('❌ User account deactivated:', user.email);
+              return null; // Return null instead of throwing
+            }
 
-          if (!user.tenant?.isActive) {
-            console.log(
-              '❌ Tenant account deactivated for:',
-              user.tenant?.name
-            );
-            return null; // Return null instead of throwing
+            // Check tenant approval status
+            if (user.tenant?.approvalStatus !== 'APPROVED') {
+              console.log(
+                '❌ Tenant not approved:',
+                user.tenant?.name,
+                'Status:',
+                user.tenant?.approvalStatus
+              );
+              return null; // Return null instead of throwing
+            }
+
+            // Check tenant activation
+            if (!user.tenant?.isActive) {
+              console.log(
+                '❌ Tenant account deactivated for:',
+                user.tenant?.name
+              );
+              return null; // Return null instead of throwing
+            }
           }
 
           const isPasswordValid = await bcryptjs.compare(
@@ -146,29 +166,42 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
   callbacks: {
     async jwt({ token, user, trigger }) {
-      // Initial sign in
-      if (user) {
-        console.log('🎫 JWT: Adding user data to token');
-        token.role = user.role;
-        token.tenantId = user.tenantId;
-        token.tenant = user.tenant;
+      try {
+        // Initial sign in
+        if (user) {
+          console.log('🎫 JWT: Adding user data to token');
+          token.role = user.role || 'MANAGER';
+          token.tenantId = user.tenantId || null; // Handle super admin (no tenant)
+          token.tenant = user.tenant || null;
+        }
+        return token;
+      } catch (error) {
+        console.error('🚨 JWT callback error:', error);
+        return token;
       }
-      return token;
     },
 
     async session({ session, token }) {
-      // Send properties to the client
-      if (token && session.user) {
-        console.log('👤 Session: Building user session');
-        session.user.id = token.sub!;
-        session.user.role = token.role as UserRole;
-        session.user.tenantId = token.tenantId as string;
+      try {
+        // Send properties to the client
+        if (token && session.user) {
+          console.log('👤 Session: Building user session');
+          session.user.id = token.sub!;
+          session.user.role = (token.role as UserRole) || 'MANAGER';
+          session.user.tenantId = (token.tenantId as string | null) || null; // Allow null for super admin
+        }
+        return session;
+      } catch (error) {
+        console.error('🚨 Session callback error:', error);
+        return session;
       }
-      return session;
     },
 
     async redirect({ url, baseUrl }) {
-      console.log('🔄 NextAuth redirect:', { url, baseUrl });
+      console.log('🔄 NextAuth redirect:', {
+        url,
+        baseUrl,
+      });
 
       // For relative URLs, make them absolute
       if (url.startsWith('/')) {
@@ -190,7 +223,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         console.warn('⚠️ Invalid URL in redirect:', url);
       }
 
-      // Default fallback
+      // Default redirect to dashboard
+      // Note: Role-based redirect logic moved to middleware
+
+      // Default fallback - dashboard for regular users
       const defaultUrl = `${baseUrl}/dashboard`;
       console.log('🛡️ Fallback redirect:', defaultUrl);
       return defaultUrl;

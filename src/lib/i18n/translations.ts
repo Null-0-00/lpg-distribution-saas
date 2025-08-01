@@ -33,6 +33,13 @@ export interface Translations {
   confirmPassword: string;
   rememberMe: string;
   forgotPassword: string;
+  resetYourPassword: string;
+  enterEmailForPasswordReset: string;
+  passwordResetLinkSent: string;
+  sendResetLink: string;
+  backToSignIn: string;
+  pleaseEnterYourEmailAddress: string;
+  pleaseEnterAValidEmailAddress: string;
   signingIn: string;
   createAccount: string;
   termsOfService: string;
@@ -1362,6 +1369,15 @@ const englishTranslations: Translations = {
   confirmPassword: 'Confirm Password',
   rememberMe: 'Remember me',
   forgotPassword: 'Forgot your password?',
+  resetYourPassword: 'Reset your password',
+  enterEmailForPasswordReset:
+    "Enter your email address and we'll send you a link to reset your password.",
+  passwordResetLinkSent:
+    "If an account with that email exists, we've sent a password reset link.",
+  sendResetLink: 'Send reset link',
+  backToSignIn: 'Back to sign in',
+  pleaseEnterYourEmailAddress: 'Please enter your email address',
+  pleaseEnterAValidEmailAddress: 'Please enter a valid email address',
   signingIn: 'Signing in...',
   createAccount: 'Create Account',
   termsOfService: 'Terms of Service',
@@ -2639,6 +2655,15 @@ const bengaliTranslations: Translations = {
   confirmPassword: 'পাসওয়ার্ড নিশ্চিত করুন',
   rememberMe: 'আমাকে মনে রাখুন',
   forgotPassword: 'পাসওয়ার্ড ভুলে গেছেন?',
+  resetYourPassword: 'আপনার পাসওয়ার্ড রিসেট করুন',
+  enterEmailForPasswordReset:
+    'আপনার ইমেইল ঠিকানা লিখুন এবং আমরা আপনাকে পাসওয়ার্ড রিসেট করার জন্য একটি লিঙ্ক পাঠাবো।',
+  passwordResetLinkSent:
+    'যদি সেই ইমেইলের সাথে কোনো অ্যাকাউন্ট থাকে, আমরা একটি পাসওয়ার্ড রিসেট লিঙ্ক পাঠিয়েছি।',
+  sendResetLink: 'রিসেট লিঙ্ক পাঠান',
+  backToSignIn: 'সাইন ইনে ফিরে যান',
+  pleaseEnterYourEmailAddress: 'অনুগ্রহ করে আপনার ইমেইল ঠিকানা লিখুন',
+  pleaseEnterAValidEmailAddress: 'অনুগ্রহ করে একটি বৈধ ইমেইল ঠিকানা লিখুন',
   signingIn: 'সাইন ইন হচ্ছে...',
   createAccount: 'অ্যাকাউন্ট তৈরি করুন',
   termsOfService: 'সেবার শর্তাবলী',

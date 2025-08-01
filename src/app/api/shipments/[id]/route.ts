@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import { ShipmentType, ShipmentStatus, MovementType } from '@prisma/client';
+import { validateTenantAccess } from '@/lib/auth/tenant-guard';
 
 export async function GET(
   request: NextRequest,
@@ -10,14 +11,12 @@ export async function GET(
   try {
     const session = await auth();
     const { id } = await params;
-    if (!session) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    const tenantId = validateTenantAccess(session);
 
     const shipment = await prisma.shipment.findFirst({
       where: {
         id: id,
-        tenantId: session.user.tenantId,
+        tenantId,
       },
       include: {
         company: true,
@@ -50,9 +49,7 @@ export async function PUT(
   try {
     const session = await auth();
     const { id } = await params;
-    if (!session) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    const tenantId = validateTenantAccess(session);
 
     const data = await request.json();
     const {
@@ -67,8 +64,6 @@ export async function PUT(
       notes,
       status,
     } = data;
-
-    const tenantId = session.user.tenantId;
 
     // Get existing shipment
     const existingShipment = await prisma.shipment.findFirst({
@@ -163,7 +158,7 @@ export async function PUT(
         existingShipment,
         status,
         tenantId,
-        session.user.id
+        session!.user.id
       );
     }
 
@@ -195,11 +190,7 @@ export async function DELETE(
   try {
     const session = await auth();
     const { id } = await params;
-    if (!session) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const tenantId = session.user.tenantId;
+    const tenantId = validateTenantAccess(session);
 
     // Check if shipment exists
     const shipment = await prisma.shipment.findFirst({

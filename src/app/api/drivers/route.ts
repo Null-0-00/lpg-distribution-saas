@@ -3,6 +3,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
+import { validateTenantAccess } from '@/lib/auth/tenant-guard';
 import { prisma } from '@/lib/prisma';
 import { UserRole } from '@prisma/client';
 import { z } from 'zod';
@@ -69,11 +70,7 @@ const driverQuerySchema = z.object({
 export async function GET(request: NextRequest) {
   try {
     const session = await auth();
-    if (!session?.user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const { tenantId } = session.user;
+    const tenantId = validateTenantAccess(session);
     const { searchParams } = new URL(request.url);
 
     // Parse query parameters and filter out null values
@@ -258,11 +255,8 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const session = await auth();
-    if (!session?.user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const { tenantId, role } = session.user;
+    const tenantId = validateTenantAccess(session);
+    const { role } = session!.user;
 
     // Only admins can create drivers
     if (role !== UserRole.ADMIN) {
@@ -351,11 +345,8 @@ export async function POST(request: NextRequest) {
 export async function DELETE(request: NextRequest) {
   try {
     const session = await auth();
-    if (!session?.user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const { tenantId, role } = session.user;
+    const tenantId = validateTenantAccess(session);
+    const { role } = session!.user;
 
     // Only admins can delete drivers
     if (role !== UserRole.ADMIN) {

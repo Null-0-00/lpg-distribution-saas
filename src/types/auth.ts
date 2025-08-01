@@ -3,7 +3,7 @@ export interface User {
   email: string;
   name: string;
   role: UserRole;
-  tenantId: string;
+  tenantId: string | null; // Null for SUPER_ADMIN users
   avatar?: string;
   isActive: boolean;
   createdAt: Date;
@@ -11,6 +11,7 @@ export interface User {
 }
 
 export enum UserRole {
+  SUPER_ADMIN = 'SUPER_ADMIN',
   ADMIN = 'ADMIN',
   MANAGER = 'MANAGER',
 }

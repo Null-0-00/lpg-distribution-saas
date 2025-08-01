@@ -3,6 +3,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
+import { validateTenantAccess } from '@/lib/auth/tenant-guard';
 import { prisma } from '@/lib/prisma';
 import { InventoryCalculator } from '@/lib/business';
 
@@ -26,11 +27,7 @@ interface InventoryAlert {
 export async function GET(request: NextRequest) {
   try {
     const session = await auth();
-    if (!session?.user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const { tenantId } = session.user;
+    const tenantId = validateTenantAccess(session);
     const { searchParams } = new URL(request.url);
 
     const severity = searchParams.get('severity') as
@@ -202,11 +199,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const session = await auth();
-    if (!session?.user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const { tenantId } = session.user;
+    const tenantId = validateTenantAccess(session);
     const body = await request.json();
     const { productId, alertType } = body;
 

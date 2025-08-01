@@ -3,6 +3,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
+import { validateTenantAccess } from '@/lib/auth/tenant-guard';
 import { prisma } from '@/lib/prisma';
 import { UserRole, DriverStatus } from '@prisma/client';
 import { z } from 'zod';
@@ -38,11 +39,7 @@ const updateDriverSchema = z.object({
 export async function GET(request: NextRequest, { params }: RouteParams) {
   try {
     const session = await auth();
-    if (!session?.user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const { tenantId } = session.user;
+    const tenantId = validateTenantAccess(session);
     const { id } = await params;
 
     const driver = await prisma.driver.findFirst({
@@ -168,11 +165,8 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 export async function PUT(request: NextRequest, { params }: RouteParams) {
   try {
     const session = await auth();
-    if (!session?.user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const { tenantId, role } = session.user;
+    const tenantId = validateTenantAccess(session);
+    const { role } = session!.user;
     const { id } = await params;
 
     // Allow both admins and managers to update drivers
@@ -266,11 +260,8 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 export async function DELETE(request: NextRequest, { params }: RouteParams) {
   try {
     const session = await auth();
-    if (!session?.user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const { tenantId, role } = session.user;
+    const tenantId = validateTenantAccess(session);
+    const { role } = session!.user;
     const { id } = await params;
 
     // Only admins can delete drivers

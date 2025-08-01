@@ -1,16 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
+import { validateTenantAccess } from '@/lib/auth/tenant-guard';
 import { prisma } from '@/lib/prisma';
 
 // GET endpoint to retrieve saved formula values from empty_cylinders table
 export async function GET(request: NextRequest) {
   try {
     const session = await auth();
-    if (!session?.user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const { tenantId } = session.user;
+    const tenantId = validateTenantAccess(session);
     const { searchParams } = new URL(request.url);
     const dateParam = searchParams.get('date');
 

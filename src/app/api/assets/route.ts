@@ -7,6 +7,7 @@ import { prisma } from '@/lib/prisma';
 import { UserRole, AssetCategory } from '@prisma/client';
 import { z } from 'zod';
 import { InventoryCalculator } from '@/lib/business';
+import { validateTenantAccess } from '@/lib/auth/tenant-guard';
 
 interface AssetResponse {
   id: string;
@@ -49,15 +50,11 @@ const createAssetSchema = z.object({
 export async function GET(request: NextRequest) {
   try {
     const session = await auth();
-    if (!session?.user?.tenantId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    const tenantId = validateTenantAccess(session);
 
     const { searchParams } = new URL(request.url);
     const { category, includeAutoCalculated, asOfDate } =
       assetQuerySchema.parse(Object.fromEntries(searchParams.entries()));
-
-    const tenantId = session.user.tenantId;
     const reportDate = asOfDate ? new Date(asOfDate) : new Date();
 
     // Get manual assets from database
@@ -159,7 +156,9 @@ export async function GET(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     const session = await auth();
-    if (!session?.user?.tenantId || session.user.role !== UserRole.ADMIN) {
+    const tenantId = validateTenantAccess(session);
+
+    if (session!.user.role !== UserRole.ADMIN) {
       return NextResponse.json(
         { error: 'Unauthorized - Admin access required' },
         { status: 401 }
@@ -175,8 +174,6 @@ export async function PUT(request: NextRequest) {
         { status: 400 }
       );
     }
-
-    const tenantId = session.user.tenantId;
 
     // Handle inventory asset unit value updates
     if (id.startsWith('auto-') && unitValue !== undefined) {
@@ -241,7 +238,9 @@ export async function PUT(request: NextRequest) {
 export async function DELETE(request: NextRequest) {
   try {
     const session = await auth();
-    if (!session?.user?.tenantId || session.user.role !== UserRole.ADMIN) {
+    const tenantId = validateTenantAccess(session);
+
+    if (session!.user.role !== UserRole.ADMIN) {
       return NextResponse.json(
         { error: 'Unauthorized - Admin access required' },
         { status: 401 }
@@ -257,8 +256,6 @@ export async function DELETE(request: NextRequest) {
         { status: 400 }
       );
     }
-
-    const tenantId = session.user.tenantId;
 
     // Cannot delete auto-calculated assets
     if (id.startsWith('auto-')) {
@@ -296,7 +293,9 @@ export async function DELETE(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const session = await auth();
-    if (!session?.user?.tenantId || session.user.role !== UserRole.ADMIN) {
+    const tenantId = validateTenantAccess(session);
+
+    if (session!.user.role !== UserRole.ADMIN) {
       return NextResponse.json(
         { error: 'Unauthorized - Admin access required' },
         { status: 401 }
@@ -305,7 +304,6 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json();
     const validatedData = createAssetSchema.parse(body);
-    const tenantId = session.user.tenantId;
 
     const asset = await prisma.asset.create({
       data: {

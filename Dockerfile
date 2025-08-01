@@ -20,13 +20,10 @@ COPY . .
 # Generate Prisma client
 RUN npx prisma generate
 
-# Build arguments for environment variables needed during build
-ARG NEXTAUTH_SECRET
-ARG NEXTAUTH_URL
-
-# Set environment variables from build args
-ENV NEXTAUTH_SECRET=$NEXTAUTH_SECRET
-ENV NEXTAUTH_URL=$NEXTAUTH_URL
+# Build the application with minimal environment variables
+# Note: Only non-sensitive build-time variables should be used here
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
 
 # Build the application
 RUN npm run build

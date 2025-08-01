@@ -34,6 +34,43 @@ export async function PUT(
     const body = await request.json();
     const validatedData = updateUserSchema.parse(body);
 
+    // 🚫 SECURITY: Prevent SUPER_ADMIN role assignment through API
+    if (validatedData.role === 'SUPER_ADMIN') {
+      console.error(
+        '🚫 SECURITY ALERT: Attempt to assign SUPER_ADMIN role via API blocked'
+      );
+      return NextResponse.json(
+        {
+          error: 'Forbidden',
+          message:
+            'Super admin role cannot be assigned through API for security reasons',
+          code: 'SUPER_ADMIN_ASSIGNMENT_BLOCKED',
+        },
+        { status: 403 }
+      );
+    }
+
+    // 🚫 SECURITY: Prevent modification of existing SUPER_ADMIN users
+    const existingUser = await prisma.user.findFirst({
+      where: { id, tenantId },
+      select: { role: true },
+    });
+
+    if (existingUser?.role === 'SUPER_ADMIN') {
+      console.error(
+        '🚫 SECURITY ALERT: Attempt to modify SUPER_ADMIN user via API blocked'
+      );
+      return NextResponse.json(
+        {
+          error: 'Forbidden',
+          message:
+            'Super admin users cannot be modified through API for security reasons',
+          code: 'SUPER_ADMIN_MODIFICATION_BLOCKED',
+        },
+        { status: 403 }
+      );
+    }
+
     const updatedUser = await prisma.user.update({
       where: {
         id: id,
@@ -101,6 +138,27 @@ export async function DELETE(
     if (role !== UserRole.ADMIN) {
       return NextResponse.json(
         { error: 'Insufficient permissions' },
+        { status: 403 }
+      );
+    }
+
+    // 🚫 SECURITY: Prevent deletion of SUPER_ADMIN users
+    const existingUser = await prisma.user.findFirst({
+      where: { id, tenantId },
+      select: { role: true },
+    });
+
+    if (existingUser?.role === 'SUPER_ADMIN') {
+      console.error(
+        '🚫 SECURITY ALERT: Attempt to delete SUPER_ADMIN user via API blocked'
+      );
+      return NextResponse.json(
+        {
+          error: 'Forbidden',
+          message:
+            'Super admin users cannot be deleted through API for security reasons',
+          code: 'SUPER_ADMIN_DELETION_BLOCKED',
+        },
         { status: 403 }
       );
     }

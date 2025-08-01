@@ -8,6 +8,7 @@ import { InventoryCalculator, BusinessValidator } from '@/lib/business';
 import { ReceivablesCalculator } from '@/lib/business/receivables';
 import { SaleType, PaymentType } from '@prisma/client';
 import { z } from 'zod';
+import { validateTenantAccess } from '@/lib/auth/tenant-guard';
 
 const combinedSaleSchema = z.object({
   driverId: z.string().cuid(),
@@ -50,11 +51,8 @@ const combinedSaleSchema = z.object({
 export async function POST(request: NextRequest) {
   try {
     const session = await auth();
-    if (!session?.user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const { tenantId, role, id: userId } = session.user;
+    const tenantId = validateTenantAccess(session);
+    const { role, id: userId } = session!.user;
 
     // Validate user permissions
     const permissionCheck = BusinessValidator.validateUserPermission(

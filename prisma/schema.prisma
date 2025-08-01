@@ -16,6 +16,15 @@ model Tenant {
   subscriptionStatus            SubscriptionStatus
   subscriptionPlan              SubscriptionPlan
   isActive                      Boolean                        @default(true)
+  approvalStatus                TenantApprovalStatus           @default(PENDING)
+  approvedBy                    String?                        // Super Admin ID who approved
+  approvedAt                    DateTime?
+  rejectedAt                    DateTime?
+  rejectionReason               String?
+  contactEmail                  String?
+  contactPhone                  String?
+  businessType                  String?
+  businessDescription           String?
   settings                      Json?
   currency                      String                         @default("BDT")
   timezone                      String                         @default("Asia/Dhaka")
@@ -61,8 +70,8 @@ model Tenant {
 
 model User {
   id                            String                         @id @default(cuid())
-  tenantId                      String
-  email                         String
+  tenantId                      String?                        // Null for SUPER_ADMIN users
+  email                         String                         @unique
   name                          String
   password                      String?
   role                          UserRole                       @default(MANAGER)
@@ -73,6 +82,11 @@ model User {
   updatedAt                     DateTime                       @updatedAt
   onboardingCompleted           Boolean                        @default(false)
   onboardingCompletedAt         DateTime?
+  // Email verification fields
+  emailVerified                 Boolean                        @default(false)
+  emailVerifiedAt               DateTime?
+  // Password reset tracking
+  passwordResetRequestedAt      DateTime?
   auditLogs                     AuditLog[]
   deposits                      Deposit[]
   distributorAssignments        DistributorAssignment[]
@@ -82,16 +96,46 @@ model User {
   createdPurchaseOrders         PurchaseOrder[]                @relation("PurchaseOrderCreatedBy")
   sales                         Sale[]
   securityAuditLogs             SecurityAuditLog[]
-  tenant                        Tenant                         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  tenant                        Tenant?                        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   permissions                   Permission[]                   @relation("PermissionToUser")
 
-  @@unique([tenantId, email])
   @@index([tenantId])
   @@index([email])
   @@index([tenantId, isActive])
   @@index([tenantId, role])
+  @@index([role])
   @@index([lastLoginAt])
   @@map("users")
+}
+
+model EmailVerificationCode {
+  id        String   @id @default(cuid())
+  email     String
+  code      String   @unique
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  usedAt    DateTime?
+  createdAt DateTime @default(now())
+  
+  @@index([email])
+  @@index([code])
+  @@index([expiresAt])
+  @@map("email_verification_codes")
+}
+
+model PasswordResetCode {
+  id        String   @id @default(cuid())
+  email     String
+  code      String   @unique
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  usedAt    DateTime?
+  createdAt DateTime @default(now())
+  
+  @@index([email])
+  @@index([code])
+  @@index([expiresAt])
+  @@map("password_reset_codes")
 }
 
 model Permission {
@@ -913,6 +957,7 @@ enum SubscriptionPlan {
 }
 
 enum UserRole {
+  SUPER_ADMIN
   ADMIN
   MANAGER
 }
@@ -1043,4 +1088,11 @@ enum AssetType {
   VEHICLE
   EQUIPMENT
   OTHER
+}
+
+enum TenantApprovalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  SUSPENDED
 }

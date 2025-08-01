@@ -1,20 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
+import { validateTenantAccess } from '@/lib/auth/tenant-guard';
 
 export async function GET(request: NextRequest) {
   try {
     const session = await auth();
-    if (!session) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    const tenantId = validateTenantAccess(session);
 
     const { searchParams } = new URL(request.url);
     const asOfDate =
       searchParams.get('asOfDate') || new Date().toISOString().split('T')[0];
     const compareDate = searchParams.get('compareDate');
-
-    const tenantId = session.user.tenantId;
 
     // Parse dates
     const reportDate = new Date(asOfDate + 'T23:59:59.999Z');

@@ -38,6 +38,9 @@ export async function POST(request: NextRequest) {
     }
 
     const tenantId = session.user.tenantId;
+    if (!tenantId) {
+      return NextResponse.json({ error: 'No tenant access' }, { status: 403 });
+    }
 
     // Only validate for SELL transactions (BUY always adds to inventory)
     if (transactionType === 'BUY') {
@@ -62,6 +65,13 @@ export async function POST(request: NextRequest) {
 
     // Use the validator to check inventory
     const cylinderValidator = new CylinderInventoryValidator(prisma);
+
+    if (!cylinderSize.size) {
+      return NextResponse.json(
+        { error: 'Cylinder size data is incomplete' },
+        { status: 400 }
+      );
+    }
 
     const validation = await cylinderValidator.validateSingleCylinderType(
       tenantId,

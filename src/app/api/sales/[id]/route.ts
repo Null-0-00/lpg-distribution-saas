@@ -7,6 +7,7 @@ import { prisma } from '@/lib/prisma';
 import { InventoryCalculator, BusinessValidator } from '@/lib/business';
 import { SaleType, PaymentType } from '@prisma/client';
 import { z } from 'zod';
+import { validateTenantAccess } from '@/lib/auth/tenant-guard';
 
 const updateSaleSchema = z.object({
   driverId: z.string().cuid().optional(),
@@ -28,11 +29,8 @@ export async function PUT(
   try {
     const session = await auth();
     const { id } = await params;
-    if (!session?.user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const { tenantId, role, id: userId } = session.user;
+    const tenantId = validateTenantAccess(session);
+    const { role, id: userId } = session!.user;
     const saleId = id;
 
     // Validate user permissions
@@ -268,11 +266,8 @@ export async function DELETE(
   try {
     const session = await auth();
     const { id } = await params;
-    if (!session?.user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const { tenantId, role, id: userId } = session.user;
+    const tenantId = validateTenantAccess(session);
+    const { role, id: userId } = session!.user;
     const saleId = id;
 
     // Validate user permissions

@@ -3,6 +3,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
+import { validateTenantAccess } from '@/lib/auth/tenant-guard';
 import { prisma } from '@/lib/prisma';
 import { InventoryCalculator, BusinessValidator } from '@/lib/business';
 import { ReceivablesCalculator } from '@/lib/business/receivables';
@@ -31,11 +32,8 @@ const createSaleSchema = z.object({
 export async function POST(request: NextRequest) {
   try {
     const session = await auth();
-    if (!session?.user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const { tenantId, role, id: userId } = session.user;
+    const tenantId = validateTenantAccess(session);
+    const { role, id: userId } = session!.user;
 
     // Validate user permissions
     const permissionCheck = BusinessValidator.validateUserPermission(
@@ -302,11 +300,7 @@ export async function GET(request: NextRequest) {
 
   try {
     const session = await auth();
-    if (!session?.user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const { tenantId } = session.user;
+    const tenantId = validateTenantAccess(session);
     const { searchParams } = new URL(request.url);
 
     // Parse pagination parameters with validation

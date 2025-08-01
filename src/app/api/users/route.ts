@@ -7,6 +7,7 @@ import { prisma } from '@/lib/prisma';
 import { UserRole } from '@prisma/client';
 import { hash } from 'bcryptjs';
 import { z } from 'zod';
+import { validateTenantAccess } from '@/lib/auth/tenant-guard';
 
 const createUserSchema = z.object({
   email: z.string().email('Invalid email format'),
@@ -22,18 +23,8 @@ export async function GET(request: NextRequest) {
     const session = await auth();
     console.log('Session:', session);
 
-    if (!session?.user) {
-      return NextResponse.json(
-        {
-          error: 'Unauthorized',
-          message: 'No active session found. Please log in first.',
-          debug: { session },
-        },
-        { status: 401 }
-      );
-    }
-
-    const { tenantId, role } = session.user;
+    const tenantId = validateTenantAccess(session);
+    const { role } = session!.user;
     const { searchParams } = new URL(request.url);
 
     console.log('User:', { tenantId, role });
@@ -182,17 +173,8 @@ export async function POST(request: NextRequest) {
     const session = await auth();
     console.log('POST Session:', session);
 
-    if (!session?.user) {
-      return NextResponse.json(
-        {
-          error: 'Unauthorized',
-          message: 'No active session found. Please log in first.',
-        },
-        { status: 401 }
-      );
-    }
-
-    const { tenantId, role } = session.user;
+    const tenantId = validateTenantAccess(session);
+    const { role } = session!.user;
 
     // Only admins can create users
     if (role !== UserRole.ADMIN) {
@@ -207,6 +189,22 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json();
     const validatedData = createUserSchema.parse(body);
+
+    // 🚫 SECURITY: Prevent SUPER_ADMIN role creation through API
+    if (validatedData.role === 'SUPER_ADMIN') {
+      console.error(
+        '🚫 SECURITY ALERT: Attempt to create SUPER_ADMIN user via API blocked'
+      );
+      return NextResponse.json(
+        {
+          error: 'Forbidden',
+          message:
+            'Super admin users cannot be created through API for security reasons',
+          code: 'SUPER_ADMIN_CREATION_BLOCKED',
+        },
+        { status: 403 }
+      );
+    }
 
     // Check if email already exists in this tenant
     const existingUser = await prisma.user.findFirst({

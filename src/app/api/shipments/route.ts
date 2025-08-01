@@ -3,13 +3,12 @@ import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import { ShipmentType, ShipmentStatus, MovementType } from '@prisma/client';
 import { CylinderInventoryValidator } from '@/lib/services/cylinder-inventory-validator';
+import { validateTenantAccess } from '@/lib/auth/tenant-guard';
 
 export async function GET(request: NextRequest) {
   try {
     const session = await auth();
-    if (!session) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    const tenantId = validateTenantAccess(session);
 
     const { searchParams } = new URL(request.url);
     const startDate = searchParams.get('startDate');
@@ -19,8 +18,6 @@ export async function GET(request: NextRequest) {
     const shipmentType = searchParams.get('shipmentType');
     const limit = parseInt(searchParams.get('limit') || '50');
     const offset = parseInt(searchParams.get('offset') || '0');
-
-    const tenantId = session.user.tenantId;
 
     const whereClause: any = { tenantId };
 
@@ -110,9 +107,8 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const session = await auth();
-    if (!session) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    const tenantId = validateTenantAccess(session);
+    const userId = session!.user.id;
 
     const data = await request.json();
 
@@ -135,9 +131,6 @@ export async function POST(request: NextRequest) {
           { status: 400 }
         );
       }
-
-      const tenantId = session.user.tenantId;
-      const userId = session.user.id;
 
       // Verify company belongs to tenant
       if (companyId) {
@@ -351,9 +344,6 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
-
-    const tenantId = session.user.tenantId;
-    const userId = session.user.id;
 
     // Initialize cylinder inventory validator for empty cylinder transactions
     const cylinderValidator = new CylinderInventoryValidator(prisma);

@@ -41,7 +41,7 @@ export const authConfig: NextAuthConfig = {
           }
 
           // Check if tenant is active
-          if (!user.tenant.isActive) {
+          if (!user.tenant?.isActive) {
             throw new Error('Account suspended');
           }
 

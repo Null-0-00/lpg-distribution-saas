@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
+import { validateTenantAccess } from '@/lib/auth/tenant-guard';
 import { prisma } from '@/lib/prisma';
 import { cache } from '@/lib/cache';
 import { performanceMonitor } from '@/lib/performance-monitor';
@@ -8,11 +9,7 @@ import { InventoryCalculator } from '@/lib/business';
 export async function GET(request: NextRequest) {
   try {
     const session = await auth();
-    if (!session?.user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const { tenantId } = session.user;
+    const tenantId = validateTenantAccess(session);
     const todayStr = new Date().toISOString().split('T')[0];
     const cacheKey = `cylinders_summary:${tenantId}:${todayStr}`;
 

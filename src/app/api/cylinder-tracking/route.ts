@@ -4,6 +4,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
+import { validateTenantAccess } from '@/lib/auth/tenant-guard';
 import { CylinderTrackingService } from '@/lib/business/cylinder-tracking';
 import {
   CylinderTrackingQuery,
@@ -29,11 +30,7 @@ const cylinderTrackingQuerySchema = z.object({
 export async function GET(request: NextRequest) {
   try {
     const session = await auth();
-    if (!session?.user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const { tenantId } = session.user;
+    const tenantId = validateTenantAccess(session);
     const { searchParams } = new URL(request.url);
 
     // Parse and validate query parameters

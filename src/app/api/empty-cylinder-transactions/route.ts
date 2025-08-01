@@ -1,14 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
+import { validateTenantAccess } from '@/lib/auth/tenant-guard';
 import { CylinderInventoryValidator } from '@/lib/services/cylinder-inventory-validator';
 
 export async function GET(request: NextRequest) {
   try {
     const session = await auth();
-    if (!session) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    const tenantId = validateTenantAccess(session);
 
     const { searchParams } = new URL(request.url);
     const startDate = searchParams.get('startDate');
@@ -18,8 +17,6 @@ export async function GET(request: NextRequest) {
     const transactionType = searchParams.get('transactionType'); // 'BUY' or 'SELL'
     const limit = parseInt(searchParams.get('limit') || '50');
     const offset = parseInt(searchParams.get('offset') || '0');
-
-    const tenantId = session.user.tenantId;
 
     const whereClause: any = {
       tenantId,
@@ -145,9 +142,8 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const session = await auth();
-    if (!session) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    const tenantId = validateTenantAccess(session);
+    const userId = session!.user.id;
 
     const data = await request.json();
     const {
@@ -195,9 +191,6 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
-
-    const tenantId = session.user.tenantId;
-    const userId = session.user.id;
 
     // Verify company and product belong to tenant
     const [company, product] = await Promise.all([

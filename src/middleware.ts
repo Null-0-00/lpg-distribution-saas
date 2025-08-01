@@ -31,8 +31,12 @@ export async function middleware(request: NextRequest) {
   console.log('🛡️ Middleware: Checking auth for:', pathname);
 
   try {
-    // Only check token for dashboard routes
-    if (!pathname.startsWith('/dashboard')) {
+    // Only check token for dashboard and super-admin routes
+    if (
+      !pathname.startsWith('/dashboard') &&
+      !pathname.startsWith('/super-admin') &&
+      !pathname.startsWith('/api/super-admin')
+    ) {
       return NextResponse.next();
     }
 
@@ -51,12 +55,25 @@ export async function middleware(request: NextRequest) {
       role: token?.role,
     });
 
-    // If no token, redirect to login for dashboard routes
+    // If no token, redirect to login for protected routes
     if (!token) {
       console.log('❌ No token for protected route, redirecting to login');
       const loginUrl = new URL('/auth/login', request.url);
       loginUrl.searchParams.set('callbackUrl', pathname);
       return NextResponse.redirect(loginUrl);
+    }
+
+    // Check for super admin routes
+    if (
+      pathname.startsWith('/super-admin') ||
+      pathname.startsWith('/api/super-admin')
+    ) {
+      if (!token || token.role !== 'SUPER_ADMIN') {
+        console.log('❌ Super admin access denied, redirecting to login');
+        const loginUrl = new URL('/auth/login', request.url);
+        loginUrl.searchParams.set('callbackUrl', pathname);
+        return NextResponse.redirect(loginUrl);
+      }
     }
 
     // Check for admin routes
@@ -68,6 +85,12 @@ export async function middleware(request: NextRequest) {
         console.log('❌ Admin access denied, redirecting to dashboard');
         return NextResponse.redirect(new URL('/dashboard', request.url));
       }
+    }
+
+    // Check tenant approval status for regular dashboard access
+    if (pathname.startsWith('/dashboard') && token.role !== 'SUPER_ADMIN') {
+      // For non-super admin users, check if their tenant is approved
+      // This will be handled by the dashboard page itself to avoid database calls in middleware
     }
 
     // Add security headers
@@ -95,7 +118,10 @@ export async function middleware(request: NextRequest) {
     console.error('🚨 Middleware error:', error);
 
     // On error, redirect to login for safety
-    if (pathname.startsWith('/dashboard')) {
+    if (
+      pathname.startsWith('/dashboard') ||
+      pathname.startsWith('/super-admin')
+    ) {
       const loginUrl = new URL('/auth/login', request.url);
       loginUrl.searchParams.set('callbackUrl', pathname);
       return NextResponse.redirect(loginUrl);

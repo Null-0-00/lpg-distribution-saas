@@ -3,15 +3,12 @@ import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import { cache } from '@/lib/cache';
 import { performanceMonitor } from '@/lib/performance-monitor';
+import { validateTenantAccess } from '@/lib/auth/tenant-guard';
 
 export async function GET(request: NextRequest) {
   try {
     const session = await auth();
-    if (!session?.user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const { tenantId } = session.user;
+    const tenantId = validateTenantAccess(session);
     const todayStr = new Date().toISOString().split('T')[0];
     const cacheKey = `cylinders_summary_ultra_opt:${tenantId}:${todayStr}`;
 
@@ -130,7 +127,7 @@ export async function GET(request: NextRequest) {
 
     // Calculate totals from aggregated data
     const totalCylinderReceivables = receivablesSummary.reduce(
-      (sum, record) => sum + (record._sum.totalCylinderReceivables || 0),
+      (sum, record) => sum + (record._sum?.totalCylinderReceivables || 0),
       0
     );
 
@@ -151,7 +148,7 @@ export async function GET(request: NextRequest) {
         id: p.id,
         name: p.name,
         size: p.size,
-        company: p.company.name,
+        company: p.company?.name || 'No Company',
       }))
     );
 

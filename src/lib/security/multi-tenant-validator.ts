@@ -56,6 +56,11 @@ export class MultiTenantValidator {
       }
 
       const sessionTenantId = session.user.tenantId;
+      if (!sessionTenantId) {
+        errors.push('No tenant ID in session');
+        return { isValid: false, errors, warnings };
+      }
+
       const headerTenantId = request.headers.get('x-tenant-id');
       const urlTenantId = this.extractTenantFromURL(request.url);
 

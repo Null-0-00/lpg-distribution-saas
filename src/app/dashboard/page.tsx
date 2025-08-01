@@ -92,6 +92,12 @@ export default function DashboardPage() {
     }
 
     if (status === 'authenticated' && session) {
+      // Redirect super admins to their dashboard
+      if (session.user.role === 'SUPER_ADMIN') {
+        router.push('/super-admin');
+        return;
+      }
+
       loadDashboardData();
       // Refresh data every 10 minutes for better performance
       const interval = setInterval(loadDashboardData, 10 * 60 * 1000);
@@ -247,6 +253,11 @@ export default function DashboardPage() {
 
   // Don't render dashboard if not authenticated (will redirect)
   if (status !== 'authenticated') {
+    return null;
+  }
+
+  // Don't render dashboard if user is super admin (will redirect)
+  if (session?.user?.role === 'SUPER_ADMIN') {
     return null;
   }
 

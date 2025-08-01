@@ -7,7 +7,7 @@ declare module 'next-auth' {
       email: string;
       name: string;
       role: UserRole;
-      tenantId: string;
+      tenantId: string | null; // Null for SUPER_ADMIN users
       avatar?: string;
     };
   }
@@ -17,7 +17,7 @@ declare module 'next-auth' {
     email: string;
     name: string;
     role: UserRole;
-    tenantId: string;
+    tenantId: string | null; // Null for SUPER_ADMIN users
     avatar?: string;
     tenant?: any;
   }
@@ -26,7 +26,7 @@ declare module 'next-auth' {
 declare module 'next-auth/jwt' {
   interface JWT {
     role: UserRole;
-    tenantId: string;
+    tenantId: string | null; // Null for SUPER_ADMIN users
     tenant?: any;
   }
 }

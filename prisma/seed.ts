@@ -41,10 +41,7 @@ async function main() {
   const adminPassword = await hash('admin123', 12);
   const adminUser = await prisma.user.upsert({
     where: {
-      tenantId_email: {
-        tenantId: tenant.id,
-        email: 'admin@demo.com',
-      },
+      email: 'admin@demo.com',
     },
     update: {},
     create: {
@@ -63,10 +60,7 @@ async function main() {
   const managerPassword = await hash('manager123', 12);
   const managerUser = await prisma.user.upsert({
     where: {
-      tenantId_email: {
-        tenantId: tenant.id,
-        email: 'manager@demo.com',
-      },
+      email: 'manager@demo.com',
     },
     update: {},
     create: {
@@ -317,10 +311,7 @@ async function main() {
   const demoAdminPassword = await hash('demo.admin', 12);
   const demoAdminUser = await prisma.user.upsert({
     where: {
-      tenantId_email: {
-        tenantId: tenant.id,
-        email: 'demo@admin.com',
-      },
+      email: 'demo@admin.com',
     },
     update: {},
     create: {

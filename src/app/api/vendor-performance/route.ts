@@ -1,21 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
+import { validateTenantAccess } from '@/lib/auth/tenant-guard';
 
 export async function GET(request: NextRequest) {
   try {
     const session = await auth();
-    if (!session) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    const tenantId = validateTenantAccess(session);
 
     const { searchParams } = new URL(request.url);
     const companyId = searchParams.get('companyId');
     const startDate = searchParams.get('startDate');
     const endDate = searchParams.get('endDate');
     const period = searchParams.get('period') || 'last-12-months';
-
-    const tenantId = session.user.tenantId;
 
     // Calculate date range
     let dateFrom: Date;

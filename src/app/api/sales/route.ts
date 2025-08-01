@@ -119,114 +119,120 @@ export async function POST(request: NextRequest) {
       validatedData.cylindersDeposited < validatedData.quantity;
 
     // Create sale transaction
-    const sale = await prisma.$transaction(async (tx) => {
-      // Create the sale record
-      const newSale = await tx.sale.create({
-        data: {
-          tenantId,
-          driverId: validatedData.driverId,
-          productId: validatedData.productId,
-          userId,
-          saleType: validatedData.saleType,
-          quantity: validatedData.quantity,
-          unitPrice: validatedData.unitPrice,
-          totalValue,
-          discount: validatedData.discount,
-          netValue,
-          paymentType: validatedData.paymentType,
-          cashDeposited: validatedData.cashDeposited,
-          cylindersDeposited: validatedData.cylindersDeposited,
-          isOnCredit,
-          isCylinderCredit,
-          notes: validatedData.notes,
-        },
-        include: {
-          driver: { select: { name: true } },
-          product: {
-            select: {
-              name: true,
-              size: true,
-              company: { select: { name: true } },
-            },
+    const sale = await prisma.$transaction(
+      async (tx) => {
+        // Create the sale record
+        const newSale = await tx.sale.create({
+          data: {
+            tenantId,
+            driverId: validatedData.driverId,
+            productId: validatedData.productId,
+            userId,
+            saleType: validatedData.saleType,
+            quantity: validatedData.quantity,
+            unitPrice: validatedData.unitPrice,
+            totalValue,
+            discount: validatedData.discount,
+            netValue,
+            paymentType: validatedData.paymentType,
+            cashDeposited: validatedData.cashDeposited,
+            cylindersDeposited: validatedData.cylindersDeposited,
+            isOnCredit,
+            isCylinderCredit,
+            notes: validatedData.notes,
           },
-          user: { select: { name: true } },
-        },
-      });
-
-      // Record inventory movement for audit trail
-      await inventoryCalculator.recordInventoryMovement(
-        tenantId,
-        validatedData.productId,
-        validatedData.saleType === SaleType.PACKAGE
-          ? 'SALE_PACKAGE'
-          : 'SALE_REFILL',
-        validatedData.quantity,
-        `Sale to driver ${driver.name} - ${validatedData.saleType}`,
-        newSale.id,
-        validatedData.driverId
-      );
-
-      // Update receivables using exact formulas
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-
-      // Get previous day's receivables for this driver (includes onboarding values)
-      const previousReceivables =
-        await receivablesCalculator.getPreviousReceivables(
-          tenantId,
-          validatedData.driverId,
-          today
-        );
-
-      console.log(
-        `📊 Previous receivables for driver ${validatedData.driverId}:`,
-        {
-          cash: previousReceivables.cashReceivables,
-          cylinders: previousReceivables.cylinderReceivables,
-        }
-      );
-
-      // Calculate receivables using exact formulas
-      const receivablesData =
-        await receivablesCalculator.calculateReceivablesForDate({
-          date: today,
-          tenantId,
-          driverId: validatedData.driverId,
-          previousCashReceivables: previousReceivables.cashReceivables,
-          previousCylinderReceivables: previousReceivables.cylinderReceivables,
+          include: {
+            driver: { select: { name: true } },
+            product: {
+              select: {
+                name: true,
+                size: true,
+                company: { select: { name: true } },
+              },
+            },
+            user: { select: { name: true } },
+          },
         });
 
-      // Store the calculated receivables in the database
-      console.log(
-        `💰 Calculated receivables for driver ${validatedData.driverId}:`,
-        {
-          previousCash: previousReceivables.cashReceivables,
-          previousCylinders: previousReceivables.cylinderReceivables,
-          cashChange: receivablesData.cashReceivablesChange,
-          cylinderChange: receivablesData.cylinderReceivablesChange,
-          totalCash: receivablesData.totalCashReceivables,
-          totalCylinders: receivablesData.totalCylinderReceivables,
-          salesRevenue: receivablesData.salesRevenue,
-        }
-      );
+        // Record inventory movement for audit trail
+        await inventoryCalculator.recordInventoryMovement(
+          tenantId,
+          validatedData.productId,
+          validatedData.saleType === SaleType.PACKAGE
+            ? 'SALE_PACKAGE'
+            : 'SALE_REFILL',
+          validatedData.quantity,
+          `Sale to driver ${driver.name} - ${validatedData.saleType}`,
+          newSale.id,
+          validatedData.driverId
+        );
 
-      console.log(
-        `💾 Saving receivables for driver ${validatedData.driverId} on ${today.toISOString().split('T')[0]}`
-      );
+        // Update receivables using exact formulas
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
 
-      await receivablesCalculator.updateReceivablesRecord(
-        tenantId,
-        validatedData.driverId,
-        today,
-        receivablesData
-      );
+        // Get previous day's receivables for this driver (includes onboarding values)
+        const previousReceivables =
+          await receivablesCalculator.getPreviousReceivables(
+            tenantId,
+            validatedData.driverId,
+            today
+          );
 
-      console.log(
-        `✅ Receivables saved successfully for driver ${validatedData.driverId}`
-      );
+        console.log(
+          `📊 Previous receivables for driver ${validatedData.driverId}:`,
+          {
+            cash: previousReceivables.cashReceivables,
+            cylinders: previousReceivables.cylinderReceivables,
+          }
+        );
 
-      return newSale;
-    });
+        // Calculate receivables using exact formulas
+        const receivablesData =
+          await receivablesCalculator.calculateReceivablesForDate({
+            date: today,
+            tenantId,
+            driverId: validatedData.driverId,
+            previousCashReceivables: previousReceivables.cashReceivables,
+            previousCylinderReceivables:
+              previousReceivables.cylinderReceivables,
+          });
+
+        // Store the calculated receivables in the database
+        console.log(
+          `💰 Calculated receivables for driver ${validatedData.driverId}:`,
+          {
+            previousCash: previousReceivables.cashReceivables,
+            previousCylinders: previousReceivables.cylinderReceivables,
+            cashChange: receivablesData.cashReceivablesChange,
+            cylinderChange: receivablesData.cylinderReceivablesChange,
+            totalCash: receivablesData.totalCashReceivables,
+            totalCylinders: receivablesData.totalCylinderReceivables,
+            salesRevenue: receivablesData.salesRevenue,
+          }
+        );
+
+        console.log(
+          `💾 Saving receivables for driver ${validatedData.driverId} on ${today.toISOString().split('T')[0]}`
+        );
+
+        await receivablesCalculator.updateReceivablesRecord(
+          tenantId,
+          validatedData.driverId,
+          today,
+          receivablesData
+        );
+
+        console.log(
+          `✅ Receivables saved successfully for driver ${validatedData.driverId}`
+        );
+
+        return newSale;
+      },
+      {
+        timeout: 15000, // 15 seconds timeout
+      }
+    );
 
     // Trigger inventory recalculation (async)
     setImmediate(async () => {

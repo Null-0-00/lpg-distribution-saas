@@ -242,6 +242,8 @@ export function OnboardingModal({
       case 'inventory':
         return (
           <InventoryStep
+            companies={onboardingData.companies}
+            cylinderSizes={onboardingData.cylinderSizes}
             products={onboardingData.products}
             inventory={onboardingData.inventory}
             onUpdate={(inventory) =>

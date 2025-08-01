@@ -431,8 +431,8 @@ export function ReceivablesStep({
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 gap-4 text-center md:grid-cols-2">
-              <div className="rounded-lg bg-blue-50 p-4">
-                <div className="text-2xl font-bold text-blue-600">
+              <div className="rounded-lg bg-blue-50 p-4 dark:bg-blue-950">
+                <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
                   {formatCurrency(
                     receivables.reduce(
                       (sum, item) => sum + item.cashReceivables,
@@ -444,8 +444,8 @@ export function ReceivablesStep({
                   {t('totalCashReceivables')}
                 </div>
               </div>
-              <div className="rounded-lg bg-green-50 p-4">
-                <div className="text-2xl font-bold text-green-600">
+              <div className="rounded-lg bg-green-50 p-4 dark:bg-green-950">
+                <div className="text-2xl font-bold text-green-600 dark:text-green-400">
                   {receivables.reduce(
                     (sum, item) => sum + item.cylinderReceivables,
                     0

@@ -14,6 +14,8 @@ import {
 import { Package2 } from 'lucide-react';
 
 interface InventoryStepProps {
+  companies: Array<{ name: string }>;
+  cylinderSizes: Array<{ size: string; description?: string }>;
   products: Array<{
     name: string;
     companyId: string;
@@ -33,6 +35,8 @@ interface InventoryStepProps {
 }
 
 export function InventoryStep({
+  companies,
+  cylinderSizes,
   products,
   inventory,
   onUpdate,
@@ -59,13 +63,13 @@ export function InventoryStep({
   };
 
   const getCompanyName = (companyId: string) => {
-    // This is a placeholder - in real implementation you'd have company data
-    return `${t('company')} ${parseInt(companyId) + 1}`;
+    const companyIndex = parseInt(companyId);
+    return companies[companyIndex]?.name || '';
   };
 
   const getCylinderSize = (cylinderSizeId: string) => {
-    // This is a placeholder - in real implementation you'd have cylinder size data
-    return `${t('size')} ${parseInt(cylinderSizeId) + 1}`;
+    const sizeIndex = parseInt(cylinderSizeId);
+    return cylinderSizes[sizeIndex]?.size || '';
   };
 
   return (

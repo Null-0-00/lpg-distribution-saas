@@ -218,233 +218,239 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Create all sales in a transaction
-    const result = await prisma.$transaction(async (tx) => {
-      const createdSales = [];
+    // Create all sales in a transaction with extended timeout
+    const result = await prisma.$transaction(
+      async (tx) => {
+        const createdSales = [];
 
-      for (const item of validatedData.saleItems) {
-        const product = products.find((p) => p.id === item.productId);
-        if (!product) continue;
+        for (const item of validatedData.saleItems) {
+          const product = products.find((p) => p.id === item.productId);
+          if (!product) continue;
 
-        // Calculate item totals
-        const packageValue = item.packageSale * item.packagePrice;
-        const refillValue = item.refillSale * item.refillPrice;
-        const itemTotal = packageValue + refillValue;
+          // Calculate item totals
+          const packageValue = item.packageSale * item.packagePrice;
+          const refillValue = item.refillSale * item.refillPrice;
+          const itemTotal = packageValue + refillValue;
 
-        // Calculate proportional discount and payment distribution
-        const itemDiscountPortion =
-          totalValue > 0 && totalDiscount > 0
-            ? (itemTotal / totalValue) * totalDiscount
-            : 0;
-        const itemNetValue = itemTotal - itemDiscountPortion;
-        const itemCashDeposited =
-          netValue > 0 && itemNetValue > 0
-            ? (itemNetValue / netValue) * validatedData.cashDeposited
-            : 0;
-
-        // Declare variables for sale records
-        let packageSale: any = null;
-        let refillSale: any = null;
-
-        // Create package sale if quantity > 0
-        if (item.packageSale > 0) {
-          const packageNet =
-            packageValue -
-            (itemTotal > 0
-              ? (packageValue / itemTotal) * itemDiscountPortion
-              : 0);
-          const packageCashDeposited =
-            netValue > 0 && packageNet > 0
-              ? (packageNet / netValue) * validatedData.cashDeposited
+          // Calculate proportional discount and payment distribution
+          const itemDiscountPortion =
+            totalValue > 0 && totalDiscount > 0
+              ? (itemTotal / totalValue) * totalDiscount
+              : 0;
+          const itemNetValue = itemTotal - itemDiscountPortion;
+          const itemCashDeposited =
+            netValue > 0 && itemNetValue > 0
+              ? (itemNetValue / netValue) * validatedData.cashDeposited
               : 0;
 
-          packageSale = await tx.sale.create({
-            data: {
-              tenantId,
-              driverId: validatedData.driverId,
-              productId: item.productId,
-              userId: userId,
-              customerName: validatedData.customerName,
-              saleType: SaleType.PACKAGE,
-              quantity: item.packageSale,
-              unitPrice: item.packagePrice,
-              totalValue: packageValue,
-              discount: (packageValue / itemTotal) * itemDiscountPortion,
-              netValue: packageNet,
-              paymentType: validatedData.paymentType,
-              cashDeposited: packageCashDeposited,
-              cylindersDeposited: 0, // Package sales don't have cylinder deposits
-              notes: validatedData.notes,
-              saleDate: new Date(),
-            },
-            include: {
-              driver: { select: { id: true, name: true, phone: true } },
-              product: {
-                select: {
-                  id: true,
-                  name: true,
-                  size: true,
-                  company: { select: { name: true } },
+          // Declare variables for sale records
+          let packageSale: any = null;
+          let refillSale: any = null;
+
+          // Create package sale if quantity > 0
+          if (item.packageSale > 0) {
+            const packageNet =
+              packageValue -
+              (itemTotal > 0
+                ? (packageValue / itemTotal) * itemDiscountPortion
+                : 0);
+            const packageCashDeposited =
+              netValue > 0 && packageNet > 0
+                ? (packageNet / netValue) * validatedData.cashDeposited
+                : 0;
+
+            packageSale = await tx.sale.create({
+              data: {
+                tenantId,
+                driverId: validatedData.driverId,
+                productId: item.productId,
+                userId: userId,
+                customerName: validatedData.customerName,
+                saleType: SaleType.PACKAGE,
+                quantity: item.packageSale,
+                unitPrice: item.packagePrice,
+                totalValue: packageValue,
+                discount: (packageValue / itemTotal) * itemDiscountPortion,
+                netValue: packageNet,
+                paymentType: validatedData.paymentType,
+                cashDeposited: packageCashDeposited,
+                cylindersDeposited: 0, // Package sales don't have cylinder deposits
+                notes: validatedData.notes,
+                saleDate: new Date(),
+              },
+              include: {
+                driver: { select: { id: true, name: true, phone: true } },
+                product: {
+                  select: {
+                    id: true,
+                    name: true,
+                    size: true,
+                    company: { select: { name: true } },
+                  },
                 },
               },
-            },
-          });
-          createdSales.push(packageSale);
-        }
+            });
+            createdSales.push(packageSale);
+          }
 
-        // Create refill sale if quantity > 0
-        if (item.refillSale > 0) {
-          const refillNet =
-            refillValue -
-            (itemTotal > 0
-              ? (refillValue / itemTotal) * itemDiscountPortion
-              : 0);
-          const refillCashDeposited =
-            netValue > 0 && refillNet > 0
-              ? (refillNet / netValue) * validatedData.cashDeposited
-              : 0;
+          // Create refill sale if quantity > 0
+          if (item.refillSale > 0) {
+            const refillNet =
+              refillValue -
+              (itemTotal > 0
+                ? (refillValue / itemTotal) * itemDiscountPortion
+                : 0);
+            const refillCashDeposited =
+              netValue > 0 && refillNet > 0
+                ? (refillNet / netValue) * validatedData.cashDeposited
+                : 0;
 
-          // Get cylinder deposits for this specific product size
-          const productSize = product?.size || '';
-          const refillCylindersDeposited = Math.min(
-            item.refillSale,
-            validatedData.cylinderDeposits?.[productSize] || 0
-          );
+            // Get cylinder deposits for this specific product size
+            const productSize = product?.size || '';
+            const refillCylindersDeposited = Math.min(
+              item.refillSale,
+              validatedData.cylinderDeposits?.[productSize] || 0
+            );
 
-          refillSale = await tx.sale.create({
-            data: {
-              tenantId,
-              driverId: validatedData.driverId,
-              productId: item.productId,
-              userId: userId,
-              customerName: validatedData.customerName,
-              saleType: SaleType.REFILL,
-              quantity: item.refillSale,
-              unitPrice: item.refillPrice,
-              totalValue: refillValue,
-              discount: (refillValue / itemTotal) * itemDiscountPortion,
-              netValue: refillNet,
-              paymentType: validatedData.paymentType,
-              cashDeposited: refillCashDeposited,
-              cylindersDeposited: refillCylindersDeposited,
-              notes: validatedData.notes,
-              saleDate: new Date(),
-            },
-            include: {
-              driver: {
-                select: {
-                  id: true,
-                  name: true,
-                  phone: true,
-                },
+            refillSale = await tx.sale.create({
+              data: {
+                tenantId,
+                driverId: validatedData.driverId,
+                productId: item.productId,
+                userId: userId,
+                customerName: validatedData.customerName,
+                saleType: SaleType.REFILL,
+                quantity: item.refillSale,
+                unitPrice: item.refillPrice,
+                totalValue: refillValue,
+                discount: (refillValue / itemTotal) * itemDiscountPortion,
+                netValue: refillNet,
+                paymentType: validatedData.paymentType,
+                cashDeposited: refillCashDeposited,
+                cylindersDeposited: refillCylindersDeposited,
+                notes: validatedData.notes,
+                saleDate: new Date(),
               },
-              product: {
-                select: {
-                  id: true,
-                  name: true,
-                  size: true,
-                  company: {
-                    select: {
-                      id: true,
-                      name: true,
+              include: {
+                driver: {
+                  select: {
+                    id: true,
+                    name: true,
+                    phone: true,
+                  },
+                },
+                product: {
+                  select: {
+                    id: true,
+                    name: true,
+                    size: true,
+                    company: {
+                      select: {
+                        id: true,
+                        name: true,
+                      },
                     },
                   },
                 },
               },
+            });
+
+            createdSales.push(refillSale);
+          }
+
+          // Record inventory movements for both package and refill sales
+          if (item.packageSale > 0 && packageSale) {
+            await inventoryCalculator.recordInventoryMovement(
+              tenantId,
+              item.productId,
+              'SALE_PACKAGE',
+              item.packageSale,
+              `Package sale to ${driver.name}`,
+              packageSale.id,
+              validatedData.driverId
+            );
+          }
+
+          if (item.refillSale > 0 && refillSale) {
+            await inventoryCalculator.recordInventoryMovement(
+              tenantId,
+              item.productId,
+              'SALE_REFILL',
+              item.refillSale,
+              `Refill sale to ${driver.name}`,
+              refillSale.id,
+              validatedData.driverId
+            );
+          }
+        }
+
+        // Note: Receivables calculation will be done after transaction completes
+        // to avoid transaction conflicts
+
+        // Create customer receivables for tracking individual customer debts
+        if (validatedData.cashDeposited < netValue) {
+          const cashReceivable = netValue - validatedData.cashDeposited;
+
+          await tx.customerReceivable.create({
+            data: {
+              tenantId,
+              driverId: validatedData.driverId,
+              customerName: validatedData.customerName || 'Walk-in Customer',
+              receivableType: 'CASH',
+              amount: cashReceivable,
+              dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
+              status: 'CURRENT',
             },
           });
-
-          createdSales.push(refillSale);
         }
 
-        // Record inventory movements for both package and refill sales
-        if (item.packageSale > 0 && packageSale) {
-          await inventoryCalculator.recordInventoryMovement(
-            tenantId,
-            item.productId,
-            'SALE_PACKAGE',
-            item.packageSale,
-            `Package sale to ${driver.name}`,
-            packageSale.id,
-            validatedData.driverId
-          );
-        }
+        // Create cylinder receivables per product size
+        if (totalRefillQuantity > totalCylinderDeposits) {
+          // Group refill sales by product size
+          const refillBySize = new Map();
 
-        if (item.refillSale > 0 && refillSale) {
-          await inventoryCalculator.recordInventoryMovement(
-            tenantId,
-            item.productId,
-            'SALE_REFILL',
-            item.refillSale,
-            `Refill sale to ${driver.name}`,
-            refillSale.id,
-            validatedData.driverId
-          );
-        }
-      }
+          validatedData.saleItems.forEach((item) => {
+            if (item.refillSale > 0) {
+              const product = products.find((p) => p.id === item.productId);
+              if (product) {
+                const size = product.size;
+                refillBySize.set(
+                  size,
+                  (refillBySize.get(size) || 0) + item.refillSale
+                );
+              }
+            }
+          });
 
-      // Note: Receivables calculation will be done after transaction completes
-      // to avoid transaction conflicts
+          // Create receivables by size using specific deposits
+          for (const [size, refillQuantity] of refillBySize) {
+            const depositsForSize = validatedData.cylinderDeposits?.[size] || 0;
+            const cylinderReceivable = refillQuantity - depositsForSize;
 
-      // Create customer receivables for tracking individual customer debts
-      if (validatedData.cashDeposited < netValue) {
-        const cashReceivable = netValue - validatedData.cashDeposited;
-
-        await tx.customerReceivable.create({
-          data: {
-            tenantId,
-            driverId: validatedData.driverId,
-            customerName: validatedData.customerName || 'Walk-in Customer',
-            receivableType: 'CASH',
-            amount: cashReceivable,
-            dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
-            status: 'CURRENT',
-          },
-        });
-      }
-
-      // Create cylinder receivables per product size
-      if (totalRefillQuantity > totalCylinderDeposits) {
-        // Group refill sales by product size
-        const refillBySize = new Map();
-
-        validatedData.saleItems.forEach((item) => {
-          if (item.refillSale > 0) {
-            const product = products.find((p) => p.id === item.productId);
-            if (product) {
-              const size = product.size;
-              refillBySize.set(
-                size,
-                (refillBySize.get(size) || 0) + item.refillSale
-              );
+            if (cylinderReceivable > 0) {
+              await tx.customerReceivable.create({
+                data: {
+                  tenantId,
+                  driverId: validatedData.driverId,
+                  customerName:
+                    validatedData.customerName || 'Walk-in Customer',
+                  receivableType: 'CYLINDER',
+                  quantity: cylinderReceivable,
+                  size: size,
+                  dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
+                  status: 'CURRENT',
+                },
+              });
             }
           }
-        });
-
-        // Create receivables by size using specific deposits
-        for (const [size, refillQuantity] of refillBySize) {
-          const depositsForSize = validatedData.cylinderDeposits?.[size] || 0;
-          const cylinderReceivable = refillQuantity - depositsForSize;
-
-          if (cylinderReceivable > 0) {
-            await tx.customerReceivable.create({
-              data: {
-                tenantId,
-                driverId: validatedData.driverId,
-                customerName: validatedData.customerName || 'Walk-in Customer',
-                receivableType: 'CYLINDER',
-                quantity: cylinderReceivable,
-                size: size,
-                dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
-                status: 'CURRENT',
-              },
-            });
-          }
         }
-      }
 
-      return createdSales;
-    });
+        return createdSales;
+      },
+      {
+        timeout: 30000, // 30 seconds timeout instead of default 5 seconds
+      }
+    );
 
     // Update receivables after transaction completes (to avoid transaction conflicts)
     setImmediate(async () => {

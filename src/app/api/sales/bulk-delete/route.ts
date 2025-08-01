@@ -104,25 +104,30 @@ export async function POST(request: NextRequest) {
     }
 
     // Delete sales in a transaction
-    const result = await prisma.$transaction(async (tx) => {
-      // First, delete related inventory movements
-      await tx.inventoryMovement.deleteMany({
-        where: {
-          tenantId,
-          reference: { in: salesIds },
-        },
-      });
+    const result = await prisma.$transaction(
+      async (tx) => {
+        // First, delete related inventory movements
+        await tx.inventoryMovement.deleteMany({
+          where: {
+            tenantId,
+            reference: { in: salesIds },
+          },
+        });
 
-      // Then delete the sales
-      const deletedSales = await tx.sale.deleteMany({
-        where: {
-          id: { in: salesIds },
-          tenantId,
-        },
-      });
+        // Then delete the sales
+        const deletedSales = await tx.sale.deleteMany({
+          where: {
+            id: { in: salesIds },
+            tenantId,
+          },
+        });
 
-      return deletedSales;
-    });
+        return deletedSales;
+      },
+      {
+        timeout: 20000, // 20 seconds timeout for bulk operations
+      }
+    );
 
     console.log('Bulk delete completed:', {
       deletedCount: result.count,

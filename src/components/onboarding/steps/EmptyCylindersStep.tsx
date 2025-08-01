@@ -71,9 +71,14 @@ export function EmptyCylindersStep({
           <CardDescription>{t('enterQuantityForEachSize')}</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="mb-4 rounded-lg border border-blue-200 bg-blue-50 p-4">
-            <p className="text-sm text-blue-800">
+          <div className="mb-4 rounded-lg border border-blue-200 bg-blue-50 p-4 dark:border-blue-800 dark:bg-blue-950">
+            <p className="text-sm text-blue-800 dark:text-blue-200">
               <strong>ℹ️ {t('emptyCylinderNote')}</strong>
+            </p>
+          </div>
+          <div className="mb-4 rounded-lg border border-amber-200 bg-amber-50 p-4 dark:border-amber-800 dark:bg-amber-950">
+            <p className="text-sm text-amber-800 dark:text-amber-200">
+              <strong>💡 {t('emptyCylinderStockReceivablesNote')}</strong>
             </p>
           </div>
           <div className="space-y-4">

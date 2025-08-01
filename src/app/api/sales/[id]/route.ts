@@ -156,77 +156,82 @@ export async function PUT(
     }
 
     // Update sale in transaction
-    const updatedSale = await prisma.$transaction(async (tx) => {
-      const sale = await tx.sale.update({
-        where: { id: saleId },
-        data: {
-          ...(validatedData.driverId && { driverId: validatedData.driverId }),
-          ...(validatedData.productId && {
-            productId: validatedData.productId,
-          }),
-          ...(validatedData.saleType && { saleType: validatedData.saleType }),
-          ...(validatedData.quantity && { quantity: validatedData.quantity }),
-          ...(validatedData.unitPrice && {
-            unitPrice: validatedData.unitPrice,
-          }),
-          ...(validatedData.discount !== undefined && {
-            discount: validatedData.discount,
-          }),
-          ...(validatedData.paymentType && {
-            paymentType: validatedData.paymentType,
-          }),
-          ...(validatedData.cashDeposited !== undefined && {
-            cashDeposited: validatedData.cashDeposited,
-          }),
-          ...(validatedData.cylindersDeposited !== undefined && {
-            cylindersDeposited: validatedData.cylindersDeposited,
-          }),
-          ...(validatedData.notes !== undefined && {
-            notes: validatedData.notes,
-          }),
-          totalValue,
-          netValue,
-          isOnCredit:
-            (validatedData.cashDeposited ?? existingSale.cashDeposited) <
+    const updatedSale = await prisma.$transaction(
+      async (tx) => {
+        const sale = await tx.sale.update({
+          where: { id: saleId },
+          data: {
+            ...(validatedData.driverId && { driverId: validatedData.driverId }),
+            ...(validatedData.productId && {
+              productId: validatedData.productId,
+            }),
+            ...(validatedData.saleType && { saleType: validatedData.saleType }),
+            ...(validatedData.quantity && { quantity: validatedData.quantity }),
+            ...(validatedData.unitPrice && {
+              unitPrice: validatedData.unitPrice,
+            }),
+            ...(validatedData.discount !== undefined && {
+              discount: validatedData.discount,
+            }),
+            ...(validatedData.paymentType && {
+              paymentType: validatedData.paymentType,
+            }),
+            ...(validatedData.cashDeposited !== undefined && {
+              cashDeposited: validatedData.cashDeposited,
+            }),
+            ...(validatedData.cylindersDeposited !== undefined && {
+              cylindersDeposited: validatedData.cylindersDeposited,
+            }),
+            ...(validatedData.notes !== undefined && {
+              notes: validatedData.notes,
+            }),
+            totalValue,
             netValue,
-          isCylinderCredit:
-            (validatedData.saleType ?? existingSale.saleType) ===
-              SaleType.REFILL &&
-            (validatedData.cylindersDeposited ??
-              existingSale.cylindersDeposited) <
-              (validatedData.quantity ?? existingSale.quantity),
-        },
-        include: {
-          driver: { select: { name: true } },
-          product: {
-            select: {
-              name: true,
-              size: true,
-              company: { select: { name: true } },
+            isOnCredit:
+              (validatedData.cashDeposited ?? existingSale.cashDeposited) <
+              netValue,
+            isCylinderCredit:
+              (validatedData.saleType ?? existingSale.saleType) ===
+                SaleType.REFILL &&
+              (validatedData.cylindersDeposited ??
+                existingSale.cylindersDeposited) <
+                (validatedData.quantity ?? existingSale.quantity),
+          },
+          include: {
+            driver: { select: { name: true } },
+            product: {
+              select: {
+                name: true,
+                size: true,
+                company: { select: { name: true } },
+              },
             },
           },
-        },
-      });
+        });
 
-      // Record the update in audit log
-      await tx.auditLog.create({
-        data: {
-          tenantId,
-          userId,
-          action: 'UPDATE',
-          entityType: 'Sale',
-          entityId: saleId,
-          oldValues: JSON.stringify(existingSale),
-          newValues: JSON.stringify(sale),
-          metadata: {
-            reason: 'Sale edit',
-            updatedFields: Object.keys(validatedData),
+        // Record the update in audit log
+        await tx.auditLog.create({
+          data: {
+            tenantId,
+            userId,
+            action: 'UPDATE',
+            entityType: 'Sale',
+            entityId: saleId,
+            oldValues: JSON.stringify(existingSale),
+            newValues: JSON.stringify(sale),
+            metadata: {
+              reason: 'Sale edit',
+              updatedFields: Object.keys(validatedData),
+            },
           },
-        },
-      });
+        });
 
-      return sale;
-    });
+        return sale;
+      },
+      {
+        timeout: 15000, // 15 seconds timeout
+      }
+    );
 
     return NextResponse.json({
       success: true,
@@ -311,25 +316,30 @@ export async function DELETE(
     }
 
     // Delete sale in transaction
-    await prisma.$transaction(async (tx) => {
-      // Delete the sale
-      await tx.sale.delete({
-        where: { id: saleId },
-      });
+    await prisma.$transaction(
+      async (tx) => {
+        // Delete the sale
+        await tx.sale.delete({
+          where: { id: saleId },
+        });
 
-      // Record the deletion in audit log
-      await tx.auditLog.create({
-        data: {
-          tenantId,
-          userId,
-          action: 'DELETE',
-          entityType: 'Sale',
-          entityId: saleId,
-          oldValues: JSON.stringify(existingSale),
-          metadata: { reason: 'Sale deletion', deletedBy: userId },
-        },
-      });
-    });
+        // Record the deletion in audit log
+        await tx.auditLog.create({
+          data: {
+            tenantId,
+            userId,
+            action: 'DELETE',
+            entityType: 'Sale',
+            entityId: saleId,
+            oldValues: JSON.stringify(existingSale),
+            metadata: { reason: 'Sale deletion', deletedBy: userId },
+          },
+        });
+      },
+      {
+        timeout: 10000, // 10 seconds timeout for delete
+      }
+    );
 
     return NextResponse.json({
       success: true,

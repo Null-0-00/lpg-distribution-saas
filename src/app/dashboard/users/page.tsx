@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import { Users, UserPlus, Shield, Edit, Trash2, Eye, X } from 'lucide-react';
 import { UserRole } from '@prisma/client';
 import { useSettings } from '@/contexts/SettingsContext';
+import { PagePermissionsSelector } from '@/components/users/PagePermissionsSelector';
+import { AVAILABLE_PAGES } from '@/lib/types/page-permissions';
 
 interface User {
   id: string;
@@ -16,6 +18,7 @@ interface User {
   createdAt: string;
   updatedAt: string;
   permissions: { id: string; name: string }[];
+  pagePermissions?: string[];
   recentActivity?: {
     salesLast30Days: number;
     expensesLast30Days: number;
@@ -56,6 +59,7 @@ export default function UsersPage() {
     password: '',
     role: UserRole.MANAGER,
     permissions: [],
+    pagePermissions: [],
   });
   const [submitting, setSubmitting] = useState(false);
   const [permissions, setPermissions] = useState<
@@ -207,6 +211,7 @@ export default function UsersPage() {
         password: '',
         role: UserRole.MANAGER,
         permissions: [],
+        pagePermissions: [],
       });
       setIsAddModalOpen(false);
     } catch (err) {
@@ -375,6 +380,7 @@ export default function UsersPage() {
               password: '',
               role: UserRole.MANAGER,
               permissions: [],
+              pagePermissions: [],
             });
             setIsAddModalOpen(true);
           }}
@@ -568,6 +574,7 @@ export default function UsersPage() {
                             password: '',
                             role: user.role,
                             permissions: user.permissions.map((p) => p.name),
+                            pagePermissions: user.pagePermissions || [],
                           });
                           setIsEditModalOpen(true);
                         }}
@@ -652,138 +659,172 @@ export default function UsersPage() {
 
       {/* Add User Modal */}
       {isAddModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-card w-full max-w-md rounded-lg p-6">
-            <div className="mb-4 flex items-center justify-between">
-              <h3 className="text-foreground text-lg font-semibold">
-                Add New User
-              </h3>
-              <button
-                onClick={() => setIsAddModalOpen(false)}
-                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
-              >
-                <X className="h-6 w-6" />
-              </button>
-            </div>
-
-            <div className="space-y-4">
-              <div>
-                <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Full Name
-                </label>
-                <input
-                  type="text"
-                  value={formData.name}
-                  onChange={(e) =>
-                    setFormData({ ...formData, name: e.target.value })
-                  }
-                  className="border-border bg-input text-foreground w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Enter full name"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Email Address
-                </label>
-                <input
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) =>
-                    setFormData({ ...formData, email: e.target.value })
-                  }
-                  className="border-border bg-input text-foreground w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Enter email address"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Password
-                </label>
-                <input
-                  type="password"
-                  value={formData.password}
-                  onChange={(e) =>
-                    setFormData({ ...formData, password: e.target.value })
-                  }
-                  className="border-border bg-input text-foreground w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Enter password (min 8 characters)"
-                  minLength={8}
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Role
-                </label>
-                <select
-                  value={formData.role}
-                  onChange={(e) => handleRoleChange(e.target.value as UserRole)}
-                  className="border-border bg-input text-foreground w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
+          <div className="bg-card flex max-h-[90vh] w-full max-w-4xl flex-col overflow-hidden rounded-lg shadow-xl">
+            <div className="bg-card border-border sticky top-0 z-10 flex-shrink-0 border-b p-6">
+              <div className="flex items-center justify-between">
+                <h3 className="text-foreground text-lg font-semibold">
+                  {t('addNewUser')}
+                </h3>
+                <button
+                  onClick={() => setIsAddModalOpen(false)}
+                  className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
                 >
-                  <option value={UserRole.MANAGER}>{t('manager')}</option>
-                  <option value={UserRole.ADMIN}>{t('administrator')}</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Permissions
-                </label>
-                <select
-                  multiple
-                  value={formData.permissions}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      permissions: Array.from(
-                        e.target.selectedOptions,
-                        (option) => option.value
-                      ),
-                    })
-                  }
-                  className="border-border bg-input text-foreground w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  {permissions.map((p) => (
-                    <option key={p.id} value={p.name}>
-                      {p.name}
-                    </option>
-                  ))}
-                </select>
+                  <X className="h-6 w-6" />
+                </button>
               </div>
             </div>
 
-            <div className="mt-6 flex justify-end space-x-3">
-              <button
-                onClick={() => setIsAddModalOpen(false)}
-                disabled={submitting}
-                className="text-muted-foreground border-border hover:bg-muted/50 rounded-lg border px-4 py-2 disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                {t('cancel')}
-              </button>
-              <button
-                onClick={handleAddUser}
-                disabled={
-                  !formData.name ||
-                  !formData.email ||
-                  !formData.password ||
-                  submitting
-                }
-                className="flex items-center rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                {submitting ? (
-                  <>
-                    <div className="mr-2 h-4 w-4 animate-spin rounded-full border-b-2 border-white"></div>
-                    {t('creating')}...
-                  </>
-                ) : (
-                  t('addUser')
+            <div className="flex-1 overflow-y-auto p-6">
+              <div className="space-y-6">
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                  <div>
+                    <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                      {t('fullName')}
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.name}
+                      onChange={(e) =>
+                        setFormData({ ...formData, name: e.target.value })
+                      }
+                      className="border-border bg-input text-foreground w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder={t('enterFullNamePlaceholder')}
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                      {t('emailAddress')}
+                    </label>
+                    <input
+                      type="email"
+                      value={formData.email}
+                      onChange={(e) =>
+                        setFormData({ ...formData, email: e.target.value })
+                      }
+                      className="border-border bg-input text-foreground w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder={t('enterEmailAddressPlaceholder')}
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                  <div>
+                    <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                      {t('password')}
+                    </label>
+                    <input
+                      type="password"
+                      value={formData.password}
+                      onChange={(e) =>
+                        setFormData({ ...formData, password: e.target.value })
+                      }
+                      className="border-border bg-input text-foreground w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder={t('enterPasswordPlaceholder')}
+                      minLength={8}
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                      {t('role')}
+                    </label>
+                    <select
+                      value={formData.role}
+                      onChange={(e) =>
+                        handleRoleChange(e.target.value as UserRole)
+                      }
+                      className="border-border bg-input text-foreground w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                      <option value={UserRole.MANAGER}>{t('manager')}</option>
+                      <option value={UserRole.ADMIN}>
+                        {t('administrator')}
+                      </option>
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Permissions
+                  </label>
+                  <select
+                    multiple
+                    value={formData.permissions}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        permissions: Array.from(
+                          e.target.selectedOptions,
+                          (option) => option.value
+                        ),
+                      })
+                    }
+                    className="border-border bg-input text-foreground h-32 w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    {permissions.map((p) => (
+                      <option key={p.id} value={p.name}>
+                        {p.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {formData.role === UserRole.MANAGER && (
+                  <div>
+                    <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                      Page Access Permissions
+                    </label>
+                    <div className="rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-gray-600 dark:bg-gray-800">
+                      <PagePermissionsSelector
+                        selectedPermissions={formData.pagePermissions}
+                        onPermissionChange={(permissions) =>
+                          setFormData({
+                            ...formData,
+                            pagePermissions: permissions,
+                          })
+                        }
+                        disabled={submitting}
+                      />
+                    </div>
+                  </div>
                 )}
-              </button>
+              </div>
+            </div>
+
+            <div className="bg-card border-border sticky bottom-0 flex-shrink-0 border-t p-6">
+              <div className="flex justify-end space-x-3">
+                <button
+                  onClick={() => setIsAddModalOpen(false)}
+                  disabled={submitting}
+                  className="text-muted-foreground border-border hover:bg-muted/50 rounded-lg border px-4 py-2 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  {t('cancel')}
+                </button>
+                <button
+                  onClick={handleAddUser}
+                  disabled={
+                    !formData.name ||
+                    !formData.email ||
+                    !formData.password ||
+                    submitting
+                  }
+                  className="flex items-center rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  {submitting ? (
+                    <>
+                      <div className="mr-2 h-4 w-4 animate-spin rounded-full border-b-2 border-white"></div>
+                      {t('creating')}...
+                    </>
+                  ) : (
+                    t('addUser')
+                  )}
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -791,122 +832,156 @@ export default function UsersPage() {
 
       {/* Edit User Modal */}
       {isEditModalOpen && editingUser && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-card w-full max-w-md rounded-lg p-6">
-            <div className="mb-4 flex items-center justify-between">
-              <h3 className="text-foreground text-lg font-semibold">
-                {t('editUser')}
-              </h3>
-              <button
-                onClick={() => {
-                  setIsEditModalOpen(false);
-                  setEditingUser(null);
-                }}
-                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
-              >
-                <X className="h-6 w-6" />
-              </button>
-            </div>
-
-            <div className="space-y-4">
-              <div>
-                <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Full Name
-                </label>
-                <input
-                  type="text"
-                  value={formData.name}
-                  onChange={(e) =>
-                    setFormData({ ...formData, name: e.target.value })
-                  }
-                  className="border-border bg-input text-foreground w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Enter full name"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Email Address
-                </label>
-                <input
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) =>
-                    setFormData({ ...formData, email: e.target.value })
-                  }
-                  className="border-border bg-input text-foreground w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Enter email address"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Role
-                </label>
-                <select
-                  value={formData.role}
-                  onChange={(e) => handleRoleChange(e.target.value as UserRole)}
-                  className="border-border bg-input text-foreground w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
+          <div className="bg-card flex max-h-[90vh] w-full max-w-4xl flex-col overflow-hidden rounded-lg shadow-xl">
+            <div className="bg-card border-border sticky top-0 z-10 flex-shrink-0 border-b p-6">
+              <div className="flex items-center justify-between">
+                <h3 className="text-foreground text-lg font-semibold">
+                  {t('editUser')}
+                </h3>
+                <button
+                  onClick={() => {
+                    setIsEditModalOpen(false);
+                    setEditingUser(null);
+                  }}
+                  className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
                 >
-                  <option value={UserRole.MANAGER}>{t('manager')}</option>
-                  <option value={UserRole.ADMIN}>{t('administrator')}</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Permissions
-                </label>
-                <select
-                  multiple
-                  value={formData.permissions}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      permissions: Array.from(
-                        e.target.selectedOptions,
-                        (option) => option.value
-                      ),
-                    })
-                  }
-                  className="border-border bg-input text-foreground w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  {permissions.map((p) => (
-                    <option key={p.id} value={p.name}>
-                      {p.name}
-                    </option>
-                  ))}
-                </select>
+                  <X className="h-6 w-6" />
+                </button>
               </div>
             </div>
 
-            <div className="mt-6 flex justify-end space-x-3">
-              <button
-                onClick={() => {
-                  setIsEditModalOpen(false);
-                  setEditingUser(null);
-                }}
-                disabled={submitting}
-                className="text-muted-foreground border-border hover:bg-muted/50 rounded-lg border px-4 py-2 disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                {t('cancel')}
-              </button>
-              <button
-                onClick={handleEditUser}
-                disabled={!formData.name || !formData.email || submitting}
-                className="flex items-center rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                {submitting ? (
-                  <>
-                    <div className="mr-2 h-4 w-4 animate-spin rounded-full border-b-2 border-white"></div>
-                    {t('updating')}...
-                  </>
-                ) : (
-                  t('updateUser')
+            <div className="flex-1 overflow-y-auto p-6">
+              <div className="space-y-6">
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                  <div>
+                    <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                      Full Name
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.name}
+                      onChange={(e) =>
+                        setFormData({ ...formData, name: e.target.value })
+                      }
+                      className="border-border bg-input text-foreground w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder="Enter full name"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                      Email Address
+                    </label>
+                    <input
+                      type="email"
+                      value={formData.email}
+                      onChange={(e) =>
+                        setFormData({ ...formData, email: e.target.value })
+                      }
+                      className="border-border bg-input text-foreground w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder="Enter email address"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                  <div>
+                    <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                      Role
+                    </label>
+                    <select
+                      value={formData.role}
+                      onChange={(e) =>
+                        handleRoleChange(e.target.value as UserRole)
+                      }
+                      className="border-border bg-input text-foreground w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                      <option value={UserRole.MANAGER}>{t('manager')}</option>
+                      <option value={UserRole.ADMIN}>
+                        {t('administrator')}
+                      </option>
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Permissions
+                  </label>
+                  <select
+                    multiple
+                    value={formData.permissions}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        permissions: Array.from(
+                          e.target.selectedOptions,
+                          (option) => option.value
+                        ),
+                      })
+                    }
+                    className="border-border bg-input text-foreground h-32 w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    {permissions.map((p) => (
+                      <option key={p.id} value={p.name}>
+                        {p.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {formData.role === UserRole.MANAGER && (
+                  <div>
+                    <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                      Page Access Permissions
+                    </label>
+                    <div className="rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-gray-600 dark:bg-gray-800">
+                      <PagePermissionsSelector
+                        selectedPermissions={formData.pagePermissions}
+                        onPermissionChange={(permissions) =>
+                          setFormData({
+                            ...formData,
+                            pagePermissions: permissions,
+                          })
+                        }
+                        disabled={submitting}
+                      />
+                    </div>
+                  </div>
                 )}
-              </button>
+              </div>
+            </div>
+
+            <div className="bg-card border-border sticky bottom-0 flex-shrink-0 border-t p-6">
+              <div className="flex justify-end space-x-3">
+                <button
+                  onClick={() => {
+                    setIsEditModalOpen(false);
+                    setEditingUser(null);
+                  }}
+                  disabled={submitting}
+                  className="text-muted-foreground border-border hover:bg-muted/50 rounded-lg border px-4 py-2 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  {t('cancel')}
+                </button>
+                <button
+                  onClick={handleEditUser}
+                  disabled={!formData.name || !formData.email || submitting}
+                  className="flex items-center rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  {submitting ? (
+                    <>
+                      <div className="mr-2 h-4 w-4 animate-spin rounded-full border-b-2 border-white"></div>
+                      {t('updating')}...
+                    </>
+                  ) : (
+                    t('updateUser')
+                  )}
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -981,6 +1056,36 @@ export default function UsersPage() {
                   ))}
                 </div>
               </div>
+
+              {editingUser.role === UserRole.MANAGER &&
+                editingUser.pagePermissions && (
+                  <div>
+                    <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                      Page Access Permissions
+                    </label>
+                    <div className="flex flex-wrap gap-2">
+                      {editingUser.pagePermissions.map((pageId, index) => {
+                        const page = AVAILABLE_PAGES.find(
+                          (p) => p.id === pageId
+                        );
+                        return page ? (
+                          <span
+                            key={index}
+                            className="inline-flex rounded-full bg-green-100 px-2 py-1 text-xs text-green-800 dark:bg-green-900 dark:text-green-200"
+                          >
+                            {page.name}
+                          </span>
+                        ) : null;
+                      })}
+                    </div>
+                    {(!editingUser.pagePermissions ||
+                      editingUser.pagePermissions.length === 0) && (
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                        No page permissions assigned
+                      </p>
+                    )}
+                  </div>
+                )}
             </div>
 
             <div className="mt-6 flex justify-end space-x-3">

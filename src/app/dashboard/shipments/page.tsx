@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
 import {
   Ship,
   Plus,
@@ -83,7 +84,12 @@ interface Shipment {
 }
 
 export default function ShipmentsPage() {
+  const { data: session } = useSession();
   const { formatCurrency, formatDate, t } = useSettings();
+
+  // Check if user is admin (can select any date) or manager (restricted to today)
+  const isAdmin = session?.user?.role === 'ADMIN';
+  const today = new Date().toISOString().split('T')[0];
   const [shipments, setShipments] = useState<Shipment[]>([]);
   const [companies, setCompanies] = useState<Company[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
@@ -1686,10 +1692,16 @@ export default function ShipmentsPage() {
                         <div>
                           <label className="text-muted-foreground mb-2 block text-sm font-medium">
                             {t('shipmentDate')} *
+                            {!isAdmin && (
+                              <span className="ml-1 text-xs text-gray-500">
+                                ({t('fixedToToday')})
+                              </span>
+                            )}
                           </label>
                           <input
                             type="date"
                             value={formData.shipmentDate}
+                            disabled={!isAdmin}
                             onChange={(e) => {
                               setFormData((prev) => ({
                                 ...prev,
@@ -1704,7 +1716,7 @@ export default function ShipmentsPage() {
                               formErrors.shipmentDate
                                 ? 'border-red-500'
                                 : 'border-border'
-                            }`}
+                            } ${!isAdmin ? 'cursor-not-allowed bg-gray-100' : ''}`}
                           />
                           {formErrors.shipmentDate && (
                             <p className="mt-1 text-sm text-red-600">
@@ -2634,17 +2646,23 @@ export default function ShipmentsPage() {
               <div>
                 <label className="text-muted-foreground mb-1 block text-sm font-medium">
                   {t('transactionDate')}
+                  {!isAdmin && (
+                    <span className="ml-1 text-xs text-gray-500">
+                      ({t('fixedToToday')})
+                    </span>
+                  )}
                 </label>
                 <input
                   type="date"
                   value={emptyCylinderData.date}
+                  disabled={!isAdmin}
                   onChange={(e) =>
                     setEmptyCylinderData((prev) => ({
                       ...prev,
                       date: e.target.value,
                     }))
                   }
-                  className="border-border bg-input text-foreground w-full rounded-md border px-3 py-2"
+                  className={`border-border bg-input text-foreground w-full rounded-md border px-3 py-2 ${!isAdmin ? 'cursor-not-allowed bg-gray-100' : ''}`}
                   required
                 />
               </div>

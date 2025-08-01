@@ -87,6 +87,8 @@ model User {
   emailVerifiedAt               DateTime?
   // Password reset tracking
   passwordResetRequestedAt      DateTime?
+  // Page permissions for managers
+  pagePermissions               Json?
   auditLogs                     AuditLog[]
   deposits                      Deposit[]
   distributorAssignments        DistributorAssignment[]

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import { ExpenseCategory, ExpenseParentCategory } from '@/hooks/useCategories';
 import { categorySchema, CategoryFormData } from '@/lib/validations/expense';
+import { useTranslation } from '@/hooks/useTranslation';
 import { z } from 'zod';
 
 interface CategoryFormProps {
@@ -27,6 +28,7 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({
   submitLabel,
   isSubmitting,
 }) => {
+  const { t } = useTranslation({ component: 'CategoryForm' });
   const [formData, setFormData] = useState<CategoryFormData>({
     name: '',
     description: '',
@@ -148,7 +150,7 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({
           {!editingCategory && (
             <div>
               <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                Category Type
+                {t('categoryType')}
               </label>
               <div className="space-y-2">
                 <label className="flex items-center">
@@ -160,7 +162,7 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({
                     className="mr-2"
                   />
                   <span className="text-sm text-gray-700 dark:text-gray-300">
-                    Sub-category (with budget)
+                    {t('subCategoryWithBudget')}
                   </span>
                 </label>
                 <label className="flex items-center">
@@ -172,7 +174,7 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({
                     className="mr-2"
                   />
                   <span className="text-sm text-gray-700 dark:text-gray-300">
-                    Parent category (grouping only)
+                    {t('parentCategoryGroupingOnly')}
                   </span>
                 </label>
               </div>
@@ -182,7 +184,7 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({
           {/* Name */}
           <div>
             <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Name *
+              {t('name')} *
             </label>
             <input
               type="text"
@@ -193,7 +195,7 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({
                   ? 'border-red-500'
                   : 'border-gray-300 dark:border-gray-600'
               }`}
-              placeholder="Enter category name"
+              placeholder={t('enterCategoryName')}
             />
             {errors.name && (
               <p className="mt-1 text-sm text-red-600 dark:text-red-400">
@@ -205,7 +207,7 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({
           {/* Description */}
           <div>
             <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Description
+              {t('description')}
             </label>
             <textarea
               value={formData.description || ''}
@@ -216,7 +218,7 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({
                   ? 'border-red-500'
                   : 'border-gray-300 dark:border-gray-600'
               }`}
-              placeholder="Enter category description"
+              placeholder={t('enterCategoryDescription')}
             />
             {errors.description && (
               <p className="mt-1 text-sm text-red-600 dark:text-red-400">
@@ -229,7 +231,7 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({
           {!formData.isParent && (
             <div>
               <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                Parent Category
+                {t('parentCategory')}
               </label>
               <select
                 value={formData.parentId || ''}
@@ -240,7 +242,7 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({
                     : 'border-gray-300 dark:border-gray-600'
                 }`}
               >
-                <option value="">No parent category</option>
+                <option value="">{t('noParentCategory')}</option>
                 {parentCategories.map((parent) => (
                   <option key={parent.id} value={parent.id}>
                     {parent.name}
@@ -259,7 +261,7 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({
           {!formData.isParent && (
             <div>
               <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                Monthly Budget
+                {t('monthlyBudget')}
               </label>
               <input
                 type="number"
@@ -285,7 +287,7 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({
                 </p>
               )}
               <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                Leave empty for no budget limit
+                {t('leaveEmptyForNoBudgetLimit')}
               </p>
             </div>
           )}
@@ -297,7 +299,7 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({
               onClick={handleClose}
               className="text-muted-foreground border-border hover:bg-muted/50 rounded-md border px-4 py-2 transition-colors"
             >
-              Cancel
+              {t('cancel')}
             </button>
             <button
               type="submit"
@@ -307,7 +309,7 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({
               {isSubmitting ? (
                 <>
                   <div className="mr-2 h-4 w-4 animate-spin rounded-full border-b-2 border-white"></div>
-                  Submitting...
+                  {t('submitting')}
                 </>
               ) : (
                 submitLabel

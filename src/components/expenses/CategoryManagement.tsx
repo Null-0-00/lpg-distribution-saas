@@ -3,6 +3,7 @@ import { X, Plus, Edit2, Trash2, Folder, Tag } from 'lucide-react';
 import { ExpenseCategory, ExpenseParentCategory } from '@/hooks/useCategories';
 import { CategoryForm } from './forms/CategoryForm';
 import { CategoryFormData } from '@/lib/validations/expense';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface CategoryManagementProps {
   isOpen: boolean;
@@ -34,6 +35,7 @@ export const CategoryManagement: React.FC<CategoryManagementProps> = ({
   loading,
   isSubmitting,
 }) => {
+  const { t } = useTranslation({ component: 'CategoryManagement' });
   const [showCategoryForm, setShowCategoryForm] = useState(false);
   const [editingCategory, setEditingCategory] =
     useState<ExpenseCategory | null>(null);
@@ -83,9 +85,9 @@ export const CategoryManagement: React.FC<CategoryManagementProps> = ({
   };
 
   const getParentName = (parentId: string | null) => {
-    if (!parentId) return 'No Parent';
+    if (!parentId) return t('noParent');
     const parent = parentCategories.find((p) => p.id === parentId);
-    return parent ? parent.name : 'Unknown Parent';
+    return parent ? parent.name : t('unknownParent');
   };
 
   if (!isOpen) return null;
@@ -96,7 +98,7 @@ export const CategoryManagement: React.FC<CategoryManagementProps> = ({
         <div className="bg-card max-h-[90vh] w-full max-w-4xl overflow-y-auto rounded-lg shadow-xl">
           <div className="border-border flex items-center justify-between border-b p-6">
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-              Category Management
+              {t('categoryManagement')}
             </h2>
             <button
               onClick={onClose}
@@ -114,7 +116,7 @@ export const CategoryManagement: React.FC<CategoryManagementProps> = ({
                 className="flex items-center rounded-lg bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
               >
                 <Plus className="mr-2 h-4 w-4" />
-                Add New Category
+                {t('addNewCategory')}
               </button>
             </div>
 
@@ -122,7 +124,7 @@ export const CategoryManagement: React.FC<CategoryManagementProps> = ({
               <div className="flex items-center justify-center py-8">
                 <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-blue-600"></div>
                 <span className="ml-2 text-gray-600 dark:text-gray-400">
-                  Loading categories...
+                  {t('loadingCategories')}
                 </span>
               </div>
             ) : (
@@ -131,13 +133,12 @@ export const CategoryManagement: React.FC<CategoryManagementProps> = ({
                 <div className="mb-8">
                   <h3 className="mb-4 flex items-center text-lg font-semibold text-gray-900 dark:text-white">
                     <Folder className="mr-2 h-5 w-5" />
-                    Parent Categories ({parentCategories.length})
+                    {t('parentCategories')} ({parentCategories.length})
                   </h3>
 
                   {parentCategories.length === 0 ? (
                     <div className="py-4 text-center text-gray-500 dark:text-gray-400">
-                      No parent categories found. Create your first parent
-                      category to organize your expenses.
+                      {t('noParentCategoriesFound')}
                     </div>
                   ) : (
                     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -157,7 +158,7 @@ export const CategoryManagement: React.FC<CategoryManagementProps> = ({
                               <button
                                 onClick={() => handleEditParentCategory(parent)}
                                 className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200"
-                                title="Edit parent category"
+                                title={t('editParentCategory')}
                               >
                                 <Edit2 className="h-4 w-4" />
                               </button>
@@ -166,7 +167,7 @@ export const CategoryManagement: React.FC<CategoryManagementProps> = ({
                                   handleDeleteParentCategory(parent)
                                 }
                                 className="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-200"
-                                title="Delete parent category"
+                                title={t('deleteParentCategory')}
                                 disabled={
                                   parent.categories &&
                                   parent.categories.length > 0
@@ -182,7 +183,8 @@ export const CategoryManagement: React.FC<CategoryManagementProps> = ({
                             </p>
                           )}
                           <div className="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                            {parent.categories?.length || 0} sub-categories
+                            {parent.categories?.length || 0}{' '}
+                            {t('subCategories')}
                           </div>
                         </div>
                       ))}
@@ -194,13 +196,12 @@ export const CategoryManagement: React.FC<CategoryManagementProps> = ({
                 <div>
                   <h3 className="mb-4 flex items-center text-lg font-semibold text-gray-900 dark:text-white">
                     <Tag className="mr-2 h-5 w-5" />
-                    Sub-Categories ({categories.length})
+                    {t('subCategoriesTitle')} ({categories.length})
                   </h3>
 
                   {categories.length === 0 ? (
                     <div className="py-4 text-center text-gray-500 dark:text-gray-400">
-                      No sub-categories found. Create your first sub-category to
-                      start tracking expenses.
+                      {t('noSubCategoriesFound')}
                     </div>
                   ) : (
                     <div className="overflow-x-auto">
@@ -208,22 +209,22 @@ export const CategoryManagement: React.FC<CategoryManagementProps> = ({
                         <thead>
                           <tr className="bg-gray-50 dark:bg-gray-700">
                             <th className="border border-gray-200 px-4 py-2 text-left text-sm font-medium text-gray-900 dark:border-gray-600 dark:text-white">
-                              Name
+                              {t('name')}
                             </th>
                             <th className="border border-gray-200 px-4 py-2 text-left text-sm font-medium text-gray-900 dark:border-gray-600 dark:text-white">
-                              Parent
+                              {t('parent')}
                             </th>
                             <th className="border border-gray-200 px-4 py-2 text-left text-sm font-medium text-gray-900 dark:border-gray-600 dark:text-white">
-                              Budget
+                              {t('budget')}
                             </th>
                             <th className="border border-gray-200 px-4 py-2 text-left text-sm font-medium text-gray-900 dark:border-gray-600 dark:text-white">
-                              Spent This Month
+                              {t('spentThisMonth')}
                             </th>
                             <th className="border border-gray-200 px-4 py-2 text-left text-sm font-medium text-gray-900 dark:border-gray-600 dark:text-white">
-                              Status
+                              {t('status')}
                             </th>
                             <th className="border border-gray-200 px-4 py-2 text-left text-sm font-medium text-gray-900 dark:border-gray-600 dark:text-white">
-                              Actions
+                              {t('actions')}
                             </th>
                           </tr>
                         </thead>
@@ -248,7 +249,7 @@ export const CategoryManagement: React.FC<CategoryManagementProps> = ({
                               <td className="border border-gray-200 px-4 py-2 text-sm text-gray-600 dark:border-gray-600 dark:text-gray-400">
                                 {category.budget
                                   ? formatCurrency(category.budget)
-                                  : 'No Budget'}
+                                  : t('noBudget')}
                               </td>
                               <td className="border border-gray-200 px-4 py-2 text-sm text-gray-600 dark:border-gray-600 dark:text-gray-400">
                                 {formatCurrency(category.currentMonthSpending)}
@@ -261,11 +262,13 @@ export const CategoryManagement: React.FC<CategoryManagementProps> = ({
                                       : 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200'
                                   }`}
                                 >
-                                  {category.isActive ? 'Active' : 'Inactive'}
+                                  {category.isActive
+                                    ? t('active')
+                                    : t('inactive')}
                                 </span>
                                 {category.isOverBudget && (
                                   <span className="ml-1 inline-flex rounded-full bg-red-100 px-2 py-1 text-xs font-semibold text-red-800 dark:bg-red-900 dark:text-red-200">
-                                    Over Budget
+                                    {t('overBudget')}
                                   </span>
                                 )}
                               </td>
@@ -274,7 +277,7 @@ export const CategoryManagement: React.FC<CategoryManagementProps> = ({
                                   <button
                                     onClick={() => handleEditCategory(category)}
                                     className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200"
-                                    title="Edit category"
+                                    title={t('editCategory')}
                                   >
                                     <Edit2 className="h-4 w-4" />
                                   </button>
@@ -283,7 +286,7 @@ export const CategoryManagement: React.FC<CategoryManagementProps> = ({
                                       handleDeleteCategory(category)
                                     }
                                     className="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-200"
-                                    title="Delete category"
+                                    title={t('deleteCategory')}
                                   >
                                     <Trash2 className="h-4 w-4" />
                                   </button>
@@ -321,17 +324,17 @@ export const CategoryManagement: React.FC<CategoryManagementProps> = ({
         editingCategory={editingCategory}
         title={
           editingCategory
-            ? 'Edit Category'
+            ? t('editCategory')
             : editingParentCategory
-              ? 'Edit Parent Category'
-              : 'Add New Category'
+              ? t('editParentCategory')
+              : t('addNewCategory')
         }
         submitLabel={
           editingCategory
-            ? 'Update Category'
+            ? t('updateCategory')
             : editingParentCategory
-              ? 'Update Parent Category'
-              : 'Create Category'
+              ? t('updateParentCategory')
+              : t('createCategory')
         }
         isSubmitting={isSubmitting}
       />

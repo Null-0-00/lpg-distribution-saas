@@ -64,7 +64,15 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             where: {
               email: credentials.email as string,
             },
-            include: {
+            select: {
+              id: true,
+              email: true,
+              name: true,
+              password: true,
+              role: true,
+              isActive: true,
+              tenantId: true,
+              pagePermissions: true,
               tenant: {
                 select: {
                   id: true,
@@ -134,6 +142,21 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
           console.log('✅ Authentication successful for:', user.email);
 
+          // Parse pagePermissions JSON properly
+          let parsedPagePermissions: string[] = [];
+          if (user.pagePermissions) {
+            try {
+              // If it's already an array, use it; if it's a JSON string, parse it
+              parsedPagePermissions = Array.isArray(user.pagePermissions)
+                ? user.pagePermissions
+                : JSON.parse(user.pagePermissions as string);
+              console.log('🔑 Parsed pagePermissions:', parsedPagePermissions);
+            } catch (error) {
+              console.error('Error parsing pagePermissions:', error);
+              parsedPagePermissions = [];
+            }
+          }
+
           // Return complete user object
           return {
             id: user.id,
@@ -142,6 +165,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             role: user.role,
             tenantId: user.tenantId,
             tenant: user.tenant,
+            pagePermissions: parsedPagePermissions,
           };
         } catch (error) {
           console.error('🚨 Authentication error:', error);
@@ -170,9 +194,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         // Initial sign in
         if (user) {
           console.log('🎫 JWT: Adding user data to token');
+          console.log('🔑 User pagePermissions:', user.pagePermissions);
           token.role = user.role || 'MANAGER';
           token.tenantId = user.tenantId || null; // Handle super admin (no tenant)
           token.tenant = user.tenant || null;
+          token.pagePermissions = user.pagePermissions || [];
         }
         return token;
       } catch (error) {
@@ -186,9 +212,16 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         // Send properties to the client
         if (token && session.user) {
           console.log('👤 Session: Building user session');
+          console.log('🔑 Token pagePermissions:', token.pagePermissions);
           session.user.id = token.sub!;
           session.user.role = (token.role as UserRole) || 'MANAGER';
           session.user.tenantId = (token.tenantId as string | null) || null; // Allow null for super admin
+          session.user.pagePermissions =
+            (token.pagePermissions as string[]) || [];
+          console.log(
+            '✅ Final session user:',
+            JSON.stringify(session.user, null, 2)
+          );
         }
         return session;
       } catch (error) {

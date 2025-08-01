@@ -9,6 +9,7 @@ const updateUserSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters').optional(),
   role: z.nativeEnum(UserRole).optional(),
   permissions: z.array(z.string()).optional(),
+  pagePermissions: z.array(z.string()).optional(),
 });
 
 export async function PUT(
@@ -77,7 +78,13 @@ export async function PUT(
         tenantId,
       },
       data: {
-        ...validatedData,
+        email: validatedData.email,
+        name: validatedData.name,
+        role: validatedData.role,
+        pagePermissions:
+          validatedData.pagePermissions !== undefined
+            ? validatedData.pagePermissions
+            : undefined,
         permissions: {
           set: validatedData.permissions
             ? validatedData.permissions.map((name) => ({ name }))

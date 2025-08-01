@@ -3,6 +3,7 @@ import './globals.css';
 import { APP_CONFIG } from '@/lib/utils/constants';
 import { SessionProvider } from '@/components/providers/SessionProvider';
 import { QueryProvider } from '@/components/providers/QueryProvider';
+import { ReactQueryDevTools } from '@/components/providers/ReactQueryDevTools';
 import { ThemeProvider } from '@/providers/ThemeProvider';
 import { SettingsProvider } from '@/contexts/SettingsContext';
 
@@ -93,25 +94,6 @@ export default function RootLayout({
         suppressHydrationWarning
         data-suppress-hydration-warning
       >
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              (function() {
-                try {
-                  var theme = localStorage.getItem('theme') || 'system';
-                  var systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-                  var effectiveTheme = theme === 'system' ? systemTheme : theme;
-                  
-                  document.documentElement.classList.remove('light', 'dark');
-                  document.documentElement.classList.add(effectiveTheme);
-                  document.documentElement.style.colorScheme = effectiveTheme;
-                } catch (e) {
-                  console.warn('Theme initialization failed:', e);
-                }
-              })();
-            `,
-          }}
-        />
         <SessionProvider>
           <QueryProvider>
             <SettingsProvider>

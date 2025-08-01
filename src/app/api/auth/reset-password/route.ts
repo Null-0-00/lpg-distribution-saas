@@ -6,7 +6,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import {
   verifyPasswordResetCode,
-  usePasswordResetCode,
+  markPasswordResetCodeAsUsed,
 } from '@/lib/email/verification';
 import bcrypt from 'bcryptjs';
 import { prisma } from '@/lib/prisma';
@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
     const hashedPassword = await bcrypt.hash(password, 12);
 
     // Use the reset code (mark as used) and update password
-    const useResult = await usePasswordResetCode(email, code);
+    const useResult = await markPasswordResetCodeAsUsed(email, code);
 
     if (!useResult.success) {
       return NextResponse.json({ error: useResult.error }, { status: 400 });

@@ -1734,8 +1734,8 @@ export default function AssetsPage() {
           <div className="bg-card w-full max-w-md rounded-lg p-6">
             <div className="mb-4 flex items-center justify-between">
               <h3 className="text-foreground text-lg font-semibold">
-                {editingItem ? t('edit') : 'Add New'}{' '}
-                {modalType === 'asset' ? 'Asset' : 'Liability'}
+                {editingItem ? t('edit') : t('addNew')}{' '}
+                {modalType === 'asset' ? t('asset') : t('liability')}
               </h3>
               <button
                 onClick={closeModal}
@@ -1761,7 +1761,7 @@ export default function AssetsPage() {
                       : 'bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300'
                   }`}
                 >
-                  Asset
+                  {t('asset')}
                 </button>
                 <button
                   onClick={() => {
@@ -1785,7 +1785,7 @@ export default function AssetsPage() {
             <div className="space-y-4">
               <div>
                 <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  {modalType === 'asset' ? 'Asset' : 'Liability'} Name
+                  {modalType === 'asset' ? t('assetName') : t('liabilityName')}
                 </label>
                 <input
                   type="text"
@@ -1794,7 +1794,11 @@ export default function AssetsPage() {
                     setFormData({ ...formData, name: e.target.value })
                   }
                   className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-                  placeholder={`Enter ${modalType} name`}
+                  placeholder={
+                    modalType === 'asset'
+                      ? t('enterAssetNamePlaceholder')
+                      : t('enterLiabilityNamePlaceholder')
+                  }
                 />
               </div>
 
@@ -1817,10 +1821,10 @@ export default function AssetsPage() {
                   ) : (
                     <>
                       <option value="CURRENT_LIABILITY">
-                        Current {t('liability')}
+                        {t('currentLiability')}
                       </option>
                       <option value="LONG_TERM_LIABILITY">
-                        Long-term {t('liability')}
+                        {t('longTermLiability')}
                       </option>
                     </>
                   )}
@@ -1831,7 +1835,7 @@ export default function AssetsPage() {
                 <>
                   <div>
                     <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                      Sub {t('category')}
+                      {t('subCategory')}
                     </label>
                     <input
                       type="text"
@@ -1848,7 +1852,7 @@ export default function AssetsPage() {
                   </div>
                   <div>
                     <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                      Asset Value (৳)
+                      {t('assetValue')} (৳)
                     </label>
                     <input
                       type="number"
@@ -1866,7 +1870,7 @@ export default function AssetsPage() {
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                        Purchase Date
+                        {t('purchaseDate')}
                       </label>
                       <input
                         type="date"
@@ -1882,7 +1886,7 @@ export default function AssetsPage() {
                     </div>
                     <div>
                       <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                        {t('depreciation')} Rate (%)
+                        {t('depreciationRate')} (%)
                       </label>
                       <input
                         type="number"
@@ -1902,7 +1906,7 @@ export default function AssetsPage() {
                   </div>
                   <div>
                     <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                      Description
+                      {t('description')}
                     </label>
                     <textarea
                       value={formData.description}
@@ -1914,7 +1918,7 @@ export default function AssetsPage() {
                       }
                       className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
                       rows={3}
-                      placeholder="Optional description"
+                      placeholder={t('optionalDescriptionPlaceholder')}
                     />
                   </div>
                 </>
@@ -1922,7 +1926,7 @@ export default function AssetsPage() {
                 <>
                   <div>
                     <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                      Total {t('amount')} (৳)
+                      {t('totalAmount')} (৳)
                     </label>
                     <input
                       type="number"
@@ -1952,7 +1956,7 @@ export default function AssetsPage() {
                   </div>
                   <div>
                     <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                      Description
+                      {t('description')}
                     </label>
                     <textarea
                       value={formData.description}
@@ -1964,7 +1968,7 @@ export default function AssetsPage() {
                       }
                       className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
                       rows={3}
-                      placeholder="Optional description"
+                      placeholder={t('optionalDescriptionPlaceholder')}
                     />
                   </div>
                 </>
@@ -1976,7 +1980,7 @@ export default function AssetsPage() {
                 onClick={closeModal}
                 className="text-muted-foreground hover:bg-muted/50 rounded-lg border border-gray-300 px-4 py-2 dark:border-gray-600"
               >
-                Cancel
+                {t('cancel')}
               </button>
               <button
                 onClick={handleSubmit}
@@ -1990,8 +1994,8 @@ export default function AssetsPage() {
                   modalType === 'asset' ? 'bg-blue-600' : 'bg-red-600'
                 }`}
               >
-                {editingItem ? 'Update' : 'Add'}{' '}
-                {modalType === 'asset' ? 'Asset' : 'Liability'}
+                {editingItem ? t('edit') : t('add')}{' '}
+                {modalType === 'asset' ? t('asset') : t('liability')}
               </button>
             </div>
           </div>

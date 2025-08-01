@@ -28,12 +28,26 @@ export const authOptions: NextAuthConfig = {
             where: {
               email: credentials.email,
             },
-            include: {
+            select: {
+              id: true,
+              email: true,
+              name: true,
+              password: true,
+              role: true,
+              isActive: true,
+              tenantId: true,
+              avatar: true,
+              pagePermissions: true,
               tenant: {
                 select: {
                   id: true,
                   name: true,
                   isActive: true,
+                },
+              },
+              permissions: {
+                select: {
+                  name: true,
                 },
               },
             },
@@ -60,6 +74,31 @@ export const authOptions: NextAuthConfig = {
             throw new Error('Invalid password');
           }
 
+          // Parse pagePermissions JSON properly
+          let parsedPagePermissions: string[] = [];
+
+          console.log('=== AUTH AUTHORIZE DEBUG ===');
+          console.log('Raw user.pagePermissions:', user.pagePermissions);
+          console.log('Type of pagePermissions:', typeof user.pagePermissions);
+          console.log('Is array:', Array.isArray(user.pagePermissions));
+          console.log('Stringified:', JSON.stringify(user.pagePermissions));
+
+          if (user.pagePermissions) {
+            try {
+              // If it's already an array, use it; if it's a JSON string, parse it
+              parsedPagePermissions = Array.isArray(user.pagePermissions)
+                ? user.pagePermissions
+                : JSON.parse(user.pagePermissions as string);
+              console.log('Parsed pagePermissions:', parsedPagePermissions);
+            } catch (error) {
+              console.error('Error parsing pagePermissions:', error);
+              parsedPagePermissions = [];
+            }
+          }
+
+          console.log('Final parsed permissions:', parsedPagePermissions);
+          console.log('=============================');
+
           return {
             id: user.id,
             email: user.email,
@@ -67,6 +106,7 @@ export const authOptions: NextAuthConfig = {
             role: user.role,
             tenantId: user.tenantId,
             tenant: user.tenant,
+            pagePermissions: parsedPagePermissions,
           };
         } catch (error) {
           console.error('Authentication error');
@@ -84,19 +124,108 @@ export const authOptions: NextAuthConfig = {
   callbacks: {
     async jwt({ token, user }: { token: any; user: any }) {
       if (user) {
+        console.log('=== JWT CALLBACK DEBUG ===');
+        console.log('User object:', user);
+        console.log('User pagePermissions:', user.pagePermissions);
+        console.log('User pagePermissions type:', typeof user.pagePermissions);
+        console.log('========================');
+
         token.role = user.role;
         token.tenantId = user.tenantId;
         token.tenant = user.tenant;
+        token.pagePermissions = user.pagePermissions;
       }
       return token;
     },
 
     async session({ session, token }: { session: any; token: any }) {
       if (token) {
+        console.log('=== SESSION CALLBACK DEBUG ===');
+        console.log('Token:', JSON.stringify(token, null, 2));
+        console.log('Token pagePermissions:', token.pagePermissions);
+        console.log(
+          'Token pagePermissions type:',
+          typeof token.pagePermissions
+        );
+        console.log(
+          'Token pagePermissions is array:',
+          Array.isArray(token.pagePermissions)
+        );
+
         session.user.id = token.sub!;
         session.user.role = token.role as string;
         session.user.tenantId = token.tenantId as string;
         session.user.tenant = token.tenant as any;
+        session.user.pagePermissions =
+          (token.pagePermissions as string[]) || [];
+
+        // If token doesn't have user data (old token), fetch fresh user data
+        if (!token.role || !token.tenantId) {
+          console.log('Token missing user data, fetching fresh user data...');
+          try {
+            const user = await prisma.user.findFirst({
+              where: { id: token.sub },
+              select: {
+                id: true,
+                email: true,
+                name: true,
+                role: true,
+                isActive: true,
+                tenantId: true,
+                pagePermissions: true,
+                tenant: {
+                  select: {
+                    id: true,
+                    name: true,
+                    isActive: true,
+                  },
+                },
+              },
+            });
+
+            if (user) {
+              // Parse pagePermissions JSON properly
+              let parsedPagePermissions: string[] = [];
+              if (user.pagePermissions) {
+                try {
+                  parsedPagePermissions = Array.isArray(user.pagePermissions)
+                    ? user.pagePermissions
+                    : JSON.parse(user.pagePermissions as string);
+                } catch (error) {
+                  console.error(
+                    'Error parsing pagePermissions in session:',
+                    error
+                  );
+                  parsedPagePermissions = [];
+                }
+              }
+
+              session.user.id = user.id;
+              session.user.email = user.email;
+              session.user.name = user.name;
+              session.user.role = user.role;
+              session.user.tenantId = user.tenantId;
+              session.user.tenant = user.tenant;
+              session.user.pagePermissions = parsedPagePermissions;
+
+              console.log(
+                'Updated session with fresh user data:',
+                JSON.stringify(session.user, null, 2)
+              );
+            }
+          } catch (error) {
+            console.error(
+              'Error fetching fresh user data in session callback:',
+              error
+            );
+          }
+        }
+
+        console.log(
+          'Final session user:',
+          JSON.stringify(session.user, null, 2)
+        );
+        console.log('==============================');
       }
       return session;
     },

@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { SaleType, PaymentType } from '@prisma/client';
+import { useSession } from 'next-auth/react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -40,6 +41,7 @@ const createCombinedSaleFormSchema = (t: (key: any) => string) =>
   z.object({
     driverId: z.string().min(1, t('driverRequired')),
     customerName: z.string().optional(),
+    saleDate: z.string().optional(), // Optional for managers (will be auto-set to today), required for admins
     saleItems: z
       .array(
         z
@@ -124,10 +126,15 @@ export function CombinedSaleForm({
   loading = false,
   initialData,
 }: CombinedSaleFormProps) {
+  const { data: session } = useSession();
   const [drivers, setDrivers] = useState<Driver[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [loadingData, setLoadingData] = useState(true);
   const { formatCurrency, t } = useSettings();
+
+  // Check if user is admin (can select any date) or manager (restricted to today)
+  const isAdmin = session?.user?.role === 'ADMIN';
+  const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
 
   // Create schema with translations
   const combinedSaleFormSchema = createCombinedSaleFormSchema(t);
@@ -146,6 +153,7 @@ export function CombinedSaleForm({
       discount: 0,
       cashDeposited: 0,
       cylinderDeposits: {},
+      saleDate: today, // Default to today for both admin and manager
       saleItems: [
         {
           productId: '',
@@ -368,6 +376,28 @@ export function CombinedSaleForm({
         />
         {errors.customerName && (
           <p className="text-sm text-red-600">{errors.customerName.message}</p>
+        )}
+      </div>
+
+      {/* Sale Date */}
+      <div className="space-y-2">
+        <Label htmlFor="saleDate">
+          {t('saleDate')} *
+          {!isAdmin && (
+            <span className="ml-1 text-xs text-gray-500">
+              ({t('fixedToToday')})
+            </span>
+          )}
+        </Label>
+        <Input
+          id="saleDate"
+          type="date"
+          {...register('saleDate')}
+          disabled={!isAdmin} // Managers cannot change the date
+          className={!isAdmin ? 'cursor-not-allowed bg-gray-100' : ''}
+        />
+        {errors.saleDate && (
+          <p className="text-sm text-red-600">{errors.saleDate.message}</p>
         )}
       </div>
 

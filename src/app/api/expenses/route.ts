@@ -260,6 +260,22 @@ export async function POST(request: NextRequest) {
 
     const tenantId = session.user.tenantId;
     const userId = session.user.id;
+    const { role } = session.user;
+
+    // Handle date validation for managers
+    if (validatedData.expenseDate && role === 'MANAGER') {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const providedDate = new Date(validatedData.expenseDate);
+      providedDate.setHours(0, 0, 0, 0);
+
+      if (providedDate.getTime() !== today.getTime()) {
+        return NextResponse.json(
+          { error: 'Managers can only create expenses for today' },
+          { status: 403 }
+        );
+      }
+    }
 
     // Verify category exists and belongs to tenant
     const category = await prisma.expenseCategory.findFirst({

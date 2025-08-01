@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
-import { useSession } from 'next-auth/react';
+import { useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import {
   TrendingUp,
@@ -14,12 +14,14 @@ import {
   CreditCard,
   Building2,
   Ship,
+  Shield,
 } from 'lucide-react';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
 import { ClientTime } from '@/components/ui/ClientTime';
 import { useSettings } from '@/contexts/SettingsContext';
 import { useOnboarding } from '@/hooks/useOnboarding';
 import { OnboardingModal } from '@/components/onboarding/OnboardingModal';
+import { hasPagePermission } from '@/lib/types/page-permissions';
 // Removed FallbackDataService import to use only real database data
 
 interface DashboardStats {
@@ -153,9 +155,10 @@ export default function DashboardPage() {
     setShowOnboarding(false);
   };
 
-  const navigationCards = useMemo(
+  const allNavigationCards = useMemo(
     () => [
       {
+        pageId: 'reports',
         title: t('dailySalesReport'),
         description: t('comprehensiveDailySalesReport'),
         icon: FileText,
@@ -165,6 +168,7 @@ export default function DashboardPage() {
         stat: t('detailedSalesAnalytics'),
       },
       {
+        pageId: 'inventory',
         title: t('inventoryControl'),
         description: t('monitorCylinderStock'),
         icon: Package,
@@ -178,6 +182,7 @@ export default function DashboardPage() {
         urgent: stats.lowStockAlerts > 0,
       },
       {
+        pageId: 'assets',
         title: t('assets'),
         description: t('manageCompanyAssets'),
         icon: Building2,
@@ -187,6 +192,7 @@ export default function DashboardPage() {
         stat: t('realTimeOverview'),
       },
       {
+        pageId: 'analytics',
         title: t('analytics'),
         description: t('comprehensiveProfitabilityAnalysis'),
         icon: TrendingUp,
@@ -196,6 +202,7 @@ export default function DashboardPage() {
         stat: t('detailedSalesAnalytics'),
       },
       {
+        pageId: 'sales',
         title: t('salesManagement'),
         description: `${t('recordDailySales')} ${t('trackPerformance')}`,
         icon: DollarSign,
@@ -205,6 +212,7 @@ export default function DashboardPage() {
         stat: `${stats.todaySales} ${t('today')}`,
       },
       {
+        pageId: 'receivables',
         title: t('receivables'),
         description: `${t('trackCustomerPayments')} ${t('trackCustomerCredits')}`,
         icon: CreditCard,
@@ -214,6 +222,7 @@ export default function DashboardPage() {
         stat: `${formatCurrency(stats.pendingReceivables)} ${t('pending')}`,
       },
       {
+        pageId: 'expenses',
         title: t('expenseManagement'),
         description: `${t('trackExpenses')} ${t('manageBudgets')}`,
         icon: Receipt,
@@ -227,6 +236,7 @@ export default function DashboardPage() {
         urgent: stats.pendingApprovals > 0,
       },
       {
+        pageId: 'shipments',
         title: t('shipmentsManagement'),
         description: t('trackPurchaseOrdersAndShipments'),
         icon: Truck,
@@ -238,6 +248,138 @@ export default function DashboardPage() {
     ],
     [stats, t, formatCurrency]
   );
+
+  // Filter navigation cards based on user permissions
+  const navigationCards = useMemo(() => {
+    if (!session?.user) return [];
+
+    // Debug logging for development (remove in production)
+    console.log('=== DASHBOARD DEBUG ===');
+    console.log('Session user:', JSON.stringify(session.user, null, 2));
+    console.log('Role:', session.user.role);
+    console.log('PagePermissions raw:', session.user.pagePermissions);
+    console.log('PagePermissions type:', typeof session.user.pagePermissions);
+    console.log(
+      'PagePermissions stringified:',
+      JSON.stringify(session.user.pagePermissions)
+    );
+    console.log(
+      'PagePermissions is array:',
+      Array.isArray(session.user.pagePermissions)
+    );
+    console.log(
+      'PagePermissions length:',
+      session.user.pagePermissions?.length
+    );
+    console.log(
+      'Has permissions:',
+      (session.user.pagePermissions?.length || 0) > 0
+    );
+    console.log('Navigation cards length:', allNavigationCards.length);
+    console.log('======================');
+
+    // ADMIN users have access to all pages
+    if (session.user.role === 'ADMIN') {
+      return allNavigationCards;
+    }
+
+    // For MANAGER users, filter based on pagePermissions
+    if (session.user.role === 'MANAGER') {
+      const permissions = session.user.pagePermissions || [];
+
+      console.log('=== MANAGER PERMISSIONS DEBUG ===');
+      console.log('Permissions:', permissions);
+      console.log('Permissions length:', permissions.length);
+      console.log('Permissions is array:', Array.isArray(permissions));
+      console.log('==================================');
+
+      // If manager has pagePermissions, filter by them
+      if (permissions && permissions.length > 0) {
+        const filteredCards = allNavigationCards.filter((card) => {
+          const hasPermission = hasPagePermission(permissions, card.pageId);
+          console.log(`Card ${card.pageId}: has permission = ${hasPermission}`);
+          return hasPermission;
+        });
+        console.log(
+          'Filtered cards:',
+          filteredCards.map((c) => c.pageId)
+        );
+        return filteredCards;
+      }
+      // If manager has no pagePermissions assigned, show empty state
+      return [];
+    }
+
+    // For other roles (USER), return empty array or a default set
+    return [];
+  }, [allNavigationCards, session?.user]);
+
+  // Quick actions filtered by permissions
+  const quickActions = useMemo(() => {
+    if (!session?.user) return [];
+
+    const allActions = [
+      {
+        pageId: 'sales',
+        label: t('newSale'),
+        href: '/dashboard/sales',
+        icon: TrendingUp,
+        className:
+          'bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700',
+      },
+      {
+        pageId: 'inventory',
+        label: t('checkStock'),
+        href: '/dashboard/inventory',
+        icon: Package,
+        className:
+          'bg-green-600 hover:bg-green-700 dark:bg-green-600 dark:hover:bg-green-700',
+      },
+      {
+        pageId: 'expenses',
+        label: t('addExpense'),
+        href: '/dashboard/expenses',
+        icon: Receipt,
+        className:
+          'bg-purple-600 hover:bg-purple-700 dark:bg-purple-600 dark:hover:bg-purple-700',
+      },
+      {
+        pageId: 'receivables',
+        label: t('updatePayment'),
+        href: '/dashboard/receivables',
+        icon: CreditCard,
+        className:
+          'bg-orange-600 hover:bg-orange-700 dark:bg-orange-600 dark:hover:bg-orange-700',
+      },
+      {
+        pageId: 'reports',
+        label: t('viewReports'),
+        href: '/dashboard/reports',
+        icon: FileText,
+        className: 'bg-muted hover:bg-muted/80',
+      },
+    ];
+
+    // ADMIN users have access to all actions
+    if (session.user.role === 'ADMIN') {
+      return allActions;
+    }
+
+    // For MANAGER users, filter based on pagePermissions
+    if (session.user.role === 'MANAGER') {
+      const permissions = session.user.pagePermissions || [];
+
+      if (permissions && permissions.length > 0) {
+        return allActions.filter((action) =>
+          hasPagePermission(permissions, action.pageId)
+        );
+      }
+      return [];
+    }
+
+    // For other roles, return empty array
+    return [];
+  }, [session?.user, t]);
 
   // Show loading spinner while checking authentication
   if (status === 'loading') {
@@ -402,7 +544,7 @@ export default function DashboardPage() {
               </div>
             ))}
           </div>
-        ) : (
+        ) : navigationCards.length > 0 ? (
           <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
             {navigationCards.map((card) => {
               const Icon = card.icon;
@@ -449,6 +591,38 @@ export default function DashboardPage() {
               );
             })}
           </div>
+        ) : (
+          <div className="mb-8 rounded-lg border border-yellow-200 bg-yellow-50 p-6 dark:border-yellow-700 dark:bg-yellow-900/20">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center">
+                <div className="flex-shrink-0">
+                  <Shield className="h-5 w-5 text-yellow-400" />
+                </div>
+                <div className="ml-3">
+                  <h3 className="text-sm font-medium text-yellow-800 dark:text-yellow-200">
+                    {t('noPageAccessPermissions')}
+                  </h3>
+                  <p className="mt-1 text-sm text-yellow-700 dark:text-yellow-300">
+                    {t('contactAdminForPageAccess')}
+                  </p>
+                </div>
+              </div>
+              <div className="flex flex-col gap-2">
+                <button
+                  onClick={() => window.location.reload()}
+                  className="rounded bg-yellow-600 px-3 py-1 text-xs text-white hover:bg-yellow-700"
+                >
+                  Refresh Page
+                </button>
+                <button
+                  onClick={() => signOut({ callbackUrl: '/auth/login' })}
+                  className="rounded bg-red-600 px-3 py-1 text-xs text-white hover:bg-red-700"
+                >
+                  Re-login
+                </button>
+              </div>
+            </div>
+          </div>
         )}
 
         {/* Quick Actions */}
@@ -471,45 +645,24 @@ export default function DashboardPage() {
                 {t('actions')}
               </h3>
               <div className="flex flex-wrap gap-3">
-                <button
-                  className="inline-flex items-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700"
-                  onClick={() => (window.location.href = '/dashboard/sales')}
-                >
-                  <TrendingUp className="mr-2 h-4 w-4" />
-                  {t('newSale')}
-                </button>
-                <button
-                  className="inline-flex items-center rounded-lg bg-green-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-green-700 dark:bg-green-600 dark:hover:bg-green-700"
-                  onClick={() =>
-                    (window.location.href = '/dashboard/inventory')
-                  }
-                >
-                  <Package className="mr-2 h-4 w-4" />
-                  {t('checkStock')}
-                </button>
-                <button
-                  className="inline-flex items-center rounded-lg bg-purple-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-purple-700 dark:bg-purple-600 dark:hover:bg-purple-700"
-                  onClick={() => (window.location.href = '/dashboard/expenses')}
-                >
-                  <Receipt className="mr-2 h-4 w-4" />
-                  {t('addExpense')}
-                </button>
-                <button
-                  className="inline-flex items-center rounded-lg bg-orange-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-orange-700 dark:bg-orange-600 dark:hover:bg-orange-700"
-                  onClick={() =>
-                    (window.location.href = '/dashboard/receivables')
-                  }
-                >
-                  <CreditCard className="mr-2 h-4 w-4" />
-                  {t('updatePayment')}
-                </button>
-                <button
-                  className="bg-muted hover:bg-muted/80 inline-flex items-center rounded-lg px-4 py-2 text-sm font-medium text-white transition-colors"
-                  onClick={() => (window.location.href = '/dashboard/reports')}
-                >
-                  <FileText className="mr-2 h-4 w-4" />
-                  {t('viewReports')}
-                </button>
+                {quickActions.map((action) => {
+                  const Icon = action.icon;
+                  return (
+                    <button
+                      key={action.pageId}
+                      className={`inline-flex items-center rounded-lg px-4 py-2 text-sm font-medium text-white transition-colors ${action.className}`}
+                      onClick={() => (window.location.href = action.href)}
+                    >
+                      <Icon className="mr-2 h-4 w-4" />
+                      {action.label}
+                    </button>
+                  );
+                })}
+                {quickActions.length === 0 && (
+                  <p className="text-muted-foreground text-sm">
+                    {t('noQuickActionsAvailable')}
+                  </p>
+                )}
               </div>
             </>
           )}

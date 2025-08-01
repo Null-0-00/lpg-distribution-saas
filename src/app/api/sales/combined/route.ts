@@ -13,6 +13,7 @@ import { validateTenantAccess } from '@/lib/auth/tenant-guard';
 const combinedSaleSchema = z.object({
   driverId: z.string().cuid(),
   customerName: z.string().optional(),
+  saleDate: z.string().optional(), // Optional - will default to today if not provided
   saleItems: z
     .array(
       z
@@ -68,6 +69,32 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json();
     const validatedData = combinedSaleSchema.parse(body);
+
+    // Date handling based on user role
+    let saleDate: Date;
+    if (role === 'ADMIN' && validatedData.saleDate) {
+      // Admin can specify any date
+      saleDate = new Date(validatedData.saleDate);
+    } else {
+      // Manager or no date specified - force to today
+      saleDate = new Date();
+      saleDate.setHours(0, 0, 0, 0); // Set to start of day for consistency
+    }
+
+    // Validate that managers can only create sales for today
+    if (role === 'MANAGER' && validatedData.saleDate) {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const providedDate = new Date(validatedData.saleDate);
+      providedDate.setHours(0, 0, 0, 0);
+
+      if (providedDate.getTime() !== today.getTime()) {
+        return NextResponse.json(
+          { error: 'Managers can only create sales for today' },
+          { status: 403 }
+        );
+      }
+    }
 
     // Calculate totals
     let totalValue = 0;
@@ -276,7 +303,7 @@ export async function POST(request: NextRequest) {
                 cashDeposited: packageCashDeposited,
                 cylindersDeposited: 0, // Package sales don't have cylinder deposits
                 notes: validatedData.notes,
-                saleDate: new Date(),
+                saleDate: saleDate,
               },
               include: {
                 driver: { select: { id: true, name: true, phone: true } },
@@ -329,7 +356,7 @@ export async function POST(request: NextRequest) {
                 cashDeposited: refillCashDeposited,
                 cylindersDeposited: refillCylindersDeposited,
                 notes: validatedData.notes,
-                saleDate: new Date(),
+                saleDate: saleDate,
               },
               include: {
                 driver: {

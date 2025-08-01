@@ -1720,7 +1720,7 @@ export default function ReceivablesPage() {
 
               <div>
                 <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Receivable Type *
+                  {t('receivableType')} *
                 </label>
                 <select
                   value={customerFormData.receivableType}
@@ -1740,7 +1740,7 @@ export default function ReceivablesPage() {
               {customerFormData.receivableType === 'CASH' && (
                 <div>
                   <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Amount (৳) *
+                    {t('amount')} (৳) *
                   </label>
                   <input
                     type="number"
@@ -1803,7 +1803,7 @@ export default function ReceivablesPage() {
 
               <div>
                 <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Due Date
+                  {t('dueDate')}
                 </label>
                 <input
                   type="date"
@@ -1820,7 +1820,7 @@ export default function ReceivablesPage() {
 
               <div>
                 <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Notes
+                  {t('notes')}
                 </label>
                 <textarea
                   value={customerFormData.notes}
@@ -1832,7 +1832,7 @@ export default function ReceivablesPage() {
                   }
                   rows={3}
                   className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-                  placeholder="Add any notes..."
+                  placeholder={t('enterNotes')}
                 />
               </div>
             </div>
@@ -1842,7 +1842,7 @@ export default function ReceivablesPage() {
                 onClick={() => setIsCustomerModalOpen(false)}
                 className="text-muted-foreground hover:bg-muted/50 rounded-lg border border-gray-300 px-4 py-2 dark:border-gray-600"
               >
-                Cancel
+                {t('cancel')}
               </button>
               <button
                 onClick={handleSaveCustomer}

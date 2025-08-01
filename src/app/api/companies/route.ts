@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
       whereClause.isActive = isActive === 'true';
     }
 
-    // Get companies available to this distributor
+    // Get companies available to this distributor - ONLY TENANT-SPECIFIC
     let companies = await prisma.company.findMany({
       where: {
         ...whereClause,
@@ -45,13 +45,6 @@ export async function GET(request: NextRequest) {
                 isActive: true,
               },
             },
-          },
-          // Or generally available companies (no specific assignments)
-          {
-            distributorAssignments: {
-              none: {},
-            },
-            isActive: true,
           },
           // Or companies created by this tenant (distributor's own companies)
           {

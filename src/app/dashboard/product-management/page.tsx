@@ -616,7 +616,7 @@ export default function ProductManagementPage() {
                       </h3>
                       {company.code && (
                         <p className="dark:text-muted-foreground text-sm text-gray-500">
-                          Code: {company.code}
+                          {t('code')}: {company.code}
                         </p>
                       )}
                     </div>
@@ -634,7 +634,7 @@ export default function ProductManagementPage() {
                     {company.email && <p>✉️ {company.email}</p>}
                     {company.address && <p>📍 {company.address}</p>}
                     <p className="font-medium">
-                      Products: {company.products?.length || 0}
+                      {t('products')}: {company.products?.length || 0}
                     </p>
                   </div>
 
@@ -774,7 +774,7 @@ export default function ProductManagementPage() {
                         {t('productName')}
                       </th>
                       <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
-                        Company
+                        {t('company')}
                       </th>
                       <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
                         {t('cylinderSize')}
@@ -789,7 +789,7 @@ export default function ProductManagementPage() {
                         {t('lowStockAlert')}
                       </th>
                       <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
-                        Status
+                        {t('status')}
                       </th>
                       <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
                         {t('created')}
@@ -904,7 +904,7 @@ export default function ProductManagementPage() {
                   <div className="p-8 text-center">
                     <Package className="text-muted-foreground mx-auto mb-4 h-12 w-12" />
                     <p className="dark:text-muted-foreground text-gray-500">
-                      No products found.
+                      {t('noProductsFound')}
                     </p>
                   </div>
                 )}
@@ -935,7 +935,7 @@ export default function ProductManagementPage() {
                 className="flex items-center space-x-2 rounded-lg bg-purple-600 px-4 py-2 text-white transition-colors hover:bg-purple-700"
               >
                 <Plus className="h-5 w-5" />
-                <span>Add {t('cylinderSize')}</span>
+                <span>{t('addCylinderSize')}</span>
               </button>
             </div>
 
@@ -949,10 +949,10 @@ export default function ProductManagementPage() {
                         {t('cylinderSize')}
                       </th>
                       <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
-                        Description
+                        {t('description')}
                       </th>
                       <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
-                        Status
+                        {t('status')}
                       </th>
                       <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
                         {t('created')}
@@ -983,7 +983,9 @@ export default function ProductManagementPage() {
                                 : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
                             }`}
                           >
-                            {cylinderSize.isActive ? 'Active' : 'Inactive'}
+                            {cylinderSize.isActive
+                              ? t('active')
+                              : t('inactive')}
                           </span>
                         </td>
                         <td className="whitespace-nowrap px-6 py-4">
@@ -1000,7 +1002,7 @@ export default function ProductManagementPage() {
                                 openEditCylinderSizeModal(cylinderSize)
                               }
                               className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300"
-                              title={`Edit ${t('cylinderSize')}`}
+                              title={t('editCylinderSize')}
                             >
                               <Edit className="h-4 w-4" />
                             </button>
@@ -1009,7 +1011,7 @@ export default function ProductManagementPage() {
                                 handleDeleteCylinderSize(cylinderSize.id)
                               }
                               className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300"
-                              title={`Delete ${t('cylinderSize')}`}
+                              title={t('deleteCylinderSize')}
                             >
                               <Trash2 className="h-4 w-4" />
                             </button>
@@ -1023,7 +1025,7 @@ export default function ProductManagementPage() {
                   <div className="p-8 text-center">
                     <Settings className="text-muted-foreground mx-auto mb-4 h-12 w-12" />
                     <p className="dark:text-muted-foreground text-gray-500">
-                      No cylinder sizes found.
+                      {t('noCylinderSizesFound')}
                     </p>
                   </div>
                 )}
@@ -1043,7 +1045,7 @@ export default function ProductManagementPage() {
             <form onSubmit={handleCompanySubmit} className="space-y-4">
               <div>
                 <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Company Name *
+                  {t('companyName')} *
                 </label>
                 <input
                   type="text"
@@ -1061,7 +1063,7 @@ export default function ProductManagementPage() {
 
               <div>
                 <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Company Code
+                  {t('companyCode')}
                 </label>
                 <input
                   type="text"
@@ -1078,7 +1080,7 @@ export default function ProductManagementPage() {
 
               <div>
                 <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Phone
+                  {t('phone')}
                 </label>
                 <input
                   type="text"
@@ -1095,7 +1097,7 @@ export default function ProductManagementPage() {
 
               <div>
                 <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Email
+                  {t('email')}
                 </label>
                 <input
                   type="email"
@@ -1112,7 +1114,7 @@ export default function ProductManagementPage() {
 
               <div>
                 <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Address
+                  {t('address')}
                 </label>
                 <textarea
                   value={companyForm.address || ''}
@@ -1144,7 +1146,7 @@ export default function ProductManagementPage() {
                   htmlFor="companyActive"
                   className="text-foreground ml-2 block text-sm"
                 >
-                  Active
+                  {t('active')}
                 </label>
               </div>
 
@@ -1158,13 +1160,13 @@ export default function ProductManagementPage() {
                   }}
                   className="border-border hover:bg-muted rounded-md border bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 transition-colors dark:bg-gray-700 dark:text-gray-300"
                 >
-                  Cancel
+                  {t('cancel')}
                 </button>
                 <button
                   type="submit"
                   className="rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700"
                 >
-                  {editingCompany ? 'Update' : 'Create'} Company
+                  {editingCompany ? t('updateCompany') : t('createCompany')}
                 </button>
               </div>
             </form>
@@ -1182,7 +1184,7 @@ export default function ProductManagementPage() {
             <form onSubmit={handleProductSubmit} className="space-y-4">
               <div>
                 <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Company *
+                  {t('company')} *
                 </label>
                 <select
                   value={productForm.companyId}
@@ -1195,7 +1197,7 @@ export default function ProductManagementPage() {
                   className="border-border bg-input text-foreground w-full rounded-md border px-3 py-2"
                   required
                 >
-                  <option value="">Select Company</option>
+                  <option value="">{t('selectACompany')}</option>
                   {companies
                     .filter((c) => c.isActive)
                     .map((company) => (
@@ -1230,7 +1232,7 @@ export default function ProductManagementPage() {
 
               <div>
                 <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Cylinder Type/Size *
+                  {t('cylinderTypeSize')} *
                 </label>
                 <select
                   value={productForm.cylinderSizeId || ''}
@@ -1243,7 +1245,7 @@ export default function ProductManagementPage() {
                   className="border-border bg-input text-foreground w-full rounded-md border px-3 py-2"
                   required
                 >
-                  <option value="">Select {t('cylinderSize')}</option>
+                  <option value="">{t('selectCylinderSize')}</option>
                   {cylinderSizes
                     .filter((cs) => cs.isActive)
                     .map((cylinderSize) => (
@@ -1256,12 +1258,12 @@ export default function ProductManagementPage() {
                     ))}
                 </select>
                 <p className="dark:text-muted-foreground mt-1 text-xs text-gray-500">
-                  Select from available cylinder sizes.{' '}
+                  {t('selectFromAvailableCylinderSizes')}.{' '}
                   <span
                     className="cursor-pointer text-blue-600"
                     onClick={() => setActiveTab('cylinder-sizes')}
                   >
-                    Manage cylinder sizes
+                    {t('manageCylinderSizes')}
                   </span>
                 </p>
               </div>
@@ -1287,7 +1289,7 @@ export default function ProductManagementPage() {
                 </div>
                 <div>
                   <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    {t('lowStock')} Threshold
+                    {t('lowStock')} {t('threshold')}
                   </label>
                   <input
                     type="number"
@@ -1321,7 +1323,7 @@ export default function ProductManagementPage() {
                   htmlFor="productActive"
                   className="text-foreground ml-2 block text-sm"
                 >
-                  Active
+                  {t('active')}
                 </label>
               </div>
 
@@ -1335,13 +1337,13 @@ export default function ProductManagementPage() {
                   }}
                   className="border-border hover:bg-muted rounded-md border bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 transition-colors dark:bg-gray-700 dark:text-gray-300"
                 >
-                  Cancel
+                  {t('cancel')}
                 </button>
                 <button
                   type="submit"
                   className="rounded-md border border-transparent bg-green-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-green-700"
                 >
-                  {editingProduct ? 'Update' : 'Create'} Product
+                  {editingProduct ? t('updateProduct') : t('createProduct')}
                 </button>
               </div>
             </form>
@@ -1355,8 +1357,8 @@ export default function ProductManagementPage() {
           <div className="bg-card mx-4 w-full max-w-md rounded-lg p-6">
             <h3 className="text-foreground mb-4 text-lg font-medium">
               {editingCylinderSize
-                ? 'Edit {t("cylinderSize")}'
-                : 'Add New {t("cylinderSize")}'}
+                ? t('editCylinderSize')
+                : t('addCylinderSize')}
             </h3>
             <form onSubmit={handleCylinderSizeSubmit} className="space-y-4">
               <div>
@@ -1377,13 +1379,13 @@ export default function ProductManagementPage() {
                   required
                 />
                 <p className="dark:text-muted-foreground mt-1 text-xs text-gray-500">
-                  Enter cylinder size (e.g., 12L, 35L, 5kg, 20L)
+                  {t('enterCylinderSizeExample')}
                 </p>
               </div>
 
               <div>
                 <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Description
+                  {t('description')}
                 </label>
                 <textarea
                   value={cylinderSizeForm.description || ''}
@@ -1416,7 +1418,7 @@ export default function ProductManagementPage() {
                   htmlFor="cylinderSizeActive"
                   className="text-foreground ml-2 block text-sm"
                 >
-                  Active
+                  {t('active')}
                 </label>
               </div>
 
@@ -1430,14 +1432,15 @@ export default function ProductManagementPage() {
                   }}
                   className="border-border hover:bg-muted rounded-md border bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 transition-colors dark:bg-gray-700 dark:text-gray-300"
                 >
-                  Cancel
+                  {t('cancel')}
                 </button>
                 <button
                   type="submit"
                   className="rounded-md border border-transparent bg-purple-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-purple-700"
                 >
-                  {editingCylinderSize ? 'Update' : 'Create'}{' '}
-                  {t('cylinderSize')}
+                  {editingCylinderSize
+                    ? t('updateCylinderSize')
+                    : t('createCylinderSize')}
                 </button>
               </div>
             </form>

@@ -3,6 +3,7 @@ import { X, Upload } from 'lucide-react';
 import { ExpenseParentCategory, ExpenseCategory } from '@/hooks/useCategories';
 import { expenseSchema, ExpenseFormData } from '@/lib/validations/expense';
 import { useSettings } from '@/contexts/SettingsContext';
+import { useSession } from 'next-auth/react';
 import { z } from 'zod';
 
 interface ExpenseFormProps {
@@ -26,7 +27,12 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
   submitLabel,
   isSubmitting,
 }) => {
+  const { data: session } = useSession();
   const { t } = useSettings();
+
+  // Check if user is admin (can select any date) or manager (restricted to today)
+  const isAdmin = session?.user?.role === 'ADMIN';
+  const today = new Date().toISOString().slice(0, 10);
   const [formData, setFormData] = useState<
     ExpenseFormData & { parentCategoryId: string }
   >({
@@ -34,7 +40,7 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
     description: '',
     parentCategoryId: '',
     categoryId: '',
-    expenseDate: new Date().toISOString().slice(0, 10),
+    expenseDate: today,
     receiptUrl: '',
     notes: '',
   });
@@ -262,16 +268,22 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
           <div>
             <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
               {t('expenseDate')} *
+              {!isAdmin && (
+                <span className="ml-1 text-xs text-gray-500">
+                  ({t('fixedToToday')})
+                </span>
+              )}
             </label>
             <input
               type="date"
               value={formData.expenseDate}
+              disabled={!isAdmin}
               onChange={(e) => handleInputChange('expenseDate', e.target.value)}
               className={`w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white ${
                 errors.expenseDate
                   ? 'border-red-500'
                   : 'border-gray-300 dark:border-gray-600'
-              }`}
+              } ${!isAdmin ? 'cursor-not-allowed bg-gray-100 dark:bg-gray-600' : ''}`}
             />
             {errors.expenseDate && (
               <p className="mt-1 text-sm text-red-600 dark:text-red-400">

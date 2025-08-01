@@ -195,7 +195,7 @@ export async function verifyPasswordResetCode(
 /**
  * Use password reset code (mark as used)
  */
-export async function usePasswordResetCode(
+export async function markPasswordResetCodeAsUsed(
   email: string,
   code: string
 ): Promise<{ success: boolean; error?: string }> {

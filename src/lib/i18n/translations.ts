@@ -94,6 +94,9 @@ export interface Translations {
   filter: string;
   total: string;
   actions: string;
+  noQuickActionsAvailable: string;
+  noPageAccessPermissions: string;
+  contactAdminForPageAccess: string;
   loading: string;
   noData: string;
   noRecentActivity: string;
@@ -118,9 +121,12 @@ export interface Translations {
   email: string;
   phone: string;
   address: string;
+  code: string;
   description: string;
   amount: string;
   date: string;
+  saleDate: string;
+  fixedToToday: string;
   notes: string;
   status: string;
   type: string;
@@ -270,6 +276,41 @@ export interface Translations {
   // Additional missing properties that are used in the codebase
   lpgDistributor: string;
   role: string;
+
+  // Product management page specific translations
+  noProductsFound: string;
+  noCylinderSizesFound: string;
+  cylinderTypeSize: string;
+  selectFromAvailableCylinderSizes: string;
+  manageCylinderSizes: string;
+  threshold: string;
+  addCylinderSize: string;
+  editCylinderSize: string;
+  createCylinderSize: string;
+  updateCylinderSize: string;
+  deleteCylinderSize: string;
+  enterCylinderSizeExample: string;
+  createProduct: string;
+  updateProduct: string;
+
+  // User management form translations
+  addNewUser: string;
+  enterFullNamePlaceholder: string;
+  enterEmailAddressPlaceholder: string;
+  enterPasswordPlaceholder: string;
+
+  // Assets form translations
+  addNew: string;
+  assetValue: string;
+  optionalDescriptionPlaceholder: string;
+  enterAssetNamePlaceholder: string;
+
+  // Liability form translations
+  liabilityName: string;
+  totalAmount: string;
+  currentLiability: string;
+  longTermLiability: string;
+  enterLiabilityNamePlaceholder: string;
   fallbackDriverName1: string;
   fallbackDriverName2: string;
   fallbackDriverName3: string;
@@ -473,6 +514,41 @@ export interface Translations {
   packageSale: string;
   packageSalesQty: string;
   parentCategory: string;
+
+  // Category Management
+  categoryManagement: string;
+  addNewCategory: string;
+  parentCategories: string;
+  subCategories: string;
+  subCategoriesTitle: string;
+  noParentCategoriesFound: string;
+  noSubCategoriesFound: string;
+  editParentCategory: string;
+  deleteParentCategory: string;
+  editCategory: string;
+  deleteCategory: string;
+  createCategory: string;
+  updateCategory: string;
+  updateParentCategory: string;
+  budget: string;
+  spentThisMonth: string;
+  noBudget: string;
+  overBudget: string;
+  parent: string;
+  noParent: string;
+  unknownParent: string;
+  loadingCategories: string;
+
+  // Category Form
+  categoryType: string;
+  subCategoryWithBudget: string;
+  parentCategoryGroupingOnly: string;
+  enterCategoryName: string;
+  enterCategoryDescription: string;
+  monthlyBudget: string;
+  noParentCategory: string;
+  leaveEmptyForNoBudgetLimit: string;
+
   pay: string;
   paymentReceived: string;
   pending: string;
@@ -719,6 +795,7 @@ export interface Translations {
   of: string;
   orderInformation: string;
   selectCompany: string;
+  selectACompany: string;
   selectDriver: string;
   shipmentDate: string;
   expectedDeliveryDate: string;
@@ -980,6 +1057,7 @@ export interface Translations {
   addNewCompany: string;
   enterCompanyNamesLikeAygaz: string;
   companyName: string;
+  companyCode: string;
   enterCompanyName: string;
   companyNameRequired: string;
   companyAlreadyExists: string;
@@ -992,7 +1070,6 @@ export interface Translations {
   setupProductsAndSizes: string;
   configureCylinderSizesAndProducts: string;
   cylinderSizes: string;
-  addCylinderSize: string;
   addSizesLike12L20L: string;
   enterSizeLike12L: string;
   addSize: string;
@@ -1134,6 +1211,8 @@ export interface Translations {
   searchCompanies: string;
   addCompany: string;
   editCompany: string;
+  createCompany: string;
+  updateCompany: string;
   deleteCompany: string;
   activeProducts: string;
   totalStock: string;
@@ -1225,13 +1304,9 @@ export interface Translations {
   errorDeletingCylinderSize: string;
   errorTogglingProductStatus: string;
   errorSavingCylinderSize: string;
-  editCylinderSize: string;
-  deleteCylinderSize: string;
   failedToSaveCylinderSize: string;
   cylinderSizeDeletedSuccessfully: string;
-  code: string;
   price: string;
-  threshold: string;
   weight: string;
   fullCylinderWeight: string;
   emptyCylinderWeight: string;
@@ -1249,8 +1324,6 @@ export interface Translations {
   changes: string;
   loadingReceivables: string;
   loadingChanges: string;
-  currentLiability: string;
-  longTermLiability: string;
   editLiability: string;
   deleteLiability: string;
 
@@ -1439,9 +1512,15 @@ const englishTranslations: Translations = {
   filter: 'Filter',
   total: 'Total',
   actions: 'Actions',
+  noQuickActionsAvailable: 'No quick actions available',
+  noPageAccessPermissions: 'No Page Access Permissions',
+  contactAdminForPageAccess:
+    'Your administrator needs to assign page permissions to your account. Please contact them to access dashboard pages.',
   active: 'Active',
   inactive: 'Inactive',
   editCompany: 'Edit Company',
+  createCompany: 'Create Company',
+  updateCompany: 'Update Company',
   deleteCompany: 'Delete Company',
   editProduct: 'Edit Product',
   deleteProduct: 'Delete Product',
@@ -1462,6 +1541,37 @@ const englishTranslations: Translations = {
   failedToSaveProduct: 'Failed to save product',
   failedToDeleteProduct: 'Failed to delete product',
   unknownError: 'Unknown error',
+
+  // Product management page specific translations
+  noProductsFound: 'No products found',
+  noCylinderSizesFound: 'No cylinder sizes found',
+  cylinderTypeSize: 'Cylinder Type/Size',
+  selectFromAvailableCylinderSizes: 'Select from available cylinder sizes',
+  selectCylinderSize: 'Select Cylinder Size',
+  manageCylinderSizes: 'Manage cylinder sizes',
+  threshold: 'Threshold',
+  addCylinderSize: 'Add Cylinder Size',
+  editCylinderSize: 'Edit Cylinder Size',
+  createCylinderSize: 'Create Cylinder Size',
+  updateCylinderSize: 'Update Cylinder Size',
+  deleteCylinderSize: 'Delete Cylinder Size',
+  enterCylinderSizeExample: 'Enter cylinder size (e.g., 12L, 35L, 5kg, 20L)',
+  createProduct: 'Create Product',
+  updateProduct: 'Update Product',
+
+  // User management form translations
+  addNewUser: 'Add New User',
+  enterFullNamePlaceholder: 'Enter full name',
+  enterEmailAddressPlaceholder: 'Enter email address',
+  enterPasswordPlaceholder: 'Enter password (min 8 characters)',
+
+  // Assets form translations
+  addNew: 'Add New',
+  assetValue: 'Asset Value',
+  optionalDescriptionPlaceholder: 'Optional description',
+  enterAssetNamePlaceholder: 'Enter asset name',
+  enterLiabilityNamePlaceholder: 'Enter liability name',
+
   // Asset translations
   dueDate: 'Due Date',
   noDate: 'No Date',
@@ -1481,6 +1591,12 @@ const englishTranslations: Translations = {
   customerReceivableUpdatedSuccessfully:
     'Customer receivable updated successfully',
   customerReceivableAddedSuccessfully: 'Customer receivable added successfully',
+  addCustomerReceivable: 'Add Customer Receivable',
+  editCustomerReceivable: 'Edit Customer Receivable',
+  customerNamePlaceholder: 'Enter customer name...',
+  cashReceivable: 'Cash Receivable',
+  cylinderReceivable: 'Cylinder Receivable',
+  enterPaymentAmount: 'Enter amount',
   failedToSaveCustomerReceivable: 'Failed to save customer receivable',
   customerReceivableDeletedSuccessfully:
     'Customer receivable deleted successfully',
@@ -1489,16 +1605,11 @@ const englishTranslations: Translations = {
   failedToRecordPayment: 'Failed to record payment',
   cylinderReturnRecordedSuccessfully: 'Cylinder return recorded successfully',
   failedToRecordCylinderReturn: 'Failed to record cylinder return',
-  cylinderReceivable: 'Cylinder Receivable',
-  enterPaymentAmount: 'Enter payment amount',
   enterNumberOfCylinders: 'Enter number of cylinders',
   recordPayment: 'Record Payment',
   recordCylinderReturn: 'Record Cylinder Return',
   recordReturn: 'Record Return',
   customerReceivablesDontMatch: "Customer receivables don't match",
-  editCustomerReceivable: 'Edit Customer Receivable',
-  addCustomerReceivable: 'Add Customer Receivable',
-  cashReceivable: 'Cash Receivable',
   driverTotalReceivablesFromSales: 'Driver Total Receivables (from Sales)',
   customerReceivableTotalsMustEqual: 'Customer Receivable Totals Must Equal',
   cashMismatch: 'Cash Mismatch',
@@ -1545,12 +1656,8 @@ const englishTranslations: Translations = {
   productNamePlaceholder: 'e.g., LPG Cylinder, Cooking Gas, Industrial Gas',
   cylinderSizePlaceholder: 'e.g., 12L, 35L, 5kg',
   optionalDescription: 'Optional description',
-  editCylinderSize: 'Edit Cylinder Size',
-  deleteCylinderSize: 'Delete Cylinder Size',
   failedToSaveCylinderSize: 'Failed to save cylinder size',
-  code: 'Code',
   price: 'Price',
-  threshold: 'Threshold',
   weight: 'Weight',
   fullCylinderWeight: 'Full Cylinder Weight',
   emptyCylinderWeight: 'Empty Cylinder Weight',
@@ -1586,6 +1693,7 @@ const englishTranslations: Translations = {
   unitValue: 'Unit Value',
   netValue: 'Net Value',
   liability: 'Liability',
+  liabilityName: 'Liability Name',
   monthlyPayment: 'মাসিক পরিশোধ',
   fixedAsset: 'Fixed Asset',
   currentAsset: 'Current Asset',
@@ -1658,9 +1766,13 @@ const englishTranslations: Translations = {
   email: 'Email',
   phone: 'Phone',
   address: 'Address',
+  code: 'Code',
   description: 'Description',
   amount: 'Amount',
+  totalAmount: 'Total Amount',
   date: 'Date',
+  saleDate: 'Sale Date',
+  fixedToToday: 'Fixed to Today',
   notes: 'Notes',
   status: 'Status',
   type: 'Type',
@@ -1994,6 +2106,43 @@ const englishTranslations: Translations = {
   packageSale: 'Package Sale',
   packageSalesQty: 'Package Sales Qty',
   parentCategory: 'Parent Category',
+
+  // Category Management
+  categoryManagement: 'Category Management',
+  addNewCategory: 'Add New Category',
+  parentCategories: 'Parent Categories',
+  subCategories: 'sub-categories',
+  subCategoriesTitle: 'Sub-Categories',
+  noParentCategoriesFound:
+    'No parent categories found. Create your first parent category to organize your expenses.',
+  noSubCategoriesFound:
+    'No sub-categories found. Create your first sub-category to start tracking expenses.',
+  editParentCategory: 'Edit parent category',
+  deleteParentCategory: 'Delete parent category',
+  editCategory: 'Edit category',
+  deleteCategory: 'Delete category',
+  createCategory: 'Create Category',
+  updateCategory: 'Update Category',
+  updateParentCategory: 'Update Parent Category',
+  budget: 'Budget',
+  spentThisMonth: 'Spent This Month',
+  noBudget: 'No Budget',
+  overBudget: 'Over Budget',
+  parent: 'Parent',
+  noParent: 'No Parent',
+  unknownParent: 'Unknown Parent',
+  loadingCategories: 'Loading categories...',
+
+  // Category Form
+  categoryType: 'Category Type',
+  subCategoryWithBudget: 'Sub-category (with budget)',
+  parentCategoryGroupingOnly: 'Parent category (grouping only)',
+  enterCategoryName: 'Enter category name',
+  enterCategoryDescription: 'Enter category description',
+  monthlyBudget: 'Monthly Budget',
+  noParentCategory: 'No parent category',
+  leaveEmptyForNoBudgetLimit: 'Leave empty for no budget limit',
+
   pay: 'পরিশোধ',
   paymentReceived: 'Payment Received',
   pending: 'Pending',
@@ -2132,13 +2281,12 @@ const englishTranslations: Translations = {
   customerName: 'Customer Name',
   selectADriver: 'একজন চালক নির্বাচন করুন',
   enterCustomerName: 'Enter Customer Name',
-  customerNamePlaceholder: 'Enter customer name...',
   saleItems: 'বিক্রয়ের আইটেম',
   itemNumber: 'Item Number',
   selectAProduct: 'একটি পণ্য নির্বাচন করুন',
   packagePrice: 'Package Price',
   refillPrice: 'Refill Price',
-  itemTotal: 'আইটেমের মোট',
+  itemTotal: 'Item Total',
   saleSummary: 'Sale Summary',
   paymentType: 'Payment Type',
   paymentTypeRequired: 'Payment Type is required',
@@ -2231,6 +2379,7 @@ const englishTranslations: Translations = {
   of: 'এর',
   orderInformation: 'Order Information',
   selectCompany: 'Select Company',
+  selectACompany: 'Select Company',
   selectDriver: 'Select Driver',
   shipmentDate: 'Shipment Date',
   expectedDeliveryDate: 'প্রত্যাশিত ডেলিভারির তারিখ',
@@ -2283,7 +2432,6 @@ const englishTranslations: Translations = {
   addEmptyCylindersToInventory: 'Add Empty Cylinders To Inventory',
   removeEmptyCylindersFromInventory: 'Remove Empty Cylinders From Inventory',
   cylinderSize: 'Cylinder Size',
-  selectCylinderSize: 'Select Cylinder Size',
   emptyCylindersNote: 'খালি সিলিন্ডার নোট',
   transactionDate: 'লেনদেনের তারিখ',
   enterTransactionDetails: 'লেনদেনের বিবরণ লিখুন',
@@ -2464,6 +2612,7 @@ const englishTranslations: Translations = {
   addNewCompany: 'Add New Company',
   enterCompanyNamesLikeAygaz: 'কোম্পানির নাম লিখুন (যেমন, আয়গাজ)',
   companyName: 'Company Name',
+  companyCode: 'Company Code',
   enterCompanyName: 'Enter Company Name',
   companyNameRequired: 'Company Name is required',
   companyAlreadyExists: 'Company Already Exists',
@@ -2473,7 +2622,6 @@ const englishTranslations: Translations = {
   addAtLeastOneCompany: 'কমপক্ষে একটি কোম্পানি যোগ করুন',
   setupProductsAndSizes: 'পণ্য এবং মাপ সেটআপ করুন',
   configureCylinderSizesAndProducts: 'সিলিন্ডারের মাপ ও পণ্য কনফিগার করুন',
-  addCylinderSize: 'Add Cylinder Size',
   addSizesLike12L20L: 'মাপ যোগ করুন, যেমন ১২লি ২০লি',
   enterSizeLike12L: 'মাপ লিখুন (যেমন, ১২লি)',
   addSize: 'Add Size',
@@ -2730,6 +2878,10 @@ const bengaliTranslations: Translations = {
   filter: 'ফিল্টার',
   total: 'মোট',
   actions: 'কার্য',
+  noQuickActionsAvailable: 'কোনো দ্রুত কার্য উপলব্ধ নেই',
+  noPageAccessPermissions: 'কোনো পেজ অ্যাক্সেস অনুমতি নেই',
+  contactAdminForPageAccess:
+    'আপনার প্রশাসক আপনার অ্যাকাউন্টে পেজ অনুমতি নির্ধারণ করতে হবে। ড্যাশবোর্ড পেজ অ্যাক্সেসের জন্য তাদের সাথে যোগাযোগ করুন।',
   loading: 'লোড হচ্ছে',
   noData: 'কোন তথ্য নেই',
   noRecentActivity: 'কোনো সাম্প্রতিক কার্যকলাপ নেই',
@@ -2754,9 +2906,13 @@ const bengaliTranslations: Translations = {
   email: 'ইমেইল',
   phone: 'ফোন',
   address: 'ঠিকানা',
+  code: 'কোড',
   description: 'বিবরণ',
   amount: 'পরিমাণ',
+  totalAmount: 'মোট পরিমাণ',
   date: 'তারিখ',
+  saleDate: 'বিক্রয়ের তারিখ',
+  fixedToToday: 'আজকের তারিখে স্থির',
   notes: 'নোট',
   status: 'অবস্থা',
   type: 'ধরন',
@@ -2764,6 +2920,8 @@ const bengaliTranslations: Translations = {
 
   inactive: 'নিষ্ক্রিয়',
   editCompany: 'কোম্পানি সম্পাদনা',
+  createCompany: 'কোম্পানি তৈরি করুন',
+  updateCompany: 'কোম্পানি আপডেট করুন',
   deleteCompany: 'কোম্পানি মুছুন',
   editProduct: 'পণ্য সম্পাদনা',
   deleteProduct: 'পণ্য মুছুন',
@@ -2783,6 +2941,38 @@ const bengaliTranslations: Translations = {
   failedToSaveProduct: 'পণ্য সংরক্ষণ করতে ব্যর্থ',
   failedToDeleteProduct: 'পণ্য মুছতে ব্যর্থ',
   unknownError: 'অজানা ত্রুটি',
+
+  // Product management page specific translations
+  noProductsFound: 'কোন পণ্য পাওয়া যায়নি',
+  noCylinderSizesFound: 'কোন সিলিন্ডার সাইজ পাওয়া যায়নি',
+  cylinderTypeSize: 'সিলিন্ডার ধরন/সাইজ',
+  selectFromAvailableCylinderSizes: 'উপলব্ধ সিলিন্ডার সাইজ থেকে নির্বাচন করুন',
+  selectCylinderSize: 'সিলিন্ডার সাইজ নির্বাচন করুন',
+  manageCylinderSizes: 'সিলিন্ডার সাইজ পরিচালনা করুন',
+  threshold: 'সীমা',
+  addCylinderSize: 'সিলিন্ডার সাইজ যোগ করুন',
+  editCylinderSize: 'সিলিন্ডার সাইজ সম্পাদনা করুন',
+  createCylinderSize: 'সিলিন্ডার সাইজ তৈরি করুন',
+  updateCylinderSize: 'সিলিন্ডার সাইজ আপডেট করুন',
+  deleteCylinderSize: 'সিলিন্ডার সাইজ মুছুন',
+  enterCylinderSizeExample:
+    'সিলিন্ডার সাইজ প্রবেশ করান (যেমন, ১২এল, ৩৫এল, ৫কেজি, ২০এল)',
+  createProduct: 'পণ্য তৈরি করুন',
+  updateProduct: 'পণ্য আপডেট করুন',
+
+  // User management form translations
+  addNewUser: 'নতুন ব্যবহারকারী যোগ করুন',
+  enterFullNamePlaceholder: 'পূর্ণ নাম লিখুন',
+  enterEmailAddressPlaceholder: 'ইমেইল ঠিকানা লিখুন',
+  enterPasswordPlaceholder: 'পাসওয়ার্ড লিখুন (কমপক্ষে ৮ অক্ষর)',
+
+  // Assets form translations
+  addNew: 'নতুন যোগ করুন',
+  assetValue: 'সম্পদের মূল্য',
+  optionalDescriptionPlaceholder: 'ঐচ্ছিক বিবরণ',
+  enterAssetNamePlaceholder: 'সম্পদের নাম লিখুন',
+  enterLiabilityNamePlaceholder: 'দায়ের নাম লিখুন',
+
   // Asset translations
   dueDate: 'নির্ধারিত তারিখ',
   noDate: 'কোন তারিখ নেই',
@@ -2801,6 +2991,12 @@ const bengaliTranslations: Translations = {
   failedToFetchReceivablesChanges: 'বাকি পরিবর্তন আনতে ব্যর্থ',
   customerReceivableUpdatedSuccessfully: 'গ্রাহকের বাকি সফলভাবে আপডেট হয়েছে',
   customerReceivableAddedSuccessfully: 'গ্রাহকের বাকি সফলভাবে যোগ হয়েছে',
+  addCustomerReceivable: 'গ্রাহকের বাকি যোগ করুন',
+  editCustomerReceivable: 'গ্রাহকের বাকি সম্পাদনা করুন',
+  customerNamePlaceholder: 'গ্রাহকের নাম প্রবেশ করান...',
+  cashReceivable: 'নগদ বাকি',
+  cylinderReceivable: 'সিলিন্ডার বাকি',
+  enterPaymentAmount: 'পরিমাণ প্রবেশ করান',
   failedToSaveCustomerReceivable: 'গ্রাহকের বাকি সংরক্ষণ করতে ব্যর্থ',
   customerReceivableDeletedSuccessfully:
     'গ্রাহকের বাকি সফলভাবে মুছে ফেলা হয়েছে',
@@ -2809,16 +3005,11 @@ const bengaliTranslations: Translations = {
   failedToRecordPayment: 'পেমেন্ট রেকর্ড করতে ব্যর্থ',
   cylinderReturnRecordedSuccessfully: 'সিলিন্ডার ফেরত সফলভাবে রেকর্ড হয়েছে',
   failedToRecordCylinderReturn: 'সিলিন্ডার ফেরত রেকর্ড করতে ব্যর্থ',
-  cylinderReceivable: 'সিলিন্ডার বাকি',
-  enterPaymentAmount: 'পেমেন্টের পরিমাণ লিখুন',
   enterNumberOfCylinders: 'সিলিন্ডারের সংখ্যা লিখুন',
   recordPayment: 'পেমেন্ট রেকর্ড করুন',
   recordCylinderReturn: 'সিলিন্ডার ফেরত রেকর্ড করুন',
   recordReturn: 'ফেরত রেকর্ড করুন',
   customerReceivablesDontMatch: 'গ্রাহকের বাকি মিলছে না',
-  editCustomerReceivable: 'গ্রাহকের বাকি সম্পাদনা',
-  addCustomerReceivable: 'গ্রাহকের বাকি যোগ করুন',
-  cashReceivable: 'নগদ বাকি',
   driverTotalReceivablesFromSales: 'ড্রাইভারের মোট বাকি (বিক্রয় থেকে)',
   customerReceivableTotalsMustEqual: 'গ্রাহকের বাকি মোট সমান হতে হবে',
   cashMismatch: 'নগদ অমিল',
@@ -2866,12 +3057,8 @@ const bengaliTranslations: Translations = {
   productNamePlaceholder: 'পণ্যের নাম লিখুন',
   cylinderSizePlaceholder: 'সিলিন্ডারের আকার লিখুন',
   optionalDescription: 'ঐচ্ছিক বিবরণ',
-  editCylinderSize: 'সিলিন্ডারের আকার সম্পাদনা',
-  deleteCylinderSize: 'সিলিন্ডারের আকার মুছুন',
   failedToSaveCylinderSize: 'সিলিন্ডারের আকার সংরক্ষণ ব্যর্থ',
-  code: 'কোড',
   price: 'দাম',
-  threshold: 'সীমা',
   weight: 'ওজন',
   fullCylinderWeight: 'পূর্ণ সিলিন্ডারের ওজন',
   emptyCylinderWeight: 'খালি সিলিন্ডারের ওজন',
@@ -2903,6 +3090,7 @@ const bengaliTranslations: Translations = {
   unitValue: 'একক মূল্য',
   netValue: 'নেট মূল্য',
   liability: 'দায়',
+  liabilityName: 'দায় নাম',
 
   fixedAsset: 'স্থায়ী সম্পদ',
   currentAsset: 'চলতি সম্পদ',
@@ -3331,6 +3519,43 @@ const bengaliTranslations: Translations = {
   packageSale: 'প্যাকেজ বিক্রয়',
   packageSalesQty: 'প্যাকেজ বিক্রয় পরিমাণ',
   parentCategory: 'প্যারেন্ট বিভাগ',
+
+  // Category Management
+  categoryManagement: 'ক্যাটাগরি ব্যবস্থাপনা',
+  addNewCategory: 'নতুন ক্যাটাগরি যোগ করুন',
+  parentCategories: 'প্যারেন্ট ক্যাটাগরি',
+  subCategories: 'সাব-ক্যাটাগরি',
+  subCategoriesTitle: 'সাব-ক্যাটাগরি',
+  noParentCategoriesFound:
+    'কোনো প্যারেন্ট ক্যাটাগরি পাওয়া যায়নি। আপনার খরচ সংগঠিত করার জন্য প্রথম প্যারেন্ট ক্যাটাগরি তৈরি করুন।',
+  noSubCategoriesFound:
+    'কোনো সাব-ক্যাটাগরি পাওয়া যায়নি। খরচ ট্র্যাক করা শুরু করতে প্রথম সাব-ক্যাটাগরি তৈরি করুন।',
+  editParentCategory: 'প্যারেন্ট ক্যাটাগরি সম্পাদনা',
+  deleteParentCategory: 'প্যারেন্ট ক্যাটাগরি মুছুন',
+  editCategory: 'ক্যাটাগরি সম্পাদনা',
+  deleteCategory: 'ক্যাটাগরি মুছুন',
+  createCategory: 'ক্যাটাগরি তৈরি করুন',
+  updateCategory: 'ক্যাটাগরি আপডেট করুন',
+  updateParentCategory: 'প্যারেন্ট ক্যাটাগরি আপডেট করুন',
+  budget: 'বাজেট',
+  spentThisMonth: 'এই মাসে খরচ',
+  noBudget: 'কোনো বাজেট নেই',
+  overBudget: 'বাজেট অতিক্রম',
+  parent: 'প্যারেন্ট',
+  noParent: 'কোনো প্যারেন্ট নেই',
+  unknownParent: 'অজানা প্যারেন্ট',
+  loadingCategories: 'ক্যাটাগরি লোড হচ্ছে...',
+
+  // Category Form
+  categoryType: 'ক্যাটাগরির ধরন',
+  subCategoryWithBudget: 'সাব-ক্যাটাগরি (বাজেট সহ)',
+  parentCategoryGroupingOnly: 'প্যারেন্ট ক্যাটাগরি (শুধু গ্রুপিং)',
+  enterCategoryName: 'ক্যাটাগরির নাম লিখুন',
+  enterCategoryDescription: 'ক্যাটাগরির বিবরণ লিখুন',
+  monthlyBudget: 'মাসিক বাজেট',
+  noParentCategory: 'কোনো প্যারেন্ট ক্যাটাগরি নেই',
+  leaveEmptyForNoBudgetLimit: 'বাজেট সীমা না রাখতে খালি রাখুন',
+
   pay: 'পরিশোধ',
   paymentReceived: 'পেমেন্ট প্রাপ্ত',
   pending: 'অপেক্ষমাণ',
@@ -3469,7 +3694,6 @@ const bengaliTranslations: Translations = {
   customerName: 'গ্রাহক নাম',
   selectADriver: 'একজন চালক নির্বাচন করুন',
   enterCustomerName: 'প্রবেশ করান গ্রাহক নাম',
-  customerNamePlaceholder: 'প্রবেশ করান গ্রাহক নাম...',
   saleItems: 'বিক্রয়ের আইটেম',
   itemNumber: 'আইটেম নম্বর',
   selectAProduct: 'একটি পণ্য নির্বাচন করুন',
@@ -3568,6 +3792,7 @@ const bengaliTranslations: Translations = {
   of: 'এর',
   orderInformation: 'আদেশ তথ্য',
   selectCompany: 'নির্বাচন করুন কোম্পানি',
+  selectACompany: 'কোম্পানি নির্বাচন করুন',
   selectDriver: 'নির্বাচন করুন চালক',
   shipmentDate: 'চালান তারিখ',
   expectedDeliveryDate: 'প্রত্যাশিত ডেলিভারির তারিখ',
@@ -3620,7 +3845,6 @@ const bengaliTranslations: Translations = {
   addEmptyCylindersToInventory: 'যোগ করুন খালি সিলিন্ডার করতে মজুদ',
   removeEmptyCylindersFromInventory: 'সরান খালি সিলিন্ডার থেকে মজুদ',
   cylinderSize: 'সিলিন্ডার আকার',
-  selectCylinderSize: 'নির্বাচন করুন সিলিন্ডার আকার',
   emptyCylindersNote: 'খালি সিলিন্ডার নোট',
   transactionDate: 'লেনদেনের তারিখ',
   enterTransactionDetails: 'লেনদেনের বিবরণ লিখুন',
@@ -3801,6 +4025,7 @@ const bengaliTranslations: Translations = {
   addNewCompany: 'নতুন কোম্পানি যোগ করুন',
   enterCompanyNamesLikeAygaz: 'কোম্পানির নাম লিখুন (যেমন, অ্যাইগ্যাস)',
   companyName: 'কোম্পানির নাম',
+  companyCode: 'কোম্পানি কোড',
   enterCompanyName: 'কোম্পানির নাম প্রবেশ করান',
   companyNameRequired: 'কোম্পানির নাম প্রয়োজনীয়',
   companyAlreadyExists: 'কোম্পানি ইতিমধ্যে বিদ্যমান',
@@ -3810,7 +4035,6 @@ const bengaliTranslations: Translations = {
   addAtLeastOneCompany: 'কমপক্ষে একটি কোম্পানি যোগ করুন',
   setupProductsAndSizes: 'পণ্য এবং মাপ সেটআপ করুন',
   configureCylinderSizesAndProducts: 'সিলিন্ডারের মাপ ও পণ্য কনফিগার করুন',
-  addCylinderSize: 'সিলিন্ডারের আকার যোগ করুন',
   addSizesLike12L20L: 'মাপ যোগ করুন, যেমন ১২লি ২০লি',
   enterSizeLike12L: 'মাপ লিখুন (যেমন, ১২লি)',
   addSize: 'আকার যোগ করুন',

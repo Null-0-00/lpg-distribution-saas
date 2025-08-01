@@ -15,6 +15,7 @@ const createUserSchema = z.object({
   password: z.string().min(8, 'Password must be at least 8 characters'),
   role: z.nativeEnum(UserRole),
   permissions: z.array(z.string()).optional(),
+  pagePermissions: z.array(z.string()).optional(),
   avatar: z.string().url('Invalid avatar URL').optional(),
 });
 
@@ -81,6 +82,7 @@ export async function GET(request: NextRequest) {
           createdAt: true,
           updatedAt: true,
           permissions: true,
+          pagePermissions: true,
           _count: {
             select: {
               sales: true,
@@ -234,6 +236,7 @@ export async function POST(request: NextRequest) {
         role: validatedData.role,
         avatar: validatedData.avatar,
         isActive: true,
+        pagePermissions: validatedData.pagePermissions || [],
         permissions: validatedData.permissions
           ? {
               connect: validatedData.permissions.map((name) => ({ name })),

@@ -9,6 +9,7 @@ declare module 'next-auth' {
       role: UserRole;
       tenantId: string | null; // Null for SUPER_ADMIN users
       avatar?: string;
+      pagePermissions?: string[];
     };
   }
 
@@ -20,6 +21,7 @@ declare module 'next-auth' {
     tenantId: string | null; // Null for SUPER_ADMIN users
     avatar?: string;
     tenant?: any;
+    pagePermissions?: string[];
   }
 }
 
@@ -28,5 +30,6 @@ declare module 'next-auth/jwt' {
     role: UserRole;
     tenantId: string | null; // Null for SUPER_ADMIN users
     tenant?: any;
+    pagePermissions?: string[];
   }
 }

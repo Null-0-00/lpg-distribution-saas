@@ -109,8 +109,39 @@ export async function POST(request: NextRequest) {
     const session = await auth();
     const tenantId = validateTenantAccess(session);
     const userId = session!.user.id;
+    const { role } = session!.user;
 
     const data = await request.json();
+
+    // Handle date validation for managers
+    if (data.shipmentDate && role === 'MANAGER') {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const providedDate = new Date(data.shipmentDate);
+      providedDate.setHours(0, 0, 0, 0);
+
+      if (providedDate.getTime() !== today.getTime()) {
+        return NextResponse.json(
+          { error: 'Managers can only create shipments for today' },
+          { status: 403 }
+        );
+      }
+    }
+
+    // Handle date validation for empty cylinder transactions
+    if (data.date && role === 'MANAGER') {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const providedDate = new Date(data.date);
+      providedDate.setHours(0, 0, 0, 0);
+
+      if (providedDate.getTime() !== today.getTime()) {
+        return NextResponse.json(
+          { error: 'Managers can only create transactions for today' },
+          { status: 403 }
+        );
+      }
+    }
 
     // Handle both old format and new line items format
     if (data.lineItems && Array.isArray(data.lineItems)) {

@@ -193,6 +193,8 @@ jobs:
       - name: Build application
         env:
           NODE_ENV: production
+          NEXTAUTH_SECRET: test-secret
+          NEXTAUTH_URL: http://localhost:3000
         run: npm run build
 
       - name: Start application
@@ -258,6 +260,9 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
           platforms: linux/amd64,linux/arm64
+          build-args: |
+            NEXTAUTH_SECRET=test-secret
+            NEXTAUTH_URL=http://localhost:3000
 
   # Deploy to Staging
   deploy-staging:

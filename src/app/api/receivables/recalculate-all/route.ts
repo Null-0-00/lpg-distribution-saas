@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
     }
 
     let updatedCount = 0;
-    let errors = [];
+    const errors = [];
 
     // Process each driver's records in chronological order
     for (const [driverId, driverRecords] of recordsByDriver.entries()) {

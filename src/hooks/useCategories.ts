@@ -176,7 +176,6 @@ export const useCategories = ({ currentMonth }: UseCategoriesProps) => {
         data.isParent ||
         parentCategories.some((parent) => parent.id === categoryId);
 
-      let response;
       let endpoint;
       let categoryData;
 
@@ -198,7 +197,7 @@ export const useCategories = ({ currentMonth }: UseCategoriesProps) => {
         };
       }
 
-      response = await fetch(endpoint, {
+      const response = await fetch(endpoint, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(categoryData),

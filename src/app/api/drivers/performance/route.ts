@@ -170,8 +170,8 @@ export async function GET(request: NextRequest) {
       let refillSalesCount = dailySalesTotal.refillSales;
 
       // Use latest receivable records for consistency with receivables page
-      let totalCashReceivables = currentCashTotal;
-      let totalCylinderReceivables = currentCylinderTotal;
+      const totalCashReceivables = currentCashTotal;
+      const totalCylinderReceivables = currentCylinderTotal;
 
       // If no daily sales aggregated data, calculate from individual sales
       if (dailySalesTotal.totalSales === 0 && driver.sales.length > 0) {

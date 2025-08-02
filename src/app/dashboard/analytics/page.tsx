@@ -1646,10 +1646,11 @@ export default function AnalyticsPage() {
                     />
                     <Tooltip
                       formatter={(value, name, props) => [
-                        <span style={{ color: '#10b981' }}>
+                        <span key="value" style={{ color: '#10b981' }}>
                           {formatCurrency(Number(value))}
                         </span>,
                         <span
+                          key="label"
                           style={{ color: '#3b82f6' }}
                         >{`${props.payload.saleTypeLabel} ${t('revenue')}`}</span>,
                       ]}
@@ -1803,10 +1804,10 @@ export default function AnalyticsPage() {
                       />
                       <Tooltip
                         formatter={(value) => [
-                          <span style={{ color: '#10b981' }}>
+                          <span key="value" style={{ color: '#10b981' }}>
                             {formatCurrency(Number(value))}
                           </span>,
-                          <span style={{ color: '#3b82f6' }}>
+                          <span key="label" style={{ color: '#3b82f6' }}>
                             {t('revenue')}
                           </span>,
                         ]}

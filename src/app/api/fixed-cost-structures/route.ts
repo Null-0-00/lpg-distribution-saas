@@ -25,15 +25,14 @@ export async function GET(request: NextRequest) {
     const productId = searchParams.get('productId');
     const includeGlobal = searchParams.get('includeGlobal') === 'true';
 
-    let where: any = {
+    const where: any = {
       tenantId: session.user.tenantId,
       isActive: true,
+      ...(month && { month: parseInt(month) }),
+      ...(year && { year: parseInt(year) }),
+      ...(productId && { productId }),
+      ...(!includeGlobal && { productId: { not: null } }),
     };
-
-    if (month) where.month = parseInt(month);
-    if (year) where.year = parseInt(year);
-    if (productId) where.productId = productId;
-    if (!includeGlobal) where.productId = { not: null };
 
     const fixedCostStructures = await prisma.fixedCostStructure.findMany({
       where,

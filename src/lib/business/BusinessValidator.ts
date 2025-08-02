@@ -109,7 +109,7 @@ export class BusinessValidator {
     const errors: string[] = [];
 
     try {
-      let newFullCylinders = data.previousFull + data.purchases - data.sales;
+      const newFullCylinders = data.previousFull + data.purchases - data.sales;
       let newEmptyCylinders = data.previousEmpty;
 
       // Apply business logic based on sale type

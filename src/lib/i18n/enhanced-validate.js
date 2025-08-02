@@ -5,6 +5,7 @@
  * Uses the new validation system from translation-validator.ts
  */
 
+/* eslint-disable @typescript-eslint/no-require-imports */
 const fs = require('fs');
 const path = require('path');
 const ts = require('typescript');

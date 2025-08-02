@@ -212,7 +212,7 @@ export function demonstrateWhyFifoMatters(): void {
   sales.forEach((s) => console.log(`   ${s.date}: ${s.qty} units`));
 
   // Calculate FIFO
-  let batches = shipments.map((s) => ({ ...s, remaining: s.qty }));
+  const batches = shipments.map((s) => ({ ...s, remaining: s.qty }));
   let totalCOGS = 0;
   let totalSold = 0;
 
@@ -223,7 +223,7 @@ export function demonstrateWhyFifoMatters(): void {
     let saleRemaining = sale.qty;
     totalSold += sale.qty;
 
-    for (let batch of batches) {
+    for (const batch of batches) {
       if (saleRemaining <= 0 || batch.remaining <= 0) continue;
 
       const take = Math.min(saleRemaining, batch.remaining);

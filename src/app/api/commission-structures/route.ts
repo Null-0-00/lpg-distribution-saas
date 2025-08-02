@@ -23,14 +23,13 @@ export async function GET(request: NextRequest) {
     const year = searchParams.get('year');
     const productId = searchParams.get('productId');
 
-    let where: any = {
+    const where: any = {
       tenantId: session.user.tenantId,
       isActive: true,
+      ...(month && { month: parseInt(month) }),
+      ...(year && { year: parseInt(year) }),
+      ...(productId && { productId }),
     };
-
-    if (month) where.month = parseInt(month);
-    if (year) where.year = parseInt(year);
-    if (productId) where.productId = productId;
 
     const commissionStructures = await prisma.commissionStructure.findMany({
       where,

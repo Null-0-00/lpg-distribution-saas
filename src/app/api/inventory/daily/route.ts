@@ -1060,7 +1060,7 @@ export async function GET(request: NextRequest) {
 
       // OPTIMIZED but ACCURATE: Calculate receivables based on actual driver baseline data
       let emptyCylinderReceivables = 0;
-      let emptyCylinderReceivablesBySizes: SizeBreakdown[] = [];
+      const emptyCylinderReceivablesBySizes: SizeBreakdown[] = [];
 
       try {
         // Use the optimized batch approach from cylinders-summary but for this specific date

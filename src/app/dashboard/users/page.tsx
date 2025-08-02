@@ -502,6 +502,7 @@ export default function UsersPage() {
                               className="h-10 w-10 rounded-full"
                               src={user.avatar}
                               alt={user.name}
+                              loading="lazy"
                             />
                           ) : (
                             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100">

@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
     }
 
     let updatedCount = 0;
-    let errors = [];
+    const errors = [];
 
     // Process each tenant's drivers
     for (const [

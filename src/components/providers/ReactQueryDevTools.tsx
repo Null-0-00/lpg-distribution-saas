@@ -1,28 +1,18 @@
 'use client';
 
 import React from 'react';
-import { useQueryClient } from '@tanstack/react-query';
 
-export const ReactQueryDevTools: React.FC = () => {
-  // Only render in development mode
-  if (process.env.NODE_ENV !== 'development') {
-    return null;
-  }
-
+// Component to safely render React Query DevTools
+const DevToolsInternal: React.FC = () => {
   const [mounted, setMounted] = React.useState(false);
-
-  // Check if QueryClient is available
-  let queryClient;
-  try {
-    queryClient = useQueryClient();
-  } catch (error) {
-    // If useQueryClient throws, QueryClient is not available
-    queryClient = null;
-  }
 
   const DevToolsComponent = React.useMemo(() => {
     // Only import the devtools if we're in development mode and mounted
-    if (typeof window !== 'undefined' && mounted) {
+    if (
+      typeof window !== 'undefined' &&
+      mounted &&
+      process.env.NODE_ENV === 'development'
+    ) {
       return React.lazy(() =>
         import('@tanstack/react-query-devtools').then((module) => ({
           default: module.ReactQueryDevtools,
@@ -36,14 +26,28 @@ export const ReactQueryDevTools: React.FC = () => {
     setMounted(true);
   }, []);
 
-  // Only render if QueryClient is available, component is mounted, and we have the DevToolsComponent
-  if (!queryClient || !mounted || !DevToolsComponent) {
+  // Only render in development mode
+  if (process.env.NODE_ENV !== 'development') {
+    return null;
+  }
+
+  // Only render if component is mounted and we have the DevToolsComponent
+  if (!mounted || !DevToolsComponent) {
     return null;
   }
 
   return (
     <React.Suspense fallback={null}>
-      {DevToolsComponent && <DevToolsComponent initialIsOpen={false} />}
+      <DevToolsComponent initialIsOpen={false} />
     </React.Suspense>
   );
+};
+
+export const ReactQueryDevTools: React.FC = () => {
+  // Only render in development mode
+  if (process.env.NODE_ENV !== 'development') {
+    return null;
+  }
+
+  return <DevToolsInternal />;
 };

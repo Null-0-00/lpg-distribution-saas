@@ -97,6 +97,7 @@ export function useTranslationDebug() {
     clearTranslationErrors,
     checkTranslationConsistency,
     generateMissingTranslationKeys,
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
   } = require('@/lib/i18n/translations');
 
   return {

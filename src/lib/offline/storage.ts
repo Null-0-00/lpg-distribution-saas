@@ -44,7 +44,7 @@ export class OfflineStorageManager {
     cleanupAfterDays: 30,
   };
   private syncTimer: NodeJS.Timeout | null = null;
-  private listeners: Map<string, Function[]> = new Map();
+  private listeners: Map<string, ((data: any) => void)[]> = new Map();
 
   private constructor() {
     this.initializeDB();
@@ -564,14 +564,14 @@ export class OfflineStorageManager {
   /**
    * Event listeners
    */
-  addEventListener(event: string, listener: Function): void {
+  addEventListener(event: string, listener: (data: any) => void): void {
     if (!this.listeners.has(event)) {
       this.listeners.set(event, []);
     }
     this.listeners.get(event)!.push(listener);
   }
 
-  removeEventListener(event: string, listener: Function): void {
+  removeEventListener(event: string, listener: (data: any) => void): void {
     const listeners = this.listeners.get(event);
     if (listeners) {
       const index = listeners.indexOf(listener);

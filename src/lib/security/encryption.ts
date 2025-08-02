@@ -481,6 +481,7 @@ export class TransportSecurity {
    */
   createSecureHttpClient(): any {
     return {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
       httpsAgent: new (require('https').Agent)({
         cert: this.loadCertificate(this.config.certificatePath),
         key: this.loadPrivateKey(this.config.privateKeyPath),
@@ -509,6 +510,7 @@ export class TransportSecurity {
     errors: string[];
   }> {
     return new Promise((resolve) => {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
       const socket = require('tls').connect(
         {
           host: hostname,
@@ -544,16 +546,19 @@ export class TransportSecurity {
   }
 
   private loadCertificate(path: string): Buffer {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const fs = require('fs');
     return fs.readFileSync(path);
   }
 
   private loadPrivateKey(path: string): Buffer {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const fs = require('fs');
     return fs.readFileSync(path);
   }
 
   private getSecureOptions(): number {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const constants = require('constants');
     return (
       constants.SSL_OP_NO_SSLv2 |
@@ -566,6 +571,7 @@ export class TransportSecurity {
 
   private checkServerIdentity(hostname: string, cert: any): Error | undefined {
     // Custom server identity checking logic
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const { checkServerIdentity } = require('tls');
     return checkServerIdentity(hostname, cert);
   }

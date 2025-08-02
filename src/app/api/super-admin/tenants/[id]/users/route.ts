@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getToken } from 'next-auth/jwt';
+import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 
 export async function GET(
@@ -8,12 +8,9 @@ export async function GET(
 ) {
   try {
     // Verify super admin access
-    const token = await getToken({
-      req: request,
-      secret: process.env.NEXTAUTH_SECRET,
-    });
+    const session = await auth();
 
-    if (!token || token.role !== 'SUPER_ADMIN') {
+    if (!session?.user || session.user.role !== 'SUPER_ADMIN') {
       return NextResponse.json(
         { error: 'Super admin access required' },
         { status: 403 }
@@ -94,12 +91,9 @@ export async function PATCH(
 ) {
   try {
     // Verify super admin access
-    const token = await getToken({
-      req: request,
-      secret: process.env.NEXTAUTH_SECRET,
-    });
+    const session = await auth();
 
-    if (!token || token.role !== 'SUPER_ADMIN') {
+    if (!session?.user || session.user.role !== 'SUPER_ADMIN') {
       return NextResponse.json(
         { error: 'Super admin access required' },
         { status: 403 }
@@ -138,13 +132,13 @@ export async function PATCH(
     // Log the action
     await prisma.auditLog.create({
       data: {
-        userId: token.sub as string,
+        userId: session.user.id,
         action: isActive ? 'ACTIVATE' : 'DEACTIVATE',
         entityType: 'User',
         entityId: userId,
         newValues: {
           isActive,
-          modifiedBy: token.sub,
+          modifiedBy: session.user.id,
         },
         metadata: {
           reason: `Super admin ${isActive ? 'activated' : 'deactivated'} user`,

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getToken } from 'next-auth/jwt';
+import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 
 export async function POST(
@@ -8,12 +8,9 @@ export async function POST(
 ) {
   try {
     // Verify super admin access
-    const token = await getToken({
-      req: request,
-      secret: process.env.NEXTAUTH_SECRET,
-    });
+    const session = await auth();
 
-    if (!token || token.role !== 'SUPER_ADMIN') {
+    if (!session?.user || session.user.role !== 'SUPER_ADMIN') {
       return NextResponse.json(
         { error: 'Super admin access required' },
         { status: 403 }
@@ -21,7 +18,7 @@ export async function POST(
     }
 
     const { id: tenantId } = await params;
-    const superAdminId = token.sub as string;
+    const superAdminId = session.user.id;
 
     // Check if tenant exists and is suspended
     const tenant = await prisma.tenant.findUnique({

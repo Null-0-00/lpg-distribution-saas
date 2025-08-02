@@ -1,13 +1,14 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   eslint: {
-    ignoreDuringBuilds: true,
+    ignoreDuringBuilds: false,
   },
   typescript: {
-    ignoreBuildErrors: true,
+    ignoreBuildErrors: false,
   },
   serverExternalPackages: ['prisma', '@prisma/client'],
   experimental: {
+    // Safe package import optimizations (tree-shaking)
     optimizePackageImports: [
       '@radix-ui/react-icons',
       'lucide-react',
@@ -19,6 +20,8 @@ const nextConfig = {
       'zod',
       'next-auth',
     ],
+    // Safe CSS optimizations
+    optimizeCss: true,
   },
   images: {
     formats: ['image/webp', 'image/avif'],
@@ -33,9 +36,26 @@ const nextConfig = {
     // Enable SWC minification
     styledComponents: true,
   },
-  // Enhanced webpack optimization
+  // Safe webpack optimizations
   webpack: (config, { dev, isServer }) => {
-    // Enable bundle splitting for better caching
+    // Safe development optimizations
+    if (dev) {
+      // Safe filesystem caching for incremental builds
+      config.cache = {
+        type: 'filesystem',
+        buildDependencies: {
+          config: [__filename],
+        },
+      };
+
+      // Safe path alias optimization
+      config.resolve.alias = {
+        ...config.resolve.alias,
+        '@': require('path').resolve(__dirname, 'src'),
+      };
+    }
+
+    // Safe production optimizations
     if (!dev && !isServer) {
       config.optimization.splitChunks = {
         chunks: 'all',
@@ -72,7 +92,7 @@ const nextConfig = {
         },
       };
 
-      // Optimize bundle size
+      // Safe tree-shaking
       config.optimization.usedExports = true;
       config.optimization.sideEffects = false;
     }

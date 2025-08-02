@@ -357,11 +357,11 @@ export default function InventoryPage() {
               className="bg-card animate-pulse rounded-lg p-6 shadow"
             >
               <div className="flex items-center">
-                <div className="h-8 w-8 rounded bg-gray-300"></div>
+                <div className="h-8 w-8 rounded bg-gray-300 dark:bg-gray-600 dark:bg-gray-600"></div>
                 <div className="ml-4 flex-1">
-                  <div className="mb-2 h-4 w-20 rounded bg-gray-300"></div>
-                  <div className="mb-1 h-8 w-12 rounded bg-gray-300"></div>
-                  <div className="h-3 w-16 rounded bg-gray-300"></div>
+                  <div className="mb-2 h-4 w-20 rounded bg-gray-300 dark:bg-gray-600 dark:bg-gray-600"></div>
+                  <div className="mb-1 h-8 w-12 rounded bg-gray-300 dark:bg-gray-600 dark:bg-gray-600"></div>
+                  <div className="h-3 w-16 rounded bg-gray-300 dark:bg-gray-600 dark:bg-gray-600"></div>
                 </div>
               </div>
             </div>
@@ -402,13 +402,13 @@ export default function InventoryPage() {
                   {[1, 2, 3].map((i) => (
                     <tr key={i} className="animate-pulse">
                       <td className="px-4 py-3">
-                        <div className="h-4 w-20 rounded bg-gray-300"></div>
+                        <div className="h-4 w-20 rounded bg-gray-300 dark:bg-gray-600"></div>
                       </td>
                       <td className="px-4 py-3">
-                        <div className="h-4 w-12 rounded bg-gray-300"></div>
+                        <div className="h-4 w-12 rounded bg-gray-300 dark:bg-gray-600"></div>
                       </td>
                       <td className="px-4 py-3">
-                        <div className="h-4 w-8 rounded bg-gray-300"></div>
+                        <div className="h-4 w-8 rounded bg-gray-300 dark:bg-gray-600"></div>
                       </td>
                     </tr>
                   ))}
@@ -455,19 +455,19 @@ export default function InventoryPage() {
                   {[1, 2, 3].map((i) => (
                     <tr key={i} className="animate-pulse">
                       <td className="px-4 py-3">
-                        <div className="h-4 w-12 rounded bg-gray-300"></div>
+                        <div className="h-4 w-12 rounded bg-gray-300 dark:bg-gray-600"></div>
                       </td>
                       <td className="px-4 py-3">
-                        <div className="h-4 w-8 rounded bg-gray-300"></div>
+                        <div className="h-4 w-8 rounded bg-gray-300 dark:bg-gray-600"></div>
                       </td>
                       <td className="px-4 py-3">
-                        <div className="h-4 w-8 rounded bg-gray-300"></div>
+                        <div className="h-4 w-8 rounded bg-gray-300 dark:bg-gray-600"></div>
                       </td>
                       <td className="px-4 py-3">
-                        <div className="h-4 w-8 rounded bg-gray-300"></div>
+                        <div className="h-4 w-8 rounded bg-gray-300 dark:bg-gray-600"></div>
                       </td>
                       <td className="px-4 py-3">
-                        <div className="h-4 w-8 rounded bg-gray-300"></div>
+                        <div className="h-4 w-8 rounded bg-gray-300 dark:bg-gray-600"></div>
                       </td>
                     </tr>
                   ))}
@@ -537,8 +537,8 @@ export default function InventoryPage() {
                   <tr key={i} className="animate-pulse">
                     {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((j) => (
                       <td key={j} className="px-2 py-4">
-                        <div className="mb-1 h-4 w-8 rounded bg-gray-300"></div>
-                        <div className="h-3 w-12 rounded bg-gray-200"></div>
+                        <div className="mb-1 h-4 w-8 rounded bg-gray-300 dark:bg-gray-600"></div>
+                        <div className="h-3 w-12 rounded bg-gray-200 dark:bg-gray-700"></div>
                       </td>
                     ))}
                   </tr>
@@ -761,13 +761,13 @@ export default function InventoryPage() {
                   {[1, 2, 3].map((i) => (
                     <tr key={i} className="animate-pulse">
                       <td className="px-4 py-3">
-                        <div className="h-4 w-20 rounded bg-gray-300"></div>
+                        <div className="h-4 w-20 rounded bg-gray-300 dark:bg-gray-600"></div>
                       </td>
                       <td className="px-4 py-3">
-                        <div className="h-4 w-12 rounded bg-gray-300"></div>
+                        <div className="h-4 w-12 rounded bg-gray-300 dark:bg-gray-600"></div>
                       </td>
                       <td className="px-4 py-3">
-                        <div className="h-4 w-8 rounded bg-gray-300"></div>
+                        <div className="h-4 w-8 rounded bg-gray-300 dark:bg-gray-600"></div>
                       </td>
                     </tr>
                   ))}
@@ -814,19 +814,19 @@ export default function InventoryPage() {
                   {[1, 2, 3].map((i) => (
                     <tr key={i} className="animate-pulse">
                       <td className="px-4 py-3">
-                        <div className="h-4 w-12 rounded bg-gray-300"></div>
+                        <div className="h-4 w-12 rounded bg-gray-300 dark:bg-gray-600"></div>
                       </td>
                       <td className="px-4 py-3">
-                        <div className="h-4 w-8 rounded bg-gray-300"></div>
+                        <div className="h-4 w-8 rounded bg-gray-300 dark:bg-gray-600"></div>
                       </td>
                       <td className="px-4 py-3">
-                        <div className="h-4 w-8 rounded bg-gray-300"></div>
+                        <div className="h-4 w-8 rounded bg-gray-300 dark:bg-gray-600"></div>
                       </td>
                       <td className="px-4 py-3">
-                        <div className="h-4 w-8 rounded bg-gray-300"></div>
+                        <div className="h-4 w-8 rounded bg-gray-300 dark:bg-gray-600"></div>
                       </td>
                       <td className="px-4 py-3">
-                        <div className="h-4 w-8 rounded bg-gray-300"></div>
+                        <div className="h-4 w-8 rounded bg-gray-300 dark:bg-gray-600"></div>
                       </td>
                     </tr>
                   ))}
@@ -1186,8 +1186,8 @@ export default function InventoryPage() {
                   <tr key={i} className="animate-pulse">
                     {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((j) => (
                       <td key={j} className="px-2 py-4">
-                        <div className="mb-1 h-4 w-8 rounded bg-gray-300"></div>
-                        <div className="h-3 w-12 rounded bg-gray-200"></div>
+                        <div className="mb-1 h-4 w-8 rounded bg-gray-300 dark:bg-gray-600"></div>
+                        <div className="h-3 w-12 rounded bg-gray-200 dark:bg-gray-700"></div>
                       </td>
                     ))}
                   </tr>

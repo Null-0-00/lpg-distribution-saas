@@ -18,10 +18,10 @@ export const ExpenseHeader: React.FC<ExpenseHeaderProps> = ({
   return (
     <div className="flex items-center justify-between">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+        <h1 className="text-foreground text-2xl font-bold">
           {t('expenseManagement')}
         </h1>
-        <p className="text-gray-600 dark:text-gray-300">
+        <p className="text-muted-foreground">
           {t('trackExpensesAndManageBudgets')}
         </p>
       </div>

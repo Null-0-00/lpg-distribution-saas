@@ -756,7 +756,7 @@ export default function ReceivablesPage() {
 
       {/* Validation Error Banner */}
       {validationErrors.length > 0 && (
-        <div className="border-destructive/20 bg-destructive/10 rounded-lg border p-4">
+        <div className="border-destructive bg-destructive/10 rounded-lg border-2 p-4">
           <div className="mb-2 flex items-center">
             <AlertCircle className="text-destructive mr-2 h-5 w-5" />
             <span className="text-foreground font-medium">
@@ -861,36 +861,30 @@ export default function ReceivablesPage() {
           <AlertCircle className="mr-2 mt-0.5 h-5 w-5 text-blue-500" />
           <div className="text-foreground">
             <div className="mb-2 font-medium">
-              📋 {t('receivablesManagementSystemRules')}:
+              📋 বাকি ব্যবস্থাপনা সিস্টেম নিয়ম:
             </div>
             <ul className="ml-4 space-y-1 text-sm">
               <li>
-                • <strong>{t('driverTotalReceivables')}:</strong>{' '}
-                {t('automaticallyCalculatedFromSales')}
+                • <strong>ড্রাইভারের মোট বাকি:</strong> বিক্রয় থেকে
+                স্বয়ংক্রিয়ভাবে গণনা
               </li>
               <li>
-                •{' '}
-                <strong>
-                  {t('customers')} {t('receivables')}:
-                </strong>{' '}
-                {t('customerReceivablesManuallyManaged')}
+                • <strong>গ্রাহকগণ বাকি:</strong> গ্রাহকের বাকি ম্যানুয়ালি
+                পরিচালিত
               </li>
               <li>
-                • <strong>⚡ Auto Recalculation:</strong> Receivables are
-                automatically recalculated fresh on every page load for
-                up-to-date values
+                • <strong>⚡ স্বয়ংক্রিয় পুনর্গণনা:</strong> প্রতিবার পেজ লোডের
+                সময় সর্বশেষ তথ্যের জন্য বাকি স্বয়ংক্রিয়ভাবে পুনর্গণনা করা হয়
               </li>
               <li>
-                • <strong>{t('validation')}:</strong>{' '}
-                {t('customerTotalsMustEqualDriverSales')}
+                • <strong>বৈধতা:</strong> গ্রাহকের মোট ড্রাইভার বিক্রয়ের সমান
+                হতে হবে
               </li>
               <li>
-                • <strong>{t('payments')}:</strong>{' '}
-                {t('paymentsAutomaticallyAdded')}
+                • <strong>পেমেন্ট:</strong> পেমেন্ট স্বয়ংক্রিয়ভাবে যোগ
               </li>
               <li>
-                • <strong>{t('changesLog')}:</strong>{' '}
-                {t('changesLogAllReceivableActions')}
+                • <strong>পরিবর্তন লগ:</strong> সমস্ত বাকি কার্যক্রম লগ পরিবর্তন
               </li>
             </ul>
             {currentUserRole === 'MANAGER' && (
@@ -1002,16 +996,16 @@ export default function ReceivablesPage() {
                   <div className="border-border bg-muted border-b px-6 py-4">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center">
-                        <div className="mr-2 h-5 w-5 animate-pulse rounded bg-gray-300"></div>
-                        <div className="h-6 w-32 animate-pulse rounded bg-gray-300"></div>
+                        <div className="mr-2 h-5 w-5 animate-pulse rounded bg-gray-300 dark:bg-gray-600"></div>
+                        <div className="h-6 w-32 animate-pulse rounded bg-gray-300 dark:bg-gray-600"></div>
                       </div>
                       <div className="flex items-center space-x-6">
                         <div className="flex space-x-4 text-sm">
-                          <div className="h-4 w-40 animate-pulse rounded bg-gray-300"></div>
-                          <div className="h-4 w-32 animate-pulse rounded bg-gray-300"></div>
-                          <div className="h-4 w-24 animate-pulse rounded bg-gray-300"></div>
+                          <div className="h-4 w-40 animate-pulse rounded bg-gray-300 dark:bg-gray-600"></div>
+                          <div className="h-4 w-32 animate-pulse rounded bg-gray-300 dark:bg-gray-600"></div>
+                          <div className="h-4 w-24 animate-pulse rounded bg-gray-300 dark:bg-gray-600"></div>
                         </div>
-                        <div className="h-8 w-24 animate-pulse rounded-md bg-gray-300"></div>
+                        <div className="h-8 w-24 animate-pulse rounded-md bg-gray-300 dark:bg-gray-600"></div>
                       </div>
                     </div>
                   </div>
@@ -1020,22 +1014,22 @@ export default function ReceivablesPage() {
                   <div className="grid grid-cols-1 gap-6 px-6 pb-6 lg:grid-cols-2">
                     {/* Cash Receivables Table Skeleton */}
                     <div>
-                      <div className="mb-3 h-5 w-32 animate-pulse rounded bg-gray-300"></div>
+                      <div className="mb-3 h-5 w-32 animate-pulse rounded bg-gray-300 dark:bg-gray-600"></div>
                       <div className="border-border overflow-x-auto rounded-lg border">
                         <table className="w-full">
                           <thead className="bg-muted">
                             <tr>
                               <th className="px-4 py-3">
-                                <div className="h-4 w-16 animate-pulse rounded bg-gray-300"></div>
+                                <div className="h-4 w-16 animate-pulse rounded bg-gray-300 dark:bg-gray-600"></div>
                               </th>
                               <th className="px-4 py-3">
-                                <div className="h-4 w-12 animate-pulse rounded bg-gray-300"></div>
+                                <div className="h-4 w-12 animate-pulse rounded bg-gray-300 dark:bg-gray-600"></div>
                               </th>
                               <th className="px-4 py-3">
-                                <div className="h-4 w-10 animate-pulse rounded bg-gray-300"></div>
+                                <div className="h-4 w-10 animate-pulse rounded bg-gray-300 dark:bg-gray-600"></div>
                               </th>
                               <th className="px-4 py-3">
-                                <div className="h-4 w-14 animate-pulse rounded bg-gray-300"></div>
+                                <div className="h-4 w-14 animate-pulse rounded bg-gray-300 dark:bg-gray-600"></div>
                               </th>
                             </tr>
                           </thead>
@@ -1043,19 +1037,19 @@ export default function ReceivablesPage() {
                             {[1, 2].map((j) => (
                               <tr key={j}>
                                 <td className="px-4 py-4">
-                                  <div className="h-4 w-20 animate-pulse rounded bg-gray-300"></div>
+                                  <div className="h-4 w-20 animate-pulse rounded bg-gray-300 dark:bg-gray-600"></div>
                                 </td>
                                 <td className="px-4 py-4">
-                                  <div className="h-4 w-16 animate-pulse rounded bg-gray-300"></div>
+                                  <div className="h-4 w-16 animate-pulse rounded bg-gray-300 dark:bg-gray-600"></div>
                                 </td>
                                 <td className="px-4 py-4">
-                                  <div className="w-18 h-4 animate-pulse rounded bg-gray-300"></div>
+                                  <div className="w-18 h-4 animate-pulse rounded bg-gray-300 dark:bg-gray-600"></div>
                                 </td>
                                 <td className="px-4 py-4">
                                   <div className="flex space-x-2">
-                                    <div className="h-4 w-8 animate-pulse rounded bg-gray-300"></div>
-                                    <div className="h-4 w-4 animate-pulse rounded bg-gray-300"></div>
-                                    <div className="h-4 w-4 animate-pulse rounded bg-gray-300"></div>
+                                    <div className="h-4 w-8 animate-pulse rounded bg-gray-300 dark:bg-gray-600"></div>
+                                    <div className="h-4 w-4 animate-pulse rounded bg-gray-300 dark:bg-gray-600"></div>
+                                    <div className="h-4 w-4 animate-pulse rounded bg-gray-300 dark:bg-gray-600"></div>
                                   </div>
                                 </td>
                               </tr>
@@ -1067,25 +1061,25 @@ export default function ReceivablesPage() {
 
                     {/* Cylinder Receivables Table Skeleton */}
                     <div>
-                      <div className="mb-3 h-5 w-36 animate-pulse rounded bg-gray-300"></div>
+                      <div className="mb-3 h-5 w-36 animate-pulse rounded bg-gray-300 dark:bg-gray-600"></div>
                       <div className="border-border overflow-x-auto rounded-lg border">
                         <table className="w-full">
                           <thead className="bg-muted">
                             <tr>
                               <th className="px-4 py-3">
-                                <div className="h-4 w-16 animate-pulse rounded bg-gray-300"></div>
+                                <div className="h-4 w-16 animate-pulse rounded bg-gray-300 dark:bg-gray-600"></div>
                               </th>
                               <th className="px-4 py-3">
-                                <div className="h-4 w-12 animate-pulse rounded bg-gray-300"></div>
+                                <div className="h-4 w-12 animate-pulse rounded bg-gray-300 dark:bg-gray-600"></div>
                               </th>
                               <th className="px-4 py-3">
-                                <div className="h-4 w-8 animate-pulse rounded bg-gray-300"></div>
+                                <div className="h-4 w-8 animate-pulse rounded bg-gray-300 dark:bg-gray-600"></div>
                               </th>
                               <th className="px-4 py-3">
-                                <div className="h-4 w-10 animate-pulse rounded bg-gray-300"></div>
+                                <div className="h-4 w-10 animate-pulse rounded bg-gray-300 dark:bg-gray-600"></div>
                               </th>
                               <th className="px-4 py-3">
-                                <div className="h-4 w-14 animate-pulse rounded bg-gray-300"></div>
+                                <div className="h-4 w-14 animate-pulse rounded bg-gray-300 dark:bg-gray-600"></div>
                               </th>
                             </tr>
                           </thead>
@@ -1093,22 +1087,22 @@ export default function ReceivablesPage() {
                             {[1, 2].map((j) => (
                               <tr key={j}>
                                 <td className="px-4 py-4">
-                                  <div className="h-4 w-20 animate-pulse rounded bg-gray-300"></div>
+                                  <div className="h-4 w-20 animate-pulse rounded bg-gray-300 dark:bg-gray-600"></div>
                                 </td>
                                 <td className="px-4 py-4">
-                                  <div className="h-4 w-8 animate-pulse rounded bg-gray-300"></div>
+                                  <div className="h-4 w-8 animate-pulse rounded bg-gray-300 dark:bg-gray-600"></div>
                                 </td>
                                 <td className="px-4 py-4">
-                                  <div className="h-4 w-10 animate-pulse rounded bg-gray-300"></div>
+                                  <div className="h-4 w-10 animate-pulse rounded bg-gray-300 dark:bg-gray-600"></div>
                                 </td>
                                 <td className="px-4 py-4">
-                                  <div className="w-18 h-4 animate-pulse rounded bg-gray-300"></div>
+                                  <div className="w-18 h-4 animate-pulse rounded bg-gray-300 dark:bg-gray-600"></div>
                                 </td>
                                 <td className="px-4 py-4">
                                   <div className="flex space-x-2">
-                                    <div className="h-4 w-10 animate-pulse rounded bg-gray-300"></div>
-                                    <div className="h-4 w-4 animate-pulse rounded bg-gray-300"></div>
-                                    <div className="h-4 w-4 animate-pulse rounded bg-gray-300"></div>
+                                    <div className="h-4 w-10 animate-pulse rounded bg-gray-300 dark:bg-gray-600"></div>
+                                    <div className="h-4 w-4 animate-pulse rounded bg-gray-300 dark:bg-gray-600"></div>
+                                    <div className="h-4 w-4 animate-pulse rounded bg-gray-300 dark:bg-gray-600"></div>
                                   </div>
                                 </td>
                               </tr>
@@ -1123,7 +1117,7 @@ export default function ReceivablesPage() {
             </div>
           ) : driverReceivables.length === 0 ? (
             <div className="bg-card rounded-lg p-8 shadow">
-              <div className="text-center text-gray-500 dark:text-gray-400">
+              <div className="text-muted-foreground text-center">
                 <Users className="mx-auto mb-4 h-12 w-12 text-gray-300" />
                 <p className="mb-2 text-lg font-medium">
                   {t('noReceivablesFound')}
@@ -1200,7 +1194,7 @@ export default function ReceivablesPage() {
                 {driver.customerBreakdown &&
                   driver.customerBreakdown.length > 0 && (
                     <div className="bg-muted border-t border-gray-200 px-6 py-2 dark:border-gray-600">
-                      <div className="flex items-center space-x-4 text-xs text-gray-600 dark:text-gray-400">
+                      <div className="text-muted-foreground flex items-center space-x-4 text-xs">
                         <span>{t('statusBreakdown')}:</span>
                         <span className="text-green-600">
                           {t('current')}:{' '}
@@ -1226,7 +1220,7 @@ export default function ReceivablesPage() {
                             ).length
                           }
                         </span>
-                        <span className="text-gray-600">
+                        <span className="text-muted-foreground">
                           {t('paid')}:{' '}
                           {
                             driver.customerBreakdown.filter(
@@ -1249,16 +1243,16 @@ export default function ReceivablesPage() {
                       <table className="w-full">
                         <thead className="bg-muted">
                           <tr>
-                            <th className="px-4 py-3 text-left text-xs font-medium uppercase text-gray-500 dark:text-gray-300">
+                            <th className="text-muted-foreground px-4 py-3 text-left text-xs font-medium uppercase">
                               {t('customers')}
                             </th>
-                            <th className="px-4 py-3 text-right text-xs font-medium uppercase text-gray-500 dark:text-gray-300">
+                            <th className="text-muted-foreground px-4 py-3 text-right text-xs font-medium uppercase">
                               {t('amount')}
                             </th>
-                            <th className="px-4 py-3 text-left text-xs font-medium uppercase text-gray-500 dark:text-gray-300">
+                            <th className="text-muted-foreground px-4 py-3 text-left text-xs font-medium uppercase">
                               {t('date')}
                             </th>
-                            <th className="px-4 py-3 text-left text-xs font-medium uppercase text-gray-500 dark:text-gray-300">
+                            <th className="text-muted-foreground px-4 py-3 text-left text-xs font-medium uppercase">
                               {t('actions')}
                             </th>
                           </tr>
@@ -1272,7 +1266,7 @@ export default function ReceivablesPage() {
                             <tr>
                               <td
                                 colSpan={4}
-                                className="px-4 py-8 text-center text-gray-500 dark:text-gray-400"
+                                className="text-muted-foreground px-4 py-8 text-center"
                               >
                                 {t('noCashReceivables')}
                               </td>
@@ -1378,19 +1372,19 @@ export default function ReceivablesPage() {
                       <table className="w-full">
                         <thead className="bg-muted">
                           <tr>
-                            <th className="px-4 py-3 text-left text-xs font-medium uppercase text-gray-500 dark:text-gray-300">
+                            <th className="text-muted-foreground px-4 py-3 text-left text-xs font-medium uppercase">
                               {t('customers')}
                             </th>
-                            <th className="px-4 py-3 text-center text-xs font-medium uppercase text-gray-500 dark:text-gray-300">
+                            <th className="text-muted-foreground px-4 py-3 text-center text-xs font-medium uppercase">
                               {t('quantity')}
                             </th>
-                            <th className="px-4 py-3 text-left text-xs font-medium uppercase text-gray-500 dark:text-gray-300">
+                            <th className="text-muted-foreground px-4 py-3 text-left text-xs font-medium uppercase">
                               {t('size')}
                             </th>
-                            <th className="px-4 py-3 text-left text-xs font-medium uppercase text-gray-500 dark:text-gray-300">
+                            <th className="text-muted-foreground px-4 py-3 text-left text-xs font-medium uppercase">
                               {t('date')}
                             </th>
-                            <th className="px-4 py-3 text-left text-xs font-medium uppercase text-gray-500 dark:text-gray-300">
+                            <th className="text-muted-foreground px-4 py-3 text-left text-xs font-medium uppercase">
                               {t('actions')}
                             </th>
                           </tr>
@@ -1404,7 +1398,7 @@ export default function ReceivablesPage() {
                             <tr>
                               <td
                                 colSpan={5}
-                                className="px-4 py-8 text-center text-gray-500 dark:text-gray-400"
+                                className="text-muted-foreground px-4 py-8 text-center"
                               >
                                 {t('noCylinderReceivables')}
                               </td>
@@ -1525,26 +1519,26 @@ export default function ReceivablesPage() {
               <table className="w-full">
                 <thead className="bg-muted">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500 dark:text-gray-300">
-                      <div className="h-4 w-12 animate-pulse rounded bg-gray-300"></div>
+                    <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase">
+                      <div className="h-4 w-12 animate-pulse rounded bg-gray-300 dark:bg-gray-600"></div>
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500 dark:text-gray-300">
-                      <div className="h-4 w-16 animate-pulse rounded bg-gray-300"></div>
+                    <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase">
+                      <div className="h-4 w-16 animate-pulse rounded bg-gray-300 dark:bg-gray-600"></div>
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500 dark:text-gray-300">
-                      <div className="h-4 w-14 animate-pulse rounded bg-gray-300"></div>
+                    <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase">
+                      <div className="h-4 w-14 animate-pulse rounded bg-gray-300 dark:bg-gray-600"></div>
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500 dark:text-gray-300">
-                      <div className="w-18 h-4 animate-pulse rounded bg-gray-300"></div>
+                    <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase">
+                      <div className="w-18 h-4 animate-pulse rounded bg-gray-300 dark:bg-gray-600"></div>
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500 dark:text-gray-300">
-                      <div className="h-4 w-10 animate-pulse rounded bg-gray-300"></div>
+                    <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase">
+                      <div className="h-4 w-10 animate-pulse rounded bg-gray-300 dark:bg-gray-600"></div>
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500 dark:text-gray-300">
-                      <div className="h-4 w-24 animate-pulse rounded bg-gray-300"></div>
+                    <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase">
+                      <div className="h-4 w-24 animate-pulse rounded bg-gray-300 dark:bg-gray-600"></div>
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500 dark:text-gray-300">
-                      <div className="h-4 w-10 animate-pulse rounded bg-gray-300"></div>
+                    <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase">
+                      <div className="h-4 w-10 animate-pulse rounded bg-gray-300 dark:bg-gray-600"></div>
                     </th>
                   </tr>
                 </thead>
@@ -1552,25 +1546,25 @@ export default function ReceivablesPage() {
                   {[1, 2, 3, 4, 5].map((i) => (
                     <tr key={i}>
                       <td className="px-6 py-4">
-                        <div className="h-4 w-20 animate-pulse rounded bg-gray-300"></div>
+                        <div className="h-4 w-20 animate-pulse rounded bg-gray-300 dark:bg-gray-600"></div>
                       </td>
                       <td className="px-6 py-4">
-                        <div className="h-6 w-16 animate-pulse rounded-full bg-gray-300"></div>
+                        <div className="h-6 w-16 animate-pulse rounded-full bg-gray-300 dark:bg-gray-600"></div>
                       </td>
                       <td className="px-6 py-4">
-                        <div className="h-4 w-16 animate-pulse rounded bg-gray-300"></div>
+                        <div className="h-4 w-16 animate-pulse rounded bg-gray-300 dark:bg-gray-600"></div>
                       </td>
                       <td className="px-6 py-4">
-                        <div className="h-4 w-20 animate-pulse rounded bg-gray-300"></div>
+                        <div className="h-4 w-20 animate-pulse rounded bg-gray-300 dark:bg-gray-600"></div>
                       </td>
                       <td className="px-6 py-4">
-                        <div className="h-6 w-12 animate-pulse rounded-full bg-gray-300"></div>
+                        <div className="h-6 w-12 animate-pulse rounded-full bg-gray-300 dark:bg-gray-600"></div>
                       </td>
                       <td className="px-6 py-4">
-                        <div className="h-4 w-16 animate-pulse rounded bg-gray-300"></div>
+                        <div className="h-4 w-16 animate-pulse rounded bg-gray-300 dark:bg-gray-600"></div>
                       </td>
                       <td className="px-6 py-4">
-                        <div className="h-4 w-14 animate-pulse rounded bg-gray-300"></div>
+                        <div className="h-4 w-14 animate-pulse rounded bg-gray-300 dark:bg-gray-600"></div>
                       </td>
                     </tr>
                   ))}
@@ -1578,7 +1572,7 @@ export default function ReceivablesPage() {
               </table>
             </div>
           ) : receivablesChanges.length === 0 ? (
-            <div className="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
+            <div className="text-muted-foreground px-6 py-8 text-center">
               <FileText className="mx-auto mb-4 h-12 w-12 text-gray-300" />
               <p className="mb-2 text-lg font-medium">
                 {t('noChangesRecorded')}
@@ -1595,25 +1589,25 @@ export default function ReceivablesPage() {
               <table className="w-full">
                 <thead className="bg-muted">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500 dark:text-gray-300">
+                    <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase">
                       Date
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500 dark:text-gray-300">
+                    <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase">
                       Action
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500 dark:text-gray-300">
+                    <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase">
                       Driver
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500 dark:text-gray-300">
+                    <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase">
                       Customer
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500 dark:text-gray-300">
+                    <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase">
                       Type
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500 dark:text-gray-300">
+                    <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase">
                       Amount/Quantity
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500 dark:text-gray-300">
+                    <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase">
                       User
                     </th>
                   </tr>
@@ -1689,7 +1683,7 @@ export default function ReceivablesPage() {
               </h3>
               <button
                 onClick={() => setIsCustomerModalOpen(false)}
-                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+                className="text-muted-foreground hover:text-foreground"
               >
                 <X className="h-6 w-6" />
               </button>
@@ -1873,7 +1867,7 @@ export default function ReceivablesPage() {
               </h3>
               <button
                 onClick={() => setIsPaymentModalOpen(false)}
-                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+                className="text-muted-foreground hover:text-foreground"
               >
                 <X className="h-6 w-6" />
               </button>
@@ -1982,7 +1976,7 @@ export default function ReceivablesPage() {
               </h3>
               <button
                 onClick={() => setIsCylinderReturnModalOpen(false)}
-                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+                className="text-muted-foreground hover:text-foreground"
               >
                 <X className="h-6 w-6" />
               </button>

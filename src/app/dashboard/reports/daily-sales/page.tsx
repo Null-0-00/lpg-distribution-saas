@@ -310,15 +310,15 @@ export default function DailySalesReportPage() {
         {/* Header Skeleton */}
         <div className="flex items-center justify-between">
           <div>
-            <div className="mb-2 h-8 w-48 animate-pulse rounded bg-gray-300"></div>
-            <div className="h-4 w-64 animate-pulse rounded bg-gray-300"></div>
+            <div className="mb-2 h-8 w-48 animate-pulse rounded bg-gray-300 dark:bg-gray-600"></div>
+            <div className="h-4 w-64 animate-pulse rounded bg-gray-300 dark:bg-gray-600"></div>
           </div>
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-2">
-              <div className="h-5 w-5 animate-pulse rounded bg-gray-300"></div>
-              <div className="h-10 w-32 animate-pulse rounded-lg bg-gray-300"></div>
+              <div className="h-5 w-5 animate-pulse rounded bg-gray-300 dark:bg-gray-600"></div>
+              <div className="h-10 w-32 animate-pulse rounded-lg bg-gray-300 dark:bg-gray-600"></div>
             </div>
-            <div className="h-10 w-24 animate-pulse rounded-lg bg-gray-300"></div>
+            <div className="h-10 w-24 animate-pulse rounded-lg bg-gray-300 dark:bg-gray-600"></div>
           </div>
         </div>
 
@@ -327,10 +327,10 @@ export default function DailySalesReportPage() {
           {[1, 2, 3, 4].map((i) => (
             <div key={i} className="bg-card rounded-lg p-6 shadow">
               <div className="flex items-center">
-                <div className="h-8 w-8 animate-pulse rounded-full bg-gray-300"></div>
+                <div className="h-8 w-8 animate-pulse rounded-full bg-gray-300 dark:bg-gray-600"></div>
                 <div className="ml-4 space-y-2">
-                  <div className="h-4 w-20 animate-pulse rounded bg-gray-300"></div>
-                  <div className="h-8 w-24 animate-pulse rounded bg-gray-300"></div>
+                  <div className="h-4 w-20 animate-pulse rounded bg-gray-300 dark:bg-gray-600"></div>
+                  <div className="h-8 w-24 animate-pulse rounded bg-gray-300 dark:bg-gray-600"></div>
                 </div>
               </div>
             </div>
@@ -340,7 +340,7 @@ export default function DailySalesReportPage() {
         {/* Report Table Skeleton */}
         <div className="bg-card overflow-hidden rounded-lg shadow">
           <div className="border-border border-b px-6 py-4">
-            <div className="h-6 w-48 animate-pulse rounded bg-gray-300"></div>
+            <div className="h-6 w-48 animate-pulse rounded bg-gray-300 dark:bg-gray-600"></div>
           </div>
           <div className="p-6">
             <div className="space-y-4">
@@ -348,7 +348,7 @@ export default function DailySalesReportPage() {
                 {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((i) => (
                   <div
                     key={i}
-                    className="h-4 w-full animate-pulse rounded bg-gray-300"
+                    className="h-4 w-full animate-pulse rounded bg-gray-300 dark:bg-gray-600"
                   ></div>
                 ))}
               </div>
@@ -357,7 +357,7 @@ export default function DailySalesReportPage() {
                   {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((j) => (
                     <div
                       key={j}
-                      className="h-4 w-full animate-pulse rounded bg-gray-300"
+                      className="h-4 w-full animate-pulse rounded bg-gray-300 dark:bg-gray-600"
                     ></div>
                   ))}
                 </div>
@@ -369,19 +369,19 @@ export default function DailySalesReportPage() {
         {/* Deposits & Expenses Skeleton */}
         <div className="bg-card rounded-lg shadow">
           <div className="border-border border-b px-6 py-4">
-            <div className="mb-2 h-6 w-64 animate-pulse rounded bg-gray-300"></div>
-            <div className="h-4 w-80 animate-pulse rounded bg-gray-300"></div>
+            <div className="mb-2 h-6 w-64 animate-pulse rounded bg-gray-300 dark:bg-gray-600"></div>
+            <div className="h-4 w-80 animate-pulse rounded bg-gray-300 dark:bg-gray-600"></div>
           </div>
           <div className="grid grid-cols-1 gap-6 p-6 lg:grid-cols-2">
             {[1, 2].map((i) => (
               <div key={i}>
-                <div className="mb-4 h-5 w-20 animate-pulse rounded bg-gray-300"></div>
+                <div className="mb-4 h-5 w-20 animate-pulse rounded bg-gray-300 dark:bg-gray-600"></div>
                 <div className="space-y-3">
                   <div className="grid grid-cols-3 gap-4">
                     {[1, 2, 3].map((j) => (
                       <div
                         key={j}
-                        className="h-4 w-full animate-pulse rounded bg-gray-300"
+                        className="h-4 w-full animate-pulse rounded bg-gray-300 dark:bg-gray-600"
                       ></div>
                     ))}
                   </div>
@@ -390,7 +390,7 @@ export default function DailySalesReportPage() {
                       {[1, 2, 3].map((k) => (
                         <div
                           key={k}
-                          className="h-4 w-full animate-pulse rounded bg-gray-300"
+                          className="h-4 w-full animate-pulse rounded bg-gray-300 dark:bg-gray-600"
                         ></div>
                       ))}
                     </div>
@@ -404,13 +404,13 @@ export default function DailySalesReportPage() {
         {/* Available Cash Summary Skeleton */}
         <div className="bg-card rounded-lg p-6 shadow">
           <div className="text-center">
-            <div className="mx-auto mb-4 h-6 w-48 animate-pulse rounded bg-gray-300"></div>
-            <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
+            <div className="mx-auto mb-4 h-6 w-48 animate-pulse rounded bg-gray-300 dark:bg-gray-600"></div>
+            <div className="rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-800/50">
               <div className="flex items-center justify-between">
-                <div className="h-6 w-40 animate-pulse rounded bg-gray-300"></div>
-                <div className="h-10 w-32 animate-pulse rounded bg-gray-300"></div>
+                <div className="h-6 w-40 animate-pulse rounded bg-gray-300 dark:bg-gray-600"></div>
+                <div className="h-10 w-32 animate-pulse rounded bg-gray-300 dark:bg-gray-600"></div>
               </div>
-              <div className="mx-auto mt-2 h-4 w-56 animate-pulse rounded bg-gray-300"></div>
+              <div className="mx-auto mt-2 h-4 w-56 animate-pulse rounded bg-gray-300 dark:bg-gray-600"></div>
             </div>
           </div>
         </div>
@@ -632,31 +632,31 @@ export default function DailySalesReportPage() {
                     <th className="text-muted-foreground px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
                       {t('driver')}
                     </th>
-                    <th className="px-6 py-3 text-center text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-300">
+                    <th className="text-muted-foreground px-6 py-3 text-center text-xs font-medium uppercase tracking-wider">
                       {t('packageSalesQty')}
                     </th>
-                    <th className="px-6 py-3 text-center text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-300">
+                    <th className="text-muted-foreground px-6 py-3 text-center text-xs font-medium uppercase tracking-wider">
                       {t('refillSalesQty')}
                     </th>
-                    <th className="px-6 py-3 text-center text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-300">
+                    <th className="text-muted-foreground px-6 py-3 text-center text-xs font-medium uppercase tracking-wider">
                       {t('totalSalesQty')}
                     </th>
-                    <th className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-300">
+                    <th className="text-muted-foreground px-6 py-3 text-right text-xs font-medium uppercase tracking-wider">
                       {t('totalSalesValue')}
                     </th>
-                    <th className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-300">
+                    <th className="text-muted-foreground px-6 py-3 text-right text-xs font-medium uppercase tracking-wider">
                       {t('discount')}
                     </th>
-                    <th className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-300">
+                    <th className="text-muted-foreground px-6 py-3 text-right text-xs font-medium uppercase tracking-wider">
                       {t('totalDeposited')}
                     </th>
-                    <th className="px-6 py-3 text-center text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-300">
+                    <th className="text-muted-foreground px-6 py-3 text-center text-xs font-medium uppercase tracking-wider">
                       {t('totalCylindersReceivables')}
                     </th>
-                    <th className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-300">
+                    <th className="text-muted-foreground px-6 py-3 text-right text-xs font-medium uppercase tracking-wider">
                       {t('totalCashReceivables')}
                     </th>
-                    <th className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-300">
+                    <th className="text-muted-foreground px-6 py-3 text-right text-xs font-medium uppercase tracking-wider">
                       {t('changeInReceivablesCashCylinders')}
                     </th>
                   </tr>
@@ -709,7 +709,7 @@ export default function DailySalesReportPage() {
                               .map(([size, quantity]) => (
                                 <div
                                   key={size}
-                                  className="text-xs leading-tight text-gray-600 dark:text-gray-400"
+                                  className="text-muted-foreground text-xs leading-tight"
                                 >
                                   <span className="font-medium">{size}:</span>
                                   <span className="ml-1 font-semibold text-orange-600">
@@ -791,7 +791,7 @@ export default function DailySalesReportPage() {
                             .map(([size, quantity]) => (
                               <div
                                 key={size}
-                                className="text-xs leading-tight text-gray-600 dark:text-gray-400"
+                                className="text-muted-foreground text-xs leading-tight"
                               >
                                 <span className="font-medium">{size}:</span>
                                 <span className="ml-1 font-semibold text-orange-600">

@@ -76,20 +76,18 @@ export const ExpensePagination: React.FC<ExpensePaginationProps> = ({
     <div className="bg-card border-border border-t px-4 py-3 sm:px-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-4">
-          <p className="text-sm text-gray-700 dark:text-gray-300">
+          <p className="text-foreground text-sm">
             Showing <span className="font-medium">{start}</span> to{' '}
             <span className="font-medium">{end}</span> of{' '}
             <span className="font-medium">{pagination.total}</span> results
           </p>
 
           <div className="flex items-center gap-2">
-            <label className="text-sm text-gray-700 dark:text-gray-300">
-              Per page:
-            </label>
+            <label className="text-foreground text-sm">Per page:</label>
             <select
               value={pagination.limit}
               onChange={(e) => onLimitChange(Number(e.target.value))}
-              className="rounded-md border border-gray-300 px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+              className="border-border dark:bg-background rounded-md border px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value={10}>10</option>
               <option value={20}>20</option>
@@ -119,7 +117,7 @@ export const ExpensePagination: React.FC<ExpensePaginationProps> = ({
                 pageNum === pagination.page
                   ? 'z-10 border-blue-500 bg-blue-50 text-blue-600 dark:border-blue-400 dark:bg-blue-900 dark:text-blue-200'
                   : pageNum === '...'
-                    ? 'cursor-default border-gray-300 bg-white text-gray-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300'
+                    ? 'border-border text-muted-foreground cursor-default bg-white'
                     : 'bg-background border-border text-muted-foreground hover:bg-muted/50'
               }`}
             >

@@ -137,7 +137,7 @@ export const CategoryManagement: React.FC<CategoryManagementProps> = ({
                   </h3>
 
                   {parentCategories.length === 0 ? (
-                    <div className="py-4 text-center text-gray-500 dark:text-gray-400">
+                    <div className="text-muted-foreground py-4 text-center">
                       {t('noParentCategoriesFound')}
                     </div>
                   ) : (
@@ -150,7 +150,7 @@ export const CategoryManagement: React.FC<CategoryManagementProps> = ({
                           <div className="flex items-center justify-between">
                             <div className="flex items-center">
                               <Folder className="mr-2 h-5 w-5 text-blue-600" />
-                              <h4 className="font-medium text-gray-900 dark:text-white">
+                              <h4 className="text-foreground font-medium">
                                 {parent.name}
                               </h4>
                             </div>
@@ -178,11 +178,11 @@ export const CategoryManagement: React.FC<CategoryManagementProps> = ({
                             </div>
                           </div>
                           {parent.description && (
-                            <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+                            <p className="text-muted-foreground mt-1 text-sm">
                               {parent.description}
                             </p>
                           )}
-                          <div className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                          <div className="text-muted-foreground mt-2 text-sm">
                             {parent.categories?.length || 0}{' '}
                             {t('subCategories')}
                           </div>
@@ -200,30 +200,30 @@ export const CategoryManagement: React.FC<CategoryManagementProps> = ({
                   </h3>
 
                   {categories.length === 0 ? (
-                    <div className="py-4 text-center text-gray-500 dark:text-gray-400">
+                    <div className="text-muted-foreground py-4 text-center">
                       {t('noSubCategoriesFound')}
                     </div>
                   ) : (
                     <div className="overflow-x-auto">
-                      <table className="w-full border-collapse border border-gray-200 dark:border-gray-600">
+                      <table className="border-border w-full border-collapse border ">
                         <thead>
                           <tr className="bg-gray-50 dark:bg-gray-700">
-                            <th className="border border-gray-200 px-4 py-2 text-left text-sm font-medium text-gray-900 dark:border-gray-600 dark:text-white">
+                            <th className="border-border border px-4 py-2 text-left text-sm font-medium text-gray-900  dark:text-white">
                               {t('name')}
                             </th>
-                            <th className="border border-gray-200 px-4 py-2 text-left text-sm font-medium text-gray-900 dark:border-gray-600 dark:text-white">
+                            <th className="border-border border px-4 py-2 text-left text-sm font-medium text-gray-900  dark:text-white">
                               {t('parent')}
                             </th>
-                            <th className="border border-gray-200 px-4 py-2 text-left text-sm font-medium text-gray-900 dark:border-gray-600 dark:text-white">
+                            <th className="border-border border px-4 py-2 text-left text-sm font-medium text-gray-900  dark:text-white">
                               {t('budget')}
                             </th>
-                            <th className="border border-gray-200 px-4 py-2 text-left text-sm font-medium text-gray-900 dark:border-gray-600 dark:text-white">
+                            <th className="border-border border px-4 py-2 text-left text-sm font-medium text-gray-900  dark:text-white">
                               {t('spentThisMonth')}
                             </th>
-                            <th className="border border-gray-200 px-4 py-2 text-left text-sm font-medium text-gray-900 dark:border-gray-600 dark:text-white">
+                            <th className="border-border border px-4 py-2 text-left text-sm font-medium text-gray-900  dark:text-white">
                               {t('status')}
                             </th>
-                            <th className="border border-gray-200 px-4 py-2 text-left text-sm font-medium text-gray-900 dark:border-gray-600 dark:text-white">
+                            <th className="border-border border px-4 py-2 text-left text-sm font-medium text-gray-900  dark:text-white">
                               {t('actions')}
                             </th>
                           </tr>
@@ -231,30 +231,30 @@ export const CategoryManagement: React.FC<CategoryManagementProps> = ({
                         <tbody>
                           {categories.map((category) => (
                             <tr key={category.id} className="hover:bg-muted/50">
-                              <td className="border border-gray-200 px-4 py-2 dark:border-gray-600">
+                              <td className="border-border border px-4 py-2 ">
                                 <div>
-                                  <div className="font-medium text-gray-900 dark:text-white">
+                                  <div className="text-foreground font-medium">
                                     {category.name}
                                   </div>
                                   {category.description && (
-                                    <div className="text-sm text-gray-600 dark:text-gray-400">
+                                    <div className="text-muted-foreground text-sm">
                                       {category.description}
                                     </div>
                                   )}
                                 </div>
                               </td>
-                              <td className="border border-gray-200 px-4 py-2 text-sm text-gray-600 dark:border-gray-600 dark:text-gray-400">
+                              <td className="border-border border px-4 py-2 text-sm text-gray-600  dark:text-gray-400">
                                 {getParentName(category.parentId || null)}
                               </td>
-                              <td className="border border-gray-200 px-4 py-2 text-sm text-gray-600 dark:border-gray-600 dark:text-gray-400">
+                              <td className="border-border border px-4 py-2 text-sm text-gray-600  dark:text-gray-400">
                                 {category.budget
                                   ? formatCurrency(category.budget)
                                   : t('noBudget')}
                               </td>
-                              <td className="border border-gray-200 px-4 py-2 text-sm text-gray-600 dark:border-gray-600 dark:text-gray-400">
+                              <td className="border-border border px-4 py-2 text-sm text-gray-600  dark:text-gray-400">
                                 {formatCurrency(category.currentMonthSpending)}
                               </td>
-                              <td className="border border-gray-200 px-4 py-2 dark:border-gray-600">
+                              <td className="border-border border px-4 py-2 ">
                                 <span
                                   className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${
                                     category.isActive
@@ -272,7 +272,7 @@ export const CategoryManagement: React.FC<CategoryManagementProps> = ({
                                   </span>
                                 )}
                               </td>
-                              <td className="border border-gray-200 px-4 py-2 dark:border-gray-600">
+                              <td className="border-border border px-4 py-2 ">
                                 <div className="flex space-x-2">
                                   <button
                                     onClick={() => handleEditCategory(category)}

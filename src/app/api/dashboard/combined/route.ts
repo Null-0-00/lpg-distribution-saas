@@ -14,10 +14,29 @@ export async function GET(request: NextRequest) {
     const tenantId = session.user.tenantId;
     // Get user's language preference - using 'bn' as default since language field doesn't exist in User model
     const userLanguage = 'bn';
-    const today = new Date();
+
+    // Get timezone setting from tenant settings
+    const tenantSettings = await prisma.tenant.findFirst({
+      where: { id: tenantId },
+      select: { timezone: true },
+    });
+    const timezone = tenantSettings?.timezone || 'Asia/Dhaka';
+
+    // Create timezone-aware date boundaries for "today"
+    const now = new Date();
+    const today = new Date(now.toLocaleString('en-US', { timeZone: timezone }));
     today.setHours(0, 0, 0, 0);
+
     const tomorrow = new Date(today);
     tomorrow.setDate(tomorrow.getDate() + 1);
+
+    // Convert back to UTC for database queries
+    const todayUTC = new Date(
+      today.getTime() - today.getTimezoneOffset() * 60000
+    );
+    const tomorrowUTC = new Date(
+      tomorrow.getTime() - tomorrow.getTimezoneOffset() * 60000
+    );
 
     // Batch all dashboard data queries
     const [
@@ -36,8 +55,8 @@ export async function GET(request: NextRequest) {
         where: {
           tenantId,
           saleDate: {
-            gte: today,
-            lt: tomorrow,
+            gte: todayUTC,
+            lt: tomorrowUTC,
           },
         },
         _sum: {
@@ -49,8 +68,8 @@ export async function GET(request: NextRequest) {
         where: {
           tenantId,
           saleDate: {
-            gte: today,
-            lt: tomorrow,
+            gte: todayUTC,
+            lt: tomorrowUTC,
           },
         },
         _sum: {
@@ -101,8 +120,8 @@ export async function GET(request: NextRequest) {
           tenantId,
           isApproved: true,
           expenseDate: {
-            gte: new Date(today.getFullYear(), today.getMonth(), 1),
-            lt: new Date(today.getFullYear(), today.getMonth() + 1, 1),
+            gte: new Date(todayUTC.getFullYear(), todayUTC.getMonth(), 1),
+            lt: new Date(todayUTC.getFullYear(), todayUTC.getMonth() + 1, 1),
           },
         },
         _sum: {
@@ -117,7 +136,7 @@ export async function GET(request: NextRequest) {
           tenantId,
           saleDate: {
             gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
-            lte: today,
+            lte: todayUTC,
           },
         },
         _count: {
@@ -134,8 +153,8 @@ export async function GET(request: NextRequest) {
         where: {
           tenantId,
           saleDate: {
-            gte: today,
-            lt: tomorrow,
+            gte: todayUTC,
+            lt: tomorrowUTC,
           },
         },
         _count: {
@@ -200,9 +219,13 @@ export async function GET(request: NextRequest) {
       const date = new Date(Date.now() - (6 - i) * 24 * 60 * 60 * 1000);
       date.setHours(0, 0, 0, 0);
 
-      const dayData = weekSalesData.find(
-        (d) => new Date(d.saleDate).toDateString() === date.toDateString()
-      );
+      const dayData = weekSalesData.find((d) => {
+        const saleDate = new Date(d.saleDate);
+        const saleDateInTimezone = new Date(
+          saleDate.toLocaleString('en-US', { timeZone: timezone })
+        );
+        return saleDateInTimezone.toDateString() === date.toDateString();
+      });
 
       return dayData?._count.id || 0;
     });

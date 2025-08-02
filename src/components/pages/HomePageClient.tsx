@@ -50,60 +50,41 @@ export function HomePageClient() {
     };
   }, [theme]);
 
-  // Render static content until mounted to prevent hydration mismatch
+  // Prevent hydration mismatch by showing loading state
   if (!mounted) {
     return (
-      <div className="bg-background min-h-screen transition-colors">
-        <div className="fixed right-4 top-4 z-50 flex items-center space-x-3">
+      <div className="bg-background min-h-screen">
+        <div className="fixed right-4 top-4 z-50">
           <div className="border-border bg-card text-card-foreground flex items-center space-x-2 rounded-lg border px-3 py-2 text-sm font-medium shadow-sm">
-            <span>বাংলা (Bengali)</span>
+            <div className="h-4 w-16 animate-pulse rounded bg-gray-300 dark:bg-gray-600"></div>
           </div>
         </div>
 
-        {/* Header with Logo and Company Name */}
         <header className="absolute left-4 top-4 z-50">
           <div className="flex items-center space-x-3">
-            {/* Logo */}
-            <div className="relative h-6 w-6">
-              <Image
-                src="/lpg manager logo 2.png"
-                alt="LPG Manager Logo"
-                width={20}
-                height={20}
-                className="rounded-md object-contain"
-                priority
-              />
-            </div>
-            {/* Company Name */}
-            <span className="text-foreground text-xl font-bold">
-              LPG Manager
-            </span>
+            <div className="h-6 w-6 animate-pulse rounded-md bg-gray-300 dark:bg-gray-600"></div>
+            <div className="h-6 w-24 animate-pulse rounded bg-gray-300 dark:bg-gray-600"></div>
           </div>
         </header>
-        <div className="container mx-auto px-4 py-16">
-          <div className="text-center">
-            <h1 className="text-foreground mb-6 text-4xl font-bold">
-              LPG Distributor Management System
-            </h1>
-            <p className="text-muted-foreground mx-auto mb-8 max-w-2xl text-xl">
-              Manage LPG distribution business
-            </p>
-            <div className="space-y-4 sm:flex sm:justify-center sm:space-x-4 sm:space-y-0">
-              <Link
-                href="/auth/login"
-                className="block w-full rounded-md bg-blue-600 px-6 py-3 font-medium text-white transition-colors hover:bg-blue-700 sm:w-auto"
-              >
-                Login
-              </Link>
-              <Link
-                href="/auth/register"
-                className="border-border bg-card text-card-foreground hover:bg-muted block w-full rounded-md border px-6 py-3 font-medium transition-colors sm:w-auto"
-              >
-                Create Account
-              </Link>
+
+        <section className="relative overflow-hidden bg-gradient-to-br from-blue-50 via-white to-sky-50 py-20 lg:py-32 dark:from-gray-900 dark:via-gray-800 dark:to-blue-950">
+          <div className="absolute inset-0 -z-10 overflow-hidden">
+            <div className="absolute -right-32 -top-40 h-80 w-80 rounded-full bg-blue-200 opacity-30 blur-3xl dark:bg-blue-900"></div>
+            <div className="absolute -bottom-40 -left-32 h-80 w-80 rounded-full bg-sky-200 opacity-30 blur-3xl dark:bg-sky-900"></div>
+          </div>
+
+          <div className="container relative z-10 mx-auto px-4">
+            <div className="mx-auto max-w-4xl text-center">
+              <div className="mb-8 inline-flex h-8 w-48 animate-pulse rounded-full bg-gray-300 dark:bg-gray-600"></div>
+              <div className="mb-6 h-16 w-full animate-pulse rounded bg-gray-300 dark:bg-gray-600"></div>
+              <div className="mx-auto mb-12 h-8 w-3/4 animate-pulse rounded bg-gray-300 dark:bg-gray-600"></div>
+              <div className="mb-12 flex justify-center space-x-4">
+                <div className="h-12 w-32 animate-pulse rounded-lg bg-gray-300 dark:bg-gray-600"></div>
+                <div className="h-12 w-24 animate-pulse rounded-lg bg-gray-300 dark:bg-gray-600"></div>
+              </div>
             </div>
           </div>
-        </div>
+        </section>
       </div>
     );
   }

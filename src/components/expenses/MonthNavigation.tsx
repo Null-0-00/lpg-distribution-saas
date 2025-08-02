@@ -31,7 +31,7 @@ export const MonthNavigation: React.FC<MonthNavigationProps> = ({
 
           <div className="flex items-center gap-2">
             <Calendar className="h-5 w-5 text-blue-500" />
-            <span className="text-lg font-semibold text-gray-900 dark:text-white">
+            <span className="text-foreground text-lg font-semibold">
               {formatMonthYear(currentMonth.year, currentMonth.month)}
             </span>
           </div>
@@ -45,7 +45,7 @@ export const MonthNavigation: React.FC<MonthNavigationProps> = ({
           </button>
         </div>
 
-        <div className="text-sm text-gray-600 dark:text-gray-400">
+        <div className="text-muted-foreground text-sm">
           {t('viewingExpensesFor')}{' '}
           {formatMonthYear(currentMonth.year, currentMonth.month)}
         </div>

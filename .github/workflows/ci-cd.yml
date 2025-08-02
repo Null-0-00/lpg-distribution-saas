@@ -285,7 +285,13 @@ jobs:
 
       - name: Configure kubectl
         run: |
+          mkdir -p ~/.kube
+          if [ -z "${{ secrets.KUBE_CONFIG_STAGING }}" ]; then
+            echo "Error: KUBE_CONFIG_STAGING secret is not set"
+            exit 1
+          fi
           echo "${{ secrets.KUBE_CONFIG_STAGING }}" | base64 -d > ~/.kube/config
+          chmod 600 ~/.kube/config
 
       - name: Deploy to staging
         run: |
@@ -294,7 +300,7 @@ jobs:
 
       - name: Run database migrations
         run: |
-          kubectl exec deployment/lpg-distributor-staging -n staging -- npm run prisma:migrate:deploy
+          kubectl exec deployment/lpg-distributor-staging -n staging -- npm run db:migrate:deploy
 
       - name: Run health check
         run: |
@@ -320,7 +326,13 @@ jobs:
 
       - name: Configure kubectl
         run: |
+          mkdir -p ~/.kube
+          if [ -z "${{ secrets.KUBE_CONFIG_PRODUCTION }}" ]; then
+            echo "Error: KUBE_CONFIG_PRODUCTION secret is not set"
+            exit 1
+          fi
           echo "${{ secrets.KUBE_CONFIG_PRODUCTION }}" | base64 -d > ~/.kube/config
+          chmod 600 ~/.kube/config
 
       - name: Create database backup
         run: |
@@ -333,7 +345,7 @@ jobs:
 
       - name: Run database migrations
         run: |
-          kubectl exec deployment/lpg-distributor-production -n production -- npm run prisma:migrate:deploy
+          kubectl exec deployment/lpg-distributor-production -n production -- npm run db:migrate:deploy
 
       - name: Run health check
         run: |

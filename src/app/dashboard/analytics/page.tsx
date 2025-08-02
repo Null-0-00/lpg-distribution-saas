@@ -1586,10 +1586,10 @@ export default function AnalyticsPage() {
           {/* Profit by Product Chart */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg font-semibold text-white">
+              <CardTitle className="text-foreground text-lg font-semibold">
                 {t('revenue')} {t('products')}
               </CardTitle>
-              <CardDescription className="text-sm text-white">
+              <CardDescription className="text-muted-foreground text-sm">
                 {t('visualRepresentationProfitByProduct')}
               </CardDescription>
             </CardHeader>
@@ -1598,13 +1598,13 @@ export default function AnalyticsPage() {
               <div className="mb-4 flex items-center justify-center gap-6">
                 <div className="flex items-center gap-2">
                   <div className="h-4 w-4 rounded bg-green-500"></div>
-                  <span className="text-sm text-white">
+                  <span className="text-muted-foreground text-sm">
                     রিফিল বিক্রয় (Refill Sales)
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="h-4 w-4 rounded bg-blue-500"></div>
-                  <span className="text-sm text-white">
+                  <span className="text-muted-foreground text-sm">
                     প্যাকেজ বিক্রয় (Package Sales)
                   </span>
                 </div>
@@ -1637,12 +1637,12 @@ export default function AnalyticsPage() {
                       textAnchor="end"
                       height={120}
                       interval={0}
-                      tick={{ fill: 'white' }}
+                      tick={{ fill: 'hsl(var(--foreground))' }}
                     />
                     <YAxis
                       tickFormatter={formatCurrency}
                       fontSize={11}
-                      tick={{ fill: 'white' }}
+                      tick={{ fill: 'hsl(var(--foreground))' }}
                     />
                     <Tooltip
                       formatter={(value, name, props) => [
@@ -1769,10 +1769,10 @@ export default function AnalyticsPage() {
             {/* Driver Revenue Chart */}
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg font-semibold text-white">
+                <CardTitle className="text-foreground text-lg font-semibold">
                   {t('revenue')} {t('drivers')}
                 </CardTitle>
-                <CardDescription className="text-sm text-white">
+                <CardDescription className="text-muted-foreground text-sm">
                   {t('comparativeAnalysisRevenueByDriver')}
                 </CardDescription>
               </CardHeader>
@@ -1792,14 +1792,14 @@ export default function AnalyticsPage() {
                         type="number"
                         tickFormatter={formatCurrency}
                         fontSize={11}
-                        tick={{ fill: 'white' }}
+                        tick={{ fill: 'hsl(var(--foreground))' }}
                       />
                       <YAxis
                         type="category"
                         dataKey="driver.name"
                         fontSize={11}
                         width={100}
-                        tick={{ fill: 'white' }}
+                        tick={{ fill: 'hsl(var(--foreground))' }}
                       />
                       <Tooltip
                         formatter={(value) => [

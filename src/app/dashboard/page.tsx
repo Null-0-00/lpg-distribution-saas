@@ -352,11 +352,12 @@ export default function DashboardPage() {
           'bg-orange-600 hover:bg-orange-700 dark:bg-orange-600 dark:hover:bg-orange-700',
       },
       {
-        pageId: 'reports',
-        label: t('viewReports'),
-        href: '/dashboard/reports',
+        pageId: 'invoices',
+        label: 'চালান',
+        href: '/dashboard/invoices',
         icon: FileText,
-        className: 'bg-muted hover:bg-muted/80',
+        className:
+          'bg-gray-600 hover:bg-gray-700 dark:bg-gray-600 dark:hover:bg-gray-700',
       },
     ];
 
@@ -708,7 +709,7 @@ export default function DashboardPage() {
                           {activity.amount &&
                             ` - ${formatCurrency(activity.amount)}`}
                         </p>
-                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                        <p className="text-muted-foreground text-xs">
                           <ClientTime
                             timestamp={activity.timestamp}
                             format="relative"
@@ -757,7 +758,7 @@ export default function DashboardPage() {
                             {fallbackActivity.amount &&
                               ` - ${formatCurrency(fallbackActivity.amount)}`}
                           </p>
-                          <p className="text-xs text-gray-500 dark:text-gray-400">
+                          <p className="text-muted-foreground text-xs">
                             <ClientTime
                               timestamp={fallbackActivity.timestamp}
                               format="relative"
@@ -844,10 +845,7 @@ export default function DashboardPage() {
                     t('sat'),
                     t('sun'),
                   ].map((day, index) => (
-                    <div
-                      key={day}
-                      className="text-xs text-gray-500 dark:text-gray-400"
-                    >
+                    <div key={day} className="text-muted-foreground text-xs">
                       {day}
                     </div>
                   ))}
@@ -869,7 +867,7 @@ export default function DashboardPage() {
                           }`}
                           style={{ height: `${height}%` }}
                         ></div>
-                        <div className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                        <div className="text-muted-foreground mt-1 text-xs">
                           {value}
                         </div>
                       </div>
@@ -926,7 +924,7 @@ export default function DashboardPage() {
                         <p className="text-foreground text-sm font-medium">
                           {driver.name}
                         </p>
-                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                        <p className="text-muted-foreground text-xs">
                           {driver.sales} {t('salesCount')} •{' '}
                           {formatCurrency(driver.revenue)}
                         </p>
@@ -939,7 +937,7 @@ export default function DashboardPage() {
                           style={{ width: `${driver.percentage}%` }}
                         ></div>
                       </div>
-                      <span className="text-xs text-gray-500 dark:text-gray-400">
+                      <span className="text-muted-foreground text-xs">
                         {driver.percentage}%
                       </span>
                     </div>
@@ -951,7 +949,7 @@ export default function DashboardPage() {
         )}
 
         {/* Footer */}
-        <div className="mt-8 text-center text-gray-500 dark:text-gray-400">
+        <div className="text-muted-foreground mt-8 text-center">
           <p className="text-sm">{t('lpgDistributorManagementSystem')}</p>
           <div className="mt-2 flex items-center justify-center text-xs">
             <div className="mr-2 h-2 w-2 animate-pulse rounded-full bg-green-500"></div>

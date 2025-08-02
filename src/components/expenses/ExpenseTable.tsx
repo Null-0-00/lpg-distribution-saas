@@ -47,13 +47,10 @@ export const ExpenseTable: React.FC<ExpenseTableProps> = ({
       <div className="bg-card rounded-lg shadow">
         <div className="p-6">
           <div className="animate-pulse">
-            <div className="mb-4 h-4 w-1/4 rounded bg-gray-200 dark:bg-gray-700"></div>
+            <div className="bg-muted mb-4 h-4 w-1/4 rounded"></div>
             <div className="space-y-3">
               {[...Array(5)].map((_, i) => (
-                <div
-                  key={i}
-                  className="h-12 rounded bg-gray-200 dark:bg-gray-700"
-                ></div>
+                <div key={i} className="bg-muted h-12 rounded"></div>
               ))}
             </div>
           </div>
@@ -66,7 +63,7 @@ export const ExpenseTable: React.FC<ExpenseTableProps> = ({
     return (
       <div className="bg-card rounded-lg p-6 shadow">
         <div className="py-8 text-center">
-          <div className="mx-auto h-12 w-12 text-gray-400">
+          <div className="text-muted-foreground mx-auto h-12 w-12">
             <svg fill="none" stroke="currentColor" viewBox="0 0 48 48">
               <path
                 strokeLinecap="round"
@@ -79,7 +76,7 @@ export const ExpenseTable: React.FC<ExpenseTableProps> = ({
           <h3 className="text-foreground mt-2 text-sm font-medium">
             {t('noExpensesFound')}
           </h3>
-          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+          <p className="text-muted-foreground mt-1 text-sm">
             {t('getStartedByAddingFirstExpense')}
           </p>
         </div>
@@ -139,7 +136,7 @@ export const ExpenseTable: React.FC<ExpenseTableProps> = ({
                     {expense.description}
                   </div>
                   {expense.notes && (
-                    <div className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                    <div className="text-muted-foreground mt-1 text-xs">
                       {expense.notes}
                     </div>
                   )}

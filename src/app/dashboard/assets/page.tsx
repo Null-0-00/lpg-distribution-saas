@@ -584,10 +584,10 @@ export default function AssetsPage() {
         {/* Header Skeleton */}
         <div className="flex items-center justify-between">
           <div>
-            <div className="mb-2 h-8 w-40 animate-pulse rounded bg-gray-300"></div>
-            <div className="h-4 w-64 animate-pulse rounded bg-gray-300"></div>
+            <div className="mb-2 h-8 w-40 animate-pulse rounded bg-gray-300 dark:bg-gray-600"></div>
+            <div className="h-4 w-64 animate-pulse rounded bg-gray-300 dark:bg-gray-600"></div>
           </div>
-          <div className="h-10 w-24 animate-pulse rounded-lg bg-gray-300"></div>
+          <div className="h-10 w-24 animate-pulse rounded-lg bg-gray-300 dark:bg-gray-600"></div>
         </div>
 
         {/* Summary Cards Skeleton */}
@@ -595,10 +595,10 @@ export default function AssetsPage() {
           {[1, 2, 3, 4].map((i) => (
             <div key={i} className="bg-card rounded-lg p-6 shadow">
               <div className="flex items-center">
-                <div className="h-8 w-8 animate-pulse rounded-full bg-gray-300"></div>
+                <div className="h-8 w-8 animate-pulse rounded-full bg-gray-300 dark:bg-gray-600"></div>
                 <div className="ml-4 space-y-2">
-                  <div className="h-4 w-20 animate-pulse rounded bg-gray-300"></div>
-                  <div className="h-8 w-24 animate-pulse rounded bg-gray-300"></div>
+                  <div className="h-4 w-20 animate-pulse rounded bg-gray-300 dark:bg-gray-600"></div>
+                  <div className="h-8 w-24 animate-pulse rounded bg-gray-300 dark:bg-gray-600"></div>
                 </div>
               </div>
             </div>
@@ -610,24 +610,24 @@ export default function AssetsPage() {
           {/* Assets Table Skeleton */}
           <div className="bg-card rounded-lg shadow">
             <div className="border-b px-6 py-4">
-              <div className="mb-2 h-6 w-32 animate-pulse rounded bg-gray-300"></div>
-              <div className="h-4 w-48 animate-pulse rounded bg-gray-300"></div>
+              <div className="mb-2 h-6 w-32 animate-pulse rounded bg-gray-300 dark:bg-gray-600"></div>
+              <div className="h-4 w-48 animate-pulse rounded bg-gray-300 dark:bg-gray-600"></div>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead className="bg-muted">
                   <tr>
                     <th className="px-4 py-3">
-                      <div className="h-4 w-16 animate-pulse rounded bg-gray-300"></div>
+                      <div className="h-4 w-16 animate-pulse rounded bg-gray-300 dark:bg-gray-600"></div>
                     </th>
                     <th className="px-4 py-3">
-                      <div className="h-4 w-20 animate-pulse rounded bg-gray-300"></div>
+                      <div className="h-4 w-20 animate-pulse rounded bg-gray-300 dark:bg-gray-600"></div>
                     </th>
                     <th className="px-4 py-3">
-                      <div className="h-4 w-16 animate-pulse rounded bg-gray-300"></div>
+                      <div className="h-4 w-16 animate-pulse rounded bg-gray-300 dark:bg-gray-600"></div>
                     </th>
                     <th className="px-4 py-3">
-                      <div className="h-4 w-14 animate-pulse rounded bg-gray-300"></div>
+                      <div className="h-4 w-14 animate-pulse rounded bg-gray-300 dark:bg-gray-600"></div>
                     </th>
                   </tr>
                 </thead>
@@ -635,18 +635,18 @@ export default function AssetsPage() {
                   {[1, 2, 3, 4, 5].map((i) => (
                     <tr key={i}>
                       <td className="px-4 py-4">
-                        <div className="h-4 w-24 animate-pulse rounded bg-gray-300"></div>
+                        <div className="h-4 w-24 animate-pulse rounded bg-gray-300 dark:bg-gray-600"></div>
                       </td>
                       <td className="px-4 py-4">
-                        <div className="h-4 w-16 animate-pulse rounded bg-gray-300"></div>
+                        <div className="h-4 w-16 animate-pulse rounded bg-gray-300 dark:bg-gray-600"></div>
                       </td>
                       <td className="px-4 py-4">
-                        <div className="h-4 w-20 animate-pulse rounded bg-gray-300"></div>
+                        <div className="h-4 w-20 animate-pulse rounded bg-gray-300 dark:bg-gray-600"></div>
                       </td>
                       <td className="px-4 py-4">
                         <div className="flex space-x-2">
-                          <div className="h-6 w-6 animate-pulse rounded bg-gray-300"></div>
-                          <div className="h-6 w-6 animate-pulse rounded bg-gray-300"></div>
+                          <div className="h-6 w-6 animate-pulse rounded bg-gray-300 dark:bg-gray-600"></div>
+                          <div className="h-6 w-6 animate-pulse rounded bg-gray-300 dark:bg-gray-600"></div>
                         </div>
                       </td>
                     </tr>
@@ -659,24 +659,24 @@ export default function AssetsPage() {
           {/* Liabilities Table Skeleton */}
           <div className="bg-card rounded-lg shadow">
             <div className="border-b px-6 py-4">
-              <div className="mb-2 h-6 w-32 animate-pulse rounded bg-gray-300"></div>
-              <div className="h-4 w-48 animate-pulse rounded bg-gray-300"></div>
+              <div className="mb-2 h-6 w-32 animate-pulse rounded bg-gray-300 dark:bg-gray-600"></div>
+              <div className="h-4 w-48 animate-pulse rounded bg-gray-300 dark:bg-gray-600"></div>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead className="bg-muted">
                   <tr>
                     <th className="px-4 py-3">
-                      <div className="h-4 w-16 animate-pulse rounded bg-gray-300"></div>
+                      <div className="h-4 w-16 animate-pulse rounded bg-gray-300 dark:bg-gray-600"></div>
                     </th>
                     <th className="px-4 py-3">
-                      <div className="h-4 w-20 animate-pulse rounded bg-gray-300"></div>
+                      <div className="h-4 w-20 animate-pulse rounded bg-gray-300 dark:bg-gray-600"></div>
                     </th>
                     <th className="px-4 py-3">
-                      <div className="h-4 w-16 animate-pulse rounded bg-gray-300"></div>
+                      <div className="h-4 w-16 animate-pulse rounded bg-gray-300 dark:bg-gray-600"></div>
                     </th>
                     <th className="px-4 py-3">
-                      <div className="h-4 w-14 animate-pulse rounded bg-gray-300"></div>
+                      <div className="h-4 w-14 animate-pulse rounded bg-gray-300 dark:bg-gray-600"></div>
                     </th>
                   </tr>
                 </thead>
@@ -684,18 +684,18 @@ export default function AssetsPage() {
                   {[1, 2, 3].map((i) => (
                     <tr key={i}>
                       <td className="px-4 py-4">
-                        <div className="h-4 w-24 animate-pulse rounded bg-gray-300"></div>
+                        <div className="h-4 w-24 animate-pulse rounded bg-gray-300 dark:bg-gray-600"></div>
                       </td>
                       <td className="px-4 py-4">
-                        <div className="h-4 w-16 animate-pulse rounded bg-gray-300"></div>
+                        <div className="h-4 w-16 animate-pulse rounded bg-gray-300 dark:bg-gray-600"></div>
                       </td>
                       <td className="px-4 py-4">
-                        <div className="h-4 w-20 animate-pulse rounded bg-gray-300"></div>
+                        <div className="h-4 w-20 animate-pulse rounded bg-gray-300 dark:bg-gray-600"></div>
                       </td>
                       <td className="px-4 py-4">
                         <div className="flex space-x-2">
-                          <div className="h-6 w-6 animate-pulse rounded bg-gray-300"></div>
-                          <div className="h-6 w-6 animate-pulse rounded bg-gray-300"></div>
+                          <div className="h-6 w-6 animate-pulse rounded bg-gray-300 dark:bg-gray-600"></div>
+                          <div className="h-6 w-6 animate-pulse rounded bg-gray-300 dark:bg-gray-600"></div>
                         </div>
                       </td>
                     </tr>
@@ -708,12 +708,12 @@ export default function AssetsPage() {
 
         {/* Owner's Equity Card Skeleton */}
         <div className="bg-card rounded-lg p-6 shadow">
-          <div className="mb-4 h-6 w-32 animate-pulse rounded bg-gray-300"></div>
+          <div className="mb-4 h-6 w-32 animate-pulse rounded bg-gray-300 dark:bg-gray-600"></div>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
             {[1, 2, 3].map((i) => (
               <div key={i} className="text-center">
-                <div className="mx-auto mb-2 h-4 w-20 animate-pulse rounded bg-gray-300"></div>
-                <div className="mx-auto h-8 w-24 animate-pulse rounded bg-gray-300"></div>
+                <div className="mx-auto mb-2 h-4 w-20 animate-pulse rounded bg-gray-300 dark:bg-gray-600"></div>
+                <div className="mx-auto h-8 w-24 animate-pulse rounded bg-gray-300 dark:bg-gray-600"></div>
               </div>
             ))}
           </div>
@@ -983,7 +983,7 @@ export default function AssetsPage() {
                           </div>
                         )}
                         {asset.isAutoCalculated && (
-                          <span className="text-xs text-gray-500">
+                          <span className="text-muted-foreground text-xs">
                             {t('autoCalculated')}
                           </span>
                         )}
@@ -1335,26 +1335,26 @@ export default function AssetsPage() {
         </h3>
         <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
           <div className="rounded-lg bg-green-50 p-4 text-center dark:bg-green-900/20">
-            <h4 className="font-semibold text-green-800 dark:text-green-200">
+            <h4 className="font-semibold text-green-800 dark:text-green-300">
               {t('totalAssets')}
             </h4>
-            <p className="text-2xl font-bold text-green-600">
+            <p className="text-2xl font-bold text-green-600 dark:text-green-400">
               {formatCurrency(totalAssets)}
             </p>
           </div>
           <div className="rounded-lg bg-red-50 p-4 text-center dark:bg-red-900/20">
-            <h4 className="font-semibold text-red-800 dark:text-red-200">
+            <h4 className="font-semibold text-red-800 dark:text-red-300">
               {t('totalLiabilities')}
             </h4>
-            <p className="text-2xl font-bold text-red-600">
+            <p className="text-2xl font-bold text-red-600 dark:text-red-400">
               {formatCurrency(totalLiabilities)}
             </p>
           </div>
           <div className="rounded-lg bg-blue-50 p-4 text-center dark:bg-blue-900/20">
-            <h4 className="font-semibold text-blue-800 dark:text-blue-200">
+            <h4 className="font-semibold text-blue-800 dark:text-blue-300">
               {t('netEquity')}
             </h4>
-            <p className="text-2xl font-bold text-blue-600">
+            <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
               {formatCurrency(netWorth)}
             </p>
           </div>
@@ -1416,12 +1416,12 @@ export default function AssetsPage() {
                 className="rounded-lg border border-blue-200 bg-blue-50 p-4 dark:border-blue-800 dark:bg-blue-900/20"
               >
                 <div className="mb-2 flex items-center justify-between">
-                  <h4 className="font-medium text-blue-900 dark:text-blue-200">
+                  <h4 className="font-medium text-blue-900 dark:text-blue-300">
                     {translateAssetName(asset.name)}
                   </h4>
-                  <Package className="h-5 w-5 text-blue-600" />
+                  <Package className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                 </div>
-                <div className="text-2xl font-bold text-blue-600">
+                <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
                   {formatCurrency(asset.currentValue)}
                 </div>
                 <div className="text-sm text-blue-700 dark:text-blue-300">
@@ -1438,7 +1438,7 @@ export default function AssetsPage() {
             ) ||
               assetsData?.categorized.CURRENT.length === 0) && (
               <div className="text-muted-foreground col-span-full py-8 text-center">
-                <Package className="mx-auto mb-4 h-12 w-12 text-gray-300" />
+                <Package className="text-muted-foreground mx-auto mb-4 h-12 w-12" />
                 <p>{t('noAutoCalculatedAssetsFound')}</p>
                 <p className="text-sm">
                   {t('autoCalculatedAssetsDescription')}

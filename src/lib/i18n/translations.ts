@@ -133,6 +133,29 @@ export interface Translations {
   category: string;
   active: string;
   inactive: string;
+  defaultTimezone: string;
+  configureGlobalSettings: string;
+  settingsChangeNote: string;
+  currencySettingDescription: string;
+  timezoneSettingDescription: string;
+  languageSettingDescription: string;
+  generalSettingsDescription: string;
+  currencySettingImpact: string;
+  timezoneSettingImpact: string;
+  languageSettingImpact: string;
+  currencyUsageDescription: string;
+  timezoneUsageDescription: string;
+  languageUsageDescription: string;
+  localTime: string;
+  settingsChangeWarning: string;
+  saving: string;
+
+  // Additional missing translation keys
+  selectCurrency: string;
+  selectTimezone: string;
+  selectLanguage: string;
+  english: string;
+  bengali: string;
 
   // Sales & Inventory
   quantity: string;
@@ -326,6 +349,7 @@ export interface Translations {
   driversPage: string;
   productManagementPage: string;
   reportsPage: string;
+  usersPage: string;
   userManagementPage: string;
   settingsPage: string;
 
@@ -1633,6 +1657,7 @@ const englishTranslations: Translations = {
   driversPage: 'Drivers',
   productManagementPage: 'Product Management',
   reportsPage: 'Reports',
+  usersPage: 'Users',
   userManagementPage: 'User Management',
   settingsPage: 'Settings',
 
@@ -2135,7 +2160,6 @@ const englishTranslations: Translations = {
   fullAccess: 'Full Access',
   fullCylinders: 'ভরা সিলিন্ডার',
   fullName: 'পূর্ণ নাম',
-  generalSettings: 'সাধারণ সেটিংস',
   getStartedByAddingFirstExpense: 'আপনার প্রথম খরচ যোগ করে শুরু করুন।',
   hour: 'Hour',
   hours: 'ঘন্টা',
@@ -2861,6 +2885,42 @@ const englishTranslations: Translations = {
   cashInHand: 'Cash in Hand',
   availableCashCalculatedFromDeposits:
     'Available cash calculated from deposits minus expenses',
+
+  // Settings translations
+  generalSettings: 'General Settings',
+  defaultTimezone: 'Default Timezone',
+  configureGlobalSettings:
+    'Configure global settings for currency, timezone, and language',
+  settingsChangeNote:
+    'Note: Changes to these settings will affect all users and financial calculations throughout the system.',
+  currencySettingDescription:
+    'This will be used for all financial calculations and displays',
+  timezoneSettingDescription: 'This affects all timestamps and scheduling',
+  languageSettingDescription:
+    'This affects the interface language and date/number formats',
+  generalSettingsDescription:
+    'Configure global settings for currency, timezone and language',
+  currencySettingImpact:
+    'This will be used for all financial calculations and displays',
+  timezoneSettingImpact: 'This affects all timestamps and scheduling',
+  languageSettingImpact:
+    'This affects the interface language and date/number formats',
+  currencyUsageDescription:
+    'This will be used for all financial calculations and displays',
+  timezoneUsageDescription: 'This affects all timestamps and scheduling',
+  languageUsageDescription:
+    'This affects the interface language and date/number formats',
+  localTime: 'Local time',
+  settingsChangeWarning:
+    'Changes to these settings will affect all users and financial calculations throughout the system',
+  saving: 'Saving',
+
+  // Additional missing translation keys
+  selectCurrency: 'Select Currency',
+  selectTimezone: 'Select Timezone',
+  selectLanguage: 'Select Language',
+  english: 'English',
+  bengali: 'Bengali',
 };
 
 const bengaliTranslations: Translations = {
@@ -3075,6 +3135,7 @@ const bengaliTranslations: Translations = {
   driversPage: 'চালক',
   productManagementPage: 'পণ্য ব্যবস্থাপনা',
   reportsPage: 'রিপোর্ট',
+  usersPage: 'ব্যবহারকারী',
   userManagementPage: 'ব্যবহারকারী ব্যবস্থাপনা',
   settingsPage: 'সেটিংস',
 
@@ -3516,6 +3577,32 @@ const bengaliTranslations: Translations = {
   create: 'তৈরি করুন',
   criticalAlert: 'সমালোচনামূলক সতর্কতা',
   currency: 'মুদ্রা',
+  defaultTimezone: 'ডিফল্ট টাইমজোন',
+  configureGlobalSettings: 'গ্লোবাল সেটিংস কনফিগার করুন',
+  settingsChangeNote:
+    'নোট: এই সেটিংসের পরিবর্তন সিস্টেমের সমস্ত ব্যবহারকারী এবং আর্থিক গণনাকে প্রভাবিত করবে।',
+  currencySettingDescription:
+    'এটি সমস্ত আর্থিক গণনা এবং ডিসপ্লের জন্য ব্যবহৃত হবে',
+  timezoneSettingDescription:
+    'এটি সমস্ত টাইমস্ট্যাম্প এবং সময়সূচীকে প্রভাবিত করবে',
+  languageSettingDescription:
+    'এটি ইন্টারফেস ভাষা এবং তারিখ/সংখ্যা ফরম্যাটকে প্রভাবিত করবে',
+  generalSettingsDescription:
+    'মুদ্রা, টাইমজোন এবং ভাষার জন্য গ্লোবাল সেটিংস কনফিগার করুন',
+  currencySettingImpact: 'এটি সমস্ত আর্থিক গণনা এবং ডিসপ্লের জন্য ব্যবহৃত হবে',
+  timezoneSettingImpact: 'এটি সমস্ত টাইমস্ট্যাম্প এবং সময়সূচীকে প্রভাবিত করবে',
+  languageSettingImpact:
+    'এটি ইন্টারফেস ভাষা এবং তারিখ/সংখ্যা ফরম্যাটকে প্রভাবিত করবে',
+  currencyUsageDescription:
+    'এটি সমস্ত আর্থিক গণনা এবং ডিসপ্লের জন্য ব্যবহৃত হবে',
+  timezoneUsageDescription:
+    'এটি সমস্ত টাইমস্ট্যাম্প এবং সময়সূচীকে প্রভাবিত করবে',
+  languageUsageDescription:
+    'এটি ইন্টারফেস ভাষা এবং তারিখ/সংখ্যা ফরম্যাটকে প্রভাবিত করবে',
+  localTime: 'স্থানীয় সময়',
+  settingsChangeWarning:
+    'এই সেটিংসের পরিবর্তন সিস্টেমের সমস্ত ব্যবহারকারী এবং আর্থিক গণনাকে প্রভাবিত করবে',
+  saving: 'সংরক্ষণ করা হচ্ছে',
   currentFullCylinderInventory: 'বর্তমান পূর্ণ সিলিন্ডার মজুদ',
   currentStock: 'বর্তমান স্টক',
   currentStockHealth: 'বর্তমান স্টক পরিস্থিতি',
@@ -4299,6 +4386,13 @@ const bengaliTranslations: Translations = {
   availableText: 'উপলব্ধ',
   purchasing: 'ক্রয় করা হচ্ছে...',
   selling: 'বিক্রয় করা হচ্ছে...',
+
+  // Additional missing translation keys that weren't already present
+  selectCurrency: 'মুদ্রা নির্বাচন করুন',
+  selectTimezone: 'টাইমজোন নির্বাচন করুন',
+  selectLanguage: 'ভাষা নির্বাচন করুন',
+  english: 'ইংরেজি',
+  bengali: 'বাংলা',
 };
 
 const translationMap: Record<string, Translations> = {

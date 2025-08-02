@@ -38,7 +38,8 @@
       "Bash(timeout 5 npx prisma generate --force-overwrite)",
       "Bash(taskkill:*)",
       "Bash(cp:*)",
-      "Bash(mv:*)"
+      "Bash(mv:*)",
+      "Bash(rg:*)"
     ],
     "deny": []
   }

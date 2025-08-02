@@ -27,6 +27,26 @@ const getDescriptionKey = (pageId: string): string => {
   return descriptionMap[pageId] || pageId;
 };
 
+const getPageTranslationKey = (pageId: string): string => {
+  const pageKeyMap: Record<string, string> = {
+    dashboard: 'dashboardPage',
+    'daily-sales-report': 'dailySalesReportPage',
+    inventory: 'inventoryPage',
+    analytics: 'analyticsPage',
+    sales: 'salesPage',
+    receivables: 'receivablesPage',
+    expenses: 'expensesPage',
+    shipments: 'shipmentsPage',
+    assets: 'assetsPage',
+    drivers: 'driversPage',
+    'product-management': 'productManagementPage',
+    reports: 'reportsPage',
+    users: 'usersPage',
+    settings: 'settingsPage',
+  };
+  return pageKeyMap[pageId] || `${pageId}Page`;
+};
+
 interface PagePermissionsSelectorProps {
   selectedPermissions: string[];
   onPermissionChange: (permissions: string[]) => void;
@@ -202,7 +222,7 @@ export const PagePermissionsSelector: React.FC<
                       />
                       <div className="min-w-0 flex-1">
                         <div className="text-foreground text-sm font-medium">
-                          {t(`${page.id}Page` as any)}
+                          {t(getPageTranslationKey(page.id) as any)}
                         </div>
                         <div className="text-muted-foreground text-xs">
                           {t(getDescriptionKey(page.id) as any)}

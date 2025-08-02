@@ -156,7 +156,7 @@ export default function SettingsPage() {
             {t('generalSettings')}
           </h1>
           <p className="text-muted-foreground">
-            Configure global settings for currency, timezone, and language
+            {t('configureGlobalSettings')}
           </p>
         </div>
         <div className="flex items-center space-x-2">
@@ -211,12 +211,12 @@ export default function SettingsPage() {
                 ))}
               </select>
               <p className="text-muted-foreground mt-1 text-sm">
-                This will be used for all financial calculations and displays
+                {t('currencyUsageDescription')}
               </p>
             </div>
             <div className="bg-muted rounded-lg p-3">
               <p className="text-muted-foreground text-sm">
-                <strong>Current:</strong> {getCurrencySymbol()}{' '}
+                <strong>{t('current')}:</strong> {getCurrencySymbol()}{' '}
                 {CURRENCIES.find((c) => c.code === settings.currency)?.name}
               </p>
             </div>
@@ -234,7 +234,7 @@ export default function SettingsPage() {
           <div className="space-y-4">
             <div>
               <label className="text-muted-foreground mb-2 block text-sm font-medium">
-                Default Timezone
+                {t('defaultTimezone')}
               </label>
               <select
                 value={localSettings.timezone}
@@ -248,15 +248,15 @@ export default function SettingsPage() {
                 ))}
               </select>
               <p className="text-muted-foreground mt-1 text-sm">
-                This affects all timestamps and scheduling
+                {t('timezoneUsageDescription')}
               </p>
             </div>
             <div className="bg-muted rounded-lg p-3">
               <p className="text-muted-foreground text-sm">
-                <strong>Current:</strong> {getTimezoneLabel()}
+                <strong>{t('current')}:</strong> {getTimezoneLabel()}
               </p>
               <p className="text-muted-foreground text-sm">
-                Local time:{' '}
+                {t('localTime')}:{' '}
                 {new Date().toLocaleString('en-US', {
                   timeZone: settings.timezone,
                 })}
@@ -290,12 +290,12 @@ export default function SettingsPage() {
                 ))}
               </select>
               <p className="text-muted-foreground mt-1 text-sm">
-                This affects the interface language and date/number formats
+                {t('languageUsageDescription')}
               </p>
             </div>
             <div className="bg-muted rounded-lg p-3">
               <p className="text-muted-foreground text-sm">
-                <strong>Current:</strong> {getLanguageName()}
+                <strong>{t('current')}:</strong> {getLanguageName()}
               </p>
             </div>
           </div>
@@ -316,7 +316,9 @@ export default function SettingsPage() {
               </span>
             </div>
             <div className="border-border flex items-center justify-between border-b py-2">
-              <span className="text-muted-foreground text-sm">Timezone</span>
+              <span className="text-muted-foreground text-sm">
+                {t('timezone')}
+              </span>
               <span className="text-foreground text-sm font-medium">
                 {settings.timezone}
               </span>
@@ -331,10 +333,9 @@ export default function SettingsPage() {
             </div>
           </div>
 
-          <div className="mt-6 rounded-lg border border-yellow-200 bg-yellow-50 p-4 dark:border-yellow-700 dark:bg-yellow-900/20">
-            <p className="text-sm text-yellow-800 dark:text-yellow-200">
-              <strong>Note:</strong> Changes to these settings will affect all
-              users and financial calculations throughout the system.
+          <div className="mt-6 rounded-lg border border-amber-200 bg-amber-50 p-4 dark:border-amber-800 dark:bg-amber-950/50">
+            <p className="text-sm text-amber-800 dark:text-amber-200">
+              <strong>{t('note')}:</strong> {t('settingsChangeWarning')}
             </p>
           </div>
         </div>
@@ -350,7 +351,7 @@ export default function SettingsPage() {
           {saving ? (
             <>
               <div className="mr-2 h-4 w-4 animate-spin rounded-full border-b-2 border-white"></div>
-              Saving...
+              {t('saving')}...
             </>
           ) : (
             <>

@@ -16,24 +16,24 @@ model Tenant {
   subscriptionStatus            SubscriptionStatus
   subscriptionPlan              SubscriptionPlan
   isActive                      Boolean                        @default(true)
-  approvalStatus                TenantApprovalStatus           @default(PENDING)
-  approvedBy                    String?                        // Super Admin ID who approved
-  approvedAt                    DateTime?
-  rejectedAt                    DateTime?
-  rejectionReason               String?
-  contactEmail                  String?
-  contactPhone                  String?
-  businessType                  String?
-  businessDescription           String?
   settings                      Json?
   currency                      String                         @default("BDT")
   timezone                      String                         @default("Asia/Dhaka")
   language                      String                         @default("bn")
   onboardingCompleted           Boolean                        @default(false)
   onboardingCompletedAt         DateTime?
-  onboardingCompletedBy         String?                        // User ID who completed onboarding
+  onboardingCompletedBy         String?
   createdAt                     DateTime                       @default(now())
   updatedAt                     DateTime                       @updatedAt
+  approvalStatus                TenantApprovalStatus           @default(PENDING)
+  approvedAt                    DateTime?
+  approvedBy                    String?
+  businessDescription           String?
+  businessType                  String?
+  contactEmail                  String?
+  contactPhone                  String?
+  rejectedAt                    DateTime?
+  rejectionReason               String?
   assets                        Asset[]
   auditLogs                     AuditLog[]
   commissionStructures          CommissionStructure[]
@@ -70,7 +70,7 @@ model Tenant {
 
 model User {
   id                            String                         @id @default(cuid())
-  tenantId                      String?                        // Null for SUPER_ADMIN users
+  tenantId                      String?
   email                         String                         @unique
   name                          String
   password                      String?
@@ -82,13 +82,10 @@ model User {
   updatedAt                     DateTime                       @updatedAt
   onboardingCompleted           Boolean                        @default(false)
   onboardingCompletedAt         DateTime?
-  // Email verification fields
   emailVerified                 Boolean                        @default(false)
   emailVerifiedAt               DateTime?
-  // Password reset tracking
-  passwordResetRequestedAt      DateTime?
-  // Page permissions for managers
   pagePermissions               Json?
+  passwordResetRequestedAt      DateTime?
   auditLogs                     AuditLog[]
   deposits                      Deposit[]
   distributorAssignments        DistributorAssignment[]
@@ -111,14 +108,14 @@ model User {
 }
 
 model EmailVerificationCode {
-  id        String   @id @default(cuid())
+  id        String    @id @default(cuid())
   email     String
-  code      String   @unique
+  code      String    @unique
   expiresAt DateTime
-  used      Boolean  @default(false)
+  used      Boolean   @default(false)
   usedAt    DateTime?
-  createdAt DateTime @default(now())
-  
+  createdAt DateTime  @default(now())
+
   @@index([email])
   @@index([code])
   @@index([expiresAt])
@@ -126,14 +123,14 @@ model EmailVerificationCode {
 }
 
 model PasswordResetCode {
-  id        String   @id @default(cuid())
+  id        String    @id @default(cuid())
   email     String
-  code      String   @unique
+  code      String    @unique
   expiresAt DateTime
-  used      Boolean  @default(false)
+  used      Boolean   @default(false)
   usedAt    DateTime?
-  createdAt DateTime @default(now())
-  
+  createdAt DateTime  @default(now())
+
   @@index([email])
   @@index([code])
   @@index([expiresAt])
@@ -451,22 +448,22 @@ model InventoryMovement {
 }
 
 model ReceivableRecord {
-  id                           String               @id @default(cuid())
-  tenantId                     String
-  driverId                     String
-  date                         DateTime             @db.Date
-  cashReceivablesChange        Float                @default(0)
-  cylinderReceivablesChange    Int                  @default(0)
-  totalCashReceivables         Float                @default(0)
-  totalCylinderReceivables     Int                  @default(0)
-  onboardingCashReceivables    Float                @default(0)
-  onboardingCylinderReceivables Int                 @default(0)
-  calculatedAt                 DateTime             @default(now())
-  createdAt                    DateTime             @default(now())
-  updatedAt                    DateTime             @updatedAt
-  customerReceivables          CustomerReceivable[]
-  driver                       Driver               @relation(fields: [driverId], references: [id], onDelete: Cascade)
-  tenant                       Tenant               @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  id                            String               @id @default(cuid())
+  tenantId                      String
+  driverId                      String
+  date                          DateTime             @db.Date
+  cashReceivablesChange         Float                @default(0)
+  cylinderReceivablesChange     Int                  @default(0)
+  totalCashReceivables          Float                @default(0)
+  totalCylinderReceivables      Int                  @default(0)
+  onboardingCashReceivables     Float                @default(0)
+  onboardingCylinderReceivables Int                  @default(0)
+  calculatedAt                  DateTime             @default(now())
+  createdAt                     DateTime             @default(now())
+  updatedAt                     DateTime             @updatedAt
+  customerReceivables           CustomerReceivable[]
+  driver                        Driver               @relation(fields: [driverId], references: [id], onDelete: Cascade)
+  tenant                        Tenant               @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   @@unique([tenantId, driverId, date])
   @@index([tenantId])
@@ -959,9 +956,9 @@ enum SubscriptionPlan {
 }
 
 enum UserRole {
-  SUPER_ADMIN
   ADMIN
   MANAGER
+  SUPER_ADMIN
 }
 
 enum DriverStatus {

@@ -31,8 +31,7 @@ const getAuthUrl = () => {
 };
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  // Temporarily disable adapter to isolate session issues
-  // adapter: PrismaAdapter(prisma),
+  adapter: PrismaAdapter(prisma),
 
   // Essential for Vercel deployment
   trustHost: true,

@@ -298,6 +298,52 @@ export interface Translations {
   enterFullNamePlaceholder: string;
   enterEmailAddressPlaceholder: string;
   enterPasswordPlaceholder: string;
+  pageAccessPermissions: string;
+  selectAll: string;
+  selectNone: string;
+  overview: string;
+  finance: string;
+  administration: string;
+
+  // Permission selector UI
+  pages: string;
+  all: string;
+  some: string;
+  none: string;
+  selected: string;
+  of: string;
+
+  // Page names for permissions
+  dashboardPage: string;
+  dailySalesReportPage: string;
+  inventoryPage: string;
+  analyticsPage: string;
+  salesPage: string;
+  receivablesPage: string;
+  expensesPage: string;
+  shipmentsPage: string;
+  assetsPage: string;
+  driversPage: string;
+  productManagementPage: string;
+  reportsPage: string;
+  userManagementPage: string;
+  settingsPage: string;
+
+  // Page descriptions
+  mainDashboardOverview: string;
+  viewDailySalesReports: string;
+  manageInventoryAndStockLevels: string;
+  businessAnalyticsAndInsights: string;
+  manageSalesTransactions: string;
+  trackCustomerReceivables: string;
+  manageBusinessExpenses: string;
+  trackShipmentsAndDeliveries: string;
+  manageCompanyAssets: string;
+  manageDriversAndAssignments: string;
+  manageProductsAndPricing: string;
+  generateBusinessReports: string;
+  manageSystemUsers: string;
+  systemSettingsAndConfiguration: string;
 
   // Assets form translations
   addNew: string;
@@ -483,13 +529,10 @@ export interface Translations {
   lpgDistributorManagementSystem: string;
   manageBudgets: string;
   manageCategories: string;
-  manageCompanyAssets: string;
-  manageDriversAndAssignments: string;
   manageLiabilities: string;
   manager: string;
   managers: string;
   manageSystemRoles: string;
-  manageSystemUsers: string;
   manageTeam: string;
   mon: string;
   monitorCylinderStock: string;
@@ -792,7 +835,6 @@ export interface Translations {
   editPurchaseOrder: string;
   createNewPurchaseOrder: string;
   step: string;
-  of: string;
   orderInformation: string;
   selectCompany: string;
   selectACompany: string;
@@ -984,7 +1026,6 @@ export interface Translations {
   statusIsRequired: string;
 
   // Language and locale related
-  all: string;
   bn: string;
   en: string;
   locale: string;
@@ -1564,6 +1605,52 @@ const englishTranslations: Translations = {
   enterFullNamePlaceholder: 'Enter full name',
   enterEmailAddressPlaceholder: 'Enter email address',
   enterPasswordPlaceholder: 'Enter password (min 8 characters)',
+  pageAccessPermissions: 'Page Access Permissions',
+  selectAll: 'Select All',
+  selectNone: 'Select None',
+  overview: 'Overview',
+  finance: 'Finance',
+  administration: 'Administration',
+
+  // Permission selector UI
+  pages: 'pages',
+  all: 'All',
+  some: 'Some',
+  none: 'None',
+  selected: 'Selected:',
+  of: 'of',
+
+  // Page names for permissions
+  dashboardPage: 'Dashboard',
+  dailySalesReportPage: 'Daily Sales Report',
+  inventoryPage: 'Inventory',
+  analyticsPage: 'Analytics',
+  salesPage: 'Sales',
+  receivablesPage: 'Receivables',
+  expensesPage: 'Expenses',
+  shipmentsPage: 'Shipments',
+  assetsPage: 'Assets',
+  driversPage: 'Drivers',
+  productManagementPage: 'Product Management',
+  reportsPage: 'Reports',
+  userManagementPage: 'User Management',
+  settingsPage: 'Settings',
+
+  // Page descriptions
+  mainDashboardOverview: 'Main dashboard overview',
+  viewDailySalesReports: 'View daily sales reports',
+  manageInventoryAndStockLevels: 'Manage inventory and stock levels',
+  businessAnalyticsAndInsights: 'Business analytics and insights',
+  manageSalesTransactions: 'Manage sales transactions',
+  trackCustomerReceivables: 'Track customer receivables',
+  manageBusinessExpenses: 'Manage business expenses',
+  trackShipmentsAndDeliveries: 'Track shipments and deliveries',
+  manageCompanyAssets: 'Manage company assets',
+  manageDriversAndAssignments: 'Manage drivers and assignments',
+  manageProductsAndPricing: 'Manage products and pricing',
+  generateBusinessReports: 'Generate business reports',
+  manageSystemUsers: 'Manage system users',
+  systemSettingsAndConfiguration: 'System settings and configuration',
 
   // Assets form translations
   addNew: 'Add New',
@@ -2024,7 +2111,7 @@ const englishTranslations: Translations = {
   enterEmergencyContactName: 'Enter Emergency Contact Name',
   enterEmergencyContactNumber: 'Enter Emergency Contact Number',
   enterFullAddress: 'সম্পূর্ণ ঠিকানা লিখুন',
-  enterFullName: 'Enter Full Name',
+  enterFullName: 'পূর্ণ নাম লিখুন',
   enterLicenseNumber: 'Enter License Number',
   enterPhoneNumber: 'Enter Phone Number',
   error: 'Error',
@@ -2047,7 +2134,7 @@ const englishTranslations: Translations = {
   from: 'থেকে',
   fullAccess: 'Full Access',
   fullCylinders: 'ভরা সিলিন্ডার',
-  fullName: 'Full Name',
+  fullName: 'পূর্ণ নাম',
   generalSettings: 'সাধারণ সেটিংস',
   getStartedByAddingFirstExpense: 'আপনার প্রথম খরচ যোগ করে শুরু করুন।',
   hour: 'Hour',
@@ -2074,13 +2161,10 @@ const englishTranslations: Translations = {
   lpgDistributorManagementSystem: 'Lpg Distributor Management System',
   manageBudgets: 'Manage Budgets',
   manageCategories: 'Manage Categories',
-  manageCompanyAssets: 'Manage Company Assets',
-  manageDriversAndAssignments: 'Manage Drivers And Assignments',
   manageLiabilities: 'Manage Liabilities',
-  manager: 'Manager',
-  managers: 'Managers',
+  manager: 'ম্যানেজার',
+  managers: 'ম্যানেজারগণ',
   manageSystemRoles: 'Manage System Roles',
-  manageSystemUsers: 'Manage System Users',
   manageTeam: 'Manage Team',
   mon: 'সোম',
   monitorCylinderStock: 'Monitor Cylinder Stock',
@@ -2376,7 +2460,6 @@ const englishTranslations: Translations = {
   editPurchaseOrder: 'Edit Purchase Order',
   createNewPurchaseOrder: 'Create New Purchase Order',
   step: 'Step',
-  of: 'এর',
   orderInformation: 'Order Information',
   selectCompany: 'Select Company',
   selectACompany: 'Select Company',
@@ -2553,7 +2636,6 @@ const englishTranslations: Translations = {
     'ফোন নম্বর অবশ্যই কমপক্ষে ১০ সংখ্যার হতে হবে।',
   phoneNumberTooLong: 'Phone Number Too Long',
   statusIsRequired: 'Status Is is required',
-  all: 'All',
   bn: 'বাংলা',
   en: 'ইংরেজি',
   locale: 'লোকেল',
@@ -2963,8 +3045,54 @@ const bengaliTranslations: Translations = {
   // User management form translations
   addNewUser: 'নতুন ব্যবহারকারী যোগ করুন',
   enterFullNamePlaceholder: 'পূর্ণ নাম লিখুন',
-  enterEmailAddressPlaceholder: 'ইমেইল ঠিকানা লিখুন',
+  enterEmailAddressPlaceholder: 'ই-মেইল ঠিকানা লিখুন',
   enterPasswordPlaceholder: 'পাসওয়ার্ড লিখুন (কমপক্ষে ৮ অক্ষর)',
+  pageAccessPermissions: 'পেজ অ্যাক্সেস অনুমতি',
+  selectAll: 'সব নির্বাচন করুন',
+  selectNone: 'কিছুই নির্বাচন করবেন না',
+  overview: 'সংক্ষিপ্ত বিবরণ',
+  finance: 'অর্থ',
+  administration: 'প্রশাসন',
+
+  // Permission selector UI
+  pages: 'পেজ',
+  all: 'সব',
+  some: 'কিছু',
+  none: 'কিছুই না',
+  selected: 'নির্বাচিত:',
+  of: 'এর মধ্যে',
+
+  // Page names for permissions
+  dashboardPage: 'ড্যাশবোর্ড',
+  dailySalesReportPage: 'দৈনিক বিক্রয় রিপোর্ট',
+  inventoryPage: 'মজুদ',
+  analyticsPage: 'অ্যানালিটিক্স',
+  salesPage: 'বিক্রয়',
+  receivablesPage: 'প্রাপ্য',
+  expensesPage: 'খরচ',
+  shipmentsPage: 'চালান',
+  assetsPage: 'সম্পদ',
+  driversPage: 'চালক',
+  productManagementPage: 'পণ্য ব্যবস্থাপনা',
+  reportsPage: 'রিপোর্ট',
+  userManagementPage: 'ব্যবহারকারী ব্যবস্থাপনা',
+  settingsPage: 'সেটিংস',
+
+  // Page descriptions
+  mainDashboardOverview: 'প্রধান ড্যাশবোর্ড সংক্ষিপ্ত বিবরণ',
+  viewDailySalesReports: 'দৈনিক বিক্রয় রিপোর্ট দেখুন',
+  manageInventoryAndStockLevels: 'মজুদ এবং স্টক স্তর পরিচালনা করুন',
+  businessAnalyticsAndInsights: 'ব্যবসায়িক অ্যানালিটিক্স এবং অন্তর্দৃষ্টি',
+  manageSalesTransactions: 'বিক্রয় লেনদেন পরিচালনা করুন',
+  trackCustomerReceivables: 'গ্রাহক প্রাপ্য ট্র্যাক করুন',
+  manageBusinessExpenses: 'ব্যবসায়িক খরচ পরিচালনা করুন',
+  trackShipmentsAndDeliveries: 'চালান এবং ডেলিভারি ট্র্যাক করুন',
+  manageCompanyAssets: 'কোম্পানির সম্পদ পরিচালনা করুন',
+  manageDriversAndAssignments: 'চালক এবং নিয়োগ পরিচালনা করুন',
+  manageProductsAndPricing: 'পণ্য এবং মূল্য নির্ধারণ পরিচালনা করুন',
+  generateBusinessReports: 'ব্যবসায়িক রিপোর্ট তৈরি করুন',
+  manageSystemUsers: 'সিস্টেম ব্যবহারকারী পরিচালনা করুন',
+  systemSettingsAndConfiguration: 'সিস্টেম সেটিংস এবং কনফিগারেশন',
 
   // Assets form translations
   addNew: 'নতুন যোগ করুন',
@@ -3487,13 +3615,10 @@ const bengaliTranslations: Translations = {
   lpgDistributorManagementSystem: 'এলপিজি পরিবেশক ব্যবস্থাপনা সিস্টেম',
   manageBudgets: 'বাজেট পরিচালনা',
   manageCategories: 'বিভাগ পরিচালনা',
-  manageCompanyAssets: 'কোম্পানির সম্পদ পরিচালনা',
-  manageDriversAndAssignments: 'চালক ও নিয়োগ পরিচালনা',
   manageLiabilities: 'দায় পরিচালনা',
   manager: 'ম্যানেজার',
   managers: 'ম্যানেজারগণ',
   manageSystemRoles: 'সিস্টেম ভূমিকা পরিচালনা',
-  manageSystemUsers: 'সিস্টেম ব্যবহারকারী পরিচালনা',
   manageTeam: 'দল পরিচালনা',
   mon: 'সোম',
   monitorCylinderStock: 'সিলিন্ডার স্টক পর্যবেক্ষণ',
@@ -3789,7 +3914,6 @@ const bengaliTranslations: Translations = {
   editPurchaseOrder: 'সম্পাদনা ক্রয় অর্ডার',
   createNewPurchaseOrder: 'তৈরি করুন নতুন ক্রয় অর্ডার',
   step: 'ধাপ',
-  of: 'এর',
   orderInformation: 'আদেশ তথ্য',
   selectCompany: 'নির্বাচন করুন কোম্পানি',
   selectACompany: 'কোম্পানি নির্বাচন করুন',
@@ -3966,7 +4090,6 @@ const bengaliTranslations: Translations = {
     'ফোন নম্বর অবশ্যই কমপক্ষে ১০ সংখ্যার হতে হবে।',
   phoneNumberTooLong: 'ফোন নম্বর খুব দীর্ঘ',
   statusIsRequired: 'অবস্থা হয় হয় প্রয়োজনীয়',
-  all: 'সব',
   bn: 'বাংলা',
   en: 'ইংরেজি',
   locale: 'লোকেল',

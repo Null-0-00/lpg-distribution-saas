@@ -5,7 +5,27 @@ import {
   PagePermission,
   PAGE_CATEGORIES,
 } from '@/lib/types/page-permissions';
-import { useTranslation } from '@/hooks/useTranslation';
+import { useSettings } from '@/contexts/SettingsContext';
+
+const getDescriptionKey = (pageId: string): string => {
+  const descriptionMap: Record<string, string> = {
+    'dashboard': 'mainDashboardOverview',
+    'daily-sales-report': 'viewDailySalesReports',
+    'inventory': 'manageInventoryAndStockLevels',
+    'analytics': 'businessAnalyticsAndInsights',
+    'sales': 'manageSalesTransactions',
+    'receivables': 'trackCustomerReceivables',
+    'expenses': 'manageBusinessExpenses',
+    'shipments': 'trackShipmentsAndDeliveries',
+    'assets': 'manageCompanyAssets',
+    'drivers': 'manageDriversAndAssignments',
+    'product-management': 'manageProductsAndPricing',
+    'reports': 'generateBusinessReports',
+    'users': 'manageSystemUsers',
+    'settings': 'systemSettingsAndConfiguration',
+  };
+  return descriptionMap[pageId] || pageId;
+};
 
 interface PagePermissionsSelectorProps {
   selectedPermissions: string[];
@@ -16,7 +36,7 @@ interface PagePermissionsSelectorProps {
 export const PagePermissionsSelector: React.FC<
   PagePermissionsSelectorProps
 > = ({ selectedPermissions, onPermissionChange, disabled = false }) => {
-  const { t } = useTranslation({ component: 'PagePermissionsSelector' });
+  const { t } = useSettings();
   const [expandedCategories, setExpandedCategories] = useState<string[]>([
     'Overview',
     'Operations',
@@ -101,7 +121,7 @@ export const PagePermissionsSelector: React.FC<
           className="flex items-center justify-center rounded-md bg-blue-50 px-3 py-2 text-sm font-medium text-blue-700 hover:bg-blue-100 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-blue-900/20 dark:text-blue-300 dark:hover:bg-blue-900/30"
         >
           <Check className="mr-2 h-4 w-4" />
-          Select All
+          {t('selectAll')}
         </button>
         <button
           type="button"
@@ -109,7 +129,7 @@ export const PagePermissionsSelector: React.FC<
           disabled={disabled}
           className="flex items-center justify-center rounded-md bg-gray-50 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
         >
-          Select None
+          {t('selectNone')}
         </button>
       </div>
 
@@ -141,10 +161,10 @@ export const PagePermissionsSelector: React.FC<
                   </button>
                   <Shield className="mr-2 h-4 w-4 text-blue-600" />
                   <span className="font-medium text-gray-900 dark:text-white">
-                    {category}
+                    {t(category.toLowerCase() as any)}
                   </span>
                   <span className="ml-2 text-sm text-gray-500 dark:text-gray-400">
-                    ({categoryPages.length} pages)
+                    ({categoryPages.length} {t('pages')})
                   </span>
                 </div>
                 <label className="flex items-center">
@@ -161,10 +181,10 @@ export const PagePermissionsSelector: React.FC<
                   />
                   <span className="ml-2 text-sm text-gray-600 dark:text-gray-400">
                     {selectionState === 'all'
-                      ? 'All'
+                      ? t('all')
                       : selectionState === 'partial'
-                        ? 'Some'
-                        : 'None'}
+                        ? t('some')
+                        : t('none')}
                   </span>
                 </label>
               </div>
@@ -185,10 +205,10 @@ export const PagePermissionsSelector: React.FC<
                       />
                       <div className="min-w-0 flex-1">
                         <div className="text-sm font-medium text-gray-900 dark:text-white">
-                          {page.name}
+                          {t(`${page.id}Page` as any)}
                         </div>
                         <div className="text-xs text-gray-500 dark:text-gray-400">
-                          {page.description}
+                          {t(getDescriptionKey(page.id) as any)}
                         </div>
                         <div className="font-mono text-xs text-blue-600 dark:text-blue-400">
                           {page.path}
@@ -205,8 +225,8 @@ export const PagePermissionsSelector: React.FC<
 
       <div className="mt-4 rounded-lg bg-blue-50 p-3 dark:bg-blue-900/20">
         <div className="text-sm text-blue-800 dark:text-blue-300">
-          <strong>Selected:</strong> {selectedPermissions.length} of{' '}
-          {AVAILABLE_PAGES.length} pages
+          <strong>{t('selected')}:</strong> {selectedPermissions.length} {t('of')}{' '}
+          {AVAILABLE_PAGES.length} {t('pages')}
         </div>
       </div>
     </div>

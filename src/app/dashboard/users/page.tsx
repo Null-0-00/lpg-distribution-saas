@@ -750,7 +750,7 @@ export default function UsersPage() {
 
                 <div>
                   <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Permissions
+                    {t('permissions')}
                   </label>
                   <select
                     multiple
@@ -777,7 +777,7 @@ export default function UsersPage() {
                 {formData.role === UserRole.MANAGER && (
                   <div>
                     <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                      Page Access Permissions
+                      {t('pageAccessPermissions')}
                     </label>
                     <div className="rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-gray-600 dark:bg-gray-800">
                       <PagePermissionsSelector
@@ -909,7 +909,7 @@ export default function UsersPage() {
 
                 <div>
                   <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Permissions
+                    {t('permissions')}
                   </label>
                   <select
                     multiple
@@ -936,7 +936,7 @@ export default function UsersPage() {
                 {formData.role === UserRole.MANAGER && (
                   <div>
                     <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                      Page Access Permissions
+                      {t('pageAccessPermissions')}
                     </label>
                     <div className="rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-gray-600 dark:bg-gray-800">
                       <PagePermissionsSelector
@@ -1043,7 +1043,7 @@ export default function UsersPage() {
               </div>
               <div>
                 <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Permissions
+                  {t('permissions')}
                 </label>
                 <div className="flex flex-wrap gap-2">
                   {editingUser.permissions.map((perm, index) => (
@@ -1061,7 +1061,7 @@ export default function UsersPage() {
                 editingUser.pagePermissions && (
                   <div>
                     <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                      Page Access Permissions
+                      {t('pageAccessPermissions')}
                     </label>
                     <div className="flex flex-wrap gap-2">
                       {editingUser.pagePermissions.map((pageId, index) => {
@@ -1081,7 +1081,7 @@ export default function UsersPage() {
                     {(!editingUser.pagePermissions ||
                       editingUser.pagePermissions.length === 0) && (
                       <p className="text-sm text-gray-500 dark:text-gray-400">
-                        No page permissions assigned
+                        {t('noPageAccessPermissions')}
                       </p>
                     )}
                   </div>

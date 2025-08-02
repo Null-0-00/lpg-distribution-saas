@@ -5,11 +5,11 @@ import { auth } from '@/auth';
 export async function GET(request: NextRequest) {
   try {
     console.log('🔍 DEBUG: Checking session and token...');
-    
+
     // Get session via auth()
     const session = await auth();
     console.log('Session from auth():', JSON.stringify(session, null, 2));
-    
+
     // Get token via getToken
     const token = await getToken({
       req: request,
@@ -28,7 +28,10 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Debug session error:', error);
     return NextResponse.json(
-      { error: 'Debug failed', details: error instanceof Error ? error.message : 'Unknown error' },
+      {
+        error: 'Debug failed',
+        details: error instanceof Error ? error.message : 'Unknown error',
+      },
       { status: 500 }
     );
   }

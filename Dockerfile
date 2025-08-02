@@ -24,6 +24,7 @@ RUN npx prisma generate
 # Note: Only non-sensitive build-time variables should be used here
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
+ENV NEXTAUTH_SECRET=build-time-secret-not-for-production
 
 # Build the application
 RUN npm run build

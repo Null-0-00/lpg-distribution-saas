@@ -97,7 +97,7 @@ export const CategoryManagement: React.FC<CategoryManagementProps> = ({
       <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black bg-opacity-50 p-4">
         <div className="bg-card max-h-[90vh] w-full max-w-4xl overflow-y-auto rounded-lg shadow-xl">
           <div className="border-border flex items-center justify-between border-b p-6">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+            <h2 className="text-foreground text-xl font-semibold">
               {t('categoryManagement')}
             </h2>
             <button
@@ -113,7 +113,7 @@ export const CategoryManagement: React.FC<CategoryManagementProps> = ({
             <div className="mb-6">
               <button
                 onClick={() => setShowCategoryForm(true)}
-                className="flex items-center rounded-lg bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
+                className="bg-primary text-primary-foreground hover:bg-primary/90 flex items-center rounded-lg px-4 py-2 transition-colors"
               >
                 <Plus className="mr-2 h-4 w-4" />
                 {t('addNewCategory')}
@@ -123,7 +123,7 @@ export const CategoryManagement: React.FC<CategoryManagementProps> = ({
             {loading ? (
               <div className="flex items-center justify-center py-8">
                 <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-blue-600"></div>
-                <span className="ml-2 text-gray-600 dark:text-gray-400">
+                <span className="text-muted-foreground ml-2">
                   {t('loadingCategories')}
                 </span>
               </div>
@@ -131,7 +131,7 @@ export const CategoryManagement: React.FC<CategoryManagementProps> = ({
               <>
                 {/* Parent Categories Section */}
                 <div className="mb-8">
-                  <h3 className="mb-4 flex items-center text-lg font-semibold text-gray-900 dark:text-white">
+                  <h3 className="text-foreground mb-4 flex items-center text-lg font-semibold">
                     <Folder className="mr-2 h-5 w-5" />
                     {t('parentCategories')} ({parentCategories.length})
                   </h3>
@@ -194,7 +194,7 @@ export const CategoryManagement: React.FC<CategoryManagementProps> = ({
 
                 {/* Sub-Categories Section */}
                 <div>
-                  <h3 className="mb-4 flex items-center text-lg font-semibold text-gray-900 dark:text-white">
+                  <h3 className="text-foreground mb-4 flex items-center text-lg font-semibold">
                     <Tag className="mr-2 h-5 w-5" />
                     {t('subCategoriesTitle')} ({categories.length})
                   </h3>

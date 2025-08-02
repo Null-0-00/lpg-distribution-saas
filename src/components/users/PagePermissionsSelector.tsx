@@ -118,7 +118,7 @@ export const PagePermissionsSelector: React.FC<
           type="button"
           onClick={selectAllPages}
           disabled={disabled}
-          className="flex items-center justify-center rounded-md bg-blue-50 px-3 py-2 text-sm font-medium text-blue-700 hover:bg-blue-100 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-blue-900/20 dark:text-blue-300 dark:hover:bg-blue-900/30"
+          className="flex items-center justify-center rounded-md bg-blue-50 px-3 py-2 text-sm font-medium text-blue-700 hover:bg-blue-100 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-blue-500/10 dark:text-blue-400 dark:hover:bg-blue-500/20"
         >
           <Check className="mr-2 h-4 w-4" />
           {t('selectAll')}
@@ -127,7 +127,7 @@ export const PagePermissionsSelector: React.FC<
           type="button"
           onClick={selectNoPages}
           disabled={disabled}
-          className="flex items-center justify-center rounded-md bg-gray-50 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+          className="bg-muted text-muted-foreground hover:bg-muted/80 flex items-center justify-center rounded-md px-3 py-2 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-50"
         >
           {t('selectNone')}
         </button>
@@ -142,16 +142,13 @@ export const PagePermissionsSelector: React.FC<
           const selectionState = getCategorySelectionState(category);
 
           return (
-            <div
-              key={category}
-              className="rounded-lg border border-gray-200 dark:border-gray-600"
-            >
-              <div className="flex items-center justify-between rounded-t-lg bg-gray-50 p-3 dark:bg-gray-800">
+            <div key={category} className="border-border rounded-lg border">
+              <div className="bg-muted/50 flex items-center justify-between rounded-t-lg p-3">
                 <div className="flex items-center">
                   <button
                     type="button"
                     onClick={() => toggleCategory(category)}
-                    className="mr-2 rounded p-1 hover:bg-gray-200 dark:hover:bg-gray-700"
+                    className="hover:bg-muted mr-2 rounded p-1"
                   >
                     {isExpanded ? (
                       <ChevronDown className="h-4 w-4" />
@@ -160,10 +157,10 @@ export const PagePermissionsSelector: React.FC<
                     )}
                   </button>
                   <Shield className="mr-2 h-4 w-4 text-blue-600" />
-                  <span className="font-medium text-gray-900 dark:text-white">
+                  <span className="text-foreground font-medium">
                     {t(category.toLowerCase() as any)}
                   </span>
-                  <span className="ml-2 text-sm text-gray-500 dark:text-gray-400">
+                  <span className="text-muted-foreground ml-2 text-sm">
                     ({categoryPages.length} {t('pages')})
                   </span>
                 </div>
@@ -177,9 +174,9 @@ export const PagePermissionsSelector: React.FC<
                     }}
                     onChange={() => handleCategoryToggle(category)}
                     disabled={disabled}
-                    className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 disabled:cursor-not-allowed disabled:opacity-50"
+                    className="border-border h-4 w-4 rounded text-blue-600 focus:ring-blue-500 disabled:cursor-not-allowed disabled:opacity-50"
                   />
-                  <span className="ml-2 text-sm text-gray-600 dark:text-gray-400">
+                  <span className="text-muted-foreground ml-2 text-sm">
                     {selectionState === 'all'
                       ? t('all')
                       : selectionState === 'partial'
@@ -190,24 +187,24 @@ export const PagePermissionsSelector: React.FC<
               </div>
 
               {isExpanded && (
-                <div className="space-y-2 rounded-b-lg bg-white p-3 dark:bg-gray-900">
+                <div className="bg-card space-y-2 rounded-b-lg p-3">
                   {categoryPages.map((page) => (
                     <label
                       key={page.id}
-                      className="flex items-start space-x-3 rounded p-2 hover:bg-gray-50 dark:hover:bg-gray-800"
+                      className="hover:bg-muted/50 flex items-start space-x-3 rounded p-2"
                     >
                       <input
                         type="checkbox"
                         checked={selectedPermissions.includes(page.id)}
                         onChange={() => handlePermissionToggle(page.id)}
                         disabled={disabled}
-                        className="mt-0.5 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 disabled:cursor-not-allowed disabled:opacity-50"
+                        className="border-border mt-0.5 h-4 w-4 rounded text-blue-600 focus:ring-blue-500 disabled:cursor-not-allowed disabled:opacity-50"
                       />
                       <div className="min-w-0 flex-1">
-                        <div className="text-sm font-medium text-gray-900 dark:text-white">
+                        <div className="text-foreground text-sm font-medium">
                           {t(`${page.id}Page` as any)}
                         </div>
-                        <div className="text-xs text-gray-500 dark:text-gray-400">
+                        <div className="text-muted-foreground text-xs">
                           {t(getDescriptionKey(page.id) as any)}
                         </div>
                         <div className="font-mono text-xs text-blue-600 dark:text-blue-400">
@@ -223,8 +220,8 @@ export const PagePermissionsSelector: React.FC<
         })}
       </div>
 
-      <div className="mt-4 rounded-lg bg-blue-50 p-3 dark:bg-blue-900/20">
-        <div className="text-sm text-blue-800 dark:text-blue-300">
+      <div className="mt-4 rounded-lg bg-blue-50 p-3 dark:bg-blue-500/10">
+        <div className="text-sm text-blue-800 dark:text-blue-400">
           <strong>{t('selected')}:</strong> {selectedPermissions.length}{' '}
           {t('of')} {AVAILABLE_PAGES.length} {t('pages')}
         </div>

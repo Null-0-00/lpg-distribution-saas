@@ -352,7 +352,7 @@ export function CombinedSaleForm({
                 <div className="flex flex-col">
                   <span className="font-medium">{driver.name}</span>
                   {driver.route && (
-                    <span className="text-sm text-gray-500">
+                    <span className="text-muted-foreground text-sm">
                       {driver.route}
                     </span>
                   )}
@@ -362,7 +362,7 @@ export function CombinedSaleForm({
           </SelectContent>
         </Select>
         {errors.driverId && (
-          <p className="text-sm text-red-600">{errors.driverId.message}</p>
+          <p className="text-destructive text-sm">{errors.driverId.message}</p>
         )}
       </div>
 
@@ -375,7 +375,9 @@ export function CombinedSaleForm({
           placeholder={t('customerNamePlaceholder')}
         />
         {errors.customerName && (
-          <p className="text-sm text-red-600">{errors.customerName.message}</p>
+          <p className="text-destructive text-sm">
+            {errors.customerName.message}
+          </p>
         )}
       </div>
 
@@ -384,7 +386,7 @@ export function CombinedSaleForm({
         <Label htmlFor="saleDate">
           {t('saleDate')} *
           {!isAdmin && (
-            <span className="ml-1 text-xs text-gray-500">
+            <span className="text-muted-foreground ml-1 text-xs">
               ({t('fixedToToday')})
             </span>
           )}
@@ -394,17 +396,17 @@ export function CombinedSaleForm({
           type="date"
           {...register('saleDate')}
           disabled={!isAdmin} // Managers cannot change the date
-          className={!isAdmin ? 'cursor-not-allowed bg-gray-100' : ''}
+          className={!isAdmin ? 'bg-muted cursor-not-allowed' : ''}
         />
         {errors.saleDate && (
-          <p className="text-sm text-red-600">{errors.saleDate.message}</p>
+          <p className="text-destructive text-sm">{errors.saleDate.message}</p>
         )}
       </div>
 
       {/* Sale Items */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <Label className="text-lg font-semibold text-gray-900 dark:text-white">
+          <Label className="text-foreground text-lg font-semibold">
             {t('saleItems')}
           </Label>
           <Button
@@ -425,10 +427,10 @@ export function CombinedSaleForm({
           return (
             <div
               key={index}
-              className="space-y-4 rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-800"
+              className="border-border bg-muted/50 space-y-4 rounded-lg border p-4"
             >
               <div className="flex items-center justify-between">
-                <h4 className="flex items-center font-medium text-gray-900 dark:text-white">
+                <h4 className="text-foreground flex items-center font-medium">
                   <Package className="mr-2 h-4 w-4" />
                   {t('itemNumber')} {index + 1}
                 </h4>
@@ -438,7 +440,7 @@ export function CombinedSaleForm({
                     variant="ghost"
                     size="sm"
                     onClick={() => removeSaleItem(index)}
-                    className="text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
+                    className="text-destructive hover:text-destructive/80"
                   >
                     <Minus className="h-4 w-4" />
                   </Button>
@@ -464,7 +466,7 @@ export function CombinedSaleForm({
                           </span>
                           {product.inventory && (
                             <span
-                              className={`text-sm ${product.inventory.isLowStock ? 'text-red-500' : 'text-green-600'}`}
+                              className={`text-sm ${product.inventory.isLowStock ? 'text-destructive' : 'text-green-600 dark:text-green-400'}`}
                             >
                               {product.inventory.fullCylinders} {t('available')}
                               {product.inventory.isLowStock &&
@@ -477,7 +479,7 @@ export function CombinedSaleForm({
                   </SelectContent>
                 </Select>
                 {errors.saleItems?.[index]?.productId && (
-                  <p className="text-sm text-red-600">
+                  <p className="text-destructive text-sm">
                     {errors.saleItems[index]?.productId?.message}
                   </p>
                 )}
@@ -507,7 +509,7 @@ export function CombinedSaleForm({
                     })}
                   />
                   {errors.saleItems?.[index]?.packageSale && (
-                    <p className="text-sm text-red-600">
+                    <p className="text-destructive text-sm">
                       {errors.saleItems[index]?.packageSale?.message}
                     </p>
                   )}
@@ -525,7 +527,7 @@ export function CombinedSaleForm({
                     })}
                   />
                   {errors.saleItems?.[index]?.refillSale && (
-                    <p className="text-sm text-red-600">
+                    <p className="text-destructive text-sm">
                       {errors.saleItems[index]?.refillSale?.message}
                     </p>
                   )}
@@ -543,7 +545,7 @@ export function CombinedSaleForm({
                     })}
                   />
                   {errors.saleItems?.[index]?.packagePrice && (
-                    <p className="text-sm text-red-600">
+                    <p className="text-destructive text-sm">
                       {errors.saleItems[index]?.packagePrice?.message}
                     </p>
                   )}
@@ -561,7 +563,7 @@ export function CombinedSaleForm({
                     })}
                   />
                   {errors.saleItems?.[index]?.refillPrice && (
-                    <p className="text-sm text-red-600">
+                    <p className="text-destructive text-sm">
                       {errors.saleItems[index]?.refillPrice?.message}
                     </p>
                   )}
@@ -571,7 +573,7 @@ export function CombinedSaleForm({
               {/* Item Total Value */}
               <div className="space-y-2">
                 <Label>{t('itemTotal')}</Label>
-                <div className="rounded-md border border-gray-300 bg-white p-2 text-sm font-semibold text-gray-900 dark:border-gray-600 dark:bg-gray-700 dark:text-white">
+                <div className="border-border bg-background text-foreground rounded-md border p-2 text-sm font-semibold">
                   {formatCurrency(
                     (item.packageSale || 0) * (item.packagePrice || 0) +
                       (item.refillSale || 0) * (item.refillPrice || 0)
@@ -583,45 +585,43 @@ export function CombinedSaleForm({
         })}
 
         {errors.saleItems && (
-          <p className="text-sm text-red-600">{errors.saleItems.message}</p>
+          <p className="text-destructive text-sm">{errors.saleItems.message}</p>
         )}
       </div>
 
       {/* Totals Summary */}
-      <div className="rounded-lg border border-blue-200 bg-blue-50 p-4 dark:border-blue-800 dark:bg-blue-900/20">
-        <h4 className="mb-2 font-semibold text-gray-900 dark:text-white">
+      <div className="border-border bg-muted/30 rounded-lg border p-4">
+        <h4 className="text-foreground mb-2 font-semibold">
           {t('saleSummary')}
         </h4>
         <div className="grid grid-cols-2 gap-4 text-sm md:grid-cols-4">
           <div>
-            <span className="text-gray-600 dark:text-gray-400">
+            <span className="text-muted-foreground">
               {t('totalQuantityLabel')}:
             </span>
-            <div className="font-semibold text-gray-900 dark:text-white">
+            <div className="text-foreground font-semibold">
               {totals.totalQuantity}
             </div>
           </div>
           <div>
-            <span className="text-gray-600 dark:text-gray-400">
+            <span className="text-muted-foreground">
               {t('totalValueLabel')}:
             </span>
-            <div className="font-semibold text-gray-900 dark:text-white">
+            <div className="text-foreground font-semibold">
               {formatCurrency(totals.totalValue)}
             </div>
           </div>
           <div>
-            <span className="text-gray-600 dark:text-gray-400">
+            <span className="text-muted-foreground">
               {t('totalDiscountLabel')}:
             </span>
-            <div className="font-semibold text-gray-900 dark:text-white">
+            <div className="text-foreground font-semibold">
               {formatCurrency(totals.totalDiscount)}
             </div>
           </div>
           <div>
-            <span className="text-gray-600 dark:text-gray-400">
-              {t('netValueLabel')}:
-            </span>
-            <div className="text-lg font-semibold text-gray-900 dark:text-white">
+            <span className="text-muted-foreground">{t('netValueLabel')}:</span>
+            <div className="text-foreground text-lg font-semibold">
               {formatCurrency(totals.netValue)}
             </div>
           </div>
@@ -659,7 +659,7 @@ export function CombinedSaleForm({
               </SelectContent>
             </Select>
             {errors.paymentType && (
-              <p className="text-sm text-red-600">
+              <p className="text-destructive text-sm">
                 {errors.paymentType.message}
               </p>
             )}
@@ -675,7 +675,9 @@ export function CombinedSaleForm({
               {...register('discount', { valueAsNumber: true })}
             />
             {errors.discount && (
-              <p className="text-sm text-red-600">{errors.discount.message}</p>
+              <p className="text-destructive text-sm">
+                {errors.discount.message}
+              </p>
             )}
           </div>
         </div>
@@ -691,7 +693,7 @@ export function CombinedSaleForm({
               {...register('cashDeposited', { valueAsNumber: true })}
             />
             {errors.cashDeposited && (
-              <p className="text-sm text-red-600">
+              <p className="text-destructive text-sm">
                 {errors.cashDeposited.message}
               </p>
             )}
@@ -708,7 +710,7 @@ export function CombinedSaleForm({
                     <div key={size} className="space-y-2">
                       <Label htmlFor={`cylinderDeposit-${size}`}>
                         {size} {t('cylindersDeposited')}
-                        <span className="ml-1 text-sm text-gray-500">
+                        <span className="text-muted-foreground ml-1 text-sm">
                           ({t('maxQuantity')}: {maxQuantity})
                         </span>
                       </Label>
@@ -728,7 +730,7 @@ export function CombinedSaleForm({
                         }}
                       />
                       {errors.cylinderDeposits?.[size] && (
-                        <p className="text-sm text-red-600">
+                        <p className="text-destructive text-sm">
                           {errors.cylinderDeposits[size]?.message}
                         </p>
                       )}
@@ -753,9 +755,9 @@ export function CombinedSaleForm({
 
       {/* Credit Warnings */}
       {totals.netValue > (watchedValues.cashDeposited || 0) && (
-        <Alert className="border-yellow-200 bg-yellow-50 dark:border-yellow-800 dark:bg-yellow-900/20">
-          <AlertTriangle className="h-4 w-4 text-yellow-600 dark:text-yellow-400" />
-          <AlertDescription className="text-yellow-800 dark:text-yellow-200">
+        <Alert className="border-border bg-muted/50">
+          <AlertTriangle className="h-4 w-4 text-orange-500" />
+          <AlertDescription className="text-foreground">
             {t('cashReceivableWarning')}{' '}
             {formatCurrency(
               totals.netValue - (watchedValues.cashDeposited || 0)
@@ -787,9 +789,9 @@ export function CombinedSaleForm({
             .filter(Boolean);
 
           return (
-            <Alert className="border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-900/20">
-              <AlertTriangle className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-              <AlertDescription className="text-blue-800 dark:text-blue-200">
+            <Alert className="border-border bg-muted/50">
+              <AlertTriangle className="h-4 w-4 text-blue-500" />
+              <AlertDescription className="text-foreground">
                 {t('cylinderReceivableWarning')}{' '}
                 {receivablesBySizeList.join(', ')}
                 {watchedValues.customerName
@@ -804,7 +806,7 @@ export function CombinedSaleForm({
       })()}
 
       {/* Form Actions */}
-      <div className="flex justify-end space-x-4 border-t border-gray-200 pt-4 dark:border-gray-700">
+      <div className="border-border flex justify-end space-x-4 border-t pt-4">
         <Button type="button" variant="outline" onClick={onCancel}>
           {t('cancel')}
         </Button>

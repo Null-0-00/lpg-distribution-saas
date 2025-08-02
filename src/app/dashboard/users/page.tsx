@@ -513,7 +513,7 @@ export default function UsersPage() {
                           <div className="text-foreground text-sm font-medium">
                             {user.name}
                           </div>
-                          <div className="text-sm text-gray-500 dark:text-gray-400">
+                          <div className="text-muted-foreground text-sm">
                             {user.email}
                           </div>
                         </div>
@@ -608,7 +608,7 @@ export default function UsersPage() {
             <div className="border-border rounded-lg border p-3">
               <div className="mb-2 flex items-center justify-between">
                 <span className="font-medium text-red-600">ADMIN</span>
-                <span className="text-sm text-gray-500 dark:text-gray-400">
+                <span className="text-muted-foreground text-sm">
                   {t('fullAccess')}
                 </span>
               </div>
@@ -619,7 +619,7 @@ export default function UsersPage() {
             <div className="border-border rounded-lg border p-3">
               <div className="mb-2 flex items-center justify-between">
                 <span className="font-medium text-blue-600">MANAGER</span>
-                <span className="text-sm text-gray-500 dark:text-gray-400">
+                <span className="text-muted-foreground text-sm">
                   {t('operations')}
                 </span>
               </div>
@@ -643,13 +643,13 @@ export default function UsersPage() {
                 <span className="text-muted-foreground text-sm">
                   {user.name} - {user.role}
                 </span>
-                <span className="text-sm text-gray-500 dark:text-gray-400">
+                <span className="text-muted-foreground text-sm">
                   {formatLastLogin(user.lastLoginAt)}
                 </span>
               </div>
             ))}
             {users.length === 0 && (
-              <div className="py-4 text-center text-gray-500 dark:text-gray-400">
+              <div className="text-muted-foreground py-4 text-center">
                 {t('noUsersFound')}
               </div>
             )}
@@ -668,7 +668,7 @@ export default function UsersPage() {
                 </h3>
                 <button
                   onClick={() => setIsAddModalOpen(false)}
-                  className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+                  className="text-muted-foreground hover:text-foreground"
                 >
                   <X className="h-6 w-6" />
                 </button>
@@ -679,7 +679,7 @@ export default function UsersPage() {
               <div className="space-y-6">
                 <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                   <div>
-                    <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <label className="text-foreground mb-2 block text-sm font-medium">
                       {t('fullName')}
                     </label>
                     <input
@@ -695,7 +695,7 @@ export default function UsersPage() {
                   </div>
 
                   <div>
-                    <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <label className="text-foreground mb-2 block text-sm font-medium">
                       {t('emailAddress')}
                     </label>
                     <input
@@ -713,7 +713,7 @@ export default function UsersPage() {
 
                 <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                   <div>
-                    <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <label className="text-foreground mb-2 block text-sm font-medium">
                       {t('password')}
                     </label>
                     <input
@@ -730,7 +730,7 @@ export default function UsersPage() {
                   </div>
 
                   <div>
-                    <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <label className="text-foreground mb-2 block text-sm font-medium">
                       {t('role')}
                     </label>
                     <select
@@ -749,7 +749,7 @@ export default function UsersPage() {
                 </div>
 
                 <div>
-                  <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                  <label className="text-foreground mb-2 block text-sm font-medium">
                     {t('permissions')}
                   </label>
                   <select
@@ -776,10 +776,10 @@ export default function UsersPage() {
 
                 {formData.role === UserRole.MANAGER && (
                   <div>
-                    <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <label className="text-foreground mb-2 block text-sm font-medium">
                       {t('pageAccessPermissions')}
                     </label>
-                    <div className="rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-gray-600 dark:bg-gray-800">
+                    <div className="border-border bg-muted/50 rounded-lg border p-4">
                       <PagePermissionsSelector
                         selectedPermissions={formData.pagePermissions}
                         onPermissionChange={(permissions) =>
@@ -844,7 +844,7 @@ export default function UsersPage() {
                     setIsEditModalOpen(false);
                     setEditingUser(null);
                   }}
-                  className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+                  className="text-muted-foreground hover:text-foreground"
                 >
                   <X className="h-6 w-6" />
                 </button>
@@ -855,8 +855,8 @@ export default function UsersPage() {
               <div className="space-y-6">
                 <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                   <div>
-                    <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                      Full Name
+                    <label className="text-foreground mb-2 block text-sm font-medium">
+                      {t('fullName')}
                     </label>
                     <input
                       type="text"
@@ -865,14 +865,14 @@ export default function UsersPage() {
                         setFormData({ ...formData, name: e.target.value })
                       }
                       className="border-border bg-input text-foreground w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      placeholder="Enter full name"
+                      placeholder={t('enterFullNamePlaceholder')}
                       required
                     />
                   </div>
 
                   <div>
-                    <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                      Email Address
+                    <label className="text-foreground mb-2 block text-sm font-medium">
+                      {t('emailAddress')}
                     </label>
                     <input
                       type="email"
@@ -881,7 +881,7 @@ export default function UsersPage() {
                         setFormData({ ...formData, email: e.target.value })
                       }
                       className="border-border bg-input text-foreground w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      placeholder="Enter email address"
+                      placeholder={t('enterEmailAddressPlaceholder')}
                       required
                     />
                   </div>
@@ -889,8 +889,8 @@ export default function UsersPage() {
 
                 <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                   <div>
-                    <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                      Role
+                    <label className="text-foreground mb-2 block text-sm font-medium">
+                      {t('role')}
                     </label>
                     <select
                       value={formData.role}
@@ -908,7 +908,7 @@ export default function UsersPage() {
                 </div>
 
                 <div>
-                  <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                  <label className="text-foreground mb-2 block text-sm font-medium">
                     {t('permissions')}
                   </label>
                   <select
@@ -935,10 +935,10 @@ export default function UsersPage() {
 
                 {formData.role === UserRole.MANAGER && (
                   <div>
-                    <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <label className="text-foreground mb-2 block text-sm font-medium">
                       {t('pageAccessPermissions')}
                     </label>
-                    <div className="rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-gray-600 dark:bg-gray-800">
+                    <div className="border-border bg-muted/50 rounded-lg border p-4">
                       <PagePermissionsSelector
                         selectedPermissions={formData.pagePermissions}
                         onPermissionChange={(permissions) =>
@@ -1000,7 +1000,7 @@ export default function UsersPage() {
                   setIsViewModalOpen(false);
                   setEditingUser(null);
                 }}
-                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+                className="text-muted-foreground hover:text-foreground"
               >
                 <X className="h-6 w-6" />
               </button>
@@ -1008,41 +1008,41 @@ export default function UsersPage() {
 
             <div className="space-y-4">
               <div>
-                <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Full Name
+                <label className="text-foreground mb-2 block text-sm font-medium">
+                  {t('fullName')}
                 </label>
                 <p className="text-foreground">{editingUser.name}</p>
               </div>
               <div>
-                <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Email Address
+                <label className="text-foreground mb-2 block text-sm font-medium">
+                  {t('emailAddress')}
                 </label>
                 <p className="text-foreground">{editingUser.email}</p>
               </div>
               <div>
-                <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Role
+                <label className="text-foreground mb-2 block text-sm font-medium">
+                  {t('role')}
                 </label>
                 <p className="text-foreground">{editingUser.role}</p>
               </div>
               <div>
-                <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Status
+                <label className="text-foreground mb-2 block text-sm font-medium">
+                  {t('status')}
                 </label>
                 <p className="text-foreground">
                   {editingUser.isActive ? t('active') : t('inactive')}
                 </p>
               </div>
               <div>
-                <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Last Login
+                <label className="text-foreground mb-2 block text-sm font-medium">
+                  {t('lastLogin')}
                 </label>
                 <p className="text-foreground">
                   {formatLastLogin(editingUser.lastLoginAt)}
                 </p>
               </div>
               <div>
-                <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                <label className="text-foreground mb-2 block text-sm font-medium">
                   {t('permissions')}
                 </label>
                 <div className="flex flex-wrap gap-2">
@@ -1060,7 +1060,7 @@ export default function UsersPage() {
               {editingUser.role === UserRole.MANAGER &&
                 editingUser.pagePermissions && (
                   <div>
-                    <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <label className="text-foreground mb-2 block text-sm font-medium">
                       {t('pageAccessPermissions')}
                     </label>
                     <div className="flex flex-wrap gap-2">
@@ -1080,7 +1080,7 @@ export default function UsersPage() {
                     </div>
                     {(!editingUser.pagePermissions ||
                       editingUser.pagePermissions.length === 0) && (
-                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                      <p className="text-muted-foreground text-sm">
                         {t('noPageAccessPermissions')}
                       </p>
                     )}

@@ -1757,8 +1757,8 @@ export default function AssetsPage() {
                   }}
                   className={`rounded-md px-3 py-1 text-sm ${
                     modalType === 'asset'
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300'
+                      ? 'bg-primary text-primary-foreground'
+                      : 'bg-muted text-muted-foreground'
                   }`}
                 >
                   {t('asset')}
@@ -1773,8 +1773,8 @@ export default function AssetsPage() {
                   }}
                   className={`rounded-md px-3 py-1 text-sm ${
                     modalType === 'liability'
-                      ? 'bg-red-600 text-white'
-                      : 'bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300'
+                      ? 'bg-destructive text-destructive-foreground'
+                      : 'bg-muted text-muted-foreground'
                   }`}
                 >
                   {t('liability')}
@@ -1784,7 +1784,7 @@ export default function AssetsPage() {
 
             <div className="space-y-4">
               <div>
-                <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                <label className="text-foreground mb-2 block text-sm font-medium">
                   {modalType === 'asset' ? t('assetName') : t('liabilityName')}
                 </label>
                 <input
@@ -1793,7 +1793,7 @@ export default function AssetsPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, name: e.target.value })
                   }
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                  className="border-border bg-background text-foreground focus:ring-primary w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2"
                   placeholder={
                     modalType === 'asset'
                       ? t('enterAssetNamePlaceholder')
@@ -1803,7 +1803,7 @@ export default function AssetsPage() {
               </div>
 
               <div>
-                <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                <label className="text-foreground mb-2 block text-sm font-medium">
                   {t('category')}
                 </label>
                 <select
@@ -1811,7 +1811,7 @@ export default function AssetsPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, category: e.target.value })
                   }
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                  className="border-border bg-background text-foreground focus:ring-primary w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2"
                 >
                   {modalType === 'asset' ? (
                     <>
@@ -1834,7 +1834,7 @@ export default function AssetsPage() {
               {modalType === 'asset' ? (
                 <>
                   <div>
-                    <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <label className="text-foreground mb-2 block text-sm font-medium">
                       {t('subCategory')}
                     </label>
                     <input
@@ -1846,12 +1846,12 @@ export default function AssetsPage() {
                           subCategory: e.target.value,
                         })
                       }
-                      className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                      className="border-border bg-background text-foreground focus:ring-primary w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2"
                       placeholder={t('assetPlaceholder')}
                     />
                   </div>
                   <div>
-                    <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <label className="text-foreground mb-2 block text-sm font-medium">
                       {t('assetValue')} (৳)
                     </label>
                     <input
@@ -1863,13 +1863,13 @@ export default function AssetsPage() {
                           value: parseFloat(e.target.value) || 0,
                         })
                       }
-                      className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                      className="border-border bg-background text-foreground focus:ring-primary w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2"
                       placeholder="0"
                     />
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                      <label className="text-foreground mb-2 block text-sm font-medium">
                         {t('purchaseDate')}
                       </label>
                       <input
@@ -1881,11 +1881,11 @@ export default function AssetsPage() {
                             purchaseDate: e.target.value,
                           })
                         }
-                        className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                        className="border-border bg-background text-foreground focus:ring-primary w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2"
                       />
                     </div>
                     <div>
-                      <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                      <label className="text-foreground mb-2 block text-sm font-medium">
                         {t('depreciationRate')} (%)
                       </label>
                       <input
@@ -1897,7 +1897,7 @@ export default function AssetsPage() {
                             depreciationRate: parseFloat(e.target.value) || 0,
                           })
                         }
-                        className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                        className="border-border bg-background text-foreground focus:ring-primary w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2"
                         placeholder="0"
                         min="0"
                         max="100"
@@ -1905,7 +1905,7 @@ export default function AssetsPage() {
                     </div>
                   </div>
                   <div>
-                    <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <label className="text-foreground mb-2 block text-sm font-medium">
                       {t('description')}
                     </label>
                     <textarea
@@ -1916,7 +1916,7 @@ export default function AssetsPage() {
                           description: e.target.value,
                         })
                       }
-                      className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                      className="border-border bg-background text-foreground focus:ring-primary w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2"
                       rows={3}
                       placeholder={t('optionalDescriptionPlaceholder')}
                     />
@@ -1925,7 +1925,7 @@ export default function AssetsPage() {
               ) : (
                 <>
                   <div>
-                    <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <label className="text-foreground mb-2 block text-sm font-medium">
                       {t('totalAmount')} (৳)
                     </label>
                     <input
@@ -1937,12 +1937,12 @@ export default function AssetsPage() {
                           amount: parseFloat(e.target.value) || 0,
                         })
                       }
-                      className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                      className="border-border bg-background text-foreground focus:ring-primary w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2"
                       placeholder="0"
                     />
                   </div>
                   <div>
-                    <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <label className="text-foreground mb-2 block text-sm font-medium">
                       {t('dueDate')}
                     </label>
                     <input
@@ -1951,11 +1951,11 @@ export default function AssetsPage() {
                       onChange={(e) =>
                         setFormData({ ...formData, dueDate: e.target.value })
                       }
-                      className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                      className="border-border bg-background text-foreground focus:ring-primary w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2"
                     />
                   </div>
                   <div>
-                    <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <label className="text-foreground mb-2 block text-sm font-medium">
                       {t('description')}
                     </label>
                     <textarea
@@ -1966,7 +1966,7 @@ export default function AssetsPage() {
                           description: e.target.value,
                         })
                       }
-                      className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                      className="border-border bg-background text-foreground focus:ring-primary w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2"
                       rows={3}
                       placeholder={t('optionalDescriptionPlaceholder')}
                     />
@@ -1978,7 +1978,7 @@ export default function AssetsPage() {
             <div className="mt-6 flex justify-end space-x-3">
               <button
                 onClick={closeModal}
-                className="text-muted-foreground hover:bg-muted/50 rounded-lg border border-gray-300 px-4 py-2 dark:border-gray-600"
+                className="border-border text-muted-foreground hover:bg-muted/50 rounded-lg border px-4 py-2"
               >
                 {t('cancel')}
               </button>
@@ -1990,8 +1990,8 @@ export default function AssetsPage() {
                   (modalType === 'asset' && formData.value <= 0) ||
                   (modalType === 'liability' && formData.amount <= 0)
                 }
-                className={`rounded-lg px-4 py-2 text-white hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50 ${
-                  modalType === 'asset' ? 'bg-blue-600' : 'bg-red-600'
+                className={`text-primary-foreground rounded-lg px-4 py-2 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50 ${
+                  modalType === 'asset' ? 'bg-primary' : 'bg-destructive'
                 }`}
               >
                 {editingItem ? t('edit') : t('add')}{' '}

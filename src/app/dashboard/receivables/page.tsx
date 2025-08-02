@@ -391,7 +391,7 @@ export default function ReceivablesPage() {
       case 'CURRENT':
         return 'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-200';
       case 'DUE_SOON':
-        return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-200';
+        return 'bg-orange-100 text-orange-800 dark:bg-orange-900/50 dark:text-orange-200';
       case 'OVERDUE':
         return 'bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-200';
       default:
@@ -739,7 +739,7 @@ export default function ReceivablesPage() {
             {t('recalculate')} {t('receivables')}
           </button>
           <button
-            className="flex items-center rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+            className="bg-primary text-primary-foreground hover:bg-primary/90 flex items-center rounded-lg px-4 py-2"
             onClick={() =>
               toast({
                 title: t('comingSoon'),
@@ -756,30 +756,28 @@ export default function ReceivablesPage() {
 
       {/* Validation Error Banner */}
       {validationErrors.length > 0 && (
-        <div className="rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-700 dark:bg-red-900/20">
+        <div className="border-destructive/20 bg-destructive/10 rounded-lg border p-4">
           <div className="mb-2 flex items-center">
-            <AlertCircle className="mr-2 h-5 w-5 text-red-500" />
-            <span className="font-medium text-red-800 dark:text-red-200">
+            <AlertCircle className="text-destructive mr-2 h-5 w-5" />
+            <span className="text-foreground font-medium">
               ⚠️ বৈধতা ত্রুটি: {t('customerReceivablesDontMatch')}
               sales-based totals
             </span>
           </div>
           <div className="ml-7 space-y-2">
-            <p className="mb-2 text-xs text-red-600 dark:text-red-400">
+            <p className="text-muted-foreground mb-2 text-xs">
               {t('driverTotalReceivablesFromSales')}.{' '}
               {t('customerReceivableTotalsMustEqual')}.
             </p>
             {validationErrors.map((error) => (
               <div
                 key={error.driverId}
-                className="rounded bg-red-100 p-2 text-sm dark:bg-red-900/30"
+                className="bg-muted/50 rounded p-2 text-sm"
               >
-                <strong className="text-red-800 dark:text-red-200">
-                  {error.driverName}:
-                </strong>
+                <strong className="text-foreground">{error.driverName}:</strong>
                 {error.cashMismatch && (
                   <div className="ml-2 mt-1">
-                    <span className="text-red-700 dark:text-red-300">
+                    <span className="text-muted-foreground">
                       💰 {t('cashMismatch')}: {t('customerTotal')}{' '}
                       {formatCurrency(error.cashMismatch.customer)} ≠{' '}
                       {t('salesTotal')}{' '}
@@ -797,7 +795,7 @@ export default function ReceivablesPage() {
                 )}
                 {error.cylinderMismatch && (
                   <div className="ml-2 mt-1">
-                    <span className="text-red-700 dark:text-red-300">
+                    <span className="text-muted-foreground">
                       🛢️ {t('cylinderMismatch')}: {t('customerTotal')}{' '}
                       {error.cylinderMismatch.customer} ≠ {t('salesTotal')}{' '}
                       {error.cylinderMismatch.sales}
@@ -812,14 +810,14 @@ export default function ReceivablesPage() {
                 {error.sizeValidationErrors &&
                   error.sizeValidationErrors.length > 0 && (
                     <div className="ml-2 mt-1">
-                      <span className="text-red-700 dark:text-red-300">
+                      <span className="text-muted-foreground">
                         📏 সাইজ অনুযায়ী বৈধতা ত্রুটি:
                       </span>
                       <div className="ml-4 mt-1 space-y-1">
                         {error.sizeValidationErrors.map((sizeError, index) => (
                           <div
                             key={index}
-                            className="text-xs text-red-600 dark:text-red-400"
+                            className="text-muted-foreground text-xs"
                           >
                             • {sizeError.size}: গ্রাহক রেকর্ড{' '}
                             {sizeError.customer} ≠ প্রত্যাশিত{' '}
@@ -845,10 +843,10 @@ export default function ReceivablesPage() {
 
       {/* Alert Banner */}
       {overdueCustomers.length > 0 && (
-        <div className="rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-700 dark:bg-red-900/20">
+        <div className="border-destructive/20 bg-destructive/10 rounded-lg border p-4">
           <div className="flex items-center">
-            <AlertCircle className="mr-2 h-5 w-5 text-red-500" />
-            <span className="font-medium text-red-800 dark:text-red-200">
+            <AlertCircle className="text-destructive mr-2 h-5 w-5" />
+            <span className="text-foreground font-medium">
               {overdueCustomers.length} {t('customersWithOverduePayments')}
               totaling {formatCurrency(overdueAmount)} {t('requireImmediate')}
               attention
@@ -858,10 +856,10 @@ export default function ReceivablesPage() {
       )}
 
       {/* System Information Banner */}
-      <div className="rounded-lg border border-blue-200 bg-blue-50 p-4 dark:border-blue-700 dark:bg-blue-900/20">
+      <div className="border-border bg-muted/30 rounded-lg border p-4">
         <div className="flex items-start">
           <AlertCircle className="mr-2 mt-0.5 h-5 w-5 text-blue-500" />
-          <div className="text-blue-800 dark:text-blue-200">
+          <div className="text-foreground">
             <div className="mb-2 font-medium">
               📋 {t('receivablesManagementSystemRules')}:
             </div>
@@ -918,9 +916,7 @@ export default function ReceivablesPage() {
               <p className="text-foreground text-2xl font-bold">
                 {formatCurrency(totalCashReceivables)}
               </p>
-              <p className="text-xs text-blue-600 dark:text-blue-400">
-                {t('fromSalesData')}
-              </p>
+              <p className="text-xs text-blue-500">{t('fromSalesData')}</p>
             </div>
           </div>
         </div>
@@ -1701,7 +1697,7 @@ export default function ReceivablesPage() {
 
             <div className="space-y-4">
               <div>
-                <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                <label className="text-foreground mb-2 block text-sm font-medium">
                   {t('customers')} {t('name')} *
                 </label>
                 <input
@@ -1713,13 +1709,13 @@ export default function ReceivablesPage() {
                       customerName: e.target.value,
                     })
                   }
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                  className="border-border bg-background text-foreground focus:ring-primary w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2"
                   placeholder={t('customerNamePlaceholder')}
                 />
               </div>
 
               <div>
-                <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                <label className="text-foreground mb-2 block text-sm font-medium">
                   {t('receivableType')} *
                 </label>
                 <select
@@ -1730,7 +1726,7 @@ export default function ReceivablesPage() {
                       receivableType: e.target.value as 'CASH' | 'CYLINDER',
                     })
                   }
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                  className="border-border bg-background text-foreground focus:ring-primary w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2"
                 >
                   <option value="CASH">{t('cashReceivable')}</option>
                   <option value="CYLINDER">{t('cylinderReceivable')}</option>
@@ -1739,7 +1735,7 @@ export default function ReceivablesPage() {
 
               {customerFormData.receivableType === 'CASH' && (
                 <div>
-                  <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                  <label className="text-foreground mb-2 block text-sm font-medium">
                     {t('amount')} (৳) *
                   </label>
                   <input
@@ -1751,7 +1747,7 @@ export default function ReceivablesPage() {
                         amount: parseFloat(e.target.value) || 0,
                       })
                     }
-                    className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                    className="border-border bg-background text-foreground focus:ring-primary w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2"
                     placeholder={t('enterPaymentAmount')}
                   />
                 </div>
@@ -1760,7 +1756,7 @@ export default function ReceivablesPage() {
               {customerFormData.receivableType === 'CYLINDER' && (
                 <>
                   <div>
-                    <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <label className="text-foreground mb-2 block text-sm font-medium">
                       Cylinder Size *
                     </label>
                     <select
@@ -1771,7 +1767,7 @@ export default function ReceivablesPage() {
                           size: e.target.value,
                         })
                       }
-                      className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                      className="border-border bg-background text-foreground focus:ring-primary w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2"
                     >
                       <option value="">Select cylinder size</option>
                       {cylinderSizes.map((size) => (
@@ -1782,7 +1778,7 @@ export default function ReceivablesPage() {
                     </select>
                   </div>
                   <div>
-                    <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <label className="text-foreground mb-2 block text-sm font-medium">
                       Quantity *
                     </label>
                     <input
@@ -1794,7 +1790,7 @@ export default function ReceivablesPage() {
                           quantity: parseInt(e.target.value) || 0,
                         })
                       }
-                      className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                      className="border-border bg-background text-foreground focus:ring-primary w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2"
                       placeholder={t('enterNumberOfCylinders')}
                     />
                   </div>
@@ -1802,7 +1798,7 @@ export default function ReceivablesPage() {
               )}
 
               <div>
-                <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                <label className="text-foreground mb-2 block text-sm font-medium">
                   {t('dueDate')}
                 </label>
                 <input
@@ -1814,12 +1810,12 @@ export default function ReceivablesPage() {
                       dueDate: e.target.value,
                     })
                   }
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                  className="border-border bg-background text-foreground focus:ring-primary w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2"
                 />
               </div>
 
               <div>
-                <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                <label className="text-foreground mb-2 block text-sm font-medium">
                   {t('notes')}
                 </label>
                 <textarea
@@ -1831,7 +1827,7 @@ export default function ReceivablesPage() {
                     })
                   }
                   rows={3}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                  className="border-border bg-background text-foreground focus:ring-primary w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2"
                   placeholder={t('enterNotes')}
                 />
               </div>
@@ -1840,7 +1836,7 @@ export default function ReceivablesPage() {
             <div className="mt-6 flex justify-end space-x-3">
               <button
                 onClick={() => setIsCustomerModalOpen(false)}
-                className="text-muted-foreground hover:bg-muted/50 rounded-lg border border-gray-300 px-4 py-2 dark:border-gray-600"
+                className="border-border text-muted-foreground hover:bg-muted/50 rounded-lg border px-4 py-2"
               >
                 {t('cancel')}
               </button>
@@ -1895,7 +1891,7 @@ export default function ReceivablesPage() {
 
             <div className="space-y-4">
               <div>
-                <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                <label className="text-foreground mb-2 block text-sm font-medium">
                   Payment Amount (৳) *
                 </label>
                 <input
@@ -1908,13 +1904,13 @@ export default function ReceivablesPage() {
                     })
                   }
                   max={selectedCustomer.amount}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                  className="border-border bg-background text-foreground focus:ring-primary w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2"
                   placeholder={t('enterPaymentAmount')}
                 />
               </div>
 
               <div>
-                <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                <label className="text-foreground mb-2 block text-sm font-medium">
                   Payment Method
                 </label>
                 <select
@@ -1925,7 +1921,7 @@ export default function ReceivablesPage() {
                       paymentMethod: e.target.value,
                     })
                   }
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                  className="border-border bg-background text-foreground focus:ring-primary w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2"
                 >
                   <option value="cash">{t('cash')}</option>
                   <option value="bank_transfer">{t('bankTransfer')}</option>
@@ -1935,7 +1931,7 @@ export default function ReceivablesPage() {
               </div>
 
               <div>
-                <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                <label className="text-foreground mb-2 block text-sm font-medium">
                   Notes
                 </label>
                 <textarea
@@ -1944,7 +1940,7 @@ export default function ReceivablesPage() {
                     setPaymentData({ ...paymentData, notes: e.target.value })
                   }
                   rows={3}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                  className="border-border bg-background text-foreground focus:ring-primary w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2"
                   placeholder="Add payment notes..."
                 />
               </div>
@@ -1953,7 +1949,7 @@ export default function ReceivablesPage() {
             <div className="mt-6 flex justify-end space-x-3">
               <button
                 onClick={() => setIsPaymentModalOpen(false)}
-                className="text-muted-foreground hover:bg-muted/50 rounded-lg border border-gray-300 px-4 py-2 dark:border-gray-600"
+                className="border-border text-muted-foreground hover:bg-muted/50 rounded-lg border px-4 py-2"
               >
                 Cancel
               </button>
@@ -2004,7 +2000,7 @@ export default function ReceivablesPage() {
 
             <div className="space-y-4">
               <div>
-                <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                <label className="text-foreground mb-2 block text-sm font-medium">
                   Cylinders Returned *
                 </label>
                 <input
@@ -2018,13 +2014,13 @@ export default function ReceivablesPage() {
                   }
                   min="1"
                   max={selectedCustomer.quantity}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                  className="border-border bg-background text-foreground focus:ring-primary w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2"
                   placeholder={t('enterNumberOfCylinders')}
                 />
               </div>
 
               <div>
-                <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                <label className="text-foreground mb-2 block text-sm font-medium">
                   Notes
                 </label>
                 <textarea
@@ -2036,7 +2032,7 @@ export default function ReceivablesPage() {
                     })
                   }
                   rows={3}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                  className="border-border bg-background text-foreground focus:ring-primary w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2"
                   placeholder="Add return notes..."
                 />
               </div>
@@ -2045,7 +2041,7 @@ export default function ReceivablesPage() {
             <div className="mt-6 flex justify-end space-x-3">
               <button
                 onClick={() => setIsCylinderReturnModalOpen(false)}
-                className="text-muted-foreground hover:bg-muted/50 rounded-lg border border-gray-300 px-4 py-2 dark:border-gray-600"
+                className="border-border text-muted-foreground hover:bg-muted/50 rounded-lg border px-4 py-2"
               >
                 Cancel
               </button>

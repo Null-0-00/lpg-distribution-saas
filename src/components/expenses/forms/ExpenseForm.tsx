@@ -140,9 +140,7 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
     <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black bg-opacity-50 p-4">
       <div className="bg-card max-h-[90vh] w-full max-w-md overflow-y-auto rounded-lg shadow-xl">
         <div className="border-border flex items-center justify-between border-b p-6">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-            {title}
-          </h2>
+          <h2 className="text-foreground text-xl font-semibold">{title}</h2>
           <button
             onClick={handleClose}
             className="text-muted-foreground hover:text-foreground"
@@ -154,7 +152,7 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
         <form onSubmit={handleSubmit} className="space-y-4 p-6">
           {/* Amount */}
           <div>
-            <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+            <label className="text-foreground mb-2 block text-sm font-medium">
               {t('amount')} *
             </label>
             <input
@@ -165,38 +163,32 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
               onChange={(e) =>
                 handleInputChange('amount', parseFloat(e.target.value) || 0)
               }
-              className={`w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white ${
-                errors.amount
-                  ? 'border-red-500'
-                  : 'border-gray-300 dark:border-gray-600'
+              className={`bg-background text-foreground focus:ring-primary w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 ${
+                errors.amount ? 'border-destructive' : 'border-border'
               }`}
               placeholder={t('amountPlaceholder')}
             />
             {errors.amount && (
-              <p className="mt-1 text-sm text-red-600 dark:text-red-400">
-                {errors.amount}
-              </p>
+              <p className="text-destructive mt-1 text-sm">{errors.amount}</p>
             )}
           </div>
 
           {/* Description */}
           <div>
-            <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+            <label className="text-foreground mb-2 block text-sm font-medium">
               {t('description')}
             </label>
             <input
               type="text"
               value={formData.description}
               onChange={(e) => handleInputChange('description', e.target.value)}
-              className={`w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white ${
-                errors.description
-                  ? 'border-red-500'
-                  : 'border-gray-300 dark:border-gray-600'
+              className={`bg-background text-foreground focus:ring-primary w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 ${
+                errors.description ? 'border-destructive' : 'border-border'
               }`}
               placeholder={t('enterExpenseDescription')}
             />
             {errors.description && (
-              <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+              <p className="text-destructive mt-1 text-sm">
                 {errors.description}
               </p>
             )}
@@ -204,7 +196,7 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
 
           {/* Parent Category */}
           <div>
-            <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+            <label className="text-foreground mb-2 block text-sm font-medium">
               {t('parentCategory')} *
             </label>
             <select
@@ -215,10 +207,8 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
                   e.target.value
                 )
               }
-              className={`w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white ${
-                errors.parentCategoryId
-                  ? 'border-red-500'
-                  : 'border-gray-300 dark:border-gray-600'
+              className={`bg-background text-foreground focus:ring-primary w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 ${
+                errors.parentCategoryId ? 'border-destructive' : 'border-border'
               }`}
             >
               <option value="">{t('selectParentCategory')}</option>
@@ -229,7 +219,7 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
               ))}
             </select>
             {errors.parentCategoryId && (
-              <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+              <p className="text-destructive mt-1 text-sm">
                 {errors.parentCategoryId}
               </p>
             )}
@@ -237,17 +227,15 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
 
           {/* Category */}
           <div>
-            <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+            <label className="text-foreground mb-2 block text-sm font-medium">
               {t('category')} *
             </label>
             <select
               value={formData.categoryId}
               onChange={(e) => handleInputChange('categoryId', e.target.value)}
               disabled={!formData.parentCategoryId}
-              className={`w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white ${
-                errors.categoryId
-                  ? 'border-red-500'
-                  : 'border-gray-300 dark:border-gray-600'
+              className={`bg-background text-foreground focus:ring-primary w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 ${
+                errors.categoryId ? 'border-destructive' : 'border-border'
               }`}
             >
               <option value="">{t('selectCategory')}</option>
@@ -258,7 +246,7 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
               ))}
             </select>
             {errors.categoryId && (
-              <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+              <p className="text-destructive mt-1 text-sm">
                 {errors.categoryId}
               </p>
             )}
@@ -266,10 +254,10 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
 
           {/* Expense Date */}
           <div>
-            <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+            <label className="text-foreground mb-2 block text-sm font-medium">
               {t('expenseDate')} *
               {!isAdmin && (
-                <span className="ml-1 text-xs text-gray-500">
+                <span className="text-muted-foreground ml-1 text-xs">
                   ({t('fixedToToday')})
                 </span>
               )}
@@ -279,14 +267,12 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
               value={formData.expenseDate}
               disabled={!isAdmin}
               onChange={(e) => handleInputChange('expenseDate', e.target.value)}
-              className={`w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white ${
-                errors.expenseDate
-                  ? 'border-red-500'
-                  : 'border-gray-300 dark:border-gray-600'
-              } ${!isAdmin ? 'cursor-not-allowed bg-gray-100 dark:bg-gray-600' : ''}`}
+              className={`bg-background text-foreground focus:ring-primary w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 ${
+                errors.expenseDate ? 'border-destructive' : 'border-border'
+              } ${!isAdmin ? 'bg-muted cursor-not-allowed' : ''}`}
             />
             {errors.expenseDate && (
-              <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+              <p className="text-destructive mt-1 text-sm">
                 {errors.expenseDate}
               </p>
             )}
@@ -294,22 +280,20 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
 
           {/* Receipt URL */}
           <div>
-            <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+            <label className="text-foreground mb-2 block text-sm font-medium">
               {t('receiptUrl')}
             </label>
             <input
               type="url"
               value={formData.receiptUrl || ''}
               onChange={(e) => handleInputChange('receiptUrl', e.target.value)}
-              className={`w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white ${
-                errors.receiptUrl
-                  ? 'border-red-500'
-                  : 'border-gray-300 dark:border-gray-600'
+              className={`bg-background text-foreground focus:ring-primary w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 ${
+                errors.receiptUrl ? 'border-destructive' : 'border-border'
               }`}
               placeholder={t('receiptUrlPlaceholder')}
             />
             {errors.receiptUrl && (
-              <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+              <p className="text-destructive mt-1 text-sm">
                 {errors.receiptUrl}
               </p>
             )}
@@ -317,29 +301,25 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
 
           {/* Notes */}
           <div>
-            <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+            <label className="text-foreground mb-2 block text-sm font-medium">
               {t('notes')}
             </label>
             <textarea
               value={formData.notes || ''}
               onChange={(e) => handleInputChange('notes', e.target.value)}
               rows={3}
-              className={`w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white ${
-                errors.notes
-                  ? 'border-red-500'
-                  : 'border-gray-300 dark:border-gray-600'
+              className={`bg-background text-foreground focus:ring-primary w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 ${
+                errors.notes ? 'border-destructive' : 'border-border'
               }`}
               placeholder={t('additionalNotesComments')}
             />
             {errors.notes && (
-              <p className="mt-1 text-sm text-red-600 dark:text-red-400">
-                {errors.notes}
-              </p>
+              <p className="text-destructive mt-1 text-sm">{errors.notes}</p>
             )}
           </div>
 
           {/* Form Actions */}
-          <div className="flex justify-end space-x-3 border-t border-gray-200 pt-4 dark:border-gray-700">
+          <div className="border-border flex justify-end space-x-3 border-t pt-4">
             <button
               type="button"
               onClick={handleClose}
@@ -350,7 +330,7 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
             <button
               type="submit"
               disabled={isSubmitting}
-              className="flex items-center rounded-md bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+              className="bg-primary text-primary-foreground hover:bg-primary/90 flex items-center rounded-md px-4 py-2 transition-colors disabled:cursor-not-allowed disabled:opacity-50"
             >
               {isSubmitting ? (
                 <>

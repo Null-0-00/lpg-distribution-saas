@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { getToken } from 'next-auth/jwt';
+import { auth } from '@/auth';
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -40,24 +40,19 @@ export async function middleware(request: NextRequest) {
       return NextResponse.next();
     }
 
-    // Get the token from the request with proper secret
-    const token = await getToken({
-      req: request,
-      secret:
-        process.env.NEXTAUTH_SECRET ||
-        'dev-secret-key-at-least-32-characters-long-for-development',
-    });
+    // Get session using auth()
+    const session = await auth();
 
-    console.log('🎫 Middleware token check:', {
+    console.log('🎫 Middleware session check:', {
       path: pathname,
-      hasToken: !!token,
-      userId: token?.sub,
-      role: token?.role,
+      hasSession: !!session,
+      userId: session?.user?.id,
+      role: session?.user?.role,
     });
 
-    // If no token, redirect to login for protected routes
-    if (!token) {
-      console.log('❌ No token for protected route, redirecting to login');
+    // If no session, redirect to login for protected routes
+    if (!session?.user) {
+      console.log('❌ No session for protected route, redirecting to login');
       const loginUrl = new URL('/auth/login', request.url);
       loginUrl.searchParams.set('callbackUrl', pathname);
       return NextResponse.redirect(loginUrl);
@@ -68,7 +63,7 @@ export async function middleware(request: NextRequest) {
       pathname.startsWith('/super-admin') ||
       pathname.startsWith('/api/super-admin')
     ) {
-      if (!token || token.role !== 'SUPER_ADMIN') {
+      if (session.user.role !== 'SUPER_ADMIN') {
         console.log('❌ Super admin access denied, redirecting to login');
         const loginUrl = new URL('/auth/login', request.url);
         loginUrl.searchParams.set('callbackUrl', pathname);
@@ -81,14 +76,17 @@ export async function middleware(request: NextRequest) {
       pathname.startsWith('/dashboard/admin') ||
       pathname.startsWith('/api/admin')
     ) {
-      if (!token || token.role !== 'ADMIN') {
+      if (session.user.role !== 'ADMIN') {
         console.log('❌ Admin access denied, redirecting to dashboard');
         return NextResponse.redirect(new URL('/dashboard', request.url));
       }
     }
 
     // Check tenant approval status for regular dashboard access
-    if (pathname.startsWith('/dashboard') && token.role !== 'SUPER_ADMIN') {
+    if (
+      pathname.startsWith('/dashboard') &&
+      session.user.role !== 'SUPER_ADMIN'
+    ) {
       // For non-super admin users, check if their tenant is approved
       // This will be handled by the dashboard page itself to avoid database calls in middleware
     }
@@ -108,7 +106,7 @@ export async function middleware(request: NextRequest) {
     );
 
     // Add cache control for authenticated routes
-    if (token && pathname.startsWith('/dashboard')) {
+    if (session?.user && pathname.startsWith('/dashboard')) {
       response.headers.set('Cache-Control', 'no-store, must-revalidate');
     }
 

@@ -1,16 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getToken } from 'next-auth/jwt';
+import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 
 export async function GET(request: NextRequest) {
   try {
     // Verify super admin access
-    const token = await getToken({
-      req: request,
-      secret: process.env.NEXTAUTH_SECRET,
-    });
+    const session = await auth();
 
-    if (!token || token.role !== 'SUPER_ADMIN') {
+    if (!session?.user || session.user.role !== 'SUPER_ADMIN') {
       return NextResponse.json(
         { error: 'Super admin access required' },
         { status: 403 }

@@ -9,20 +9,20 @@ import { useSettings } from '@/contexts/SettingsContext';
 
 const getDescriptionKey = (pageId: string): string => {
   const descriptionMap: Record<string, string> = {
-    'dashboard': 'mainDashboardOverview',
+    dashboard: 'mainDashboardOverview',
     'daily-sales-report': 'viewDailySalesReports',
-    'inventory': 'manageInventoryAndStockLevels',
-    'analytics': 'businessAnalyticsAndInsights',
-    'sales': 'manageSalesTransactions',
-    'receivables': 'trackCustomerReceivables',
-    'expenses': 'manageBusinessExpenses',
-    'shipments': 'trackShipmentsAndDeliveries',
-    'assets': 'manageCompanyAssets',
-    'drivers': 'manageDriversAndAssignments',
+    inventory: 'manageInventoryAndStockLevels',
+    analytics: 'businessAnalyticsAndInsights',
+    sales: 'manageSalesTransactions',
+    receivables: 'trackCustomerReceivables',
+    expenses: 'manageBusinessExpenses',
+    shipments: 'trackShipmentsAndDeliveries',
+    assets: 'manageCompanyAssets',
+    drivers: 'manageDriversAndAssignments',
     'product-management': 'manageProductsAndPricing',
-    'reports': 'generateBusinessReports',
-    'users': 'manageSystemUsers',
-    'settings': 'systemSettingsAndConfiguration',
+    reports: 'generateBusinessReports',
+    users: 'manageSystemUsers',
+    settings: 'systemSettingsAndConfiguration',
   };
   return descriptionMap[pageId] || pageId;
 };
@@ -225,8 +225,8 @@ export const PagePermissionsSelector: React.FC<
 
       <div className="mt-4 rounded-lg bg-blue-50 p-3 dark:bg-blue-900/20">
         <div className="text-sm text-blue-800 dark:text-blue-300">
-          <strong>{t('selected')}:</strong> {selectedPermissions.length} {t('of')}{' '}
-          {AVAILABLE_PAGES.length} {t('pages')}
+          <strong>{t('selected')}:</strong> {selectedPermissions.length}{' '}
+          {t('of')} {AVAILABLE_PAGES.length} {t('pages')}
         </div>
       </div>
     </div>

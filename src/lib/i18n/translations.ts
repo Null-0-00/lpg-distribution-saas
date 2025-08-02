@@ -469,7 +469,6 @@ export interface Translations {
   driverAddedSuccessfully: string;
   driverDeletedSuccessfully: string;
   driverDetails: string;
-  driverManagement: string;
   driverName: string;
   driverType: string;
   driverUpdatedSuccessfully: string;
@@ -1481,6 +1480,46 @@ export interface Translations {
   noEmptyCylindersAvailable: string;
   noEmptyCylindersOfSizeAvailable: string;
   automatedInventoryCalculationsForCylinders: string;
+
+  // Homepage specific translations
+  modernLpgDistributionPlatform: string;
+  streamlineYourOperations: string;
+  powerfulFeaturesForModernLpg: string;
+  everythingYouNeedToManage: string;
+  driverManagement: string;
+  manageDriverAssignments: string;
+  realTimeAnalytics: string;
+  getInstantInsights: string;
+  secureAndCompliant: string;
+  enterpriseGradeSecurity: string;
+  whyChooseOurPlatform: string;
+  builtSpecificallyForLpg: string;
+  industrySpecificSolutions: string;
+  purposeBuiltForLpg: string;
+  automatedBusinessLogic: string;
+  exactFormulasFor: string;
+  multiTenantArchitecture: string;
+  secureIsolatedData: string;
+  saveTimeAndReduceErrors: string;
+  eliminateManualCalculations: string;
+  increaseProfitability: string;
+  optimizeOperations: string;
+  comprehensiveReporting: string;
+  generateDetailedReports: string;
+  readyToTransformYourBusiness: string;
+  joinHundredsOfDistributors: string;
+  startFreeTrial: string;
+
+  // Trust indicators
+  activeDistributors: string;
+  uptime: string;
+  transactions: string;
+  support: string;
+
+  // Feature descriptions extensions
+  trackPerformanceManageTerritories: string;
+  realTimeStockMonitoring: string;
+  incomeStatementsBalanceSheets: string;
 }
 
 const englishTranslations: Translations = {
@@ -2101,7 +2140,6 @@ const englishTranslations: Translations = {
   driverAddedSuccessfully: 'চালক সফলভাবে যোগ করা হয়েছে।',
   driverDeletedSuccessfully: 'চালক সফলভাবে মুছে ফেলা হয়েছে।',
   driverDetails: 'চালকের বিবরণ',
-  driverManagement: 'Driver Management',
   driverName: 'Driver Name',
   driverType: 'Driver Type',
   driverUpdatedSuccessfully: 'চালকের তথ্য সফলভাবে আপডেট করা হয়েছে।',
@@ -2921,6 +2959,63 @@ const englishTranslations: Translations = {
   selectLanguage: 'Select Language',
   english: 'English',
   bengali: 'Bengali',
+
+  // Homepage specific translations
+  modernLpgDistributionPlatform: 'Modern LPG Distribution Platform',
+  streamlineYourOperations:
+    'Streamline your operations with real-time analytics, automated calculations, and comprehensive reporting.',
+  powerfulFeaturesForModernLpg: 'Powerful Features for Modern LPG Distribution',
+  everythingYouNeedToManage:
+    'Everything you need to manage your LPG distribution business efficiently and profitably.',
+  driverManagement: 'Driver Management',
+  manageDriverAssignments:
+    'Manage driver assignments, track performance, and optimize delivery routes efficiently.',
+  realTimeAnalytics: 'Real-time Analytics',
+  getInstantInsights:
+    'Get instant insights with live dashboards, performance metrics, and predictive analytics.',
+  secureAndCompliant: 'Secure & Compliant',
+  enterpriseGradeSecurity:
+    'Enterprise-grade security with audit trails, user permissions, and regulatory compliance.',
+  whyChooseOurPlatform: 'Why Choose Our Platform?',
+  builtSpecificallyForLpg:
+    'Built specifically for LPG distributors, by industry experts who understand your business.',
+  industrySpecificSolutions: 'Industry-Specific Solutions',
+  purposeBuiltForLpg:
+    'Purpose-built for LPG distribution with features like cylinder tracking, refill management, and regulatory reporting.',
+  automatedBusinessLogic: 'Automated Business Logic',
+  exactFormulasFor:
+    'Exact formulas for inventory calculations, receivables tracking, and financial reporting that ensure accuracy.',
+  multiTenantArchitecture: 'Multi-tenant Architecture',
+  secureIsolatedData:
+    'Secure, isolated data for each distributor with role-based access control and audit trails.',
+  saveTimeAndReduceErrors: 'Save Time & Reduce Errors',
+  eliminateManualCalculations:
+    'Eliminate manual calculations and reduce human errors with automated processes and real-time validation.',
+  increaseProfitability: 'Increase Profitability',
+  optimizeOperations:
+    'Optimize operations, reduce wastage, and make data-driven decisions to improve your bottom line.',
+  comprehensiveReporting: 'Comprehensive Reporting',
+  generateDetailedReports:
+    'Generate detailed reports for stakeholders, regulatory compliance, and business intelligence.',
+  readyToTransformYourBusiness:
+    'Ready to Transform Your LPG Distribution Business?',
+  joinHundredsOfDistributors:
+    'Join distributors who have already modernized their operations with our platform.',
+  startFreeTrial: 'Start Free Trial',
+
+  // Trust indicators
+  activeDistributors: 'Active Distributors',
+  uptime: 'Uptime',
+  transactions: 'Transactions',
+  support: 'Support',
+
+  // Feature descriptions extensions
+  trackPerformanceManageTerritories:
+    'Track performance, manage territories, and optimize revenue streams.',
+  realTimeStockMonitoring:
+    'Real-time stock monitoring and intelligent reorder alerts.',
+  incomeStatementsBalanceSheets:
+    'Income statements, balance sheets, and cash flow analysis.',
 };
 
 const bengaliTranslations: Translations = {
@@ -3626,7 +3721,6 @@ const bengaliTranslations: Translations = {
   driverAddedSuccessfully: 'চালক সফলভাবে যোগ করা হয়েছে।',
   driverDeletedSuccessfully: 'চালক সফলভাবে মুছে ফেলা হয়েছে।',
   driverDetails: 'চালকের বিবরণ',
-  driverManagement: 'চালক ব্যবস্থাপনা',
   driverName: 'চালকের নাম',
   driverType: 'চালকের ধরন',
   driverUpdatedSuccessfully: 'চালকের তথ্য সফলভাবে আপডেট করা হয়েছে।',
@@ -4393,6 +4487,64 @@ const bengaliTranslations: Translations = {
   selectLanguage: 'ভাষা নির্বাচন করুন',
   english: 'ইংরেজি',
   bengali: 'বাংলা',
+
+  // Homepage specific translations
+  modernLpgDistributionPlatform: 'আধুনিক এলপিজি বিতরণ প্ল্যাটফর্ম',
+  streamlineYourOperations:
+    'রিয়েল-টাইম অ্যানালিটিক্স, স্বয়ংক্রিয় গণনা এবং বিস্তৃত প্রতিবেদনের সাথে আপনার কার্যক্রম সুশৃঙ্খল করুন।',
+  powerfulFeaturesForModernLpg:
+    'আধুনিক এলপিজি বিতরণের জন্য শক্তিশালী বৈশিষ্ট্য',
+  everythingYouNeedToManage:
+    'আপনার এলপিজি বিতরণ ব্যবসা দক্ষতার সাথে এবং লাভজনকভাবে পরিচালনা করার জন্য আপনার প্রয়োজনীয় সবকিছু।',
+  driverManagement: 'চালক ব্যবস্থাপনা',
+  manageDriverAssignments:
+    'চালক নিয়োগ পরিচালনা করুন, কর্মক্ষমতা ট্র্যাক করুন এবং ডেলিভারি রুট দক্ষতার সাথে অপ্টিমাইজ করুন।',
+  realTimeAnalytics: 'রিয়েল-টাইম অ্যানালিটিক্স',
+  getInstantInsights:
+    'লাইভ ড্যাশবোর্ড, কর্মক্ষমতা মেট্রিক্স এবং ভবিষ্যদ্বাণীমূলক বিশ্লেষণের সাথে তাৎক্ষণিক অন্তর্দৃষ্টি পান।',
+  secureAndCompliant: 'নিরাপদ এবং সম্মতিপূর্ণ',
+  enterpriseGradeSecurity:
+    'অডিট ট্রেইল, ব্যবহারকারীর অনুমতি এবং নিয়ন্ত্রক সম্মতি সহ এন্টারপ্রাইজ-গ্রেড নিরাপত্তা।',
+  whyChooseOurPlatform: 'কেন আমাদের প্ল্যাটফর্ম বেছে নেবেন?',
+  builtSpecificallyForLpg:
+    'এলপিজি বিতরণকারীদের জন্য বিশেষভাবে তৈরি, শিল্প বিশেষজ্ঞদের দ্বারা যারা আপনার ব্যবসা বোঝেন।',
+  industrySpecificSolutions: 'শিল্প-নির্দিষ্ট সমাধান',
+  purposeBuiltForLpg:
+    'সিলিন্ডার ট্র্যাকিং, রিফিল ব্যবস্থাপনা এবং নিয়ন্ত্রক প্রতিবেদনের মতো বৈশিষ্ট্য সহ এলপিজি বিতরণের জন্য উদ্দেশ্য-নির্মিত।',
+  automatedBusinessLogic: 'স্বয়ংক্রিয় ব্যবসায়িক যুক্তি',
+  exactFormulasFor:
+    'ইনভেন্টরি গণনা, প্রাপ্য ট্র্যাকিং এবং আর্থিক প্রতিবেদনের জন্য সঠিক সূত্র যা নির্ভুলতা নিশ্চিত করে।',
+  multiTenantArchitecture: 'মাল্টি-টেন্যান্ট আর্কিটেকচার',
+  secureIsolatedData:
+    'ভূমিকা-ভিত্তিক অ্যাক্সেস নিয়ন্ত্রণ এবং অডিট ট্রেইল সহ প্রতিটি বিতরণকারীর জন্য নিরাপদ, বিচ্ছিন্ন ডেটা।',
+  saveTimeAndReduceErrors: 'সময় সাশ্রয় করুন এবং ত্রুটি কমান',
+  eliminateManualCalculations:
+    'স্বয়ংক্রিয় প্রক্রিয়া এবং রিয়েল-টাইম বৈধতার সাথে ম্যানুয়াল গণনা দূর করুন এবং মানুষের ত্রুটি কমান।',
+  increaseProfitability: 'লাভজনকতা বৃদ্ধি করুন',
+  optimizeOperations:
+    'অপারেশন অপ্টিমাইজ করুন, অপচয় হ্রাস করুন এবং আপনার মুনাফা উন্নত করতে ডেটা-চালিত সিদ্ধান্ত নিন।',
+  comprehensiveReporting: 'ব্যাপক প্রতিবেদন',
+  generateDetailedReports:
+    'স্টেকহোল্ডার, নিয়ন্ত্রক সম্মতি এবং ব্যবসায়িক বুদ্ধিমত্তার জন্য বিস্তারিত প্রতিবেদন তৈরি করুন।',
+  readyToTransformYourBusiness:
+    'আপনার এলপিজি বিতরণ ব্যবসা রূপান্তরিত করতে প্রস্তুত?',
+  joinHundredsOfDistributors:
+    'বিতরণকারীদের সাথে যোগ দিন যারা ইতিমধ্যে আমাদের প্ল্যাটফর্মের সাথে তাদের অপারেশন আধুনিকীকরণ করেছেন।',
+  startFreeTrial: 'বিনামূল্যে ট্রায়াল শুরু করুন',
+
+  // Trust indicators
+  activeDistributors: 'সক্রিয় বিতরণকারী',
+  uptime: 'আপটাইম',
+  transactions: 'লেনদেন',
+  support: 'সহায়তা',
+
+  // Feature descriptions extensions
+  trackPerformanceManageTerritories:
+    'কর্মক্ষমতা ট্র্যাক করুন, এলাকা পরিচালনা করুন এবং আয়ের ধারা অনুকূল করুন।',
+  realTimeStockMonitoring:
+    'রিয়েল-টাইম স্টক মনিটরিং এবং বুদ্ধিমান পুনর্বার সতর্কতা।',
+  incomeStatementsBalanceSheets:
+    'আয়ের বিবৃতি, ব্যালেন্স শীট এবং নগদ প্রবাহ বিশ্লেষণ।',
 };
 
 const translationMap: Record<string, Translations> = {

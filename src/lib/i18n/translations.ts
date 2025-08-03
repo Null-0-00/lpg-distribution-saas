@@ -20,6 +20,7 @@ export interface Translations {
   settings: string;
   inventory: string;
   users: string;
+  customerManagement: string;
   reports: string;
   productManagement: string;
   dailySalesReport: string;
@@ -1534,6 +1535,7 @@ const englishTranslations: Translations = {
   settings: 'Settings',
   inventory: 'Inventory',
   users: 'Users',
+  customerManagement: 'Customer Management',
   reports: 'Reports',
   productManagement: 'Product Management',
   dailySalesReport: 'Daily Sales Report',
@@ -3030,6 +3032,7 @@ const bengaliTranslations: Translations = {
   settings: 'সেটিংস',
 
   users: 'ব্যবহারকারী',
+  customerManagement: 'গ্রাহক ব্যবস্থাপনা',
   reports: 'রিপোর্ট',
   productManagement: 'পণ্য ব্যবস্থাপনা',
   dailySalesReport: 'দৈনিক বিক্রয় রিপোর্ট',

@@ -1,0 +1,132 @@
+// Add these models to your main schema.prisma file
+
+// Messaging Provider Configuration
+model MessageProvider {
+  id              String            @id @default(cuid())
+  tenantId        String
+  name            String            // 'whatsapp', 'sms', 'email'
+  type            MessageType       
+  config          Json              // API keys, webhook URLs, etc.
+  isActive        Boolean           @default(true)
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  tenant          Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  messageTemplates MessageTemplate[]
+  sentMessages    SentMessage[]
+
+  @@unique([tenantId, name])
+  @@index([tenantId])
+  @@map("message_providers")
+}
+
+// Message Templates
+model MessageTemplate {
+  id                String            @id @default(cuid())
+  tenantId          String
+  providerId        String
+  name              String
+  triggerType       MessageTrigger   
+  language          String            @default("bn")
+  subject           String?           // For email
+  bodyTemplate      String            // Template with variables like {{amount}}, {{driverName}}
+  isActive          Boolean           @default(true)
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  tenant            Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  provider          MessageProvider   @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  sentMessages      SentMessage[]
+
+  @@unique([tenantId, name, triggerType])
+  @@index([tenantId])
+  @@index([triggerType])
+  @@map("message_templates")
+}
+
+// Message Queue & Sent Messages
+model SentMessage {
+  id              String              @id @default(cuid())
+  tenantId        String
+  templateId      String
+  providerId      String
+  recipientType   RecipientType       
+  recipientId     String              // driverId for drivers, customerId for customers
+  recipientPhone  String
+  recipientName   String
+  triggerType     MessageTrigger      
+  triggerData     Json                // Original data that triggered the message
+  messageContent  String              // Final rendered message
+  status          MessageStatus       @default(PENDING)
+  externalId      String?             // Provider's message ID
+  sentAt          DateTime?
+  deliveredAt     DateTime?
+  readAt          DateTime?
+  failedAt        DateTime?
+  retryCount      Int                 @default(0)
+  error           String?
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+  tenant          Tenant              @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  template        MessageTemplate     @relation(fields: [templateId], references: [id])
+  provider        MessageProvider     @relation(fields: [providerId], references: [id])
+
+  @@index([tenantId])
+  @@index([status])
+  @@index([triggerType])
+  @@index([recipientId])
+  @@index([createdAt])
+  @@map("sent_messages")
+}
+
+// Messaging Settings
+model MessagingSettings {
+  id                    String    @id @default(cuid())
+  tenantId              String    @unique
+  isEnabled             Boolean   @default(true)
+  allowWhatsApp         Boolean   @default(true)
+  allowSMS              Boolean   @default(true)
+  allowEmail            Boolean   @default(false)
+  dailyMessageLimit     Int       @default(1000)
+  retryAttempts         Int       @default(3)
+  retryDelayMinutes     Int       @default(5)
+  quietHoursStart       String?   @default("22:00")
+  quietHoursEnd         String?   @default("08:00")
+  timezone              String    @default("Asia/Dhaka")
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+  tenant                Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("messaging_settings")
+}
+
+// Enums
+enum MessageType {
+  WHATSAPP
+  SMS
+  EMAIL
+}
+
+enum MessageTrigger {
+  RECEIVABLES_INCREASE
+  RECEIVABLES_DECREASE
+  RECEIVABLES_PAYMENT
+  RECEIVABLES_OVERDUE
+  DAILY_SUMMARY
+  WEEKLY_SUMMARY
+  CUSTOM
+}
+
+enum RecipientType {
+  DRIVER
+  CUSTOMER
+  ADMIN
+}
+
+enum MessageStatus {
+  PENDING
+  QUEUED
+  SENT
+  DELIVERED
+  READ
+  FAILED
+  CANCELLED
+}

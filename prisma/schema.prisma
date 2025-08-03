@@ -64,6 +64,13 @@ model Tenant {
   securityAuditLogs             SecurityAuditLog[]
   shipments                     Shipment[]
   users                         User[]
+  areas                         Area[]
+  customers                     Customer[]
+  customerReceivableRecords     CustomerReceivableRecord[]
+  messageProviders              MessageProvider[]
+  messagingSettings             MessagingSettings?
+  messageTemplates              MessageTemplate[]
+  sentMessages                  SentMessage[]
 
   @@map("tenants")
 }
@@ -269,6 +276,8 @@ model Driver {
   purchaseOrders              PurchaseOrder[]
   receivableRecords           ReceivableRecord[]
   sales                       Sale[]
+  customers                   Customer[]
+  customerReceivableRecords   CustomerReceivableRecord[]
 
   @@unique([tenantId, phone])
   @@index([tenantId])
@@ -283,6 +292,7 @@ model Sale {
   driverId           String
   productId          String
   userId             String
+  customerId         String?
   customerName       String?
   saleType           SaleType
   quantity           Int
@@ -299,6 +309,7 @@ model Sale {
   saleDate           DateTime    @default(now())
   createdAt          DateTime    @default(now())
   updatedAt          DateTime    @updatedAt
+  customer           Customer?   @relation(fields: [customerId], references: [id], onDelete: SetNull)
   driver             Driver      @relation(fields: [driverId], references: [id], onDelete: Cascade)
   product            Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
   tenant             Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
@@ -312,6 +323,7 @@ model Sale {
   @@index([paymentType])
   @@index([driverId])
   @@index([productId])
+  @@index([customerId])
   @@index([tenantId, driverId, saleDate])
   @@index([tenantId, saleType])
   @@index([tenantId, isOnCredit])
@@ -498,6 +510,80 @@ model CustomerReceivable {
   @@index([customerName])
   @@index([status])
   @@map("customer_receivables")
+}
+
+model Area {
+  id          String     @id @default(cuid())
+  tenantId    String
+  name        String
+  code        String?
+  description String?
+  isActive    Boolean    @default(true)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  tenant      Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  customers   Customer[]
+
+  @@unique([tenantId, name])
+  @@unique([tenantId, code])
+  @@index([tenantId])
+  @@index([tenantId, isActive])
+  @@map("areas")
+}
+
+model Customer {
+  id                        String                     @id @default(cuid())
+  tenantId                  String
+  areaId                    String
+  driverId                  String?
+  name                      String
+  customerCode              String?
+  phone                     String?
+  alternatePhone            String?
+  address                   String?
+  customerType              CustomerType               @default(RETAIL)
+  isActive                  Boolean                    @default(true)
+  notes                     String?
+  createdAt                 DateTime                   @default(now())
+  updatedAt                 DateTime                   @updatedAt
+  area                      Area                       @relation(fields: [areaId], references: [id], onDelete: Cascade)
+  driver                    Driver?                    @relation(fields: [driverId], references: [id], onDelete: SetNull)
+  tenant                    Tenant                     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  sales                     Sale[]
+  customerReceivableRecords CustomerReceivableRecord[]
+
+  @@unique([tenantId, customerCode])
+  @@unique([tenantId, phone])
+  @@index([tenantId])
+  @@index([areaId])
+  @@index([driverId])
+  @@index([tenantId, isActive])
+  @@index([customerType])
+  @@map("customers")
+}
+
+model CustomerReceivableRecord {
+  id                  String    @id @default(cuid())
+  tenantId            String
+  customerId          String
+  driverId            String?
+  date                DateTime  @db.Date
+  cashReceivables     Float     @default(0)
+  cylinderReceivables Float     @default(0)
+  totalReceivables    Float     @default(0)
+  notes               String?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+  customer            Customer  @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  driver              Driver?   @relation(fields: [driverId], references: [id], onDelete: SetNull)
+  tenant              Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, customerId, date], name: "tenantId_customerId_date")
+  @@index([tenantId])
+  @@index([customerId])
+  @@index([driverId])
+  @@index([date])
+  @@map("customer_receivable_records")
 }
 
 model Asset {
@@ -1096,6 +1182,136 @@ enum TenantApprovalStatus {
   APPROVED
   REJECTED
   SUSPENDED
+}
+
+enum CustomerType {
+  RETAIL
+  WHOLESALE
+  COMMERCIAL
+}
+
+enum MessageType {
+  SMS
+  WHATSAPP
+  EMAIL
+}
+
+enum MessageTrigger {
+  RECEIVABLES_CHANGE
+  PAYMENT_RECEIVED
+  CYLINDER_RETURN
+  OVERDUE_REMINDER
+  SALE_CONFIRMATION
+  MANUAL
+}
+
+enum RecipientType {
+  CUSTOMER
+  DRIVER
+  ADMIN
+}
+
+enum MessageStatus {
+  PENDING
+  SENT
+  DELIVERED
+  FAILED
+  CANCELLED
+}
+
+enum MessageProviderType {
+  WHATSAPP_BUSINESS
+  SMS_PROVIDER
+  EMAIL_PROVIDER
+}
+
+model MessageProvider {
+  id                String              @id @default(cuid())
+  tenantId          String
+  name              String
+  type              MessageProviderType
+  config            Json
+  isActive          Boolean             @default(true)
+  isDefault         Boolean             @default(false)
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  tenant            Tenant              @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  messageTemplates  MessageTemplate[]
+  sentMessages      SentMessage[]
+
+  @@unique([tenantId, name])
+  @@index([tenantId, isActive])
+  @@map("message_providers")
+}
+
+model MessagingSettings {
+  id                            String   @id @default(cuid())
+  tenantId                      String   @unique
+  whatsappEnabled               Boolean  @default(true)
+  smsEnabled                    Boolean  @default(true)
+  emailEnabled                  Boolean  @default(false)
+  receivablesNotificationsEnabled Boolean @default(true)
+  paymentNotificationsEnabled   Boolean  @default(true)
+  overdueRemindersEnabled       Boolean  @default(true)
+  createdAt                     DateTime @default(now())
+  updatedAt                     DateTime @updatedAt
+  tenant                        Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("messaging_settings")
+}
+
+model MessageTemplate {
+  id               String            @id @default(cuid())
+  tenantId         String
+  providerId       String
+  name             String
+  trigger          MessageTrigger
+  messageType      MessageType
+  template         String
+  variables        Json
+  isActive         Boolean           @default(true)
+  isDefault        Boolean           @default(false)
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  tenant           Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  provider         MessageProvider   @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  sentMessages     SentMessage[]
+
+  @@unique([tenantId, trigger, messageType])
+  @@index([tenantId, isActive])
+  @@index([trigger])
+  @@map("message_templates")
+}
+
+model SentMessage {
+  id           String         @id @default(cuid())
+  tenantId     String
+  templateId   String?
+  providerId   String
+  recipientId  String?
+  recipientType RecipientType
+  phoneNumber  String
+  message      String
+  status       MessageStatus  @default(PENDING)
+  trigger      MessageTrigger
+  messageType  MessageType
+  metadata     Json?
+  sentAt       DateTime?
+  deliveredAt  DateTime?
+  failedAt     DateTime?
+  errorMessage String?
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  tenant       Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  template     MessageTemplate? @relation(fields: [templateId], references: [id], onDelete: SetNull)
+  provider     MessageProvider @relation(fields: [providerId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, status])
+  @@index([recipientId, recipientType])
+  @@index([phoneNumber])
+  @@index([trigger])
+  @@index([createdAt])
+  @@map("sent_messages")
 }
 
 // NextAuth.js Models

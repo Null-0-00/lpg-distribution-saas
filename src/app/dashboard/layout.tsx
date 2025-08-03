@@ -23,6 +23,7 @@ import {
   BarChart3,
   Calculator,
   LogOut,
+  UserCheck,
 } from 'lucide-react';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
 import { useSettings } from '@/contexts/SettingsContext';
@@ -95,6 +96,12 @@ const getNavigation = (
     href: '/dashboard/drivers',
     icon: Truck,
     pageId: 'drivers',
+  },
+  {
+    name: t('customerManagement'),
+    href: '/dashboard/customer-management',
+    icon: UserCheck,
+    pageId: 'customer-management',
   },
   {
     name: t('productManagement'),

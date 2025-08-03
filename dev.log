@@ -1,0 +1,16 @@
+
+> lpg-distributor-saas@1.0.0 dev
+> next dev
+
+ ⚠ Port 3000 is in use, using available port 3001 instead.
+   ▲ Next.js 15.3.5
+   - Local:        http://localhost:3001
+   - Network:      http://172.21.64.1:3001
+   - Environments: .env.development, .env
+   - Experiments (use with caution):
+     ✓ optimizeCss
+
+ ✓ Starting...
+   Disabled SWC as replacement for Babel because of custom Babel configuration "babel.config.js" https://nextjs.org/docs/messages/swc-disabled
+   `compiler` options in `next.config.js` will be ignored while using Babel https://nextjs.org/docs/messages/ignored-compiler-options
+ ✓ Ready in 1906ms

@@ -177,6 +177,8 @@ export default function ReceivablesPage() {
     useState<CustomerReceivable | null>(null);
 
   const [customerFormData, setCustomerFormData] = useState({
+    areaId: '',
+    customerId: '',
     customerName: '',
     receivableType: 'CASH' as 'CASH' | 'CYLINDER',
     amount: 0,
@@ -185,6 +187,21 @@ export default function ReceivablesPage() {
     dueDate: '',
     notes: '',
   });
+
+  // New state for area/customer management
+  const [areas, setAreas] = useState<
+    Array<{ id: string; name: string; code?: string }>
+  >([]);
+  const [areaCustomers, setAreaCustomers] = useState<
+    Array<{
+      id: string;
+      name: string;
+      customerCode?: string;
+      area: { name: string };
+    }>
+  >([]);
+  const [loadingAreas, setLoadingAreas] = useState(false);
+  const [loadingCustomers, setLoadingCustomers] = useState(false);
 
   const [paymentData, setPaymentData] = useState({
     amount: 0,
@@ -228,6 +245,7 @@ export default function ReceivablesPage() {
 
     initializePage();
     fetchCylinderSizes();
+    fetchAreas(); // Fetch areas for dropdown
   }, []);
 
   useEffect(() => {
@@ -247,6 +265,88 @@ export default function ReceivablesPage() {
       console.error(t('failedToFetchCylinderSizes'), error);
     }
   };
+
+  const fetchAreas = async () => {
+    try {
+      setLoadingAreas(true);
+      const response = await fetch('/api/areas');
+      if (response.ok) {
+        const data = await response.json();
+        setAreas(data);
+      } else {
+        toast({
+          title: t('error'),
+          description: 'Failed to fetch areas',
+          variant: 'destructive',
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching areas:', error);
+      toast({
+        title: t('error'),
+        description: 'Failed to fetch areas',
+        variant: 'destructive',
+      });
+    } finally {
+      setLoadingAreas(false);
+    }
+  };
+
+  const fetchCustomersByArea = async (areaId: string) => {
+    if (!areaId || areaId === 'all') {
+      // Fetch all customers from all areas
+      try {
+        setLoadingCustomers(true);
+        const response = await fetch('/api/customers');
+        if (response.ok) {
+          const data = await response.json();
+          setAreaCustomers(data);
+        }
+      } catch (error) {
+        console.error('Error fetching all customers:', error);
+      } finally {
+        setLoadingCustomers(false);
+      }
+      return;
+    }
+
+    try {
+      setLoadingCustomers(true);
+      const response = await fetch(`/api/customers?areaId=${areaId}`);
+      if (response.ok) {
+        const data = await response.json();
+        setAreaCustomers(data);
+      } else {
+        toast({
+          title: t('error'),
+          description: 'Failed to fetch customers',
+          variant: 'destructive',
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching customers:', error);
+      toast({
+        title: t('error'),
+        description: 'Failed to fetch customers',
+        variant: 'destructive',
+      });
+    } finally {
+      setLoadingCustomers(false);
+    }
+  };
+
+  // Handle area change
+  useEffect(() => {
+    if (customerFormData.areaId) {
+      fetchCustomersByArea(customerFormData.areaId);
+      // Reset customer selection when area changes
+      setCustomerFormData((prev) => ({
+        ...prev,
+        customerId: '',
+        customerName: '',
+      }));
+    }
+  }, [customerFormData.areaId]);
 
   const fetchReceivables = async () => {
     try {
@@ -435,6 +535,8 @@ export default function ReceivablesPage() {
     if (customer) {
       setEditingCustomer(customer);
       setCustomerFormData({
+        areaId: '',
+        customerId: '',
         customerName: customer.customerName,
         receivableType: customer.receivableType,
         amount: customer.amount,
@@ -446,6 +548,8 @@ export default function ReceivablesPage() {
     } else {
       setEditingCustomer(null);
       setCustomerFormData({
+        areaId: 'all', // Default to "all areas"
+        customerId: '',
         customerName: '',
         receivableType: 'CASH',
         amount: 0,
@@ -454,6 +558,8 @@ export default function ReceivablesPage() {
         dueDate: '',
         notes: '',
       });
+      // Load all customers when opening modal for new entry
+      fetchCustomersByArea('all');
     }
     setIsCustomerModalOpen(true);
   };
@@ -478,10 +584,20 @@ export default function ReceivablesPage() {
   };
 
   const handleSaveCustomer = async () => {
-    if (!selectedDriver || !customerFormData.customerName) return;
+    if (!selectedDriver || (!customerFormData.customerId && !editingCustomer))
+      return;
 
     try {
       setSubmitting(true);
+
+      // Get customer name from selected customer
+      let customerName = customerFormData.customerName;
+      if (customerFormData.customerId && !editingCustomer) {
+        const selectedCustomer = areaCustomers.find(
+          (c) => c.id === customerFormData.customerId
+        );
+        customerName = selectedCustomer?.name || '';
+      }
 
       const url = editingCustomer
         ? `/api/receivables/customers/${editingCustomer.id}`
@@ -496,7 +612,8 @@ export default function ReceivablesPage() {
         },
         body: JSON.stringify({
           driverId: selectedDriver,
-          customerName: customerFormData.customerName,
+          customerId: customerFormData.customerId || null,
+          customerName: customerName,
           receivableType: customerFormData.receivableType,
           amount: customerFormData.amount,
           quantity: customerFormData.quantity,
@@ -1690,22 +1807,88 @@ export default function ReceivablesPage() {
             </div>
 
             <div className="space-y-4">
+              {/* Area Selection */}
+              <div>
+                <label className="text-foreground mb-2 block text-sm font-medium">
+                  {t('area')} *
+                </label>
+                <select
+                  value={customerFormData.areaId}
+                  onChange={(e) =>
+                    setCustomerFormData({
+                      ...customerFormData,
+                      areaId: e.target.value,
+                    })
+                  }
+                  className="border-border bg-background text-foreground focus:ring-primary w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2"
+                  disabled={!!editingCustomer || loadingAreas}
+                >
+                  <option value="all">সব এলাকা (All Areas)</option>
+                  {areas.map((area) => (
+                    <option key={area.id} value={area.id}>
+                      {area.name} {area.code && `(${area.code})`}
+                    </option>
+                  ))}
+                </select>
+                {loadingAreas && (
+                  <p className="text-muted-foreground mt-1 text-xs">
+                    Loading areas...
+                  </p>
+                )}
+              </div>
+
+              {/* Customer Selection */}
               <div>
                 <label className="text-foreground mb-2 block text-sm font-medium">
                   {t('customers')} {t('name')} *
                 </label>
-                <input
-                  type="text"
-                  value={customerFormData.customerName}
-                  onChange={(e) =>
-                    setCustomerFormData({
-                      ...customerFormData,
-                      customerName: e.target.value,
-                    })
-                  }
-                  className="border-border bg-background text-foreground focus:ring-primary w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2"
-                  placeholder={t('customerNamePlaceholder')}
-                />
+                {editingCustomer ? (
+                  <input
+                    type="text"
+                    value={customerFormData.customerName}
+                    className="border-border bg-muted text-foreground w-full rounded-lg border px-3 py-2"
+                    disabled
+                    placeholder="Editing existing customer"
+                  />
+                ) : (
+                  <select
+                    value={customerFormData.customerId}
+                    onChange={(e) => {
+                      const selectedCustomer = areaCustomers.find(
+                        (c) => c.id === e.target.value
+                      );
+                      setCustomerFormData({
+                        ...customerFormData,
+                        customerId: e.target.value,
+                        customerName: selectedCustomer?.name || '',
+                      });
+                    }}
+                    className="border-border bg-background text-foreground focus:ring-primary w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2"
+                    disabled={loadingCustomers}
+                  >
+                    <option value="">Select customer</option>
+                    {areaCustomers.map((customer) => (
+                      <option key={customer.id} value={customer.id}>
+                        {customer.name}
+                        {customer.customerCode && ` (${customer.customerCode})`}
+                        {customer.area && ` - ${customer.area.name}`}
+                      </option>
+                    ))}
+                  </select>
+                )}
+                {loadingCustomers && (
+                  <p className="text-muted-foreground mt-1 text-xs">
+                    Loading customers...
+                  </p>
+                )}
+                {!loadingCustomers &&
+                  areaCustomers.length === 0 &&
+                  customerFormData.areaId &&
+                  customerFormData.areaId !== 'all' && (
+                    <p className="text-muted-foreground mt-1 text-xs">
+                      No customers found in selected area
+                    </p>
+                  )}
               </div>
 
               <div>
@@ -1838,7 +2021,8 @@ export default function ReceivablesPage() {
                 onClick={handleSaveCustomer}
                 disabled={
                   submitting ||
-                  !customerFormData.customerName ||
+                  (!editingCustomer && !customerFormData.customerId) ||
+                  (editingCustomer && !customerFormData.customerName) ||
                   (customerFormData.receivableType === 'CASH' &&
                     customerFormData.amount <= 0) ||
                   (customerFormData.receivableType === 'CYLINDER' &&

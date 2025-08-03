@@ -1,0 +1,113 @@
+// Customer Management Schema
+// Add these models to your main schema.prisma file
+
+// Areas for organizing customers geographically
+model Area {
+  id          String     @id @default(cuid())
+  tenantId    String
+  name        String     // e.g., "Dhanmondi", "Gulshan", "Uttara"
+  code        String?    // Short code like "DH", "GS", "UT"
+  description String?
+  isActive    Boolean    @default(true)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  tenant      Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  customers   Customer[]
+
+  @@unique([tenantId, name])
+  @@unique([tenantId, code])
+  @@index([tenantId])
+  @@index([tenantId, isActive])
+  @@map("areas")
+}
+
+// Customers who buy LPG
+model Customer {
+  id                      String                   @id @default(cuid())
+  tenantId                String
+  areaId                  String
+  driverId                String                   // Which driver serves this customer
+  name                    String
+  phone                   String?                  // For messaging
+  alternatePhone          String?
+  address                 String?
+  customerCode            String?                  // Unique code like "DH001", "GS025"
+  customerType            CustomerType             @default(RETAIL)
+  isActive                Boolean                  @default(true)
+  notes                   String?
+  createdAt               DateTime                 @default(now())
+  updatedAt               DateTime                 @updatedAt
+  tenant                  Tenant                   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  area                    Area                     @relation(fields: [areaId], references: [id], onDelete: Cascade)
+  driver                  Driver                   @relation(fields: [driverId], references: [id], onDelete: Cascade)
+  customerReceivables     CustomerReceivableRecord[]
+  sales                   Sale[]                   @relation("CustomerSales")
+
+  @@unique([tenantId, customerCode])
+  @@index([tenantId])
+  @@index([areaId])
+  @@index([driverId])
+  @@index([tenantId, isActive])
+  @@index([tenantId, driverId])
+  @@index([phone])
+  @@map("customers")
+}
+
+// Customer Receivables - Track what each customer owes
+model CustomerReceivableRecord {
+  id                   String   @id @default(cuid())
+  tenantId             String
+  customerId           String
+  driverId             String
+  date                 DateTime @db.Date
+  cashReceivables      Float    @default(0)
+  cylinderReceivables  Float    @default(0)
+  totalReceivables     Float    @default(0) // Computed field
+  notes                String?
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+  tenant               Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  customer             Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  driver               Driver   @relation(fields: [driverId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, customerId, date])
+  @@index([tenantId])
+  @@index([customerId])
+  @@index([driverId])
+  @@index([date])
+  @@index([tenantId, driverId, date])
+  @@map("customer_receivable_records")
+}
+
+// Enhanced Sales model to include customer
+// You'll need to add these fields to your existing Sale model:
+/*
+  customerId String?
+  customer   Customer? @relation("CustomerSales", fields: [customerId], references: [id])
+  @@index([customerId])
+*/
+
+// Customer Types
+enum CustomerType {
+  RETAIL      // Individual customers
+  COMMERCIAL  // Restaurants, shops
+  INDUSTRIAL  // Factories, large businesses
+}
+
+// Update your existing Driver model to include the customer relationship:
+/*
+Add to Driver model:
+customers               Customer[]
+customerReceivables     CustomerReceivableRecord[]
+*/
+
+// Update MessageTemplate and SentMessage models:
+/*
+Add to MessageTemplate:
+customerTriggers Boolean @default(false) // Whether this template is for customer notifications
+
+Add to SentMessage:
+customerId String? // For customer messages
+customer   Customer? @relation(fields: [customerId], references: [id])
+@@index([customerId])
+*/

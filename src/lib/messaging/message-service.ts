@@ -70,10 +70,230 @@ export class MessageService {
   }
 
   /**
+   * Auto-initialize messaging for a tenant if not already set up
+   */
+  private async ensureTenantMessagingSetup(tenantId: string): Promise<void> {
+    try {
+      // Check if provider already exists for this tenant
+      if (this.whatsappProviders.has(tenantId)) {
+        return; // Already set up
+      }
+
+      // Check if provider exists in database
+      let provider = await prisma.messageProvider.findFirst({
+        where: {
+          tenantId,
+          isActive: true,
+          type: MessageProviderType.WHATSAPP_BUSINESS,
+        },
+      });
+
+      if (!provider) {
+        // Auto-create Evolution API provider for this tenant
+        console.log(
+          `🔧 Auto-creating messaging provider for tenant: ${tenantId}`
+        );
+
+        provider = await prisma.messageProvider.create({
+          data: {
+            tenantId,
+            name: 'Evolution API',
+            type: MessageProviderType.WHATSAPP_BUSINESS,
+            config: {
+              provider: 'evolution',
+              apiUrl:
+                process.env.EVOLUTION_API_URL ||
+                'http://evo-p8okkk0840kg40o0o44w4gck.173.249.28.62.sslip.io/',
+              apiKey:
+                process.env.EVOLUTION_API_KEY ||
+                'nJjnWgllihDFnx2FRk3yyIdvi5NUUFl7',
+              instanceName: process.env.EVOLUTION_INSTANCE_NAME || 'lpgapp',
+              webhookUrl:
+                process.env.EVOLUTION_WEBHOOK_URL ||
+                'http://localhost:3000/api/messaging/evolution/webhook',
+              fromNumber: process.env.EVOLUTION_INSTANCE_NAME || 'lpgapp',
+            },
+            isActive: true,
+            isDefault: true,
+          },
+        });
+
+        // Create messaging settings
+        await prisma.messagingSettings.upsert({
+          where: { tenantId },
+          update: {
+            whatsappEnabled: true,
+            receivablesNotificationsEnabled: true,
+            paymentNotificationsEnabled: true,
+            overdueRemindersEnabled: true,
+          },
+          create: {
+            tenantId,
+            whatsappEnabled: true,
+            smsEnabled: false,
+            emailEnabled: false,
+            receivablesNotificationsEnabled: true,
+            paymentNotificationsEnabled: true,
+            overdueRemindersEnabled: true,
+          },
+        });
+
+        // Create default templates
+        await this.createDefaultTemplates(tenantId, provider.id);
+
+        console.log(`✅ Messaging setup completed for tenant: ${tenantId}`);
+      }
+
+      // Initialize provider in memory
+      const config = provider.config as unknown as WhatsAppConfig;
+      this.whatsappProviders.set(tenantId, new WhatsAppProvider(config));
+    } catch (error) {
+      console.error(
+        `Error setting up messaging for tenant ${tenantId}:`,
+        error
+      );
+    }
+  }
+
+  /**
+   * Create default message templates for a tenant
+   */
+  private async createDefaultTemplates(
+    tenantId: string,
+    providerId: string
+  ): Promise<void> {
+    const templates = [
+      {
+        name: 'Customer Receivables Change',
+        trigger: MessageTrigger.RECEIVABLES_CHANGE,
+        messageType: MessageType.WHATSAPP,
+        template: `🔔 *বকেয়া আপডেট*
+
+প্রিয় {{customerName}},
+
+আপনার বকেয়া তথ্য আপডেট হয়েছে:
+
+পুরাতন বকেয়া: {{oldAmount}}
+নতুন বকেয়া: {{newAmount}}
+পরিবর্তন: {{change}} ({{changeType}})
+
+নগদ বকেয়া: {{cashAmount}}
+সিলিন্ডার বকেয়া: {{cylinderAmount}}
+
+এলাকা: {{areaName}}
+সময়: {{date}} {{time}}
+কারণ: {{changeReason}}
+
+*{{companyName}}*`,
+        variables: {
+          customerName: 'গ্রাহকের নাম',
+          oldAmount: 'পুরাতন বকেয়া',
+          newAmount: 'নতুন বকেয়া',
+          change: 'পরিবর্তন',
+          changeType: 'বৃদ্ধি/হ্রাস',
+          cashAmount: 'নগদ বকেয়া',
+          cylinderAmount: 'সিলিন্ডার বকেয়া',
+          areaName: 'এলাকার নাম',
+          date: 'তারিখ',
+          time: 'সময়',
+          changeReason: 'কারণ',
+          companyName: 'কোম্পানির নাম',
+        },
+      },
+      {
+        name: 'Payment Received Confirmation',
+        trigger: MessageTrigger.PAYMENT_RECEIVED,
+        messageType: MessageType.WHATSAPP,
+        template: `✅ *পেমেন্ট নিশ্চিতকরণ*
+
+প্রিয় {{customerName}},
+
+আপনার {{amount}} টাকার {{paymentType}} পেমেন্ট সফলভাবে গ্রহণ করা হয়েছে।
+
+গ্রহণকারী: {{receivedBy}}
+সময়: {{date}} {{time}}
+
+ধন্যবাদ!
+
+*{{companyName}}*`,
+        variables: {
+          customerName: 'গ্রাহকের নাম',
+          amount: 'পরিমাণ',
+          paymentType: 'পেমেন্ট প্রকার',
+          receivedBy: 'গ্রহণকারী',
+          date: 'তারিখ',
+          time: 'সময়',
+          companyName: 'কোম্পানির নাম',
+        },
+      },
+      {
+        name: 'Overdue Reminder',
+        trigger: MessageTrigger.OVERDUE_REMINDER,
+        messageType: MessageType.WHATSAPP,
+        template: `⚠️ *বকেয়া মনে করিয়ে দিন*
+
+প্রিয় {{customerName}},
+
+আপনার মোট বকেয়া {{amount}} টাকা।
+বকেয়ার মেয়াদ: {{daysOverdue}} দিন
+
+নগদ বকেয়া: {{cashAmount}}
+সিলিন্ডার বকেয়া: {{cylinderAmount}}
+
+অনুগ্রহ করে যত তাড়াতাড়ি সম্ভব পরিশোধ করুন।
+যোগাযোগ: {{contactNumber}}
+
+*{{companyName}}*`,
+        variables: {
+          customerName: 'গ্রাহকের নাম',
+          amount: 'মোট বকেয়া',
+          daysOverdue: 'বকেয়ার দিন',
+          cashAmount: 'নগদ বকেয়া',
+          cylinderAmount: 'সিলিন্ডার বকেয়া',
+          contactNumber: 'যোগাযোগ নম্বর',
+          companyName: 'কোম্পানির নাম',
+        },
+      },
+    ];
+
+    for (const template of templates) {
+      await prisma.messageTemplate.upsert({
+        where: {
+          tenantId_trigger_messageType: {
+            tenantId,
+            trigger: template.trigger,
+            messageType: template.messageType,
+          },
+        },
+        update: {
+          name: template.name,
+          template: template.template,
+          variables: template.variables,
+          isActive: true,
+        },
+        create: {
+          tenantId,
+          providerId,
+          name: template.name,
+          trigger: template.trigger,
+          messageType: template.messageType,
+          template: template.template,
+          variables: template.variables,
+          isActive: true,
+          isDefault: true,
+        },
+      });
+    }
+  }
+
+  /**
    * Send message for receivables update
    */
   async sendReceivablesMessage(data: MessageData): Promise<boolean> {
     try {
+      // Ensure messaging is set up for this tenant
+      await this.ensureTenantMessagingSetup(data.tenantId);
+
       // Check messaging settings
       const settings = await prisma.messagingSettings.findUnique({
         where: { tenantId: data.tenantId },
@@ -247,7 +467,8 @@ export class MessageService {
           messageType,
           metadata: data.triggerData,
           status: MessageStatus.FAILED,
-          errorMessage: error instanceof Error ? error.message : 'Unknown error',
+          errorMessage:
+            error instanceof Error ? error.message : 'Unknown error',
         },
       });
 
@@ -372,7 +593,8 @@ export class MessageService {
           where: { id: message.id },
           data: {
             // Note: retryCount field removed from schema
-            errorMessage: error instanceof Error ? error.message : 'Unknown error',
+            errorMessage:
+              error instanceof Error ? error.message : 'Unknown error',
           },
         });
       }

@@ -6,6 +6,7 @@ import { UserRole } from '@prisma/client';
 import { useSettings } from '@/contexts/SettingsContext';
 import { PagePermissionsSelector } from '@/components/users/PagePermissionsSelector';
 import { AVAILABLE_PAGES } from '@/lib/types/page-permissions';
+import Image from 'next/image';
 
 interface User {
   id: string;
@@ -498,11 +499,12 @@ export default function UsersPage() {
                       <div className="flex items-center">
                         <div className="h-10 w-10 flex-shrink-0">
                           {user.avatar ? (
-                            <img
+                            <Image
                               className="h-10 w-10 rounded-full"
                               src={user.avatar}
                               alt={user.name}
-                              loading="lazy"
+                              width={40}
+                              height={40}
                             />
                           ) : (
                             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100">

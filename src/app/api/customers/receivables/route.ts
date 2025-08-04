@@ -279,7 +279,7 @@ export async function POST(request: NextRequest) {
     // 🔔 TRIGGER CUSTOMER MESSAGING
     // Import and use the customer messaging service
     const { notifyCustomerReceivablesChange } = await import(
-      '@/lib/messaging/customer-messaging'
+      '@/lib/messaging/receivables-messaging'
     );
 
     await notifyCustomerReceivablesChange({
@@ -290,7 +290,6 @@ export async function POST(request: NextRequest) {
       oldCylinderReceivables: previousRecord?.cylinderReceivables || 0,
       newCylinderReceivables: data.cylinderReceivables,
       changeReason: 'Manual receivables update',
-      updatedBy: session.user.name || 'Admin',
     });
 
     return NextResponse.json(receivableRecord, {

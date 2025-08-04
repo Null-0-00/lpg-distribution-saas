@@ -554,6 +554,105 @@ export async function POST(request: NextRequest) {
       return receivable;
     });
 
+    // 🔔 TRIGGER CUSTOMER RECEIVABLES CHANGE MESSAGING
+    // Find the customer associated with this receivable
+    const customer = await prisma.customer.findFirst({
+      where: {
+        tenantId,
+        name: customerReceivable.customerName,
+        isActive: true,
+      },
+    });
+
+    if (customer && customer.phone) {
+      // Calculate new receivables totals - get all current receivables for this customer
+      const allReceivables = await prisma.customerReceivable.aggregate({
+        where: {
+          tenantId,
+          customerName: customer.name,
+          status: { not: 'PAID' },
+        },
+        _sum: {
+          amount: true,
+          quantity: true,
+        },
+      });
+
+      const newCashReceivables = allReceivables._sum.amount || 0;
+      const newCylinderReceivables = allReceivables._sum.quantity || 0;
+
+      // Calculate old receivables (subtract the just-added amounts)
+      const oldCashReceivables =
+        customerReceivable.receivableType === 'CASH'
+          ? newCashReceivables - customerReceivable.amount
+          : newCashReceivables;
+      const oldCylinderReceivables =
+        customerReceivable.receivableType === 'CYLINDER'
+          ? newCylinderReceivables - customerReceivable.quantity
+          : newCylinderReceivables;
+
+      // Get old and new cylinder receivables by size for messaging
+      const oldTotalCylinders = oldCylinderReceivables;
+      const newTotalCylinders = newCylinderReceivables;
+
+      // Calculate the change in cylinders to determine how to distribute old vs new
+      const cylinderChange = newTotalCylinders - oldTotalCylinders;
+
+      // Get current cylinder breakdown by size
+      const currentCylindersBySize = await prisma.customerReceivable.findMany({
+        where: {
+          tenantId,
+          customerName: customer.name,
+          receivableType: 'CYLINDER',
+          status: { not: 'PAID' },
+        },
+        select: { quantity: true, size: true },
+      });
+
+      const newCylinderSizeBreakdown: Record<string, number> = {};
+      currentCylindersBySize.forEach((receivable) => {
+        const size = receivable.size || '12L';
+        newCylinderSizeBreakdown[size] =
+          (newCylinderSizeBreakdown[size] || 0) + receivable.quantity;
+      });
+
+      // Calculate old cylinder breakdown (subtract the new receivable that was just added)
+      const oldCylinderSizeBreakdown: Record<string, number> = {
+        ...newCylinderSizeBreakdown,
+      };
+      if (customerReceivable.receivableType === 'CYLINDER') {
+        const size = customerReceivable.size || '12L';
+        oldCylinderSizeBreakdown[size] = Math.max(
+          0,
+          (oldCylinderSizeBreakdown[size] || 0) - customerReceivable.quantity
+        );
+        // Remove sizes with 0 quantity
+        if (oldCylinderSizeBreakdown[size] === 0) {
+          delete oldCylinderSizeBreakdown[size];
+        }
+      }
+
+      const { notifyCustomerReceivablesChangeWithSizeBreakdown } = await import(
+        '@/lib/messaging/receivables-messaging'
+      );
+
+      await notifyCustomerReceivablesChangeWithSizeBreakdown({
+        tenantId,
+        customerId: customer.id,
+        oldCashReceivables,
+        newCashReceivables,
+        oldCylinderReceivables,
+        newCylinderReceivables,
+        oldCylinderSizeBreakdown,
+        newCylinderSizeBreakdown,
+        changeReason: 'নতুন বকেয়া যোগ করা হয়েছে', // "New receivable added"
+      });
+    } else {
+      console.log(
+        `📞 Customer receivables change notification skipped - customer ${customerReceivable.customerName} not found or no phone`
+      );
+    }
+
     return NextResponse.json({
       success: true,
       customerReceivable: {

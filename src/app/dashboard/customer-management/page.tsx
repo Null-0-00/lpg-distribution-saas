@@ -16,6 +16,8 @@ import AreaManagement from '@/components/areas/AreaManagement';
 import CustomerManagement from '@/components/customers/CustomerManagement';
 import CustomerReceivablesForm from '@/components/customers/CustomerReceivablesForm';
 import CustomerReceivablesDisplay from '@/components/customers/CustomerReceivablesDisplay';
+import MessagingMetrics from '@/components/messaging/MessagingMetrics';
+import MessageLog from '@/components/messaging/MessageLog';
 
 type TabType = 'areas' | 'customers' | 'receivables' | 'messaging';
 
@@ -170,6 +172,17 @@ export default function CustomerManagementPage() {
 
           {activeTab === 'messaging' && (
             <div className="space-y-6">
+              {/* Messaging Metrics */}
+              <div className="bg-card rounded-lg border p-6">
+                <MessagingMetrics />
+              </div>
+
+              {/* Message Log */}
+              <div className="bg-card rounded-lg border p-6">
+                <MessageLog />
+              </div>
+
+              {/* Messaging Configuration */}
               <div className="bg-card rounded-lg border p-6">
                 <h3 className="text-foreground mb-4 text-lg font-semibold">
                   Messaging Configuration
@@ -194,7 +207,9 @@ export default function CustomerManagementPage() {
                         </span>
                       </div>
                       <div className="flex items-center justify-between rounded-lg bg-green-50 p-3 dark:bg-green-900/20">
-                        <span className="text-sm">Overdue Reminders</span>
+                        <span className="text-sm">
+                          Cylinder Return Confirmations
+                        </span>
                         <span className="text-sm font-medium text-green-600">
                           Active
                         </span>
@@ -239,7 +254,8 @@ export default function CustomerManagementPage() {
                       <p className="mt-1 text-sm text-yellow-700 dark:text-yellow-300">
                         All messaging services are configured and running.
                         Messages are automatically sent when customer
-                        receivables are updated. Phone numbers are required for
+                        receivables are updated, payments are received, or
+                        cylinders are returned. Phone numbers are required for
                         customers to receive notifications.
                       </p>
                     </div>

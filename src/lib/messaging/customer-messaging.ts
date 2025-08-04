@@ -75,8 +75,8 @@ export class CustomerMessaging {
         return;
       }
 
-      // Determine message trigger type  
-      let triggerType: MessageTrigger = MessageTrigger.RECEIVABLES_CHANGE;
+      // Determine message trigger type
+      const triggerType: MessageTrigger = MessageTrigger.RECEIVABLES_CHANGE;
 
       // Prepare template variables for customer messaging
       const templateVariables: TemplateVariables = {

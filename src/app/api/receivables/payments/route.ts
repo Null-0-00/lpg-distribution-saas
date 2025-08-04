@@ -143,7 +143,7 @@ export async function POST(request: NextRequest) {
         data: {
           tenantId,
           userId: session.user.id,
-          action: 'UPDATE',
+          action: 'PAYMENT',
           entityType: 'CustomerReceivable',
           entityId: customerReceivable.id,
           oldValues: {
@@ -169,6 +169,62 @@ export async function POST(request: NextRequest) {
       customerReceivable.driverId,
       today
     );
+
+    // 🔔 TRIGGER CUSTOMER PAYMENT MESSAGING
+    // Find the customer associated with this receivable
+    const customer = await prisma.customer.findFirst({
+      where: {
+        tenantId,
+        name: customerReceivable.customerName,
+        isActive: true,
+      },
+    });
+
+    if (customer && customer.phone) {
+      // Calculate updated receivables after payment by summing all remaining customer receivables
+      const remainingReceivables = await prisma.customerReceivable.aggregate({
+        where: {
+          tenantId,
+          customerName: customer.name,
+          receivableType: 'CASH',
+          status: { not: 'PAID' },
+        },
+        _sum: {
+          amount: true,
+          quantity: true,
+        },
+      });
+
+      const updatedCashReceivables = remainingReceivables._sum.amount || 0;
+      const updatedCylinderReceivables =
+        remainingReceivables._sum.quantity || 0;
+
+      // Get current user for "receivedBy"
+      const currentUser = await prisma.user.findUnique({
+        where: { id: session.user.id },
+        select: { name: true },
+      });
+
+      const { notifyCustomerPaymentReceived } = await import(
+        '@/lib/messaging/receivables-messaging'
+      );
+
+      await notifyCustomerPaymentReceived({
+        tenantId,
+        customerId: customer.id,
+        customerName: customer.name,
+        amount: data.amount,
+        paymentType: 'cash',
+        paymentId: customerReceivable.id,
+        updatedCashReceivables,
+        updatedCylinderReceivables,
+        receivedBy: currentUser?.name || 'অ্যাডমিন',
+      });
+    } else {
+      console.log(
+        `📞 Customer payment notification skipped - customer ${customerReceivable.customerName} not found or no phone`
+      );
+    }
 
     // Clear cache to force fresh data on next request
     receivablesCache.clear();

@@ -213,6 +213,66 @@ export async function POST(request: NextRequest) {
       today
     );
 
+    // CRITICAL FIX: Sync receivables record with actual customer receivables
+    await syncReceivablesWithCustomerReceivables(
+      tenantId,
+      customerReceivable.driverId
+    );
+
+    // 🔔 TRIGGER CUSTOMER CYLINDER RETURN MESSAGING
+    // Find the customer associated with this receivable
+    const customer = await prisma.customer.findFirst({
+      where: {
+        tenantId,
+        name: customerReceivable.customerName,
+        isActive: true,
+      },
+    });
+
+    if (customer && customer.phone) {
+      // Calculate updated receivables after cylinder return by summing all remaining customer receivables
+      const remainingReceivables = await prisma.customerReceivable.aggregate({
+        where: {
+          tenantId,
+          customerName: customer.name,
+          status: { not: 'PAID' },
+        },
+        _sum: {
+          amount: true,
+          quantity: true,
+        },
+      });
+
+      const updatedCashReceivables = remainingReceivables._sum.amount || 0;
+      const updatedCylinderReceivables =
+        remainingReceivables._sum.quantity || 0;
+
+      // Get current user for "receivedBy"
+      const currentUser = await prisma.user.findUnique({
+        where: { id: session.user.id },
+        select: { name: true },
+      });
+
+      const { notifyCustomerCylinderReturn } = await import(
+        '@/lib/messaging/receivables-messaging'
+      );
+
+      await notifyCustomerCylinderReturn({
+        tenantId,
+        customerId: customer.id,
+        customerName: customer.name,
+        quantity: data.quantity,
+        size: customerReceivable.size || '12L',
+        updatedCashReceivables,
+        updatedCylinderReceivables,
+        receivedBy: currentUser?.name || 'অ্যাডমিন',
+      });
+    } else {
+      console.log(
+        `📞 Customer cylinder return notification skipped - customer ${customerReceivable.customerName} not found or no phone`
+      );
+    }
+
     // Clear cache to force fresh data on next request
     receivablesCache.clear();
 
@@ -356,4 +416,76 @@ async function calculateDailyReceivablesForDate(
       totalCylinderReceivables,
     },
   });
+}
+
+// CRITICAL FIX: Sync receivables record with actual customer receivables
+async function syncReceivablesWithCustomerReceivables(
+  tenantId: string,
+  driverId: string
+) {
+  console.log(
+    `🔄 Syncing receivables record with customer receivables for driver ${driverId}`
+  );
+
+  // Get actual outstanding customer receivables
+  const customerReceivables = await prisma.customerReceivable.groupBy({
+    by: ['receivableType'],
+    where: {
+      tenantId,
+      driverId,
+      status: { not: 'PAID' },
+    },
+    _sum: {
+      amount: true,
+      quantity: true,
+    },
+  });
+
+  let actualCashReceivables = 0;
+  let actualCylinderReceivables = 0;
+
+  customerReceivables.forEach((group) => {
+    if (group.receivableType === 'CASH') {
+      actualCashReceivables = group._sum.amount || 0;
+    } else if (group.receivableType === 'CYLINDER') {
+      actualCylinderReceivables = group._sum.quantity || 0;
+    }
+  });
+
+  console.log(
+    `📊 Actual customer receivables: Cash=${actualCashReceivables}, Cylinders=${actualCylinderReceivables}`
+  );
+
+  // Get the latest receivables record
+  const latestRecord = await prisma.receivableRecord.findFirst({
+    where: { tenantId, driverId },
+    orderBy: { date: 'desc' },
+  });
+
+  if (latestRecord) {
+    console.log(
+      `📊 Current record: Cash=${latestRecord.totalCashReceivables}, Cylinders=${latestRecord.totalCylinderReceivables}`
+    );
+
+    // Only update if there's a mismatch
+    if (
+      latestRecord.totalCashReceivables !== actualCashReceivables ||
+      latestRecord.totalCylinderReceivables !== actualCylinderReceivables
+    ) {
+      console.log(`🔧 Fixing mismatch - updating receivables record`);
+
+      await prisma.receivableRecord.update({
+        where: { id: latestRecord.id },
+        data: {
+          totalCashReceivables: actualCashReceivables,
+          totalCylinderReceivables: actualCylinderReceivables,
+          calculatedAt: new Date(),
+        },
+      });
+
+      console.log(`✅ Receivables record synced successfully`);
+    } else {
+      console.log(`✅ Receivables already in sync`);
+    }
+  }
 }

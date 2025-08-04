@@ -1,6 +1,6 @@
 // Enhanced Sales API with Messaging Integration
 // This file shows how to integrate messaging into your existing sales route
-// 
+//
 // IMPORTANT: This is a reference implementation. To use messaging:
 //
 // 1. In your existing sales route, add these imports:
@@ -20,7 +20,7 @@
 //
 // 3. For payment notifications, add:
 //    import { notifyPaymentReceived } from '@/lib/messaging/receivables-messaging';
-//    
+//
 //    await notifyPaymentReceived({
 //      tenantId: session.user.tenantId,
 //      driverId: paymentData.driverId,

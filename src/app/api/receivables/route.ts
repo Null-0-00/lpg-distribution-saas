@@ -376,6 +376,16 @@ async function calculateDailyReceivables(
         totalCash: upsertResult.totalCashReceivables,
         totalCylinders: upsertResult.totalCylinderReceivables,
       });
+
+      // 🚫 DRIVER RECEIVABLES MESSAGING DISABLED - customers only
+      if (
+        Math.abs(cashReceivablesChange) > 0 ||
+        Math.abs(cylinderReceivablesChange) > 0
+      ) {
+        console.log(
+          '🚫 Driver receivables messaging disabled - customers only'
+        );
+      }
     } catch (upsertError: unknown) {
       console.error(
         `❌ Failed to save receivable record for driver ${driver.id}:`,

@@ -1,10 +1,11 @@
 // WhatsApp Business API Integration
-// Supports multiple providers: Twilio, Meta Business, etc.
+// Supports multiple providers: Twilio, Meta Business, Evolution API, etc.
 
 import { MessageProviderType, MessageStatus } from '@prisma/client';
+import { EvolutionProvider, EvolutionConfig } from './evolution';
 
 export interface WhatsAppConfig {
-  provider: 'twilio' | 'meta' | 'gupshup';
+  provider: 'twilio' | 'meta' | 'gupshup' | 'evolution';
   apiKey: string;
   apiSecret?: string;
   phoneNumberId?: string; // For Meta Business API
@@ -12,6 +13,10 @@ export interface WhatsAppConfig {
   accountSid?: string; // For Twilio
   authToken?: string; // For Twilio
   fromNumber: string; // WhatsApp Business number
+  // Evolution API specific
+  apiUrl?: string; // For Evolution API
+  instanceName?: string; // For Evolution API
+  webhookUrl?: string; // For Evolution API
 }
 
 export interface WhatsAppMessage {
@@ -30,9 +35,24 @@ export interface WhatsAppResponse {
 
 export class WhatsAppProvider {
   private config: WhatsAppConfig;
+  private evolutionProvider?: EvolutionProvider;
 
   constructor(config: WhatsAppConfig) {
     this.config = config;
+
+    // Initialize Evolution provider if selected
+    if (
+      config.provider === 'evolution' &&
+      config.apiUrl &&
+      config.instanceName
+    ) {
+      this.evolutionProvider = new EvolutionProvider({
+        apiUrl: config.apiUrl,
+        apiKey: config.apiKey,
+        instanceName: config.instanceName,
+        webhookUrl: config.webhookUrl,
+      });
+    }
   }
 
   /**
@@ -47,6 +67,8 @@ export class WhatsAppProvider {
           return await this.sendViaMeta(message);
         case 'gupshup':
           return await this.sendViaGupshup(message);
+        case 'evolution':
+          return await this.sendViaEvolution(message);
         default:
           throw new Error(
             `Unsupported WhatsApp provider: ${this.config.provider}`
@@ -185,6 +207,28 @@ export class WhatsAppProvider {
   }
 
   /**
+   * Send via Evolution API
+   */
+  private async sendViaEvolution(
+    message: WhatsAppMessage
+  ): Promise<WhatsAppResponse> {
+    if (!this.evolutionProvider) {
+      return {
+        success: false,
+        error: 'Evolution provider not initialized',
+        status: MessageStatus.FAILED,
+      };
+    }
+
+    const result = await this.evolutionProvider.sendMessage({
+      to: message.to,
+      message: message.message,
+    });
+
+    return result;
+  }
+
+  /**
    * Get message delivery status
    */
   async getMessageStatus(messageId: string): Promise<MessageStatus> {
@@ -197,6 +241,9 @@ export class WhatsAppProvider {
           return MessageStatus.SENT;
         case 'gupshup':
           return await this.getGupshupStatus(messageId);
+        case 'evolution':
+          // Evolution API provides status via webhooks
+          return MessageStatus.SENT;
         default:
           return MessageStatus.SENT;
       }

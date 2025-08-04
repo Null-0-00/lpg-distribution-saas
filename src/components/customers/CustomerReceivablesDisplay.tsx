@@ -213,10 +213,10 @@ export default function CustomerReceivablesDisplay({
       <div className="flex items-center justify-between">
         <div>
           <h3 className="text-foreground text-lg font-semibold">
-            Customer Receivables Summary
+            {t('customerReceivables')} {t('summary')}
           </h3>
           <p className="text-muted-foreground text-sm">
-            Aggregated view of customer outstanding balances by customer
+            {t('trackAndUpdateCustomerOutstandingBalances')}
           </p>
         </div>
       </div>
@@ -227,7 +227,9 @@ export default function CustomerReceivablesDisplay({
           <div className="flex items-center">
             <TrendingUp className="mr-3 h-8 w-8 text-green-500" />
             <div>
-              <p className="text-muted-foreground text-sm">Total Customers</p>
+              <p className="text-muted-foreground text-sm">
+                {t('total')} {t('customers')}
+              </p>
               <p className="text-foreground text-2xl font-bold">
                 {Array.isArray(filteredCustomers)
                   ? filteredCustomers.length
@@ -240,7 +242,9 @@ export default function CustomerReceivablesDisplay({
           <div className="flex items-center">
             <Calculator className="mr-3 h-8 w-8 text-blue-500" />
             <div>
-              <p className="text-muted-foreground text-sm">Cash Receivables</p>
+              <p className="text-muted-foreground text-sm">
+                {t('cashReceivables')}
+              </p>
               <p className="text-foreground text-2xl font-bold">
                 {formatCurrency(totalCashReceivables)}
               </p>
@@ -252,7 +256,7 @@ export default function CustomerReceivablesDisplay({
             <Eye className="mr-3 h-8 w-8 text-orange-500" />
             <div>
               <p className="text-muted-foreground text-sm">
-                Cylinder Receivables
+                {t('cylinderReceivables')}
               </p>
               <p className="text-foreground text-2xl font-bold">
                 {formatCurrency(totalCylinderReceivables)}
@@ -264,7 +268,9 @@ export default function CustomerReceivablesDisplay({
           <div className="flex items-center">
             <Users className="mr-3 h-8 w-8 text-purple-500" />
             <div>
-              <p className="text-muted-foreground text-sm">Total Outstanding</p>
+              <p className="text-muted-foreground text-sm">
+                {t('totalReceivables')}
+              </p>
               <p className="text-2xl font-bold text-red-600">
                 {formatCurrency(totalReceivables)}
               </p>
@@ -278,7 +284,7 @@ export default function CustomerReceivablesDisplay({
         <div className="flex flex-wrap items-end gap-4">
           <div className="min-w-[200px]">
             <label className="text-foreground mb-1 block text-sm font-medium">
-              Search
+              {t('search')}
             </label>
             <div className="relative">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
@@ -294,14 +300,16 @@ export default function CustomerReceivablesDisplay({
 
           <div className="min-w-[140px]">
             <label className="text-foreground mb-1 block text-sm font-medium">
-              Area
+              {t('area')}
             </label>
             <select
               value={selectedAreaId}
               onChange={(e) => setSelectedAreaId(e.target.value)}
               className="border-border bg-background text-foreground focus:ring-primary w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2"
             >
-              <option value="">All Areas</option>
+              <option value="">
+                {t('all')} {t('area')}
+              </option>
               {areas.map((area) => (
                 <option key={area.id} value={area.id}>
                   {area.name} {area.code && `(${area.code})`}
@@ -312,14 +320,16 @@ export default function CustomerReceivablesDisplay({
 
           <div className="min-w-[140px]">
             <label className="text-foreground mb-1 block text-sm font-medium">
-              Driver
+              {t('driver')}
             </label>
             <select
               value={selectedDriverId}
               onChange={(e) => setSelectedDriverId(e.target.value)}
               className="border-border bg-background text-foreground focus:ring-primary w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2"
             >
-              <option value="">All Drivers</option>
+              <option value="">
+                {t('all')} {t('drivers')}
+              </option>
               {drivers.map((driver) => (
                 <option key={driver.id} value={driver.id}>
                   {driver.name}
@@ -330,7 +340,7 @@ export default function CustomerReceivablesDisplay({
 
           <div>
             <label className="text-foreground mb-1 block text-sm font-medium">
-              Filters
+              {t('filter')}
             </label>
             <label className="flex h-[42px] items-center">
               <input
@@ -345,7 +355,7 @@ export default function CustomerReceivablesDisplay({
 
           <div>
             <label className="text-foreground mb-1 block text-sm font-medium">
-              Actions
+              {t('actions')}
             </label>
             <div className="flex space-x-2">
               <button
@@ -353,13 +363,13 @@ export default function CustomerReceivablesDisplay({
                 className="flex items-center rounded-lg bg-green-600 px-3 py-2 text-sm text-white hover:bg-green-700"
               >
                 <Filter className="mr-1 h-4 w-4" />
-                Apply
+                {t('apply')}
               </button>
               <button
                 onClick={clearFilters}
                 className="border-border text-muted-foreground hover:bg-muted/50 flex items-center rounded-lg border px-3 py-2 text-sm"
               >
-                Clear
+                {t('clear')}
               </button>
             </div>
           </div>
@@ -373,7 +383,7 @@ export default function CustomerReceivablesDisplay({
             <div className="p-8 text-center">
               <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent"></div>
               <p className="text-muted-foreground mt-2 text-sm">
-                Loading customer receivables...
+                {t('loading')} {t('customerReceivables')}...
               </p>
             </div>
           ) : !Array.isArray(filteredCustomers) ||
@@ -381,12 +391,12 @@ export default function CustomerReceivablesDisplay({
             <div className="p-8 text-center">
               <Users className="mx-auto mb-4 h-12 w-12 text-gray-300" />
               <p className="text-foreground mb-2 text-lg font-medium">
-                No Customer Receivables Found
+                {t('noReceivablesFound')}
               </p>
               <p className="text-muted-foreground text-sm">
                 {!Array.isArray(customerAggregations) ||
                 customerAggregations.length === 0
-                  ? 'No customer receivables exist yet. Add receivables from the Receivables page.'
+                  ? t('noReceivablesFound')
                   : 'Try adjusting your search or filter criteria.'}
               </p>
             </div>
@@ -395,25 +405,25 @@ export default function CustomerReceivablesDisplay({
               <thead className="bg-muted/50">
                 <tr>
                   <th className="text-foreground px-4 py-3 text-left text-sm font-medium">
-                    Customer
+                    {t('customer')}
                   </th>
                   <th className="text-foreground px-4 py-3 text-left text-sm font-medium">
-                    Area
+                    {t('area')}
                   </th>
                   <th className="text-foreground px-4 py-3 text-left text-sm font-medium">
-                    Driver
+                    {t('driver')}
                   </th>
                   <th className="text-foreground px-4 py-3 text-right text-sm font-medium">
-                    Cash Receivables
+                    {t('cashReceivables')}
                   </th>
                   <th className="text-foreground px-4 py-3 text-right text-sm font-medium">
-                    Cylinder Receivables
+                    {t('cylinderReceivables')}
                   </th>
                   <th className="text-foreground px-4 py-3 text-right text-sm font-medium">
-                    Total Outstanding
+                    {t('totalReceivables')}
                   </th>
                   <th className="text-foreground px-4 py-3 text-center text-sm font-medium">
-                    Records
+                    {t('records')}
                   </th>
                 </tr>
               </thead>

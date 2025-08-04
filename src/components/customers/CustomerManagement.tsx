@@ -436,10 +436,10 @@ export default function CustomerManagement({
       <div className="flex items-center justify-between">
         <div>
           <h3 className="text-foreground text-lg font-semibold">
-            Customer Management
+            {t('customerManagementTitle')}
           </h3>
           <p className="text-muted-foreground text-sm">
-            Manage customers organized by geographical areas
+            {t('manageCustomersOrganizedByGeographicalAreas')}
           </p>
         </div>
         <button
@@ -448,7 +448,7 @@ export default function CustomerManagement({
           className="flex items-center rounded-md bg-green-600 px-3 py-2 text-sm text-white hover:bg-green-700 disabled:cursor-not-allowed disabled:opacity-50"
         >
           <Plus className="mr-1 h-4 w-4" />
-          Add Customer
+          {t('addCustomer')}
         </button>
       </div>
 
@@ -457,10 +457,10 @@ export default function CustomerManagement({
         <div className="bg-card rounded-lg border p-4">
           <div className="mb-3">
             <label className="text-foreground text-sm font-medium">
-              Select Area First *
+              {t('selectAreaFirst')}
             </label>
             <p className="text-muted-foreground text-xs">
-              Choose an area to view and manage customers in that region
+              {t('chooseAreaToViewAndManageCustomers')}
             </p>
           </div>
           <select
@@ -468,7 +468,7 @@ export default function CustomerManagement({
             onChange={(e) => handleAreaChange(e.target.value)}
             className="border-border bg-background text-foreground focus:ring-primary w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2"
           >
-            <option value="">Select an area...</option>
+            <option value="">{t('selectAnArea')}</option>
             {areas &&
               areas.map((area) => (
                 <option key={area.id} value={area.id}>
@@ -483,10 +483,10 @@ export default function CustomerManagement({
         <div className="bg-card rounded-lg border p-8 text-center">
           <AlertCircle className="mx-auto mb-4 h-12 w-12 text-gray-300" />
           <p className="text-foreground mb-2 text-lg font-medium">
-            Select an Area
+            {t('selectAnAreaTitle')}
           </p>
           <p className="text-muted-foreground text-sm">
-            Please select an area first to view and manage customers.
+            {t('pleaseSelectAreaFirstToViewCustomers')}
           </p>
         </div>
       ) : (
@@ -496,7 +496,7 @@ export default function CustomerManagement({
             <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
               <div>
                 <label className="text-foreground mb-1 block text-sm font-medium">
-                  Search
+                  {t('search')}
                 </label>
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
@@ -504,7 +504,7 @@ export default function CustomerManagement({
                     type="text"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    placeholder="Search customers, codes, phones..."
+                    placeholder={t('searchCustomersCodesPhones')}
                     className="border-border bg-background text-foreground focus:ring-primary w-full rounded-lg border py-2 pl-10 pr-3 focus:outline-none focus:ring-2"
                   />
                 </div>
@@ -512,32 +512,32 @@ export default function CustomerManagement({
 
               <div>
                 <label className="text-foreground mb-1 block text-sm font-medium">
-                  Customer Type
+                  {t('customerType')}
                 </label>
                 <select
                   value={customerTypeFilter}
                   onChange={(e) => setCustomerTypeFilter(e.target.value)}
                   className="border-border bg-background text-foreground focus:ring-primary w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2"
                 >
-                  <option value="">All Types</option>
-                  <option value="RETAIL">Retail</option>
-                  <option value="COMMERCIAL">Commercial</option>
-                  <option value="INDUSTRIAL">Industrial</option>
+                  <option value="">{t('allTypes')}</option>
+                  <option value="RETAIL">{t('retail')}</option>
+                  <option value="COMMERCIAL">{t('commercial')}</option>
+                  <option value="INDUSTRIAL">{t('industrial')}</option>
                 </select>
               </div>
 
               <div>
                 <label className="text-foreground mb-1 block text-sm font-medium">
-                  Status
+                  {t('status')}
                 </label>
                 <select
                   value={activeFilter}
                   onChange={(e) => setActiveFilter(e.target.value)}
                   className="border-border bg-background text-foreground focus:ring-primary w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2"
                 >
-                  <option value="all">All Status</option>
-                  <option value="active">Active Only</option>
-                  <option value="inactive">Inactive Only</option>
+                  <option value="all">{t('allStatus')}</option>
+                  <option value="active">{t('activeOnly')}</option>
+                  <option value="inactive">{t('inactiveOnly')}</option>
                 </select>
               </div>
 
@@ -551,14 +551,19 @@ export default function CustomerManagement({
                   className="border-border text-muted-foreground hover:bg-muted/50 flex items-center rounded-lg border px-3 py-2 text-sm"
                 >
                   <Filter className="mr-1 h-4 w-4" />
-                  Clear
+                  {t('clear')}
                 </button>
               </div>
             </div>
 
             <div className="text-muted-foreground mt-4 text-sm">
-              Showing {filteredCustomers.length} of {customers.length} customers
-              in {areas.find((a) => a.id === currentAreaId)?.name}
+              {t('showingCustomersInArea')
+                .replace('{count}', filteredCustomers.length.toString())
+                .replace('{total}', customers.length.toString())
+                .replace(
+                  '{area}',
+                  areas.find((a) => a.id === currentAreaId)?.name || ''
+                )}
             </div>
           </div>
 
@@ -581,13 +586,13 @@ export default function CustomerManagement({
               <User className="mx-auto mb-4 h-12 w-12 text-gray-300" />
               <p className="text-foreground mb-2 text-lg font-medium">
                 {customers.length === 0
-                  ? 'No Customers Found'
-                  : 'No Matching Customers'}
+                  ? t('noCustomersFound')
+                  : t('noMatchingCustomers')}
               </p>
               <p className="text-muted-foreground text-sm">
                 {customers.length === 0
-                  ? 'Add your first customer to get started.'
-                  : 'Try adjusting your search or filter criteria.'}
+                  ? t('addFirstCustomerToGetStarted')
+                  : t('tryAdjustingSearchOrFilter')}
               </p>
               {customers.length === 0 && (
                 <button
@@ -595,7 +600,7 @@ export default function CustomerManagement({
                   className="mt-4 inline-flex items-center rounded-md bg-green-600 px-4 py-2 text-sm text-white hover:bg-green-700"
                 >
                   <Plus className="mr-1 h-4 w-4" />
-                  Add First Customer
+                  {t('addFirstCustomer')}
                 </button>
               )}
             </div>
@@ -615,14 +620,14 @@ export default function CustomerManagement({
                           </h4>
                           {!customer.isActive && (
                             <span className="ml-2 inline-flex rounded-full bg-gray-100 px-2 py-1 text-xs font-semibold text-gray-800 dark:bg-gray-900/50 dark:text-gray-200">
-                              Inactive
+                              {t('inactive')}
                             </span>
                           )}
                         </div>
 
                         {customer.customerCode && (
                           <p className="text-muted-foreground text-sm">
-                            Code: {customer.customerCode}
+                            {t('code')}: {customer.customerCode}
                           </p>
                         )}
 
@@ -642,14 +647,15 @@ export default function CustomerManagement({
                         </div>
 
                         <p className="text-muted-foreground mt-1 text-sm">
-                          Driver: {customer.driver?.name || 'Not assigned'}
+                          {t('driver')}:{' '}
+                          {customer.driver?.name || t('notAssigned')}
                         </p>
 
                         {customer.customerReceivables &&
                           customer.customerReceivables.length > 0 && (
                             <div className="mt-2 text-sm">
                               <span className="text-muted-foreground">
-                                Outstanding:{' '}
+                                {t('outstanding')}:{' '}
                               </span>
                               <span className="font-medium text-red-600">
                                 {formatCurrency(
@@ -661,10 +667,12 @@ export default function CustomerManagement({
                           )}
 
                         <div className="text-muted-foreground mt-2 text-xs">
-                          {customer._count.sales} sale
-                          {customer._count.sales !== 1 ? 's' : ''} •{' '}
-                          {customer._count.customerReceivables} receivable
-                          {customer._count.customerReceivables !== 1 ? 's' : ''}
+                          {customer._count.sales}{' '}
+                          {customer._count.sales === 1 ? t('sale') : t('sales')}{' '}
+                          • {customer._count.customerReceivables}{' '}
+                          {customer._count.customerReceivables === 1
+                            ? t('receivable')
+                            : t('receivables')}
                         </div>
                       </div>
 
@@ -672,14 +680,14 @@ export default function CustomerManagement({
                         <button
                           onClick={() => openModal(customer)}
                           className="text-blue-600 hover:text-blue-900 dark:text-blue-400"
-                          title="Edit customer"
+                          title={t('editCustomer')}
                         >
                           <Edit2 className="h-4 w-4" />
                         </button>
                         <button
                           onClick={() => handleDelete(customer)}
                           className="text-red-600 hover:text-red-900 dark:text-red-400"
-                          title="Delete customer"
+                          title={t('confirmDeleteCustomer')}
                         >
                           <Trash2 className="h-4 w-4" />
                         </button>
@@ -698,7 +706,7 @@ export default function CustomerManagement({
           <div className="bg-card max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-lg p-6">
             <div className="mb-4 flex items-center justify-between">
               <h3 className="text-foreground text-lg font-semibold">
-                {editingCustomer ? 'Edit Customer' : 'Add New Customer'}
+                {editingCustomer ? t('editCustomer') : t('addNewCustomer')}
               </h3>
               <button
                 onClick={closeModal}
@@ -712,7 +720,7 @@ export default function CustomerManagement({
               {/* Area Selection */}
               <div>
                 <label className="text-foreground mb-2 block text-sm font-medium">
-                  Area *
+                  {t('areaRequired')}
                 </label>
                 <select
                   value={formData.areaId}
@@ -721,7 +729,7 @@ export default function CustomerManagement({
                   }
                   className="border-border bg-background text-foreground focus:ring-primary w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2"
                 >
-                  <option value="">Select area...</option>
+                  <option value="">{t('selectArea')}</option>
                   {areas &&
                     areas.map((area) => (
                       <option key={area.id} value={area.id}>
@@ -734,7 +742,7 @@ export default function CustomerManagement({
               {/* Customer Name */}
               <div>
                 <label className="text-foreground mb-2 block text-sm font-medium">
-                  Customer Name *
+                  {t('customerName')} *
                 </label>
                 <input
                   type="text"
@@ -743,14 +751,14 @@ export default function CustomerManagement({
                     setFormData({ ...formData, name: e.target.value })
                   }
                   className="border-border bg-background text-foreground focus:ring-primary w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2"
-                  placeholder="Enter customer name"
+                  placeholder={t('enterCustomerName')}
                 />
               </div>
 
               {/* Driver Assignment */}
               <div>
                 <label className="text-foreground mb-2 block text-sm font-medium">
-                  Assign Driver
+                  {t('assignDriver')}
                 </label>
                 <select
                   value={formData.driverId}
@@ -759,7 +767,7 @@ export default function CustomerManagement({
                   }
                   className="border-border bg-background text-foreground focus:ring-primary w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2"
                 >
-                  <option value="">No driver assigned</option>
+                  <option value="">{t('noDriverAssigned')}</option>
                   {drivers &&
                     drivers.map((driver) => (
                       <option key={driver.id} value={driver.id}>
@@ -768,14 +776,14 @@ export default function CustomerManagement({
                     ))}
                 </select>
                 <p className="text-muted-foreground mt-1 text-xs">
-                  Optional - assign a driver to serve this customer
+                  {t('optionalAssignDriverToServeCustomer')}
                 </p>
               </div>
 
               {/* Customer Code */}
               <div>
                 <label className="text-foreground mb-2 block text-sm font-medium">
-                  Customer Code
+                  {t('customerCode')}
                 </label>
                 <input
                   type="text"
@@ -784,14 +792,14 @@ export default function CustomerManagement({
                     setFormData({ ...formData, customerCode: e.target.value })
                   }
                   className="border-border bg-background text-foreground focus:ring-primary w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2"
-                  placeholder="Auto-generated if empty"
+                  placeholder={t('autoGeneratedIfEmpty')}
                 />
               </div>
 
               {/* Phone */}
               <div>
                 <label className="text-foreground mb-2 block text-sm font-medium">
-                  Phone Number
+                  {t('phoneNumber')}
                 </label>
                 <input
                   type="tel"
@@ -803,14 +811,14 @@ export default function CustomerManagement({
                   placeholder="01XXXXXXXXX"
                 />
                 <p className="text-muted-foreground mt-1 text-xs">
-                  Required for automated messaging
+                  {t('requiredForAutomatedMessaging')}
                 </p>
               </div>
 
               {/* Alternate Phone */}
               <div>
                 <label className="text-foreground mb-2 block text-sm font-medium">
-                  Alternate Phone
+                  {t('alternatePhone')}
                 </label>
                 <input
                   type="tel"
@@ -826,7 +834,7 @@ export default function CustomerManagement({
               {/* Customer Type */}
               <div>
                 <label className="text-foreground mb-2 block text-sm font-medium">
-                  Customer Type
+                  {t('customerType')}
                 </label>
                 <select
                   value={formData.customerType}
@@ -841,9 +849,9 @@ export default function CustomerManagement({
                   }
                   className="border-border bg-background text-foreground focus:ring-primary w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2"
                 >
-                  <option value="RETAIL">Retail</option>
-                  <option value="COMMERCIAL">Commercial</option>
-                  <option value="INDUSTRIAL">Industrial</option>
+                  <option value="RETAIL">{t('retail')}</option>
+                  <option value="COMMERCIAL">{t('commercial')}</option>
+                  <option value="INDUSTRIAL">{t('industrial')}</option>
                 </select>
               </div>
 
@@ -862,7 +870,7 @@ export default function CustomerManagement({
                   htmlFor="isActiveCustomer"
                   className="text-foreground text-sm"
                 >
-                  Active customer
+                  {t('activeCustomer')}
                 </label>
               </div>
             </div>

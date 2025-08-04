@@ -74,7 +74,7 @@ export default function AreaManagement({
       } else {
         toast({
           title: t('error'),
-          description: 'Failed to fetch areas',
+          description: t('failedToFetchAreas'),
           variant: 'destructive',
         });
       }
@@ -82,7 +82,7 @@ export default function AreaManagement({
       console.error('Error fetching areas:', error);
       toast({
         title: t('error'),
-        description: 'Failed to fetch areas',
+        description: t('failedToFetchAreas'),
         variant: 'destructive',
       });
     } finally {
@@ -126,7 +126,7 @@ export default function AreaManagement({
     if (!formData.name.trim()) {
       toast({
         title: t('error'),
-        description: 'Area name is required',
+        description: t('areaNameRequired'),
         variant: 'destructive',
       });
       return;
@@ -153,8 +153,8 @@ export default function AreaManagement({
         toast({
           title: t('success'),
           description: editingArea
-            ? 'Area updated successfully'
-            : 'Area created successfully',
+            ? t('areaUpdatedSuccessfully')
+            : t('areaCreatedSuccessfully'),
         });
 
         await fetchAreas();
@@ -163,7 +163,7 @@ export default function AreaManagement({
         const errorData = await response.json();
         toast({
           title: t('error'),
-          description: errorData.error || 'Failed to save area',
+          description: errorData.error || t('failedToSaveArea'),
           variant: 'destructive',
         });
       }
@@ -171,7 +171,7 @@ export default function AreaManagement({
       console.error('Error saving area:', error);
       toast({
         title: t('error'),
-        description: 'Failed to save area',
+        description: t('failedToSaveArea'),
         variant: 'destructive',
       });
     } finally {
@@ -183,13 +183,13 @@ export default function AreaManagement({
     if (area._count.customers > 0) {
       toast({
         title: t('error'),
-        description: `Cannot delete area with ${area._count.customers} customers. Please move or delete customers first.`,
+        description: t('cannotDeleteAreaWithCustomers'),
         variant: 'destructive',
       });
       return;
     }
 
-    if (!confirm(`Are you sure you want to delete "${area.name}"?`)) {
+    if (!confirm(`${t('confirmDeleteArea')} "${area.name}"?`)) {
       return;
     }
 
@@ -203,7 +203,7 @@ export default function AreaManagement({
       if (response.ok) {
         toast({
           title: t('success'),
-          description: 'Area deleted successfully',
+          description: t('areaDeletedSuccessfully'),
         });
 
         await fetchAreas();
@@ -211,7 +211,7 @@ export default function AreaManagement({
         const errorData = await response.json();
         toast({
           title: t('error'),
-          description: errorData.error || 'Failed to delete area',
+          description: errorData.error || t('failedToDeleteArea'),
           variant: 'destructive',
         });
       }
@@ -219,7 +219,7 @@ export default function AreaManagement({
       console.error('Error deleting area:', error);
       toast({
         title: t('error'),
-        description: 'Failed to delete area',
+        description: t('failedToDeleteArea'),
         variant: 'destructive',
       });
     } finally {
@@ -231,7 +231,7 @@ export default function AreaManagement({
     return (
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold">Area Management</h3>
+          <h3 className="text-lg font-semibold">{t('areaManagement')}</h3>
           <div className="h-10 w-24 animate-pulse rounded-md bg-gray-300 dark:bg-gray-600"></div>
         </div>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -256,10 +256,10 @@ export default function AreaManagement({
       <div className="flex items-center justify-between">
         <div>
           <h3 className="text-foreground text-lg font-semibold">
-            Area Management
+            {t('areaManagement')}
           </h3>
           <p className="text-muted-foreground text-sm">
-            Organize customers by geographical areas
+            {t('organizeCustomersByGeographicalAreas')}
           </p>
         </div>
         <button
@@ -267,7 +267,7 @@ export default function AreaManagement({
           className="flex items-center rounded-md bg-blue-600 px-3 py-2 text-sm text-white hover:bg-blue-700"
         >
           <Plus className="mr-1 h-4 w-4" />
-          Add Area
+          {t('addArea')}
         </button>
       </div>
 
@@ -276,17 +276,17 @@ export default function AreaManagement({
         <div className="bg-card rounded-lg border p-8 text-center">
           <MapPin className="mx-auto mb-4 h-12 w-12 text-gray-300" />
           <p className="text-foreground mb-2 text-lg font-medium">
-            No Areas Found
+            {t('noAreasFound')}
           </p>
           <p className="text-muted-foreground text-sm">
-            Create your first area to organize customers geographically.
+            {t('createYourFirstAreaToOrganizeCustomers')}
           </p>
           <button
             onClick={() => openModal()}
             className="mt-4 inline-flex items-center rounded-md bg-blue-600 px-4 py-2 text-sm text-white hover:bg-blue-700"
           >
             <Plus className="mr-1 h-4 w-4" />
-            Create First Area
+            {t('createFirstArea')}
           </button>
         </div>
       ) : (
@@ -335,7 +335,7 @@ export default function AreaManagement({
                             : 'bg-gray-100 text-gray-800 dark:bg-gray-900/50 dark:text-gray-200'
                         }`}
                       >
-                        {area.isActive ? 'Active' : 'Inactive'}
+                        {area.isActive ? t('active') : 'Inactive'}
                       </span>
                     </div>
                   </div>
@@ -344,14 +344,14 @@ export default function AreaManagement({
                       <button
                         onClick={() => openModal(area)}
                         className="text-blue-600 hover:text-blue-900 dark:text-blue-400"
-                        title="Edit area"
+                        title={t('editAreaTooltip')}
                       >
                         <Edit2 className="h-4 w-4" />
                       </button>
                       <button
                         onClick={() => handleDelete(area)}
                         className="text-red-600 hover:text-red-900 dark:text-red-400"
-                        title="Delete area"
+                        title={t('deleteAreaTooltip')}
                         disabled={area._count.customers > 0}
                       >
                         <Trash2 className="h-4 w-4" />
@@ -370,7 +370,7 @@ export default function AreaManagement({
           <div className="bg-card w-full max-w-md rounded-lg p-6">
             <div className="mb-4 flex items-center justify-between">
               <h3 className="text-foreground text-lg font-semibold">
-                {editingArea ? 'Edit Area' : 'Add New Area'}
+                {editingArea ? t('editArea') : t('addNewArea')}
               </h3>
               <button
                 onClick={closeModal}
@@ -383,7 +383,7 @@ export default function AreaManagement({
             <div className="space-y-4">
               <div>
                 <label className="text-foreground mb-2 block text-sm font-medium">
-                  Area Name *
+                  {t('areaName')} *
                 </label>
                 <input
                   type="text"
@@ -392,13 +392,13 @@ export default function AreaManagement({
                     setFormData({ ...formData, name: e.target.value })
                   }
                   className="border-border bg-background text-foreground focus:ring-primary w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2"
-                  placeholder="e.g., Dhanmondi, Gulshan, Uttara"
+                  placeholder={t('areaNamePlaceholder')}
                 />
               </div>
 
               <div>
                 <label className="text-foreground mb-2 block text-sm font-medium">
-                  Area Code
+                  {t('areaCode')}
                 </label>
                 <input
                   type="text"
@@ -407,14 +407,14 @@ export default function AreaManagement({
                     setFormData({ ...formData, code: e.target.value })
                   }
                   className="border-border bg-background text-foreground focus:ring-primary w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2"
-                  placeholder="e.g., DH, GS, UT"
+                  placeholder={t('areaCodePlaceholder')}
                   maxLength={10}
                 />
               </div>
 
               <div>
                 <label className="text-foreground mb-2 block text-sm font-medium">
-                  Description
+                  {t('description')}
                 </label>
                 <textarea
                   value={formData.description}
@@ -423,7 +423,7 @@ export default function AreaManagement({
                   }
                   rows={3}
                   className="border-border bg-background text-foreground focus:ring-primary w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2"
-                  placeholder="Optional description for this area"
+                  placeholder={t('optionalDescriptionForArea')}
                 />
               </div>
 
@@ -438,7 +438,7 @@ export default function AreaManagement({
                   className="mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500"
                 />
                 <label htmlFor="isActive" className="text-foreground text-sm">
-                  Active area
+                  {t('activeArea')}
                 </label>
               </div>
             </div>
@@ -448,7 +448,7 @@ export default function AreaManagement({
                 onClick={closeModal}
                 className="border-border text-muted-foreground hover:bg-muted/50 rounded-lg border px-4 py-2"
               >
-                Cancel
+                {t('cancel')}
               </button>
               <button
                 onClick={handleSave}
@@ -458,7 +458,7 @@ export default function AreaManagement({
                 {submitting && (
                   <div className="mr-2 h-4 w-4 animate-spin rounded-full border-b-2 border-white"></div>
                 )}
-                {editingArea ? 'Update' : 'Create'} Area
+                {editingArea ? t('edit') : t('add')} Area
               </button>
             </div>
           </div>

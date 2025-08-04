@@ -12,6 +12,7 @@ import {
   AlertCircle,
   Trash2,
 } from 'lucide-react';
+import { useSettings } from '@/contexts/SettingsContext';
 
 interface MessageLogEntry {
   id: string;
@@ -43,6 +44,7 @@ interface MessageLogData {
 }
 
 export default function MessageLog() {
+  const { t, formatDate } = useSettings();
   const [data, setData] = useState<MessageLogData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -81,13 +83,13 @@ export default function MessageLog() {
 
       const response = await fetch(`/api/messaging/logs?${params}`);
       if (!response.ok) {
-        throw new Error('Failed to fetch message logs');
+        throw new Error(t('failedToFetchMessageLogs'));
       }
       const result = await response.json();
       setData(result);
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : 'Failed to load message logs'
+        err instanceof Error ? err.message : t('failedToLoadMessageLogs')
       );
     } finally {
       setLoading(false);
@@ -95,7 +97,7 @@ export default function MessageLog() {
   };
 
   const handleDeleteMessage = async (messageId: string) => {
-    if (!confirm('Are you sure you want to delete this message log?')) {
+    if (!confirm(t('confirmDeleteMessageLog'))) {
       return;
     }
 
@@ -108,15 +110,16 @@ export default function MessageLog() {
       );
 
       if (!response.ok) {
-        throw new Error('Failed to delete message');
+        throw new Error(t('failedToDeleteMessage'));
       }
 
       // Refresh the message list
       fetchMessages();
     } catch (err) {
       alert(
-        'Failed to delete message: ' +
-          (err instanceof Error ? err.message : 'Unknown error')
+        t('failedToDeleteMessage') +
+          ': ' +
+          (err instanceof Error ? err.message : t('unknownError'))
       );
     }
   };
@@ -137,24 +140,18 @@ export default function MessageLog() {
   const getTypeLabel = (type: string) => {
     switch (type) {
       case 'RECEIVABLES_CHANGE':
-        return 'Receivables Change';
+        return t('receivablesChange');
       case 'PAYMENT_RECEIVED':
-        return 'Payment Received';
+        return t('paymentReceived');
       case 'CYLINDER_RETURN':
-        return 'Cylinder Return';
+        return t('cylinderReturn');
       default:
         return type.replace(/_/g, ' ');
     }
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
+  const formatMessageDate = (dateString: string) => {
+    return formatDate(new Date(dateString));
   };
 
   const clearFilters = () => {
@@ -184,7 +181,7 @@ export default function MessageLog() {
         <div className="flex items-center">
           <XCircle className="mr-2 h-5 w-5 text-red-500" />
           <p className="text-red-700 dark:text-red-400">
-            Error loading message logs: {error}
+            {t('errorLoadingMessageLogs')}: {error}
           </p>
         </div>
       </div>
@@ -194,13 +191,15 @@ export default function MessageLog() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h3 className="text-foreground text-lg font-semibold">Message Log</h3>
+        <h3 className="text-foreground text-lg font-semibold">
+          {t('messageLog')}
+        </h3>
         <button
           onClick={() => setShowFilters(!showFilters)}
           className="flex items-center space-x-2 text-sm text-blue-600 hover:text-blue-800"
         >
           <Filter className="h-4 w-4" />
-          <span>Filters</span>
+          <span>{t('filters')}</span>
         </button>
       </div>
 
@@ -211,7 +210,7 @@ export default function MessageLog() {
           <Search className="text-muted-foreground absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform" />
           <input
             type="text"
-            placeholder="Search by phone number or message content..."
+            placeholder={t('searchByPhoneOrMessage')}
             value={searchTerm}
             onChange={(e) => {
               setSearchTerm(e.target.value);
@@ -226,7 +225,7 @@ export default function MessageLog() {
           <div className="bg-muted/30 border-border grid grid-cols-1 gap-4 rounded-lg border p-4 md:grid-cols-4">
             <div>
               <label className="text-foreground mb-1 block text-sm font-medium">
-                Trigger Type
+                {t('triggerType')}
               </label>
               <select
                 value={selectedTrigger}
@@ -236,7 +235,7 @@ export default function MessageLog() {
                 }}
                 className="border-border bg-background text-foreground w-full rounded border px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500"
               >
-                <option value="">All Triggers</option>
+                <option value="">{t('allTriggers')}</option>
                 {data.filters.triggers.map((trigger) => (
                   <option key={trigger} value={trigger}>
                     {getTypeLabel(trigger)}
@@ -247,7 +246,7 @@ export default function MessageLog() {
 
             <div>
               <label className="text-foreground mb-1 block text-sm font-medium">
-                Status
+                {t('status')}
               </label>
               <select
                 value={selectedStatus}
@@ -257,7 +256,7 @@ export default function MessageLog() {
                 }}
                 className="border-border bg-background text-foreground w-full rounded border px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500"
               >
-                <option value="">All Statuses</option>
+                <option value="">{t('allStatuses')}</option>
                 {data.filters.statuses.map((status) => (
                   <option key={status} value={status}>
                     {status.charAt(0) + status.slice(1).toLowerCase()}
@@ -268,7 +267,7 @@ export default function MessageLog() {
 
             <div>
               <label className="text-foreground mb-1 block text-sm font-medium">
-                Recipient Type
+                {t('recipientType')}
               </label>
               <select
                 value={selectedRecipientType}
@@ -278,7 +277,7 @@ export default function MessageLog() {
                 }}
                 className="border-border bg-background text-foreground w-full rounded border px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500"
               >
-                <option value="">All Types</option>
+                <option value="">{t('allTypes')}</option>
                 {data.filters.recipientTypes.map((type) => (
                   <option key={type} value={type}>
                     {type.charAt(0) + type.slice(1).toLowerCase()}
@@ -292,7 +291,7 @@ export default function MessageLog() {
                 onClick={clearFilters}
                 className="text-muted-foreground hover:text-foreground px-4 py-2 text-sm transition-colors"
               >
-                Clear All
+                {t('clearAll')}
               </button>
             </div>
           </div>
@@ -304,7 +303,7 @@ export default function MessageLog() {
         <div className="bg-card border-border overflow-hidden rounded-lg border">
           {data.messages.length === 0 ? (
             <div className="text-muted-foreground py-8 text-center">
-              No messages found
+              {t('noMessagesFound')}
             </div>
           ) : (
             <>
@@ -313,22 +312,22 @@ export default function MessageLog() {
                   <thead className="bg-muted/50 border-border border-b">
                     <tr>
                       <th className="text-foreground px-4 py-3 text-left text-sm font-medium">
-                        Status
+                        {t('status')}
                       </th>
                       <th className="text-foreground px-4 py-3 text-left text-sm font-medium">
-                        Recipient
+                        {t('recipient')}
                       </th>
                       <th className="text-foreground px-4 py-3 text-left text-sm font-medium">
-                        Trigger
+                        {t('trigger')}
                       </th>
                       <th className="text-foreground px-4 py-3 text-left text-sm font-medium">
-                        Message
+                        {t('message')}
                       </th>
                       <th className="text-foreground px-4 py-3 text-left text-sm font-medium">
-                        Sent At
+                        {t('sentAt')}
                       </th>
                       <th className="text-foreground px-4 py-3 text-left text-sm font-medium">
-                        Actions
+                        {t('actions')}
                       </th>
                     </tr>
                   </thead>
@@ -378,13 +377,13 @@ export default function MessageLog() {
                           </div>
                         </td>
                         <td className="text-foreground px-4 py-3 text-sm">
-                          {formatDate(message.sentAt)}
+                          {formatMessageDate(message.sentAt)}
                         </td>
                         <td className="px-4 py-3">
                           <button
                             onClick={() => handleDeleteMessage(message.id)}
                             className="text-red-600 transition-colors hover:text-red-800"
-                            title="Delete message log"
+                            title={t('deleteMessageLog')}
                           >
                             <Trash2 className="h-4 w-4" />
                           </button>
@@ -398,13 +397,14 @@ export default function MessageLog() {
               {/* Pagination */}
               <div className="bg-muted/30 border-border flex items-center justify-between border-t px-4 py-3">
                 <div className="text-muted-foreground text-sm">
-                  Showing{' '}
+                  {t('showing')}{' '}
                   {Math.min(
                     (currentPage - 1) * 20 + 1,
                     data.pagination.totalCount
                   )}{' '}
-                  to {Math.min(currentPage * 20, data.pagination.totalCount)} of{' '}
-                  {data.pagination.totalCount} messages
+                  {t('to')}{' '}
+                  {Math.min(currentPage * 20, data.pagination.totalCount)}{' '}
+                  {t('of')} {data.pagination.totalCount} {t('messages')}
                 </div>
                 <div className="flex items-center space-x-2">
                   <button
@@ -416,7 +416,8 @@ export default function MessageLog() {
                   </button>
 
                   <span className="text-foreground text-sm">
-                    Page {currentPage} of {data.pagination.totalPages}
+                    {t('page')} {currentPage} {t('of')}{' '}
+                    {data.pagination.totalPages}
                   </span>
 
                   <button
@@ -434,7 +435,9 @@ export default function MessageLog() {
       )}
 
       {loading && data && (
-        <div className="text-muted-foreground py-4 text-center">Loading...</div>
+        <div className="text-muted-foreground py-4 text-center">
+          {t('loading')}...
+        </div>
       )}
     </div>
   );

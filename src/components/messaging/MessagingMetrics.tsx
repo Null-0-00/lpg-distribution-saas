@@ -10,6 +10,7 @@ import {
   XCircle,
   AlertCircle,
 } from 'lucide-react';
+import { useSettings } from '@/contexts/SettingsContext';
 
 interface MessagingMetrics {
   currentMonth: {
@@ -29,6 +30,7 @@ interface MessagingMetrics {
 }
 
 export default function MessagingMetrics() {
+  const { t } = useSettings();
   const [metrics, setMetrics] = useState<MessagingMetrics | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -42,12 +44,12 @@ export default function MessagingMetrics() {
       setLoading(true);
       const response = await fetch('/api/messaging/metrics');
       if (!response.ok) {
-        throw new Error('Failed to fetch messaging metrics');
+        throw new Error(t('failedToFetchMessagingMetrics'));
       }
       const data = await response.json();
       setMetrics(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load metrics');
+      setError(err instanceof Error ? err.message : t('failedToLoadMetrics'));
     } finally {
       setLoading(false);
     }
@@ -69,11 +71,11 @@ export default function MessagingMetrics() {
   const getTypeLabel = (type: string) => {
     switch (type) {
       case 'RECEIVABLES_CHANGE':
-        return 'Receivables Change';
+        return t('receivablesChange');
       case 'PAYMENT_RECEIVED':
-        return 'Payment Received';
+        return t('paymentReceived');
       case 'CYLINDER_RETURN':
-        return 'Cylinder Return';
+        return t('cylinderReturn');
       default:
         return type.replace(/_/g, ' ');
     }
@@ -97,7 +99,9 @@ export default function MessagingMetrics() {
       <div className="rounded-lg border border-red-200 bg-red-50 p-4">
         <div className="flex items-center">
           <XCircle className="mr-2 h-5 w-5 text-red-500" />
-          <p className="text-red-700">Error loading metrics: {error}</p>
+          <p className="text-red-700">
+            {t('errorLoadingMetrics')}: {error}
+          </p>
         </div>
       </div>
     );
@@ -106,7 +110,7 @@ export default function MessagingMetrics() {
   if (!metrics) {
     return (
       <div className="py-8 text-center text-gray-500">
-        No messaging metrics available
+        {t('noMessagingMetricsAvailable')}
       </div>
     );
   }
@@ -115,13 +119,13 @@ export default function MessagingMetrics() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h3 className="text-foreground text-lg font-semibold">
-          Messaging Metrics
+          {t('messagingMetrics')}
         </h3>
         <button
           onClick={fetchMetrics}
           className="text-sm text-blue-600 hover:text-blue-800"
         >
-          Refresh
+          {t('refresh')}
         </button>
       </div>
 
@@ -131,7 +135,7 @@ export default function MessagingMetrics() {
         <div className="bg-card rounded-lg border p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-muted-foreground text-sm">This Month</p>
+              <p className="text-muted-foreground text-sm">{t('thisMonth')}</p>
               <p className="text-foreground text-2xl font-bold">
                 {metrics.currentMonth.total}
               </p>
@@ -147,7 +151,9 @@ export default function MessagingMetrics() {
         <div className="bg-card rounded-lg border p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-muted-foreground text-sm">Previous Month</p>
+              <p className="text-muted-foreground text-sm">
+                {t('previousMonth')}
+              </p>
               <p className="text-foreground text-2xl font-bold">
                 {metrics.previousMonth.total}
               </p>
@@ -163,7 +169,9 @@ export default function MessagingMetrics() {
         <div className="bg-card rounded-lg border p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-muted-foreground text-sm">Monthly Change</p>
+              <p className="text-muted-foreground text-sm">
+                {t('monthlyChange')}
+              </p>
               <p
                 className={`text-2xl font-bold ${
                   metrics.currentMonth.percentageChange >= 0
@@ -174,7 +182,9 @@ export default function MessagingMetrics() {
                 {metrics.currentMonth.percentageChange >= 0 ? '+' : ''}
                 {metrics.currentMonth.percentageChange}%
               </p>
-              <p className="text-muted-foreground text-xs">vs last month</p>
+              <p className="text-muted-foreground text-xs">
+                {t('vsLastMonth')}
+              </p>
             </div>
             {metrics.currentMonth.percentageChange >= 0 ? (
               <TrendingUp className="h-8 w-8 text-green-500" />
@@ -189,7 +199,9 @@ export default function MessagingMetrics() {
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         {/* Messages by Type */}
         <div className="bg-card rounded-lg border p-4">
-          <h4 className="text-foreground mb-4 font-medium">Messages by Type</h4>
+          <h4 className="text-foreground mb-4 font-medium">
+            {t('messagesByType')}
+          </h4>
           <div className="space-y-3">
             {metrics.breakdown.byType.map((item) => (
               <div
@@ -220,7 +232,7 @@ export default function MessagingMetrics() {
         {/* Messages by Status */}
         <div className="bg-card rounded-lg border p-4">
           <h4 className="text-foreground mb-4 font-medium">
-            Messages by Status
+            {t('messagesByStatus')}
           </h4>
           <div className="space-y-3">
             {metrics.breakdown.byStatus.map((item) => (

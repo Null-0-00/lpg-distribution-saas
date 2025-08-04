@@ -18,10 +18,12 @@ import CustomerReceivablesForm from '@/components/customers/CustomerReceivablesF
 import CustomerReceivablesDisplay from '@/components/customers/CustomerReceivablesDisplay';
 import MessagingMetrics from '@/components/messaging/MessagingMetrics';
 import MessageLog from '@/components/messaging/MessageLog';
+import { useSettings } from '@/contexts/SettingsContext';
 
 type TabType = 'areas' | 'customers' | 'receivables' | 'messaging';
 
 export default function CustomerManagementPage() {
+  const { t } = useSettings();
   const [activeTab, setActiveTab] = useState<TabType>('areas');
   const [selectedAreaId, setSelectedAreaId] = useState<string>('');
   const [isReceivablesFormOpen, setIsReceivablesFormOpen] = useState(false);
@@ -29,27 +31,27 @@ export default function CustomerManagementPage() {
   const tabs = [
     {
       id: 'areas' as TabType,
-      name: 'Area Management',
+      name: t('areaManagement'),
       icon: MapPin,
-      description: 'Manage geographical areas',
+      description: t('organizeCustomersByGeographicalAreas'),
     },
     {
       id: 'customers' as TabType,
-      name: 'Customer Management',
+      name: t('customerManagementTab'),
       icon: Users,
-      description: 'Add and manage customers',
+      description: t('addAndManageCustomers'),
     },
     {
       id: 'receivables' as TabType,
-      name: 'Customer Receivables',
+      name: t('customerReceivables'),
       icon: Calculator,
-      description: 'Update customer receivables',
+      description: t('updateCustomerReceivables'),
     },
     {
       id: 'messaging' as TabType,
-      name: 'Messaging Settings',
+      name: t('messagingSettings'),
       icon: MessageSquare,
-      description: 'Configure automated messages',
+      description: t('configureAutomatedMessages'),
     },
   ];
 
@@ -76,17 +78,17 @@ export default function CustomerManagementPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-foreground text-2xl font-bold">
-            Customer & Area Management
+            {t('customerAndAreaManagement')}
           </h1>
           <p className="text-muted-foreground">
-            Manage areas, customers, and automated messaging for receivables
+            {t('manageAreasCustomersAndAutomatedMessaging')}
           </p>
         </div>
         <div className="flex items-center space-x-4">
           <div className="flex items-center space-x-2">
             <TrendingUp className="h-5 w-5 text-green-500" />
             <span className="text-muted-foreground text-sm">
-              Automated messaging enabled
+              {t('automatedMessagingEnabled')}
             </span>
           </div>
         </div>
@@ -98,24 +100,24 @@ export default function CustomerManagementPage() {
           <Phone className="mr-3 mt-0.5 h-5 w-5 text-blue-600" />
           <div>
             <h3 className="font-medium text-blue-900 dark:text-blue-100">
-              Automated Customer Messaging Workflow
+              {t('automatedCustomerMessagingWorkflow')}
             </h3>
             <div className="mt-2 space-y-1 text-sm text-blue-800 dark:text-blue-200">
               <p>
-                • <strong>Step 1:</strong> Create and manage areas for
-                geographical organization
+                • <strong>Step 1:</strong>{' '}
+                {t('createAndManageAreasForGeographicalOrganization')}
               </p>
               <p>
-                • <strong>Step 2:</strong> Add customers to areas with phone
-                numbers for messaging
+                • <strong>Step 2:</strong>{' '}
+                {t('addCustomersToAreasWithPhoneNumbers')}
               </p>
               <p>
-                • <strong>Step 3:</strong> Update customer receivables -
-                messages are sent automatically
+                • <strong>Step 3:</strong>{' '}
+                {t('updateCustomerReceivablesMessagesAutomaticallySent')}
               </p>
               <p>
-                • <strong>Messaging:</strong> WhatsApp/SMS notifications sent
-                when receivables change
+                • <strong>Messaging:</strong>{' '}
+                {t('whatsappSmsNotificationsSentOnReceivablesChange')}
               </p>
             </div>
           </div>
@@ -185,33 +187,37 @@ export default function CustomerManagementPage() {
               {/* Messaging Configuration */}
               <div className="bg-card rounded-lg border p-6">
                 <h3 className="text-foreground mb-4 text-lg font-semibold">
-                  Messaging Configuration
+                  {t('messagingConfiguration')}
                 </h3>
 
                 <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                   <div>
                     <h4 className="text-foreground mb-3 font-medium">
-                      WhatsApp Settings
+                      {t('whatsappSettings')}
                     </h4>
                     <div className="space-y-3">
                       <div className="flex items-center justify-between rounded-lg bg-green-50 p-3 dark:bg-green-900/20">
-                        <span className="text-sm">Receivables Updates</span>
-                        <span className="text-sm font-medium text-green-600">
-                          Active
+                        <span className="text-sm">
+                          {t('receivablesUpdates')}
                         </span>
-                      </div>
-                      <div className="flex items-center justify-between rounded-lg bg-green-50 p-3 dark:bg-green-900/20">
-                        <span className="text-sm">Payment Confirmations</span>
                         <span className="text-sm font-medium text-green-600">
-                          Active
+                          {t('active')}
                         </span>
                       </div>
                       <div className="flex items-center justify-between rounded-lg bg-green-50 p-3 dark:bg-green-900/20">
                         <span className="text-sm">
-                          Cylinder Return Confirmations
+                          {t('paymentConfirmations')}
                         </span>
                         <span className="text-sm font-medium text-green-600">
-                          Active
+                          {t('active')}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between rounded-lg bg-green-50 p-3 dark:bg-green-900/20">
+                        <span className="text-sm">
+                          {t('cylinderReturnConfirmations')}
+                        </span>
+                        <span className="text-sm font-medium text-green-600">
+                          {t('active')}
                         </span>
                       </div>
                     </div>
@@ -219,25 +225,27 @@ export default function CustomerManagementPage() {
 
                   <div>
                     <h4 className="text-foreground mb-3 font-medium">
-                      SMS Settings
+                      {t('smsSettings')}
                     </h4>
                     <div className="space-y-3">
                       <div className="flex items-center justify-between rounded-lg bg-blue-50 p-3 dark:bg-blue-900/20">
-                        <span className="text-sm">Backup Messaging</span>
+                        <span className="text-sm">{t('backupMessaging')}</span>
                         <span className="text-sm font-medium text-blue-600">
-                          Active
+                          {t('active')}
                         </span>
                       </div>
                       <div className="flex items-center justify-between rounded-lg bg-blue-50 p-3 dark:bg-blue-900/20">
-                        <span className="text-sm">Bangladesh Providers</span>
+                        <span className="text-sm">
+                          {t('bangladeshProviders')}
+                        </span>
                         <span className="text-sm font-medium text-blue-600">
-                          Configured
+                          {t('configured')}
                         </span>
                       </div>
                       <div className="flex items-center justify-between rounded-lg bg-blue-50 p-3 dark:bg-blue-900/20">
-                        <span className="text-sm">Message Templates</span>
+                        <span className="text-sm">{t('messageTemplates')}</span>
                         <span className="text-sm font-medium text-blue-600">
-                          Bengali/English
+                          {t('bengaliEnglish')}
                         </span>
                       </div>
                     </div>
@@ -249,14 +257,10 @@ export default function CustomerManagementPage() {
                     <Settings className="mr-2 mt-0.5 h-5 w-5 text-yellow-600" />
                     <div>
                       <p className="font-medium text-yellow-800 dark:text-yellow-200">
-                        Messaging System Status
+                        {t('messagingSystemStatus')}
                       </p>
                       <p className="mt-1 text-sm text-yellow-700 dark:text-yellow-300">
-                        All messaging services are configured and running.
-                        Messages are automatically sent when customer
-                        receivables are updated, payments are received, or
-                        cylinders are returned. Phone numbers are required for
-                        customers to receive notifications.
+                        {t('allMessagingServicesConfiguredAndRunning')}
                       </p>
                     </div>
                   </div>

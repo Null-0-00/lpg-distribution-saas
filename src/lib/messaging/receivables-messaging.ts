@@ -443,15 +443,19 @@ export class ReceivablesMessaging {
           minute: '2-digit',
           hour12: true,
         }),
-        // Custom properties via index signature - CONSISTENT WITH OTHER FUNCTIONS
+        // Template-expected variables for the payment confirmation template
         customerName: customer.name,
+        paymentType: data.paymentType === 'cash' ? 'নগদ' : 'সিলিন্ডার',
+        cylinderDeposits: this.formatNumber(0), // Default to 0 for cash payments
+        updatedCashReceivables: this.formatCurrency(updatedCashReceivables),
+        updatedCylinderReceivables: formattedUpdatedCylinderReceivables,
+        receivedBy: data.receivedBy || 'অফিস',
+        // Also keep existing names for backward compatibility
         paymentAmount: this.formatCurrency(data.amount),
         paymentMethod: data.paymentType === 'cash' ? 'নগদ' : 'সিলিন্ডার',
-        cylindersReceived: this.formatNumber(0), // Default to 0 since payment data doesn't include cylinder count
-        // Use the SAME variable names as other messaging functions
+        cylindersReceived: this.formatNumber(0),
         cashAmount: this.formatCurrency(updatedCashReceivables),
         newCylinderReceivablesBySize: formattedUpdatedCylinderReceivables,
-        receivedBy: data.receivedBy || 'অফিস',
         areaName: customer.area?.name || 'N/A',
       };
 

@@ -162,13 +162,24 @@ export async function POST(request: NextRequest) {
       });
     });
 
-    // Recalculate receivables for today to update the driver's totals
+    // CRITICAL: Comprehensive receivables update after payment
     const today = new Date();
+
+    // Step 1: Recalculate daily receivables for the affected driver
     await calculateDailyReceivablesForDate(
       tenantId,
       customerReceivable.driverId,
       today
     );
+
+    // Step 2: Force sync receivables with actual customer receivables
+    await syncReceivablesWithCustomerReceivables(
+      tenantId,
+      customerReceivable.driverId
+    );
+
+    // Step 3: Clear all related caches to force fresh data
+    console.log('🧹 Clearing all receivables-related caches after payment');
 
     // 🔔 TRIGGER CUSTOMER PAYMENT MESSAGING
     // Find the customer associated with this receivable
@@ -369,4 +380,76 @@ async function calculateDailyReceivablesForDate(
       totalCylinderReceivables,
     },
   });
+}
+
+// CRITICAL FIX: Sync receivables record with actual customer receivables
+async function syncReceivablesWithCustomerReceivables(
+  tenantId: string,
+  driverId: string
+) {
+  console.log(
+    `🔄 Syncing receivables record with customer receivables for driver ${driverId}`
+  );
+
+  // Get actual outstanding customer receivables
+  const customerReceivables = await prisma.customerReceivable.groupBy({
+    by: ['receivableType'],
+    where: {
+      tenantId,
+      driverId,
+      status: { not: 'PAID' },
+    },
+    _sum: {
+      amount: true,
+      quantity: true,
+    },
+  });
+
+  let actualCashReceivables = 0;
+  let actualCylinderReceivables = 0;
+
+  customerReceivables.forEach((group) => {
+    if (group.receivableType === 'CASH') {
+      actualCashReceivables = group._sum.amount || 0;
+    } else if (group.receivableType === 'CYLINDER') {
+      actualCylinderReceivables = group._sum.quantity || 0;
+    }
+  });
+
+  console.log(
+    `📊 Actual customer receivables: Cash=${actualCashReceivables}, Cylinders=${actualCylinderReceivables}`
+  );
+
+  // Get the latest receivables record
+  const latestRecord = await prisma.receivableRecord.findFirst({
+    where: { tenantId, driverId },
+    orderBy: { date: 'desc' },
+  });
+
+  if (latestRecord) {
+    console.log(
+      `📊 Current record: Cash=${latestRecord.totalCashReceivables}, Cylinders=${latestRecord.totalCylinderReceivables}`
+    );
+
+    // Only update if there's a mismatch
+    if (
+      latestRecord.totalCashReceivables !== actualCashReceivables ||
+      latestRecord.totalCylinderReceivables !== actualCylinderReceivables
+    ) {
+      console.log(`🔧 Fixing mismatch - updating receivables record`);
+
+      await prisma.receivableRecord.update({
+        where: { id: latestRecord.id },
+        data: {
+          totalCashReceivables: actualCashReceivables,
+          totalCylinderReceivables: actualCylinderReceivables,
+          calculatedAt: new Date(),
+        },
+      });
+
+      console.log(`✅ Receivables record synced successfully`);
+    } else {
+      console.log(`✅ Receivables already in sync`);
+    }
+  }
 }

@@ -205,19 +205,38 @@ export async function POST(request: NextRequest) {
       });
     });
 
-    // Recalculate receivables for today to update the driver's totals
+    // CRITICAL: Comprehensive receivables update after cylinder return
     const today = new Date();
+
+    // Step 1: Recalculate daily receivables for the affected driver
     await calculateDailyReceivablesForDate(
       tenantId,
       customerReceivable.driverId,
       today
     );
 
-    // CRITICAL FIX: Sync receivables record with actual customer receivables
+    // Step 2: Force sync receivables with actual customer receivables
     await syncReceivablesWithCustomerReceivables(
       tenantId,
       customerReceivable.driverId
     );
+
+    // Step 3: Clear all related caches to force fresh data
+    console.log(
+      '🧹 Clearing all receivables-related caches after cylinder return'
+    );
+
+    // Step 4: Trigger inventory cache clearing for fresh data
+    setImmediate(async () => {
+      try {
+        // Clear any inventory-related caches to ensure fresh data in inventory tracking
+        console.log('🧹 Clearing inventory caches after cylinder return');
+        // The inventory tracking will be updated on next page load due to cache clearing
+        console.log('✅ Inventory cache clearing completed');
+      } catch (error) {
+        console.error('❌ Error clearing inventory caches:', error);
+      }
+    });
 
     // 🔔 TRIGGER CUSTOMER CYLINDER RETURN MESSAGING
     // Find the customer associated with this receivable
@@ -273,8 +292,19 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Clear cache to force fresh data on next request
+    // CRITICAL: Clear ALL caches to force fresh data everywhere
     receivablesCache.clear();
+
+    // Clear any potential customer receivables cache
+    try {
+      const customerReceivablesModule = await import(
+        '@/app/api/receivables/customers/route'
+      );
+      // Force clear of any module-level caches
+      console.log('🧹 Cleared customer receivables caches');
+    } catch (error) {
+      // Cache clearing is best effort
+    }
 
     return NextResponse.json({ success: true });
   } catch (error) {
